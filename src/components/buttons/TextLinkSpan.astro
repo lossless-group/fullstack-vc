@@ -1,0 +1,104 @@
+---
+/* TextLinkSpan
+   Inline-flex row of subtle text links separated by a bright dot.
+   Auto-inserts the separator BETWEEN direct children — pass plain <a> tags,
+   no manual separator needed.
+
+   Defaults:
+     - max-width:  80%
+     - min-width:  max-content   (keeps links on one line when there's room)
+     - width:      auto
+     - separator:  "•"           (CSS var override — bright dot in --color-primary)
+
+   Each prop, if undeclared, falls back to default behavior. */
+
+export interface Props {
+  /** CSS width — overrides default `auto`. */
+  width?: string;
+  /** CSS min-width — overrides default `max-content`. */
+  minWidth?: string;
+  /** CSS max-width — overrides default `80%`. */
+  maxWidth?: string;
+  /** Separator glyph between children. Default: "•". */
+  separator?: string;
+  /** CSS color for the separator. Default: var(--color-primary). */
+  separatorColor?: string;
+  /** Additional class name(s) merged onto the root span. */
+  class?: string;
+}
+
+const {
+  width,
+  minWidth,
+  maxWidth,
+  separator,
+  separatorColor,
+  class: className = '',
+} = Astro.props;
+
+/* Build inline style with only the props the caller actually passed —
+   undeclared props inherit the CSS defaults below. */
+const styleParts: string[] = [];
+if (width)           styleParts.push(`--tls-width: ${width}`);
+if (minWidth)        styleParts.push(`--tls-min-width: ${minWidth}`);
+if (maxWidth)        styleParts.push(`--tls-max-width: ${maxWidth}`);
+if (separator)       styleParts.push(`--tls-separator: "${separator}"`);
+if (separatorColor)  styleParts.push(`--tls-separator-color: ${separatorColor}`);
+const inlineStyle = styleParts.join('; ');
+---
+
+<span class:list={['text-link-span', className]} style={inlineStyle}>
+  <slot />
+</span>
+
+<style>
+  .text-link-span {
+    /* Defaults — overridable via inline custom properties from props above */
+    --tls-width: auto;
+    --tls-min-width: max-content;
+    --tls-max-width: 80%;
+    --tls-separator: "\2022"; /* • */
+    --tls-separator-color: var(--color-primary);
+
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    row-gap: 0.375rem;
+
+    width: var(--tls-width);
+    min-width: var(--tls-min-width);
+    max-width: var(--tls-max-width);
+  }
+
+  /* Subtle text-link styling for direct anchor children */
+  .text-link-span :global(> a) {
+    white-space: nowrap;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 150ms ease;
+  }
+  .text-link-span :global(> a:hover),
+  .text-link-span :global(> a:focus-visible) {
+    color: var(--color-text);
+  }
+  .text-link-span :global(> a:focus-visible) {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Bright dot before every direct child after the first */
+  .text-link-span :global(> *:not(:first-child))::before {
+    content: var(--tls-separator);
+    color: var(--tls-separator-color);
+    margin-inline: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    /* Pseudo sits inside the next child's box, separated from text by margin */
+  }
+</style>

@@ -25,6 +25,7 @@
   --color__graphite-400: #6b7390;
   --color__graphite-200: #c1c5d4;
   --color__bone: #f6f3ec;
+  --color__pampas: #f6f1ef;
   --color__bone-warm: #ece8de;
   --color__ink: #0a0c12;
   --color__amber-flare: #ffb84d;
@@ -75,7 +76,10 @@
   --fx-card-bg: var(--color__bone-warm);
   --fx-card-border: var(--color__graphite-200);
   --fx-card-border-hover: var(--color__violet-electric);
-  --fx-headline-gradient: none;
+  /* Light mode "gradient" is a near-solid: a subtle violet-deep accent on the
+     ink base. Keeps the headline visible when the same background-clip:text
+     technique is used as in dark/vibrant, while staying clean and minimal. */
+  --fx-headline-gradient: linear-gradient(120deg, var(--color__ink) 0%, var(--color__violet-deep) 100%);
   --fx-flare-color: var(--color__violet-deep);
 }
 

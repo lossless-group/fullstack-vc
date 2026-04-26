@@ -1,5 +1,6 @@
 ---
 import ModeToggle from '../ui/ModeToggle.astro';
+import SocialsFaviconRow from './SocialsFaviconRow.astro';
 ---
 
 <header class="site-header">
@@ -10,7 +11,7 @@ import ModeToggle from '../ui/ModeToggle.astro';
     </a>
 
     <nav class="site-header__nav" aria-label="Primary">
-      <a href="/" class="site-header__link">Dojo</a>
+      <a href="/dojo" class="site-header__link">Dojo</a>
       <a href="/webinars" class="site-header__link">Webinars</a>
       <a href="/stack" class="site-header__link">Stack</a>
       <a href="/changelog" class="site-header__link">Changelog</a>
@@ -20,6 +21,7 @@ import ModeToggle from '../ui/ModeToggle.astro';
     </nav>
 
     <div class="site-header__actions">
+      <SocialsFaviconRow github="https://github.com/lossless-group/fullstack-vc" />
       <ModeToggle />
     </div>
   </div>
@@ -62,6 +64,7 @@ import ModeToggle from '../ui/ModeToggle.astro';
   }
   .site-header__nav {
     display: flex;
+    align-items: center;
     gap: 1.25rem;
     margin-left: auto;
   }

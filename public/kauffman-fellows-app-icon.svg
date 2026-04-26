@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- White page background -->
+  <rect width="512" height="512" fill="#ffffff"/>
+
+  <!-- =========================================================
+       OUTER HEXAGON FRAME (split vertically: blue left, gray right)
+       Outer hex vertices (point-top):
+         T  (256, 56)   TR (429,156)   BR (429,356)
+         B  (256,456)   BL ( 83,356)   TL ( 83,156)
+       Inner hex vertices (frame inset ~24px):
+         iT (256, 84)   iTR(405,171)   iBR(405,341)
+         iB (256,428)   iBL(107,341)   iTL(107,171)
+       ========================================================= -->
+
+  <!-- Left frame half -->
+  <polygon
+    points="256,56 83,156 83,356 256,456 256,428 107,341 107,171 256,84"
+    fill="#1c8ec3"/>
+
+  <!-- Right frame half -->
+  <polygon
+    points="256,56 256,84 405,171 405,341 256,428 256,456 429,356 429,156"
+    fill="#bcc1c8"/>
+
+  <!-- =========================================================
+       INNER NEGATIVE SPACE (base fill, shows above/below chevrons
+       and at the central spine)
+       ========================================================= -->
+  <polygon
+    points="256,84 405,171 405,341 256,428 107,341 107,171"
+    fill="#0d1a2e"/>
+
+  <!-- =========================================================
+       LEFT CHEVRON ( > ) — two facets, tip at center
+       ========================================================= -->
+  <!-- Top facet (in shadow): very dark navy -->
+  <polygon points="107,171 256,256 107,256" fill="#0d1a2e"/>
+  <!-- Bottom facet (caught light): teal -->
+  <polygon points="107,256 256,256 107,341" fill="#1f5775"/>
+
+  <!-- =========================================================
+       RIGHT CHEVRON ( < ) — two facets, tip at center
+       ========================================================= -->
+  <!-- Top facet (caught light): medium gray -->
+  <polygon points="405,171 256,256 405,256" fill="#6e7785"/>
+  <!-- Bottom facet (in shadow): lighter gray -->
+  <polygon points="405,256 256,256 405,341" fill="#a5acb6"/>
+</svg>

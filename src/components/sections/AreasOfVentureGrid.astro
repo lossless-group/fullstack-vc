@@ -1,0 +1,171 @@
+---
+/* AreasOfVentureGrid
+   Renders a grid of "areas of venture" cards. Each card surfaces one
+   workflow area of a VC firm, sourced from the Voodoo Handbook (Class 20
+   Living Draft) chapter structure. Pure semantic tokens; mode-aware. */
+
+export interface Area {
+  /** 1-indexed position in the workflow chapter list. */
+  number: number;
+  /** Short title — exactly as it appears in the source chapter heading. */
+  title: string;
+  /** One-sentence lede summarizing what's covered. */
+  lede: string;
+  /** Marketing tags — short, search-friendly hooks (SEO + GEO). NOT the structural sub-sections of the underlying content page. */
+  tags?: string[];
+}
+
+export interface Props {
+  /** Section eyebrow shown above the heading. */
+  eyebrow?: string;
+  /** Section headline (h2). */
+  heading?: string;
+  /** Section lede paragraph. */
+  intro?: string;
+  /** Card data. */
+  areas: Area[];
+}
+
+const {
+  eyebrow = 'Venture Workflows',
+  heading = 'Areas of Venture',
+  intro,
+  areas,
+} = Astro.props;
+---
+
+<section class="areas">
+  <header class="areas__header">
+    {eyebrow && <p class="areas__eyebrow">{eyebrow}</p>}
+    <h2 class="areas__heading">{heading}</h2>
+    {intro && <p class="areas__intro">{intro}</p>}
+  </header>
+
+  <ol class="areas__grid">
+    {areas.map(area => (
+      <li class="area-card">
+        <div class="area-card__number" aria-hidden="true">
+          {String(area.number).padStart(2, '0')}
+        </div>
+        <h3 class="area-card__title">{area.title}</h3>
+        <p class="area-card__lede">{area.lede}</p>
+        {area.tags && area.tags.length > 0 && (
+          <ul class="area-card__tags" aria-label={`${area.title} topics`}>
+            {area.tags.map(t => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .areas {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .areas__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 56ch;
+  }
+  .areas__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .areas__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.1;
+    color: var(--color-text);
+  }
+  .areas__intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .areas__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .areas__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .areas__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  .area-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    transition: border-color 200ms ease, box-shadow 200ms ease, transform 150ms ease;
+  }
+  .area-card:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-1px);
+  }
+  .area-card__number {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    letter-spacing: 0.12em;
+  }
+  .area-card__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.25;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .area-card__lede {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .area-card__tags {
+    list-style: none;
+    margin: 0.25rem 0 0;
+    padding: 0.625rem 0 0;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .area-card__tags li {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+  }
+</style>

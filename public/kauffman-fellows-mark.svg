@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#0a1f33"/>
+
+  <!-- Hexagon outline (point-top, point-bottom) -->
+  <polygon points="256,56 429,156 429,356 256,456 83,356 83,156"
+           fill="none"
+           stroke="#c5d4eb"
+           stroke-width="6"
+           stroke-linejoin="round"/>
+
+  <!-- Left chevron ( > ) -->
+  <polygon points="140,130 260,256 140,382 175,362 215,256 175,150"
+           fill="#c5d4eb"/>
+
+  <!-- Right chevron ( < ) -->
+  <polygon points="372,130 252,256 372,382 337,362 297,256 337,150"
+           fill="#c5d4eb"/>
+</svg>

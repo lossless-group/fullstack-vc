@@ -1,0 +1,169 @@
+---
+export const prerender = true;
+
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import HeroContentCoreMessage from '../../components/heroes/HeroContentCoreMessage.astro';
+import AlternateCta from '../../components/heroes/AlternateCta.astro';
+import AreasOfVentureGrid, { type Area } from '../../components/sections/AreasOfVentureGrid.astro';
+
+/* -----------
+   Page Metadata
+----------- */
+const pageTitle = 'The nerdiest Agentic VC Dojo for venture professionals | hosted by FullStack VC';
+const pageDescription = 'Practice, build, and level up your AI agent skills with the Kauffman Fellow network.';
+
+/* -----------
+   Hero copy
+----------- */
+const contextSetter = 'The nerdiest Agentic VC Dojo for venture professionals';
+const headerTxt = 'Hone your skills, build your projects';
+const subheaderTxt = 'Gain AI Agent superpowers applicable to your real work and needs. We will follow up to assure your hopes and dreams with AI are closer to reality.';
+const supportingTxt = "Join us, we're getting our hands dirty. Elbow grease is encouraged.";
+const trailingTxt = 'A content series by the <a href="https://kauffmanfellows.org">Kauffman Fellows</a> network.';
+
+/* -----------
+   CTA
+   The intended endpoint is roughly /api/o-auth/dojo/join — wired here to the
+   existing /login entry until the dedicated dojo-join route exists.
+----------- */
+const ctaText = 'Join the Dojo';
+const ctaLink = '/login';
+
+/* -----------
+   Areas of Venture (Voodoo Handbook Class 20 chapter structure).
+   `tags` are marketing hooks — short, search-friendly (SEO + GEO), curiosity-
+   provoking. They are intentionally NOT the structural sub-sections of the
+   eventual content page (Discussion / Tips & Tricks / Case Studies / etc.).
+----------- */
+const areas: Area[] = [
+  {
+    number: 1,
+    title: 'Strategy Development & Raising a Fund',
+    lede: 'How emerging managers grind through hundreds of LP meetings, build the team, and close anchors.',
+    tags: ['Emerging managers', 'Anchor LPs', 'Pre-marketing', 'GP commit', 'First close'],
+  },
+  {
+    number: 2,
+    title: 'Proprietary Dealflow & Dealflow Management',
+    lede: 'Earn the inbound, route the inbound, say "no" fast and well, and get invited to oversubscribed rounds.',
+    tags: ['Sourcing engines', 'Founder-friendly nos', 'Inbound triage', 'CRM for VCs', 'Oversubscribed rounds'],
+  },
+  {
+    number: 3,
+    title: 'Thesis, Diligence & Pushing Deals Through',
+    lede: 'Build a point of view, run diligence sprints, and move through committee without losing the founder.',
+    tags: ['Investment thesis', 'Diligence sprints', 'Reference calls', 'IC dynamics', 'Priority deals'],
+  },
+  {
+    number: 4,
+    title: 'Winning Deals',
+    lede: 'Personal brand, fast trust, and valuation gymnastics — what makes the founder pick you.',
+    tags: ['Why founders pick you', 'Personal brand', 'Term sheet timing', 'Lead investor leverage', 'Valuation gymnastics'],
+  },
+  {
+    number: 5,
+    title: 'Board Participation & Governance',
+    lede: 'Showing up, value-add vs. busywork, and knowing when to be impermanent.',
+    tags: ['Board seats', 'Observer rights', 'Founder coaching', 'Impermanent boards', 'Crisis governance'],
+  },
+  {
+    number: 6,
+    title: 'Portfolio Services & Community',
+    lede: 'Service offers, community programs, growth acceleration, and "one-battle" frameworks.',
+    tags: ['Platform teams', 'Customer intros', 'One-battle framework', 'Talent network', 'Founder community'],
+  },
+  {
+    number: 7,
+    title: 'Portfolio Tracking, Modeling & Follow-On Management',
+    lede: 'Internal dashboards, portfolio review cadences, and follow-on decision frameworks.',
+    tags: ['Portfolio dashboards', 'Reserves modeling', 'Follow-on math', 'Markup signals', 'Cohort analysis'],
+  },
+  {
+    number: 8,
+    title: 'Fund Management & Administration',
+    lede: 'Fund admin, investment committee design, and the often-invisible non-investing roles.',
+    tags: ['Fund admin stack', 'IC design', 'Back office', 'Carry waterfall', 'GP/LP economics'],
+  },
+  {
+    number: 9,
+    title: 'Investor Relations, Community & Reporting',
+    lede: 'Quarterly reports, LP days, and building a community around your fund.',
+    tags: ['Quarterly letters', 'AGM playbook', 'Capital calls', 'LP days', 'DPI storytelling'],
+  },
+  {
+    number: 10,
+    title: 'Exits, Auctions, Secondary, Liquidity & Distributions',
+    lede: 'Selling early, secondaries, distributions — the M&A grind and the end of the J-curve.',
+    tags: ['Secondary sales', 'Tender offers', 'M&A timing', 'Distributions in kind', 'DPI vs TVPI'],
+  },
+];
+
+const areasIntro = 'Ten workflow areas that show up across nearly every venture firm. Adapted from the Kauffman Fellows Class 20 living draft on perspectives & practice in venture capital.';
+---
+
+<BaseThemeLayout
+  title={pageTitle}
+  description={pageDescription}
+  containerClass="px-6 py-16 md:py-24"
+>
+  <div class="dojo-shell">
+    <!-- Top: 2/3 hero · 1/3 alternate CTA -->
+    <section class="dojo-top">
+      <div class="dojo-top__primary">
+        <HeroContentCoreMessage
+          contextSetter={contextSetter}
+          headerTxt={headerTxt}
+          subheaderTxt={subheaderTxt}
+          supportingTxt={supportingTxt}
+          ctaHref={ctaLink}
+          ctaLabel={ctaText}
+        />
+      </div>
+
+      <div class="dojo-top__aside">
+        <AlternateCta
+          title="Read the dispatches"
+          bodyHtml={`<p>While we get our hands dirty in the dojo, we publish what we learn. Notes, prompts, transcripts, and the occasional unfiltered take on what works in agentic VC.</p>`}
+          trailingHtml={trailingTxt}
+          ctaHref="/changelog"
+          ctaLabel="Browse the dispatches"
+        />
+      </div>
+    </section>
+
+    <!-- Bottom: Areas of Venture grid -->
+    <section class="dojo-areas">
+      <AreasOfVentureGrid
+        eyebrow="Venture Workflows · Areas of Venture"
+        heading="Where agents earn their keep"
+        intro={areasIntro}
+        areas={areas}
+      />
+    </section>
+  </div>
+</BaseThemeLayout>
+
+<style>
+  .dojo-shell {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+  }
+
+  .dojo-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .dojo-top {
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+    }
+  }
+  .dojo-top__primary { min-width: 0; }
+  .dojo-top__aside { min-width: 0; }
+</style>
