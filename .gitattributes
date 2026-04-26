@@ -47,6 +47,18 @@
 *.mov            binary
 *.zip            binary
 
+# Design source files — proprietary binary formats from design tools.
+# Marked binary so git never tries to text-diff or merge them.
+*.afdesign       binary
+*.afphoto        binary
+*.afpub          binary
+*.psd            binary
+*.psb            binary
+*.ai             binary
+*.sketch         binary
+*.xd             binary
+*.fig            binary
+
 # Lockfiles — prevent merge conflict noise via "merge=union" (deno-style)
 # pnpm-lock.yaml is at the monorepo root, not here.
 package-lock.json text eol=lf merge=binary
