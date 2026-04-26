@@ -1,0 +1,56 @@
+---
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+
+const provider = Astro.url.searchParams.get('provider') ?? '';
+const handle = Astro.url.searchParams.get('handle') ?? '';
+const email = Astro.url.searchParams.get('email') ?? '';
+const identifier = handle || email || 'your account';
+---
+
+<BaseThemeLayout
+  title="Not on the roster · FullStack VC"
+  description="Your account isn't on the Kauffman Fellows roster yet."
+  containerClass="px-6 py-16 max-w-md mx-auto"
+>
+  <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+    Membership check
+  </p>
+  <h1 class="text-3xl md:text-4xl font-bold mb-4" style="font-family: var(--font-display); color: var(--color-text);">
+    Not seeing you on the roster
+  </h1>
+
+  <p class="mb-4" style="color: var(--color-text);">
+    We checked <strong>{identifier}</strong>{provider && <> (via {provider})</>} against the Kauffman Fellows roster and didn't find a match.
+  </p>
+
+  <p class="mb-6" style="color: var(--color-text);">
+    If you believe this is a mistake — different email on file, different GitHub handle, or you've recently joined the network — please reach out to <a href="mailto:hello@lossless.group" style="color: var(--color-primary);">hello@lossless.group</a> and we'll get you sorted within a day.
+  </p>
+
+  <div class="flex gap-3">
+    <a class="link-btn link-btn--primary" href="/login">Try a different account</a>
+    <a class="link-btn" href="/">Back to the Dojo</a>
+  </div>
+</BaseThemeLayout>
+
+<style>
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+  .link-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .link-btn--primary {
+    background: var(--color-primary);
+    color: var(--color__bone);
+    border-color: var(--color-primary);
+  }
+  .link-btn--primary:hover { color: var(--color__bone); border-color: var(--color-primary); }
+</style>

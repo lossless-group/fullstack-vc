@@ -27,3 +27,6 @@ pnpm-debug.log*
 # build artifacts
 .vercel/
 .netlify/
+
+# Affinity Designer / Photo / Publisher lock files — created while file is open in the editor
+*~lock~

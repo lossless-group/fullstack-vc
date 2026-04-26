@@ -22,9 +22,9 @@ A small, opinionated marketing + community site:
 
 Part of the **[astro-knots](../../README.md)** family of websites maintained by [The Lossless Group](https://lossless.group). astro-knots is a pseudo-monorepo of independently-deployable Astro sites that share patterns, components, and conventions through pattern-reference packages (copy-and-adapt) and a small number of published packages (real npm dependencies).
 
-This site is derived from (Astro Knots)[https://github.com/lossless-group/astro-knots], a collection of sites developed by The Lossless Group. Most of them are for VCs, but quite sophisticated relative to typical VC sites.
+This site is derived from [Astro Knots](https://github.com/lossless-group/astro-knots), a collection of sites developed by The Lossless Group. Most of them are for VCs, but quite sophisticated relative to typical VC sites.
 
-Conventions, blueprints, and prompts that govern this site live under [`context-v/`](../../context-v/) at the (_pseudomonorepo_ root)[https://github.com/lossless-group/astro-knots/context-v/]. **Read those first** if you're contributing, or like being very nerdy.
+Conventions, blueprints, and prompts that govern this site live under [`context-v/`](https://github.com/lossless-group/astro-knots/tree/main/context-v) at the [pseudomonorepo root](https://github.com/lossless-group/astro-knots/context-v/). **Read those first** if you're contributing, or like being very nerdy.
 
 ---
 

@@ -1,0 +1,157 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
+
+const lastUpdated = '2026-04-26';
+---
+
+<BaseThemeLayout
+  title="Privacy Policy · FullStack VC"
+  description="What data the FullStack VC site collects from Agentic VC Dojo participants, how it's used, and how to remove it."
+  containerClass="px-6 py-12 max-w-3xl mx-auto"
+>
+  <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+    Last updated · {lastUpdated}
+  </p>
+  <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+    Privacy Policy
+  </h1>
+  <p class="lede" style="color: var(--color-text);">
+    FullStack VC is the homebase for the Agentic VC Dojo, a learning community of venture capitalists. This page explains exactly what data this site collects, why, where it lives, and how to remove it. Plain language, no dark patterns, no third-party trackers.
+  </p>
+
+  <article class="prose">
+    <h2>Who runs this site</h2>
+    <p>
+      The FullStack VC site is operated by <a href="https://lossless.group">The Lossless Group</a> ("we", "our"). Questions about anything on this page can go to <a href="mailto:hello@lossless.group">hello@lossless.group</a>.
+    </p>
+
+    <h2>What data we collect</h2>
+    <p>
+      We only collect data when you choose to log in. Anonymous browsing of the public pages (the dojo schedule, changelog, brand kit, design system) does not collect personal data. There are no analytics scripts and no third-party trackers on this site.
+    </p>
+
+    <h3>From OAuth login (GitHub or LinkedIn)</h3>
+    <p>When you log in, the OAuth provider returns:</p>
+    <ul>
+      <li><strong>A stable identifier</strong> — your GitHub username or LinkedIn subject ID</li>
+      <li><strong>Your name</strong> — as displayed on the OAuth provider</li>
+      <li><strong>Your email address</strong> — primary verified email on the OAuth account</li>
+      <li><strong>Your avatar URL</strong> — the profile picture URL the provider returns</li>
+    </ul>
+    <p>
+      We use these to verify you against the Kauffman Fellows roster (a private allowlist maintained by the Lossless Group), to display your name and avatar on the site, and to associate your stack data with your identity.
+    </p>
+
+    <h3>From you, when you submit your stack</h3>
+    <p>
+      The stack-tracking feature stores: tools you currently use, tools you aspire to use, tools you've moved on from, and any notes you add. It also stores the timestamps of when each entry was added.
+    </p>
+    <p>
+      You choose whether your profile is publicly visible. New profiles default to <em>private</em>; only you can see your data until you explicitly toggle it to public. Sensitive fields (like firm name and per-tool notes) require an additional per-field opt-in even when your profile is public.
+    </p>
+
+    <h2>Where the data lives</h2>
+    <p>
+      Your stack data is stored as a markdown file in a public GitHub repository at <a href="https://github.com/lossless-group/fullstack-vc">github.com/lossless-group/fullstack-vc</a>. Public profile data is visible there to anyone; private profile data is encrypted client-side before submission and decrypted only for your own logged-in view.
+    </p>
+    <p>
+      Your session — the cookie that keeps you logged in — is a signed JSON Web Token stored only in your browser, with no corresponding server-side session record. Sessions expire after 30 days of inactivity.
+    </p>
+    <p>
+      We do not use any external database, analytics, or marketing platform.
+    </p>
+
+    <h2>Who can see what</h2>
+    <ul>
+      <li><strong>Public pages</strong> (the dojo schedule, changelog, brand kit, design system, public stack profiles, aggregate views) are visible to anyone.</li>
+      <li><strong>Your full profile and your private stack data</strong> are visible only to you when logged in.</li>
+      <li><strong>Lossless Group maintainers</strong> can see anything stored in the GitHub repository, which includes your profile and any data you've submitted.</li>
+      <li><strong>OAuth providers</strong> (GitHub, LinkedIn) see the fact that you authorized this app, per their own privacy policies.</li>
+    </ul>
+
+    <h2>How to remove your data</h2>
+    <p>
+      Three options:
+    </p>
+    <ol>
+      <li>From your profile page, click <strong>"Delete my profile."</strong> This removes your participant file from the repository in the next site build.</li>
+      <li>Open a pull request against <a href="https://github.com/lossless-group/fullstack-vc">the repository</a> deleting your <code>src/content/participants/{'{your-handle}.md'}</code> file.</li>
+      <li>Email <a href="mailto:hello@lossless.group">hello@lossless.group</a> and we'll handle it within 7 days.</li>
+    </ol>
+    <p>
+      Removing your data does not retroactively scrub it from public git history. We can rewrite history on request, but doing so requires force-pushing the repository, which is a coordinated change. Tell us if this matters to you and we'll work it out.
+    </p>
+
+    <h2>Children</h2>
+    <p>
+      The Agentic VC Dojo is a professional community for venture capitalists. The site is not directed at children and we do not knowingly collect data from anyone under 18.
+    </p>
+
+    <h2>Changes to this policy</h2>
+    <p>
+      We'll update this page when the data flows change. Material changes will be announced in a changelog entry on this site (and you'll see them by the updated date at the top). The full revision history of this page is available in the GitHub repository.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Anything about this policy or about your data: <a href="mailto:hello@lossless.group">hello@lossless.group</a>.
+    </p>
+  </article>
+</BaseThemeLayout>
+
+<style>
+  .lede {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+  }
+  .prose {
+    color: var(--color-text);
+    line-height: 1.65;
+  }
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 0.75rem;
+    color: var(--color-text);
+  }
+  .prose h3 {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+    color: var(--color-text);
+  }
+  .prose p { margin: 0 0 1em; }
+  .prose ul,
+  .prose ol {
+    margin: 0 0 1em;
+    padding-left: 1.5em;
+  }
+  .prose ul { list-style: disc; }
+  .prose ol { list-style: decimal; }
+  .prose li { margin-bottom: 0.375em; }
+  .prose a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .prose code {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .prose strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .prose em {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+</style>
