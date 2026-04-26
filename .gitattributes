@@ -1,0 +1,68 @@
+# ============================================================================
+# .gitattributes — fullstack-vc
+#
+# Git's auto-detection handles most cases, but explicit declarations prevent
+# subtle bugs:
+#  - Stops git from running text diff/merge on binary formats
+#  - Stops Windows checkouts from CRLF-mangling files in subtle ways
+#  - Marks SVG as text (it IS text — XML — and benefits from real diffs)
+#
+# Generated banners under public/changelog/ accumulate as prompt hashes change.
+# A typical entry is ~600 KB; ~12 entries/year ≈ 7 MB/year. Keeping them in git
+# directly is fine at this scale. If accumulation outpaces ~50 MB total, switch
+# the PNG line below to use Git LFS (see "Git LFS migration" section).
+# ============================================================================
+
+# Text — normalize line endings, allow real diffs
+*.md             text eol=lf
+*.mdx            text eol=lf
+*.astro          text eol=lf
+*.ts             text eol=lf
+*.tsx            text eol=lf
+*.js             text eol=lf
+*.jsx            text eol=lf
+*.json           text eol=lf
+*.yml            text eol=lf
+*.yaml           text eol=lf
+*.css            text eol=lf
+*.html           text eol=lf
+*.svg            text eol=lf
+
+# Binary images — no diff, no merge, no line-ending conversion
+*.png            binary
+*.jpg            binary
+*.jpeg           binary
+*.webp           binary
+*.gif            binary
+*.ico            binary
+*.avif           binary
+
+# Other binaries
+*.pdf            binary
+*.woff           binary
+*.woff2          binary
+*.ttf            binary
+*.otf            binary
+*.mp4            binary
+*.mov            binary
+*.zip            binary
+
+# Lockfiles — prevent merge conflict noise via "merge=union" (deno-style)
+# pnpm-lock.yaml is at the monorepo root, not here.
+package-lock.json text eol=lf merge=binary
+yarn.lock         text eol=lf merge=binary
+
+# ----------------------------------------------------------------------------
+# Git LFS migration (commented out — enable when generated assets exceed ~50 MB)
+#
+# 1. Install git-lfs locally:        brew install git-lfs && git lfs install
+# 2. Uncomment the lines below (and comment out the matching `binary` lines above)
+# 3. Migrate existing files:         git lfs migrate import --include="public/changelog/*.png"
+# 4. Push:                            git push
+# 5. Note: GitHub free LFS quota = 1 GB storage / 1 GB bandwidth per month.
+#    Most VC-content sites stay under this for years. Beyond that, $5/mo per
+#    50 GB pack. For OSS / private repos, behavior is the same.
+# ----------------------------------------------------------------------------
+# public/changelog/*.png  filter=lfs diff=lfs merge=lfs -text
+# public/og/*.png         filter=lfs diff=lfs merge=lfs -text
+# public/og/*.webp        filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,127 @@
+---
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import WebinarCard from '../../components/webinars/WebinarCard.astro';
+import { inferWebinarStatus } from '../../lib/webinar-status';
+
+const all = await getCollection('webinars');
+
+const enriched = all.map(entry => ({
+  entry,
+  status: inferWebinarStatus(entry.data),
+}));
+
+const live = enriched
+  .filter(e => e.status === 'Live')
+  .sort((a, b) => a.entry.data.date_scheduled.getTime() - b.entry.data.date_scheduled.getTime());
+
+const upcoming = enriched
+  .filter(e => e.status === 'Upcoming')
+  .sort((a, b) => a.entry.data.date_scheduled.getTime() - b.entry.data.date_scheduled.getTime());
+
+const recorded = enriched
+  .filter(e => e.status === 'Recorded')
+  .sort((a, b) => b.entry.data.date_scheduled.getTime() - a.entry.data.date_scheduled.getTime());
+
+const totalCount = all.length;
+---
+
+<BaseThemeLayout
+  title="Webinars · Agentic VC Dojo · FullStack VC"
+  description="Monthly working sessions on agentic AI for venture capitalists."
+  containerClass="px-6 py-12 max-w-5xl mx-auto"
+>
+  <header class="mb-12">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Agentic VC Dojo · Monthly
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4" style="font-family: var(--font-display); color: var(--color-text);">
+      Sessions
+    </h1>
+    <p style="color: var(--color-text); max-width: 36rem;">
+      A working community for VCs putting agentic AI into daily practice.
+      Live monthly. Recordings stay up.
+    </p>
+  </header>
+
+  {totalCount === 0 && (
+    <div
+      class="p-10 rounded-xl text-center"
+      style="background: var(--fx-card-bg); border: 1px dashed var(--color-border);"
+    >
+      <p style="color: var(--color-text-muted); font-family: var(--font-code);">
+        // No webinars scheduled yet. Drop a `.md` file in
+        <code style="color: var(--color-primary);">src/content/webinars/</code>.
+      </p>
+    </div>
+  )}
+
+  {live.length > 0 && (
+    <section class="mb-14">
+      <h2 class="webinars-section-title">
+        <span class="webinars-section-dot" aria-hidden="true"></span>
+        Live now
+      </h2>
+      <div class="webinars-grid">
+        {live.map(({ entry }) => (
+          <WebinarCard data={entry.data} href={`/webinars/${entry.id}`} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {upcoming.length > 0 && (
+    <section class="mb-14">
+      <h2 class="webinars-section-title">Upcoming</h2>
+      <div class="webinars-grid">
+        {upcoming.map(({ entry }) => (
+          <WebinarCard data={entry.data} href={`/webinars/${entry.id}`} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {recorded.length > 0 && (
+    <section class="mb-14">
+      <h2 class="webinars-section-title">Past sessions</h2>
+      <div class="webinars-grid">
+        {recorded.map(({ entry }) => (
+          <WebinarCard data={entry.data} href={`/webinars/${entry.id}`} />
+        ))}
+      </div>
+    </section>
+  )}
+</BaseThemeLayout>
+
+<style>
+  .webinars-section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-muted);
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid var(--color-border);
+    width: 100%;
+  }
+  .webinars-section-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    animation: webinars-section-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes webinars-section-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.45; transform: scale(0.85); }
+  }
+  .webinars-grid {
+    display: grid;
+    gap: 1rem;
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+import ModeToggle from '../ui/ModeToggle.astro';
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="/" class="site-header__brand" aria-label="FullStack VC home">
+      <img src="/favicon.svg" alt="" width="28" height="28" />
+      <span class="site-header__wordmark">FullStack VC</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Primary">
+      <a href="/" class="site-header__link">Dojo</a>
+      <a href="/webinars" class="site-header__link">Webinars</a>
+      <a href="/changelog" class="site-header__link">Changelog</a>
+      <a href="/brand-kit" class="site-header__link">Brand</a>
+      <a href="/design-system" class="site-header__link">System</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <ModeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-background) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .site-header__inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .site-header__brand:hover {
+    color: var(--color-primary);
+  }
+  .site-header__wordmark {
+    white-space: nowrap;
+  }
+  .site-header__nav {
+    display: flex;
+    gap: 1.25rem;
+    margin-left: auto;
+  }
+  .site-header__link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 150ms ease;
+  }
+  .site-header__link:hover {
+    color: var(--color-text);
+  }
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  @media (max-width: 640px) {
+    .site-header__nav {
+      display: none;
+    }
+  }
+</style>

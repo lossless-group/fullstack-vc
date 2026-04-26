@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+/* Base resets that apply across all themes/modes */
+html {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}

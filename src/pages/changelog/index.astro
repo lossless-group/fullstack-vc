@@ -1,0 +1,139 @@
+---
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import BannerWithOverlay from '../../components/changelog/BannerWithOverlay.astro';
+
+const all = await getCollection('changelog');
+const sorted = all.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+function formatDate(d: Date): string {
+  return d.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+}
+---
+
+<BaseThemeLayout
+  title="Changelog · FullStack VC"
+  description="What we've shipped, why it matters, and what's next."
+  containerClass="px-6 py-12 max-w-4xl mx-auto"
+>
+  <header class="mb-12">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Changelog
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4" style="font-family: var(--font-display); color: var(--color-text);">
+      What we've shipped
+    </h1>
+    <p style="color: var(--color-text); max-width: 36rem;">
+      Reverse-chronological. Every entry leads with "Why Care?" — value for both the firm and our users.
+    </p>
+  </header>
+
+  {sorted.length === 0 && (
+    <div
+      class="p-10 rounded-xl text-center"
+      style="background: var(--fx-card-bg); border: 1px dashed var(--color-border);"
+    >
+      <p style="color: var(--color-text-muted); font-family: var(--font-code);">
+        // No changelog entries yet.
+      </p>
+    </div>
+  )}
+
+  <div class="changelog-list">
+    {sorted.map(entry => (
+      <article class="changelog-entry">
+        {entry.data.image ? (
+          <BannerWithOverlay
+            src={entry.data.image}
+            href={`/changelog/${entry.id}`}
+            eyebrow={`Changelog · ${formatDate(entry.data.date)}`}
+            title={entry.data.image_text ?? entry.data.title}
+            subtitle={entry.data.summary?.slice(0, 140)}
+          />
+        ) : (
+          <a href={`/changelog/${entry.id}`} class="changelog-entry__no-banner">
+            <span class="changelog-entry__eyebrow">Changelog · {formatDate(entry.data.date)}</span>
+            <h2 class="changelog-entry__title">{entry.data.title}</h2>
+          </a>
+        )}
+
+        <div class="changelog-entry__meta">
+          <span class="changelog-entry__date">{formatDate(entry.data.date)}</span>
+          {entry.data.category && (
+            <span class="changelog-entry__category">{entry.data.category}</span>
+          )}
+          {entry.data.tags && entry.data.tags.slice(0, 3).map(tag => (
+            <span class="changelog-entry__tag">{tag}</span>
+          ))}
+        </div>
+      </article>
+    ))}
+  </div>
+</BaseThemeLayout>
+
+<style>
+  .changelog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .changelog-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .changelog-entry__no-banner {
+    display: block;
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    text-decoration: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .changelog-entry__no-banner:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+  }
+  .changelog-entry__eyebrow {
+    display: block;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+  }
+  .changelog-entry__title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .changelog-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding-left: 0.25rem;
+  }
+  .changelog-entry__date,
+  .changelog-entry__category,
+  .changelog-entry__tag {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+  .changelog-entry__category {
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+  .changelog-entry__tag::before {
+    content: '#';
+    opacity: 0.5;
+    margin-right: 0.125rem;
+  }
+</style>

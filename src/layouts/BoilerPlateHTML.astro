@@ -1,0 +1,50 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  themeClass?: string;
+  favicon?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = "FullStack VC",
+  description = "Agentic VC Dojo — a learning community for venture capitalists building with AI.",
+  themeClass = "theme-default",
+  favicon = "/favicon.svg",
+  noindex = false,
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class={themeClass}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  <link rel="icon" href={favicon} type="image/svg+xml" />
+
+  <!-- Pre-paint mode application to avoid FOUC -->
+  <script is:inline>
+    (function () {
+      try {
+        var stored = localStorage.getItem('mode');
+        var valid = ['light', 'dark', 'vibrant'];
+        var mode = valid.indexOf(stored) >= 0 ? stored : 'dark';
+        document.documentElement.setAttribute('data-mode', mode);
+        if (mode === 'dark' || mode === 'vibrant') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {
+        document.documentElement.setAttribute('data-mode', 'dark');
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <slot />
+</body>
+</html>

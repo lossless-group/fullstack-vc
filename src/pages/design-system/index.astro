@@ -1,0 +1,293 @@
+---
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../components/ui/ModeThemeToggle.astro';
+import WebinarCard from '../../components/webinars/WebinarCard.astro';
+
+// Synthetic data so all three status variants are inspectable side by side.
+const sampleData = {
+  title: 'Sample · How agents reshape diligence',
+  lede: 'A workshop on wiring an agentic research loop into a junior analyst workflow.',
+  durationMinutes: 60,
+  presenters: ['Lead Presenter', 'Co-host'],
+  rsvpUrl: 'https://example.com/rsvp',
+  recordingUrl: 'https://example.com/recording',
+};
+const upcomingDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days out
+const liveDate = new Date(Date.now() - 5 * 60 * 1000);                // started 5 min ago
+const recordedDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
+const fxTokens = [
+  { token: '--fx-glow-opacity',     desc: 'Base glow opacity (0–1) — light: subtle, dark: moderate, vibrant: max' },
+  { token: '--fx-glow-spread',      desc: 'Glow spread radius — scales with mode intensity' },
+  { token: '--fx-card-bg',          desc: 'Card background, mode-adaptive' },
+  { token: '--fx-card-border',      desc: 'Card border at rest' },
+  { token: '--fx-card-border-hover',desc: 'Card border on hover' },
+  { token: '--fx-card-shadow',      desc: 'Card shadow at rest' },
+  { token: '--fx-card-shadow-hover',desc: 'Card shadow on hover' },
+  { token: '--fx-headline-gradient',desc: 'Display headline gradient — none in light, gradient in dark/vibrant' },
+  { token: '--fx-flare-color',      desc: 'Color for canvas/Three.js elements (resolved via getComputedStyle)' },
+];
+
+const components = [
+  {
+    name: 'ModeThemeToggle',
+    purpose: 'The 3-mode + theme toggle widget used on /brand-kit and /design-system.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-border, --fx-card-bg, --fx-card-border, --font-code',
+    props: '— (no props yet)',
+  },
+  {
+    name: 'BaseThemeLayout',
+    purpose: 'Site-wide layout wrapper. Applies theme class on <html>, boots theme + mode switchers, imports global.css.',
+    cssContract: '(none directly — sets up the contract for descendants)',
+    props: 'title, description, themeClass, noindex, containerClass',
+  },
+  {
+    name: 'BoilerPlateHTML',
+    purpose: 'Bare HTML skeleton with pre-paint mode-application script (avoids FOUC).',
+    cssContract: '(none directly)',
+    props: 'title, description, themeClass, favicon, noindex',
+  },
+  {
+    name: 'WebinarCard',
+    purpose: 'Calendar-style card for webinars collection entries; status inferred from date_scheduled.',
+    cssContract: '--fx-card-*, --color-text, --color-text-muted, --color-primary, --color-accent, --color-surface, --color-border, --font-display, --font-code',
+    props: 'data, href?, statusOverride?',
+  },
+  {
+    name: 'BannerWithOverlay',
+    purpose: 'Composites brand-font HTML title text over an Ideogram-generated, text-stripped base image. Used for changelog banners. Mode-aware scrim adapts to light/dark/vibrant.',
+    cssContract: '--color-border, --color-surface, --color__bone, --color__obsidian, --color__ink, --color__lime-terminal, --font-display, --font-body, --font-code',
+    props: 'src, title, eyebrow?, subtitle?, alt?, href?',
+  },
+  {
+    name: 'Header',
+    purpose: 'Sticky site chrome — wordmark + nav + ModeToggle. Rendered by BaseThemeLayout on every page.',
+    cssContract: '--color-background, --color-border, --color-text, --color-text-muted, --color-primary, --font-display, --font-code',
+    props: '— (no props)',
+  },
+  {
+    name: 'ModeToggle',
+    purpose: '3-mode chrome cycle button (light → dark → vibrant). Reads window.modeSwitcher; CSS-driven icon visibility.',
+    cssContract: '--color-text, --color-border, --color-primary',
+    props: '— (no props)',
+  },
+];
+---
+
+<BaseThemeLayout
+  title="Design System · FullStack VC"
+  description="Component catalog: variants, props, CSS contracts, mode-specific behavior."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Internal · Design System
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      Component catalog
+    </h1>
+    <p style="color: var(--color-text-muted);">
+      Every component used on the site, with variants visible in all three modes. New components land here in the same change that introduces them.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <!-- Card variants -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Card</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      Surface element using <code style="font-family: var(--font-code); color: var(--color-primary);">--fx-card-*</code> tokens.
+      Mode determines shadow intensity, border treatment, and hover behavior.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="ds-card">
+        <h3 class="ds-card-title">Rest</h3>
+        <p class="ds-card-body">Default card surface in current mode.</p>
+      </div>
+      <div class="ds-card ds-card-hover">
+        <h3 class="ds-card-title">Hover state</h3>
+        <p class="ds-card-body">Forced hover styling for inspection.</p>
+      </div>
+      <div class="ds-card">
+        <h3 class="ds-card-title">With code</h3>
+        <p class="ds-card-body" style="font-family: var(--font-code); font-size: 0.875rem;">{`const dojo = await VCDojo.start();`}</p>
+      </div>
+    </div>
+
+    <details class="text-sm">
+      <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">CSS contract + usage</summary>
+      <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<div class="ds-card">
+  <h3 class="ds-card-title">Title</h3>
+  <p class="ds-card-body">Body</p>
+</div>
+
+/* Tokens read */
+--fx-card-bg, --fx-card-border, --fx-card-border-hover,
+--fx-card-shadow, --fx-card-shadow-hover,
+--color-text, --color-text-muted, --font-display`}</pre>
+    </details>
+  </section>
+
+  <!-- WebinarCard -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">WebinarCard</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      Calendar-style card for the <code style="font-family: var(--font-code); color: var(--color-primary);">webinars</code> collection.
+      Status (<em>Upcoming / Live / Recorded</em>) is inferred at render time from <code style="font-family: var(--font-code);">date_scheduled</code> via <code style="font-family: var(--font-code);">inferWebinarStatus()</code>.
+    </p>
+    <div class="grid grid-cols-1 gap-4 mb-4">
+      <WebinarCard data={{ ...sampleData, date_scheduled: upcomingDate }} statusOverride="Upcoming" />
+      <WebinarCard data={{ ...sampleData, date_scheduled: liveDate }}     statusOverride="Live" />
+      <WebinarCard data={{ ...sampleData, date_scheduled: recordedDate }} statusOverride="Recorded" />
+    </div>
+    <details class="text-sm">
+      <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + tokens</summary>
+      <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<WebinarCard data={entry.data} href="/webinars/[id]" />
+
+/* Props */
+data:           { title, lede?, date_scheduled, durationMinutes?,
+                  presenters?, rsvpUrl?, recordingUrl? }
+href?:          link to detail page
+statusOverride?: 'Upcoming' | 'Live' | 'Recorded' (design-system use only)
+
+/* Tokens read */
+--fx-card-bg, --fx-card-border, --fx-card-border-hover,
+--fx-card-shadow, --fx-card-shadow-hover,
+--color-text, --color-text-muted, --color-primary, --color-accent,
+--color-surface, --color-border, --color__bone,
+--font-display, --font-code`}</pre>
+    </details>
+  </section>
+
+  <!-- Buttons -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Buttons</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">Primary, secondary (outlined), ghost.</p>
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button class="ds-btn ds-btn-primary">Primary</button>
+      <button class="ds-btn ds-btn-secondary">Secondary</button>
+      <button class="ds-btn ds-btn-ghost">Ghost</button>
+      <button class="ds-btn ds-btn-primary" disabled>Disabled</button>
+    </div>
+  </section>
+
+  <!-- Effect tokens reference -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Effect tokens (--fx-*)</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      Carry mode-adaptive intensity. Same names across modes; values shift.
+    </p>
+    <div class="overflow-x-auto rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--color-border);">
+            <th class="text-left p-3" style="font-family: var(--font-code); color: var(--color-text-muted);">Token</th>
+            <th class="text-left p-3" style="font-family: var(--font-code); color: var(--color-text-muted);">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          {fxTokens.map(t => (
+            <tr style="border-bottom: 1px solid var(--color-border);">
+              <td class="p-3" style="font-family: var(--font-code); color: var(--color-primary);">{t.token}</td>
+              <td class="p-3" style="color: var(--color-text);">{t.desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Component index -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Catalog index</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">As components grow, sub-pages will be added (e.g., <code style="font-family: var(--font-code);">/design-system/page-headers</code>).</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {components.map(c => (
+        <div class="p-5 rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+          <h3 class="text-lg font-semibold mb-1" style="font-family: var(--font-display); color: var(--color-text);">{c.name}</h3>
+          <p class="text-sm mb-3" style="color: var(--color-text);">{c.purpose}</p>
+          <div class="text-xs" style="color: var(--color-text-muted); font-family: var(--font-code);">
+            <div><strong style="color: var(--color-primary);">props:</strong> {c.props}</div>
+            <div class="mt-1"><strong style="color: var(--color-primary);">tokens:</strong> {c.cssContract}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <footer class="mt-20 pt-8" style="border-top: 1px solid var(--color-border);">
+    <p class="text-sm" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Brand experience: <a href="/brand-kit" style="color: var(--color-primary); text-decoration: underline;">/brand-kit</a> ·
+      Maintenance motion: every new component lands here in the same change.
+    </p>
+  </footer>
+</BaseThemeLayout>
+
+<style is:global>
+  /* Card */
+  .ds-card {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    transition: all 200ms ease;
+  }
+  .ds-card:hover,
+  .ds-card.ds-card-hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+  }
+  .ds-card-title {
+    font-family: var(--font-display);
+    color: var(--color-text);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .ds-card-body {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* Buttons */
+  .ds-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: 1px solid transparent;
+  }
+  .ds-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ds-btn-primary {
+    background: var(--color-primary);
+    color: var(--color__bone);
+    border-color: var(--color-primary);
+  }
+  .ds-btn-primary:hover:not(:disabled) {
+    box-shadow: var(--fx-card-shadow-hover);
+  }
+  .ds-btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+  .ds-btn-secondary:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .ds-btn-ghost {
+    background: transparent;
+    color: var(--color-text-muted);
+    border-color: transparent;
+  }
+  .ds-btn-ghost:hover:not(:disabled) {
+    color: var(--color-text);
+    background: var(--color-surface);
+  }
+</style>

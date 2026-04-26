@@ -1,0 +1,67 @@
+---
+// Reusable theme + 3-mode toggle for /brand-kit and /design-system pages.
+// Hardwires the firm-wide three-mode contract: light / dark / vibrant.
+---
+
+<div class="mt-toggle flex flex-wrap gap-3 items-center mb-10 p-4 rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+  <span class="text-xs uppercase tracking-wider" style="color: var(--color-text-muted); font-family: var(--font-code);">Mode</span>
+  <div class="flex gap-2" role="group" aria-label="Mode selector">
+    <button data-mode-pick="light" class="mode-btn">Light</button>
+    <button data-mode-pick="dark" class="mode-btn">Dark</button>
+    <button data-mode-pick="vibrant" class="mode-btn">Vibrant</button>
+  </div>
+  <span class="text-xs uppercase tracking-wider ml-6" style="color: var(--color-text-muted); font-family: var(--font-code);">Theme</span>
+  <button id="theme-toggle" class="mode-btn">Toggle theme</button>
+</div>
+
+<style is:global>
+  .mt-toggle .mode-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+  .mt-toggle .mode-btn:hover {
+    border-color: var(--color-primary);
+  }
+  .mt-toggle .mode-btn[aria-pressed="true"] {
+    background: var(--color-primary);
+    color: var(--color__bone);
+    border-color: var(--color-primary);
+  }
+</style>
+
+<script>
+  import { themeSwitcher } from '../../utils/theme-switcher.js';
+  import { modeSwitcher } from '../../utils/mode-switcher.js';
+
+  function syncModeButtons() {
+    const current = modeSwitcher.getCurrentMode();
+    document.querySelectorAll('[data-mode-pick]').forEach((btn) => {
+      const target = (btn as HTMLElement).dataset.modePick;
+      btn.setAttribute('aria-pressed', String(target === current));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-mode-pick]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = (btn as HTMLElement).dataset.modePick;
+        if (target) modeSwitcher.setMode(target);
+      });
+    });
+
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => themeSwitcher.toggleTheme());
+    }
+
+    window.addEventListener('mode-change', syncModeButtons);
+    syncModeButtons();
+  });
+</script>

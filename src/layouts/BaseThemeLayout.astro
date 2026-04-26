@@ -1,0 +1,43 @@
+---
+import BoilerPlateHTML from './BoilerPlateHTML.astro';
+import Header from '../components/basics/Header.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  themeClass?: string;
+  noindex?: boolean;
+  containerClass?: string;
+  hideChrome?: boolean;
+}
+
+const {
+  title,
+  description,
+  themeClass = 'theme-default',
+  noindex = false,
+  containerClass = '',
+  hideChrome = false,
+} = Astro.props;
+---
+
+<BoilerPlateHTML
+  title={title}
+  description={description}
+  themeClass={themeClass}
+  noindex={noindex}
+>
+  <div class="min-h-screen flex flex-col">
+    {!hideChrome && <Header />}
+    <main class={`flex-1 ${containerClass}`}>
+      <slot />
+    </main>
+  </div>
+
+  <!-- Boot the switchers — no-op on SSR, hydrates client-side -->
+  <script>
+    import '../utils/theme-switcher.js';
+    import '../utils/mode-switcher.js';
+  </script>
+</BoilerPlateHTML>

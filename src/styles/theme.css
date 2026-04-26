@@ -1,0 +1,173 @@
+/* ============================================================================
+   FullStack VC — Theme tokens
+   Two-tier system per blueprint: Maintain-Themes-Mode-Across-CSS-Tailwind.md §2.1
+   - Tier 1 (named tokens, --color__*, --font__*) at the top of this file
+   - Tier 2 (semantic tokens, --color-*, --font-*) inside theme + mode blocks
+   Components and Tailwind utilities only ever read Tier 2.
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------------
+   TIER 1 — Named tokens (raw values, private to the theme).
+   The brand's palette of "things we have."
+   ---------------------------------------------------------------------------- */
+
+:root {
+  /* Named colors — devtools-meets-dojo improvisation */
+  --color__violet-electric: #7c5cff;
+  --color__violet-deep: #4b2fc9;
+  --color__lime-terminal: #b6ff5c;
+  --color__cyan-vapor: #5cf2ff;
+  --color__magenta-fuse: #ff5cd6;
+  --color__obsidian: #0b0d12;
+  --color__graphite-950: #11141c;
+  --color__graphite-800: #1c2030;
+  --color__graphite-600: #3a4055;
+  --color__graphite-400: #6b7390;
+  --color__graphite-200: #c1c5d4;
+  --color__bone: #f6f3ec;
+  --color__bone-warm: #ece8de;
+  --color__ink: #0a0c12;
+  --color__amber-flare: #ffb84d;
+
+  /* Named fonts */
+  --font__inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font__space-grotesk: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font__jetbrains-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+/* ----------------------------------------------------------------------------
+   TIER 2 — Semantic tokens, base / theme layer.
+   These are what Tailwind utilities and components read.
+   ---------------------------------------------------------------------------- */
+
+.theme-default {
+  /* Brand */
+  --color-primary: var(--color__violet-electric);
+  --color-primary-500: var(--color__violet-electric);
+  --color-primary-700: var(--color__violet-deep);
+  --color-secondary: var(--color__cyan-vapor);
+  --color-accent: var(--color__lime-terminal);
+
+  /* Typography */
+  --font-display: var(--font__space-grotesk);
+  --font-heading-1: var(--font__space-grotesk);
+  --font-heading-2: var(--font__space-grotesk);
+  --font-body: var(--font__inter);
+  --font-code: var(--font__jetbrains-mono);
+}
+
+/* ----------------------------------------------------------------------------
+   MODE: light — clean dev-doc feel
+   ---------------------------------------------------------------------------- */
+
+[data-mode="light"] {
+  --color-background: var(--color__bone);
+  --color-surface: var(--color__bone-warm);
+  --color-text: var(--color__ink);
+  --color-text-muted: var(--color__graphite-600);
+  --color-border: var(--color__graphite-200);
+
+  /* Effect tokens — minimal in light mode */
+  --fx-glow-opacity: 0.06;
+  --fx-glow-spread: 8px;
+  --fx-card-shadow: 0 1px 3px rgba(11, 13, 18, 0.06), 0 1px 2px rgba(11, 13, 18, 0.04);
+  --fx-card-shadow-hover: 0 4px 12px rgba(11, 13, 18, 0.08);
+  --fx-card-bg: var(--color__bone-warm);
+  --fx-card-border: var(--color__graphite-200);
+  --fx-card-border-hover: var(--color__violet-electric);
+  --fx-headline-gradient: none;
+  --fx-flare-color: var(--color__violet-deep);
+}
+
+/* ----------------------------------------------------------------------------
+   MODE: dark — code-editor feel (default for new visitors)
+   ---------------------------------------------------------------------------- */
+
+[data-mode="dark"] {
+  --color-background: var(--color__obsidian);
+  --color-surface: var(--color__graphite-950);
+  --color-text: var(--color__bone);
+  --color-text-muted: var(--color__graphite-400);
+  --color-border: var(--color__graphite-800);
+
+  /* Effect tokens — moderate in dark mode */
+  --fx-glow-opacity: 0.22;
+  --fx-glow-spread: 24px;
+  --fx-card-shadow: 0 0 0 1px var(--color__graphite-800), 0 4px 14px rgba(0, 0, 0, 0.35);
+  --fx-card-shadow-hover: 0 0 0 1px var(--color__violet-electric), 0 8px 24px rgba(124, 92, 255, 0.18);
+  --fx-card-bg: var(--color__graphite-950);
+  --fx-card-border: var(--color__graphite-800);
+  --fx-card-border-hover: var(--color__violet-electric);
+  --fx-headline-gradient: linear-gradient(135deg, var(--color__violet-electric), var(--color__cyan-vapor));
+  --fx-flare-color: var(--color__violet-electric);
+}
+
+/* ----------------------------------------------------------------------------
+   MODE: vibrant — neon dojo energy. Loud gradients, glows, saturated accents.
+   ---------------------------------------------------------------------------- */
+
+[data-mode="vibrant"] {
+  --color-background: var(--color__ink);
+  --color-surface: color-mix(in srgb, var(--color__violet-deep) 20%, var(--color__obsidian));
+  --color-text: var(--color__bone);
+  --color-text-muted: color-mix(in srgb, var(--color__cyan-vapor) 60%, var(--color__bone));
+  --color-border: var(--color__violet-electric);
+
+  /* Effect tokens — maximum impact */
+  --fx-glow-opacity: 0.55;
+  --fx-glow-spread: 48px;
+  --fx-card-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color__violet-electric) 50%, transparent),
+    0 0 24px color-mix(in srgb, var(--color__violet-electric) 30%, transparent);
+  --fx-card-shadow-hover:
+    0 0 0 1px var(--color__lime-terminal),
+    0 0 36px color-mix(in srgb, var(--color__lime-terminal) 50%, transparent);
+  --fx-card-bg: color-mix(in srgb, var(--color__violet-deep) 12%, var(--color__obsidian));
+  --fx-card-border: color-mix(in srgb, var(--color__violet-electric) 60%, transparent);
+  --fx-card-border-hover: var(--color__lime-terminal);
+  --fx-headline-gradient: linear-gradient(
+    120deg,
+    var(--color__lime-terminal) 0%,
+    var(--color__cyan-vapor) 40%,
+    var(--color__violet-electric) 70%,
+    var(--color__magenta-fuse) 100%
+  );
+  --fx-flare-color: var(--color__lime-terminal);
+}
+
+/* ----------------------------------------------------------------------------
+   Tailwind v4 @theme — semantic tokens that Tailwind exposes as utilities.
+   Only kebab-case --color-* tokens here. Mode-dependent values come from
+   data-mode blocks above and propagate via var().
+   ---------------------------------------------------------------------------- */
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-700: var(--color-primary-700);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-code);
+}
+
+/* ----------------------------------------------------------------------------
+   Smooth transitions on theme/mode changes (added by switcher after first paint
+   to avoid flash of unstyled transition).
+   ---------------------------------------------------------------------------- */
+
+.theme-transition,
+.theme-transition * {
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}

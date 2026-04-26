@@ -1,0 +1,163 @@
+---
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../components/ui/ModeThemeToggle.astro';
+
+const namedColors = [
+  { token: '--color__violet-electric', value: '#7c5cff', role: 'primary' },
+  { token: '--color__violet-deep',     value: '#4b2fc9', role: 'primary-700' },
+  { token: '--color__lime-terminal',   value: '#b6ff5c', role: 'accent' },
+  { token: '--color__cyan-vapor',      value: '#5cf2ff', role: 'secondary' },
+  { token: '--color__magenta-fuse',    value: '#ff5cd6', role: 'vibrant accent' },
+  { token: '--color__obsidian',        value: '#0b0d12', role: 'background (dark)' },
+  { token: '--color__graphite-950',    value: '#11141c', role: 'surface (dark)' },
+  { token: '--color__graphite-800',    value: '#1c2030', role: 'border (dark)' },
+  { token: '--color__graphite-400',    value: '#6b7390', role: 'text-muted (dark)' },
+  { token: '--color__graphite-200',    value: '#c1c5d4', role: 'border (light)' },
+  { token: '--color__bone',            value: '#f6f3ec', role: 'background (light)' },
+  { token: '--color__bone-warm',       value: '#ece8de', role: 'surface (light)' },
+  { token: '--color__ink',             value: '#0a0c12', role: 'text (light)' },
+  { token: '--color__amber-flare',     value: '#ffb84d', role: 'reserve' },
+];
+
+const semanticColors = [
+  '--color-primary',
+  '--color-secondary',
+  '--color-accent',
+  '--color-background',
+  '--color-surface',
+  '--color-text',
+  '--color-text-muted',
+  '--color-border',
+];
+
+const fonts = [
+  { token: '--font__inter',          stack: 'Inter, system-ui, sans-serif',         role: '--font-body' },
+  { token: '--font__space-grotesk',  stack: 'Space Grotesk, Inter, system-ui',      role: '--font-display, --font-heading-*' },
+  { token: '--font__jetbrains-mono', stack: 'JetBrains Mono, ui-monospace',         role: '--font-code' },
+];
+---
+
+<BaseThemeLayout
+  title="Brand Kit · FullStack VC"
+  description="Brand experience essentials: colors, typography, marks, signature layouts."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Internal · Brand Kit
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      FullStack VC
+    </h1>
+    <p style="color: var(--color-text-muted);">
+      The brand essentials. Stakeholders use this to verify the look and feel reads correctly across all three modes.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <!-- 1. Named colors (Tier 1) -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">
+      Named colors <span style="color: var(--color-text-muted); font-weight: 400; font-family: var(--font-code); font-size: 0.875rem;">— Tier 1, raw values</span>
+    </h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      The brand's palette of "things we have." Components do not reference these directly — only the semantic tier does.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {namedColors.map(c => (
+        <div class="p-4 rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+          <div class="w-full h-16 rounded mb-3" style={`background: ${c.value}; border: 1px solid var(--color-border);`} />
+          <div class="text-sm font-mono" style="color: var(--color-text);">{c.token}</div>
+          <div class="text-xs mt-1" style="color: var(--color-text-muted);">{c.value} · {c.role}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 2. Semantic colors (Tier 2) -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">
+      Semantic colors <span style="color: var(--color-text-muted); font-weight: 400; font-family: var(--font-code); font-size: 0.875rem;">— Tier 2, what components consume</span>
+    </h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      Resolves differently per mode. Toggle modes above to see them shift.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {semanticColors.map(token => (
+        <div class="p-4 rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+          <div class="w-full h-12 rounded mb-3" style={`background: var(${token}); border: 1px solid var(--color-border);`} />
+          <div class="text-sm font-mono" style="color: var(--color-text);">{token}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 3. Typography -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-6" style="font-family: var(--font-display); color: var(--color-text);">Typography</h2>
+
+    {fonts.map(f => (
+      <div class="mb-6 p-5 rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+        <div class="text-sm font-mono mb-3" style="color: var(--color-text-muted);">
+          {f.token} <span style="color: var(--color-primary);">→</span> {f.role}
+        </div>
+        <p class="text-3xl mb-1" style={`font-family: ${f.stack}; color: var(--color-text);`}>The five boxing wizards jump quickly.</p>
+        <p class="text-base" style={`font-family: ${f.stack}; color: var(--color-text-muted);`}>Stack: {f.stack}</p>
+      </div>
+    ))}
+
+    <div class="p-5 rounded-lg" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+      <div class="text-sm font-mono mb-3" style="color: var(--color-text-muted);">Type scale (display)</div>
+      <p style="font-family: var(--font-display); color: var(--color-text); font-size: 4rem; line-height: 1; margin-bottom: 0.75rem;">Display</p>
+      <p style="font-family: var(--font-display); color: var(--color-text); font-size: 2.5rem; line-height: 1.1; margin-bottom: 0.75rem;">Heading 1</p>
+      <p style="font-family: var(--font-display); color: var(--color-text); font-size: 1.875rem; line-height: 1.2; margin-bottom: 0.75rem;">Heading 2</p>
+      <p style="font-family: var(--font-body); color: var(--color-text); font-size: 1rem; line-height: 1.6;">Body — the quick brown fox jumps over the lazy dog. Body text should be comfortable to read at small sizes.</p>
+      <p style="font-family: var(--font-code); color: var(--color-text); font-size: 0.875rem;">code · const dojo = await VCDojo.start();</p>
+    </div>
+  </section>
+
+  <!-- 4. Brand marks -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-6" style="font-family: var(--font-display); color: var(--color-text);">Brand marks</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="p-4 rounded-lg flex flex-col items-center" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+        <img src="/favicon.svg" alt="favicon" width="64" height="64" />
+        <div class="text-xs mt-3 font-mono" style="color: var(--color-text-muted);">favicon.svg</div>
+      </div>
+      <div class="p-4 rounded-lg flex items-center justify-center" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+        <div class="text-xs font-mono" style="color: var(--color-text-muted);">app icon · TBD</div>
+      </div>
+      <div class="p-4 rounded-lg flex items-center justify-center" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+        <div class="text-xs font-mono" style="color: var(--color-text-muted);">wordmark · TBD</div>
+      </div>
+      <div class="p-4 rounded-lg flex items-center justify-center" style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border);">
+        <div class="text-xs font-mono" style="color: var(--color-text-muted);">trademark · TBD</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Signature layout — hero preview -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-6" style="font-family: var(--font-display); color: var(--color-text);">Signature layouts</h2>
+    <div class="rounded-xl overflow-hidden" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+      <div class="p-10">
+        <p class="text-sm uppercase tracking-[0.18em] mb-4" style="color: var(--color-text-muted); font-family: var(--font-code);">Hero · Agentic VC Dojo</p>
+        <h3 class="text-4xl md:text-5xl font-bold mb-4" style="font-family: var(--font-display); background: var(--fx-headline-gradient, none); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--color-text);">
+          Give your firm AI superpowers.
+        </h3>
+        <p class="max-w-xl" style="color: var(--color-text);">
+          A working community for the next generation of venture capitalists.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mt-20 pt-8" style="border-top: 1px solid var(--color-border);">
+    <p class="text-sm" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Convention reference: <a href="/design-system" style="color: var(--color-primary); text-decoration: underline;">/design-system</a> ·
+      Blueprints in <code>context-v/blueprints/</code>
+    </p>
+  </footer>
+</BaseThemeLayout>

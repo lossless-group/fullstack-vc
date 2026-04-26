@@ -1,0 +1,275 @@
+---
+import { getCollection, render, type GetStaticPaths } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import BannerWithOverlay from '../../components/changelog/BannerWithOverlay.astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const entries = await getCollection('changelog');
+  return entries.map(entry => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+
+function formatDate(d: Date): string {
+  return d.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+}
+---
+
+<BaseThemeLayout
+  title={`${data.title} · Changelog · FullStack VC`}
+  description={data.summary ?? data.title}
+  containerClass="px-6 py-12 max-w-3xl mx-auto"
+>
+  <a href="/changelog" class="back-link">← All changelog entries</a>
+
+  {data.image && (
+    <div class="changelog-detail__banner">
+      <BannerWithOverlay
+        src={data.image}
+        eyebrow={`Changelog · ${formatDate(data.date)}`}
+        title={data.image_text ?? data.title}
+        subtitle={data.summary?.slice(0, 140)}
+      />
+    </div>
+  )}
+
+  <article class="changelog-detail">
+    <header class="changelog-detail__head">
+      <span class="changelog-detail__eyebrow">{formatDate(data.date)}{data.category ? ` · ${data.category}` : ''}</span>
+      <h1 class="changelog-detail__title">{data.title}</h1>
+      {data.summary && <p class="changelog-detail__summary">{data.summary}</p>}
+
+      <dl class="changelog-detail__meta">
+        {data.authors && data.authors.length > 0 && (
+          <div class="changelog-detail__meta-row">
+            <dt>Authors</dt>
+            <dd>{data.authors.join(' · ')}</dd>
+          </div>
+        )}
+        {data.augmented_with && (
+          <div class="changelog-detail__meta-row">
+            <dt>Augmented with</dt>
+            <dd>{data.augmented_with}</dd>
+          </div>
+        )}
+        {data.tags && data.tags.length > 0 && (
+          <div class="changelog-detail__meta-row">
+            <dt>Tags</dt>
+            <dd>
+              {data.tags.map(t => <span class="changelog-detail__tag">#{t}</span>)}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </header>
+
+    <div class="changelog-detail__body">
+      <Content />
+    </div>
+
+    {data.files_modified && data.files_modified.length > 0 && (
+      <details class="changelog-detail__files">
+        <summary>Files modified ({data.files_modified.length})</summary>
+        <ul>
+          {data.files_modified.map(f => <li><code>{f}</code></li>)}
+        </ul>
+      </details>
+    )}
+  </article>
+</BaseThemeLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 150ms ease;
+  }
+  .back-link:hover { color: var(--color-primary); }
+
+  .changelog-detail__banner { margin-bottom: 2rem; }
+
+  .changelog-detail {
+    padding: 2rem;
+    border-radius: 1rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+  }
+
+  .changelog-detail__head {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .changelog-detail__eyebrow {
+    display: block;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.625rem;
+  }
+  .changelog-detail__title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+  }
+  .changelog-detail__summary {
+    font-size: 1.0625rem;
+    color: var(--color-text);
+    margin: 0 0 1.5rem;
+  }
+  .changelog-detail__meta {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    font-size: 0.875rem;
+  }
+  .changelog-detail__meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    align-items: baseline;
+    padding: 0.25rem 0;
+  }
+  .changelog-detail__meta-row + .changelog-detail__meta-row {
+    border-top: 1px dashed var(--color-border);
+  }
+  .changelog-detail__meta-row dt {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    min-width: 7rem;
+  }
+  .changelog-detail__meta-row dd {
+    margin: 0;
+    color: var(--color-text);
+  }
+  .changelog-detail__tag {
+    display: inline-block;
+    margin-right: 0.375rem;
+    color: var(--color-primary);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+  }
+
+  .changelog-detail__files {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    font-size: 0.875rem;
+  }
+  .changelog-detail__files summary {
+    cursor: pointer;
+    font-family: var(--font-code);
+    color: var(--color-text-muted);
+  }
+  .changelog-detail__files ul {
+    margin: 0.75rem 0 0;
+    padding-left: 1rem;
+  }
+  .changelog-detail__files li {
+    color: var(--color-text);
+    font-size: 0.8125rem;
+  }
+  .changelog-detail__files code {
+    font-family: var(--font-code);
+  }
+
+  /* Body markdown — minimal scoped prose styles to counter Tailwind preflight */
+  .changelog-detail__body {
+    color: var(--color-text);
+    line-height: 1.65;
+  }
+  .changelog-detail__body :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.75rem 0 0.75rem;
+    color: var(--color-text);
+  }
+  .changelog-detail__body :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+    color: var(--color-text);
+  }
+  .changelog-detail__body :global(p)  { margin: 0 0 1em; }
+  .changelog-detail__body :global(ul) { list-style: disc;    padding-left: 1.5em; margin: 0 0 1em; }
+  .changelog-detail__body :global(ol) { list-style: decimal; padding-left: 1.5em; margin: 0 0 1em; }
+  .changelog-detail__body :global(li) { margin-bottom: 0.25em; }
+  .changelog-detail__body :global(a)  {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .changelog-detail__body :global(code) {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .changelog-detail__body :global(pre) {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    overflow-x: auto;
+    margin: 0 0 1em;
+  }
+  .changelog-detail__body :global(pre code) { background: transparent; border: 0; padding: 0; }
+  .changelog-detail__body :global(blockquote) {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1rem;
+    margin: 0 0 1em;
+    color: var(--color-text-muted);
+  }
+  .changelog-detail__body :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+  }
+  .changelog-detail__body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1em;
+    font-size: 0.9375rem;
+  }
+  .changelog-detail__body :global(th),
+  .changelog-detail__body :global(td) {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .changelog-detail__body :global(th) {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+</style>
