@@ -44,8 +44,35 @@ const changelog = defineCollection({
   }),
 });
 
+const ventureWorkflows = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/long-form/venture-workflows' }),
+  schema: z.object({
+    chapter_number:                z.number(),
+    title:                         z.string(),
+    lede:                          z.string(),
+    tags:                          z.array(z.string()).optional(),
+    subsection_outline:            z.array(z.string()).optional(),
+    published:                     z.boolean().default(false),
+    date_authored:                 z.coerce.date().optional(),
+    date_published:                z.coerce.date().nullable().optional(),
+    date_modified:                 z.coerce.date().nullable().optional(),
+    source_publication:            z.string().optional(),
+    source_organization:           z.string().optional(),
+    source_chapter_number:         z.number().optional(),
+    source_chapter_title_original: z.string().optional(),
+    chapter_eyebrow:               z.string().optional(),
+    hero_image:                    z.string().optional(),
+    hero_image_prompt:             z.string().optional(),
+    og_image:                      z.string().optional(),
+    summary:                       z.string().optional(),
+    contributors:                  z.array(z.string()).optional(),
+    language:                      z.string().default('en'),
+  }).passthrough(),
+});
+
 export const collections = {
   pages,
   webinars,
   changelog,
+  ventureWorkflows,
 };

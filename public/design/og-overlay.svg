@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  og-overlay.svg
+  Drop-in text overlay for public/og-default.png (1280×720, 16:9).
+  Open in Affinity Designer alongside the PNG, drag this on top, edit type,
+  swap "Kauffman Fellows" to the Kauffman brand font, re-export.
+
+  Mirrors the in-page changelog banner styling (BannerWithOverlay.astro):
+    - Bottom-left anchored caption block
+    - Bottom-up obsidian gradient scrim for legibility
+    - Space Grotesk display title in bone, drop-shadow
+    - Inter subtitle in bone @ 80% opacity
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1280 720"
+     width="1280" height="720">
+
+  <defs>
+    <!-- Bottom-up scrim: obsidian #0b0d12 78% → 35% → transparent.
+         Hide this layer in Affinity if the layerized art is already dark
+         enough to read against. -->
+    <linearGradient id="scrimGradient" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0"    stop-color="#0b0d12" stop-opacity="0.78"/>
+      <stop offset="0.35" stop-color="#0b0d12" stop-opacity="0.35"/>
+      <stop offset="0.65" stop-color="#0b0d12" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Title drop shadow: 0 2px 14px obsidian @ 50% (matches text-shadow
+         on .banner-overlay__title in BannerWithOverlay.astro). -->
+    <filter id="titleShadow" x="-10%" y="-30%" width="120%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="7"
+                    flood-color="#0b0d12" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- ============================================================
+       SCRIM (toggle off in Affinity if not needed)
+       ============================================================ -->
+  <g id="scrim">
+    <rect x="0" y="0" width="1280" height="720" fill="url(#scrimGradient)"/>
+  </g>
+
+  <!-- ============================================================
+       CAPTION — bottom-left, 56px padding from left/bottom
+       Title baseline at y=600, subtitle baseline at y=656
+       ============================================================ -->
+  <g id="caption">
+    <!-- Title: Space Grotesk 700, 72px, letter-spacing -0.72px, color bone -->
+    <text id="title"
+          x="56" y="600"
+          fill="#f6f3ec"
+          font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+          font-weight="700"
+          font-size="72"
+          letter-spacing="-0.72"
+          filter="url(#titleShadow)">Agentic VC Dojo</text>
+
+    <!-- Subtitle: Inter 400, 26px, color bone @ 80%
+         "Kauffman Fellows" is its own tspan — select it in Affinity to swap
+         to the Kauffman brand typeface; keep font-size at 26 to stay aligned. -->
+    <text id="subtitle"
+          x="56" y="656"
+          fill="#f6f3ec"
+          fill-opacity="0.8"
+          font-family="'Inter', system-ui, -apple-system, sans-serif"
+          font-weight="400"
+          font-size="26">hosted by <tspan id="kauffman-mark">Kauffman Fellows</tspan> and FullStack VC</text>
+  </g>
+</svg>
