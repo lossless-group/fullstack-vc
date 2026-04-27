@@ -12,6 +12,8 @@ working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
 cadence: "Bi-weekly · WhatsApp chat"
+working_group_slugs:
+  - performance-content-development
 links:
   repo: "https://github.com/lossless-group/content-farm"
   spec: "https://www.lossless.group/projects/gallery/content-farm"
@@ -19,6 +21,7 @@ tags: [Editorial-Workflow, Agentic-Drafting, Content-Automation, Market-Research
 category: "Workflow Pipelines"
 origin: "Ported from lossless.group"
 icon: "🌾"
+image_prompt: "Isometric vector illustration of a small editorial workshop floating in deep navy space. A compact research desk in the foreground with stacked manuscript pages, a violet-glowing terminal cursor on a holographic editor pane, and threads of citations as fine luminous lines flowing from the pages into a network node above. Off to the side, a soft amber proof-reading lens hovers mid-air. Warm bone-colored paper textures contrasted against cool violet and cyan accents. Devtools-meets-dojo aesthetic, restrained light bloom, deep navy background, no human figures, no text."
 banner_overlay: "gradient"
 publish: true
 feature_in_popdown: true

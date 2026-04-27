@@ -10,6 +10,7 @@ cadence: "Proposed · Bi-weekly"
 tags: [Dealflow, Sourcing, Inbound-Triage, Personal-Operating-System]
 category: "Decision Support"
 icon: "📥"
+image_prompt: "Isometric vector illustration of a personal dealflow operating system in deep navy space: a small translucent inbox tray in the foreground holding stacked translucent envelopes, each tinted differently (violet for new, amber for triaged, grey for archived). Above the tray, a soft cyan signal-router with three branching paths — one leading to a 'review' icon, one to a 'pass' icon, one to a 'follow-up' clock. Devtools-meets-dojo aesthetic, deep navy background, restrained light bloom, violet → cyan → amber accents, no human figures, no text."
 publish: true
 feature_in_popdown: true
 popdown_order: 10

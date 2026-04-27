@@ -1,0 +1,66 @@
+---
+export const prerender = true;
+
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import HeroBanner from '../../components/heroes/HeroBannerWithMessageHierarchy.astro';
+import Section__WorkingGroupGallery from '../../components/sections/Section__WorkingGroupGallery.astro';
+import { loadWorkingGroupsWithProjects } from '../../lib/load-working-groups';
+
+const [active, proposed, archived] = await Promise.all([
+  loadWorkingGroupsWithProjects('active'),
+  loadWorkingGroupsWithProjects('proposed'),
+  loadWorkingGroupsWithProjects('archived'),
+]);
+
+const heroImage = '/imageRep__AgenticVC-Dojo.png';
+---
+
+<BaseThemeLayout
+  title="Working Groups · Agentic VC Dojo · FullStack VC"
+  description="Communities of practice in the KF FullStack VC peer learning community — long-lived theme-based working groups that meet challenges together."
+  image={heroImage}
+  ogType="website"
+>
+  <HeroBanner
+    image={heroImage}
+    imageAlt=""
+    overlay="gradient"
+    align="left"
+    height="standard"
+    contextSetterTxt="Communities of Practice · Kauffman Fellows SIGs · FullStack VC"
+    headerTxt="Working groups: wayfinding together with peers."
+    subheaderTxt="Theme-based communities of practice in the KF SIGs + FullStack VC community."
+    supportingTxt="Self-organize around hard, recurring problems. Each one tackles interrelated challenges, takes on projects or applies skills, and provides a little group therapy.</br></br>Find a group whose theme matches your firm's actual practice."
+    ctaLabelTxt="Propose a working group"
+    ctaHref="/working-groups/propose"
+  />
+
+  <div class="px-6 py-16 max-w-6xl mx-auto flex flex-col gap-20">
+    <!-- Active: portfolio variant with the project chip row -->
+    <Section__WorkingGroupGallery
+      contextSetterTxt="In flight"
+      headingTxt="Active Working Groups"
+      introTxt="Communities of practice meeting on a regular cadence. Click into one for its charter, members, and the projects it currently runs."
+      entries={active}
+      variant="portfolio"
+    />
+
+    <!-- Proposed: lite variant -->
+    <Section__WorkingGroupGallery
+      contextSetterTxt="Open call"
+      headingTxt="Proposed — looking for committed members"
+      introTxt="Working groups in formation. Each needs a small core of committed members to launch."
+      entries={proposed}
+      variant="lite"
+    />
+
+    <!-- Archived: shelf variant -->
+    <Section__WorkingGroupGallery
+      contextSetterTxt="Prior practice"
+      headingTxt="Archive"
+      introTxt="Working groups we deliberately wound down. Read the retrospectives — what they learned and why they stopped meeting."
+      entries={archived}
+      variant="shelf"
+    />
+  </div>
+</BaseThemeLayout>

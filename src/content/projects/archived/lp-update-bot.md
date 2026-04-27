@@ -11,6 +11,7 @@ working_group_name: "LP Update Bot WG (archived)"
 tags: [LP-Reporting, Agentic-Drafting, Lessons-Learned, Archived-Project]
 category: "Investor Reporting"
 icon: "📨"
+image_prompt: "Isometric vector illustration of a softly faded mailbot — a small violet robotic envelope-disposer hovering above a stack of partially-completed LP report pages, the topmost page marked with a translucent grey 'archived' band. Behind the bot, a faint cyan timeline ribbon trails off into deep navy space, fading. Subtle desaturation across the entire scene — this is a retrospective, not a celebration. Devtools-meets-dojo aesthetic, deep navy background, restrained desaturated palette with muted violet → grey accents, no human figures, no text."
 publish: true
 feature_in_popdown: false
 authors:

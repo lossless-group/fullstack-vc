@@ -1,0 +1,111 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import JumboPopdown__WorkingGroups from '../../../components/ui/menus/JumboPopdown__WorkingGroups.astro';
+import { loadWorkingGroupsForPopdown } from '../../../lib/load-working-groups';
+
+const workingGroups = await loadWorkingGroupsForPopdown({ showProposed: true, maxItems: 8 });
+---
+
+<BaseThemeLayout
+  title="Component · JumboPopdown__WorkingGroups"
+  description="Header dropdown that surfaces working groups."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Design System · Components
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      JumboPopdown__WorkingGroups
+    </h1>
+    <p style="color: var(--color-text-muted);">
+      Sibling to <code style="font-family: var(--font-code); color: var(--color-primary);">JumboPopdown__Projects</code> with the same hover/click/Esc/arrow-key behavior. Conforms to <code style="font-family: var(--font-code);">Jumbotron-Popdown-Patterns.md</code>.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">Default — active + proposed</h2>
+    <p class="ds-block-note">
+      As wired into <code>Header.astro</code> next to the Projects popdown. Hover the trigger or tab to it and press Enter.
+    </p>
+    <div class="ds-popdown-stage">
+      <JumboPopdown__WorkingGroups workingGroups={workingGroups} triggerLabelTxt="Working Groups" />
+    </div>
+  </section>
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">Active only — <code>showProposed: false</code></h2>
+    <p class="ds-block-note">
+      Hides the proposed subgroup.
+    </p>
+    <div class="ds-popdown-stage">
+      <JumboPopdown__WorkingGroups workingGroups={workingGroups} triggerLabelTxt="Working Groups" showProposed={false} />
+    </div>
+  </section>
+
+  <details class="text-sm mt-8">
+    <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + tokens</summary>
+    <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<JumboPopdown__WorkingGroups
+  triggerLabelTxt="Working Groups"   /* nav-link text */
+  workingGroups={popdownWorkingGroups}   /* pre-loaded WorkingGroupEntry[] */
+  showProposed={true}                 /* default true */
+/>
+
+/* Loader */
+import { loadWorkingGroupsForPopdown } from '../../lib/load-working-groups';
+const popdownWorkingGroups = await loadWorkingGroupsForPopdown({ showProposed: true, maxItems: 6 });
+
+/* Tokens read */
+--fx-card-bg, --fx-card-border, --fx-card-shadow-hover,
+--color-text, --color-text-muted, --color-primary, --color-surface, --color-border,
+--color-status-active, --color-status-proposed, --color-status-archived,
+--font-display, --font-code`}</pre>
+  </details>
+</BaseThemeLayout>
+
+<style is:global>
+  .ds-block {
+    margin-bottom: 4rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .ds-block:last-of-type { border-bottom: none; }
+  .ds-block-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .ds-block-title code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    background: var(--color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-border);
+  }
+  .ds-block-note {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+  }
+  .ds-block-note code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+  }
+  .ds-popdown-stage {
+    padding: 4rem 1.5rem 8rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    display: flex;
+    justify-content: center;
+  }
+</style>

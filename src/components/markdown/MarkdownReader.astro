@@ -1,26 +1,35 @@
 ---
-/* ProjectReader
-   Main content area on /projects/[slug]/. Wraps the LFM-rendered markdown
-   body in a constrained reading column with prose styling. Provides a
-   "back to projects" link in the top-left and "Edit on GitHub" if a
-   spec/repo URL is supplied. */
+/* MarkdownReader
+   Generic LFM-rendered reading column. Used by /projects/[slug]/ and
+   /working-groups/[slug]/ (and any future detail page that wants the same
+   prose treatment). Wraps an MDAST tree in a 70ch column with prose styling.
+   Top chrome: optional back-link + optional "Edit on source" link.
+   Renders Sources at the bottom when citations are non-empty. */
 
-import AstroMarkdown from '../markdown/AstroMarkdown.astro';
-import Sources from '../markdown/Sources.astro';
+import AstroMarkdown from './AstroMarkdown.astro';
+import Sources from './Sources.astro';
 
 export interface Props {
   tree: any;                  // MDAST root from parseMarkdown()
   citations?: any[];          // tree.data.citations.ordered
   editUrl?: string;
+  backHref?: string;          // default: '/projects/'
+  backLabelTxt?: string;      // default: 'All projects'
 }
 
-const { tree, citations = [], editUrl } = Astro.props;
+const {
+  tree,
+  citations = [],
+  editUrl,
+  backHref = '/projects/',
+  backLabelTxt = 'All projects',
+} = Astro.props;
 ---
 
 <article class="preader">
   <div class="preader__chrome">
-    <a class="preader__back" href="/projects/">
-      <span aria-hidden="true">←</span> All projects
+    <a class="preader__back" href={backHref}>
+      <span aria-hidden="true">←</span> {backLabelTxt}
     </a>
     {editUrl && (
       <a class="preader__edit" href={editUrl} target="_blank" rel="noopener noreferrer">

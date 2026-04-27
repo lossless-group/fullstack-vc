@@ -6,8 +6,9 @@ import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import HeroBanner from '../../components/heroes/HeroBannerWithMessageHierarchy.astro';
 import HeroContentCoreMessage from '../../components/heroes/HeroContentCoreMessage.astro';
 import ProjectMetadataDisplay from '../../components/sections/ProjectMetadataDisplay.astro';
-import ProjectReader from '../../components/sections/ProjectReader.astro';
+import MarkdownReader from '../../components/markdown/MarkdownReader.astro';
 import { loadAllProjects, projectHref, statusLabel } from '../../lib/load-projects';
+import { loadWorkingGroupsForProject, workingGroupHref } from '../../lib/load-working-groups';
 
 export async function getStaticPaths() {
   const all = await loadAllProjects();
@@ -29,18 +30,34 @@ const idx = sameStatus.findIndex(p => p.id === entry.id);
 const prev = idx > 0 ? sameStatus[idx - 1] : sameStatus[sameStatus.length - 1];
 const next = idx >= 0 && idx < sameStatus.length - 1 ? sameStatus[idx + 1] : sameStatus[0];
 
+// Cross-collection reverse lookup: which WGs claim this project? Many-to-many.
+const parentWorkingGroups = await loadWorkingGroupsForProject(entry);
+
 const editUrl = d.links?.spec ?? d.links?.repo;
+
+// OG image priority chain — picks the most-specific image available so that
+// WhatsApp / Twitter / iMessage shares of a single project surface a banner
+// that's about *that* project, not the site default.
+//   1. d.hero_image    — explicit per-project banner override (rare; user-set)
+//   2. d.og_image      — banner produced by scripts/generate-content-banners-on-dir.ts
+//                        from the file's image_prompt
+//   3. undefined       — falls through to BoilerPlateHTML's /og-default.jpg
+const ogImageOverride = d.hero_image ?? d.og_image;
+
+// Description: prefer summary (longer, more context for the share preview)
+// when available, fall back to lede.
+const ogDescription = d.summary ?? d.lede;
 ---
 
 <BaseThemeLayout
   title={`${d.title} · FullStack VC`}
-  description={d.lede}
-  image={d.hero_image}
+  description={ogDescription}
+  image={ogImageOverride}
   ogType="article"
 >
-  {d.hero_image ? (
+  {ogImageOverride ? (
     <HeroBanner
-      image={d.hero_image}
+      image={ogImageOverride}
       imageAlt={d.title}
       overlay={d.banner_overlay ?? 'gradient'}
       align="left"
@@ -61,11 +78,23 @@ const editUrl = d.links?.spec ?? d.links?.repo;
     </section>
   )}
 
+  {parentWorkingGroups.length > 0 && (
+    <p class="pdetail-partof">
+      <span class="pdetail-partof__label">Part of:</span>
+      {parentWorkingGroups.map((wg, i) => (
+        <>
+          {i > 0 && <span class="pdetail-partof__sep"> · </span>}
+          <a class="pdetail-partof__link" href={workingGroupHref(wg)}>{wg.data.title}</a>
+        </>
+      ))}
+    </p>
+  )}
+
   <div class="pdetail-meta-wrap">
     <ProjectMetadataDisplay project={entry} />
   </div>
 
-  <ProjectReader tree={tree} citations={citations} editUrl={editUrl} />
+  <MarkdownReader tree={tree} citations={citations} editUrl={editUrl} />
 
   {sameStatus.length > 0 && (
     <nav class="pdetail-adjacent" aria-label="Adjacent projects">
@@ -96,6 +125,29 @@ const editUrl = d.links?.spec ?? d.links?.repo;
     max-width: 70ch;
     margin: 0 auto;
     padding: 1.5rem 1.5rem 0;
+  }
+
+  .pdetail-partof {
+    max-width: 70ch;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+  .pdetail-partof__label {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.6875rem;
+    margin-right: 0.5rem;
+  }
+  .pdetail-partof__link {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .pdetail-partof__link:hover { text-decoration: underline; }
+  .pdetail-partof__sep {
+    color: var(--color-text-muted);
   }
 
   .pdetail-adjacent {

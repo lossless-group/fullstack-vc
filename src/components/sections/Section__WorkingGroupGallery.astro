@@ -1,16 +1,21 @@
 ---
-/* Section__ProjectGallery
-   Renders a filtered set of projects as a card grid. One component, four
-   variants:
-     - 'portfolio'      — Working Group Cards (banner image + leads + tags). Default for active.
-     - 'mission-brief'  — Number badge + monospace eyebrow + paragraph + icon row.
-     - 'lite'           — Compact card, no thumbnail, "join" CTA. Used for proposed.
-     - 'shelf'          — Horizontal list rows with archive metadata. Used for archived.
+/* Section__WorkingGroupGallery
+   Sibling to Section__ProjectGallery — same visual variants and CSS, but the
+   data shape is enriched: each entry carries the WorkingGroupEntry plus its
+   currently-active projects (pre-joined by the loader). The portfolio /
+   mission-brief / lite variant cards add a small chip row showing 1–3 of the
+   WG's active projects, which is the headline differentiator vs. project cards.
+
+   Variants:
+     - 'portfolio'      — Banner thumbnail + title + lede + leads + tag chips + active-projects chip row.
+     - 'mission-brief'  — Number badge + eyebrow + paragraph + cadence/status footer + active-projects chip row.
+     - 'lite'           — Compact card, no thumbnail, "join" CTA. For proposed.
+     - 'shelf'          — Horizontal list rows. For archived.
 
    Reads only Tier-2 semantic tokens. Empty list + emptyHide → renders nothing. */
 
-import type { ProjectEntry } from '../../lib/load-projects';
-import { projectHref, statusLabel } from '../../lib/load-projects';
+import type { WorkingGroupWithProjects } from '../../lib/load-working-groups';
+import { workingGroupHref, statusLabel } from '../../lib/load-working-groups';
 
 export type GalleryVariant = 'portfolio' | 'mission-brief' | 'lite' | 'shelf';
 
@@ -18,35 +23,25 @@ export interface Props {
   contextSetterTxt?: string;
   headingTxt?: string;
   introTxt?: string;
-  projects: ProjectEntry[];
+  entries: WorkingGroupWithProjects[];   // each is { wg, currentProjects }
   variant?: GalleryVariant;
   emptyHide?: boolean;
-  /** Override the lite-variant card CTA. Default copy "Join the working group →"
-      assumes a project-discovery context (e.g., /projects/ proposed section).
-      On a WG detail page where the visitor is already in the WG context,
-      pass "Learn more →" or similar. */
-  liteCtaLabelTxt?: string;
 }
 
 const {
   contextSetterTxt,
   headingTxt,
   introTxt,
-  projects,
+  entries,
   variant = 'portfolio',
   emptyHide = true,
-  liteCtaLabelTxt = 'Join the working group →',
 } = Astro.props;
-
-if (emptyHide && projects.length === 0) {
-  // Render nothing
-}
 
 const fmtDate = (d?: Date) =>
   d ? d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
 ---
 
-{(!emptyHide || projects.length > 0) && (
+{(!emptyHide || entries.length > 0) && (
   <section class={`pgallery pgallery--${variant}`}>
     <header class="pgallery__header">
       {contextSetterTxt && <p class="pgallery__eyebrow">{contextSetterTxt}</p>}
@@ -56,31 +51,43 @@ const fmtDate = (d?: Date) =>
 
     {variant === 'portfolio' && (
       <ol class="pgallery__grid pgallery__grid--portfolio">
-        {projects.map(p => (
+        {entries.map(({ wg, currentProjects }) => (
           <li class="pcard pcard--portfolio">
-            <a class="pcard__hit" href={projectHref(p)}>
+            <a class="pcard__hit" href={workingGroupHref(wg)}>
               <div class="pcard__banner" aria-hidden="true">
-                {p.data.thumbnail
-                  ? <img class="pcard__banner-img" src={p.data.thumbnail} alt="" loading="lazy" />
-                  : p.data.hero_image
-                    ? <img class="pcard__banner-img" src={p.data.hero_image} alt="" loading="lazy" />
-                    : <div class="pcard__banner-fallback"><span class="pcard__icon">{p.data.icon ?? '◆'}</span></div>
+                {wg.data.thumbnail
+                  ? <img class="pcard__banner-img" src={wg.data.thumbnail} alt="" loading="lazy" />
+                  : wg.data.hero_image
+                    ? <img class="pcard__banner-img" src={wg.data.hero_image} alt="" loading="lazy" />
+                    : <div class="pcard__banner-fallback"><span class="pcard__icon">{wg.data.icon ?? '◆'}</span></div>
                 }
-                <span class="pcard__status" data-status={p.data.status}>
-                  <span class="sr-only">Status: </span>{statusLabel(p.data.status)}
+                <span class="pcard__status" data-status={wg.data.status}>
+                  <span class="sr-only">Status: </span>{statusLabel(wg.data.status)}
                 </span>
               </div>
               <div class="pcard__body">
-                <h3 class="pcard__title">{p.data.title}</h3>
-                <p class="pcard__lede">{p.data.lede}</p>
-                {p.data.working_group_leads && p.data.working_group_leads.length > 0 && (
+                <h3 class="pcard__title">{wg.data.title}</h3>
+                <p class="pcard__lede">{wg.data.lede}</p>
+                {wg.data.working_group_leads && wg.data.working_group_leads.length > 0 && (
                   <p class="pcard__leads">
-                    {p.data.working_group_leads.map(l => l.name).join(' · ')}
+                    {wg.data.working_group_leads.map(l => l.name).join(' · ')}
                   </p>
                 )}
-                {p.data.tags && p.data.tags.length > 0 && (
+                {currentProjects.length > 0 && (
+                  <p class="pcard__projects">
+                    <span class="pcard__projects-label">Active projects · </span>
+                    {currentProjects.slice(0, 3).map((p, i) => (
+                      <>
+                        {i > 0 && <span class="pcard__projects-sep"> · </span>}
+                        <span class="pcard__projects-name">{p.data.title}</span>
+                      </>
+                    ))}
+                    {currentProjects.length > 3 && <span class="pcard__projects-more"> +{currentProjects.length - 3}</span>}
+                  </p>
+                )}
+                {wg.data.tags && wg.data.tags.length > 0 && (
                   <ul class="pcard__tags">
-                    {p.data.tags.slice(0, 3).map(t => <li>{t}</li>)}
+                    {wg.data.tags.slice(0, 3).map(t => <li>{t}</li>)}
                   </ul>
                 )}
               </div>
@@ -92,17 +99,23 @@ const fmtDate = (d?: Date) =>
 
     {variant === 'mission-brief' && (
       <ol class="pgallery__grid pgallery__grid--mission">
-        {projects.map((p, i) => (
+        {entries.map(({ wg, currentProjects }, i) => (
           <li class="pcard pcard--mission">
-            <a class="pcard__hit" href={projectHref(p)}>
+            <a class="pcard__hit" href={workingGroupHref(wg)}>
               <div class="pcard__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
-              <p class="pcard__brief-eyebrow">{p.data.category ?? p.data.working_group_name ?? 'Working Group'}</p>
-              <h3 class="pcard__title">{p.data.title}</h3>
-              <p class="pcard__brief-body">{p.data.summary ?? p.data.lede}</p>
+              <p class="pcard__brief-eyebrow">{wg.data.category ?? wg.data.working_group_name ?? 'Working Group'}</p>
+              <h3 class="pcard__title">{wg.data.title}</h3>
+              <p class="pcard__brief-body">{wg.data.summary ?? wg.data.lede}</p>
+              {currentProjects.length > 0 && (
+                <p class="pcard__projects">
+                  <span class="pcard__projects-label">Active · </span>
+                  {currentProjects.slice(0, 3).map(p => p.data.title).join(' · ')}
+                </p>
+              )}
               <div class="pcard__brief-foot">
-                {p.data.cadence && <span class="pcard__cadence">{p.data.cadence}</span>}
-                <span class="pcard__status pcard__status--inline" data-status={p.data.status}>
-                  <span class="sr-only">Status: </span>{statusLabel(p.data.status)}
+                {wg.data.cadence && <span class="pcard__cadence">{wg.data.cadence}</span>}
+                <span class="pcard__status pcard__status--inline" data-status={wg.data.status}>
+                  <span class="sr-only">Status: </span>{statusLabel(wg.data.status)}
                 </span>
               </div>
             </a>
@@ -113,15 +126,15 @@ const fmtDate = (d?: Date) =>
 
     {variant === 'lite' && (
       <ol class="pgallery__grid pgallery__grid--lite">
-        {projects.map(p => (
+        {entries.map(({ wg }) => (
           <li class="pcard pcard--lite">
-            <a class="pcard__hit" href={projectHref(p)}>
+            <a class="pcard__hit" href={workingGroupHref(wg)}>
               <div class="pcard__lite-head">
-                <span class="pcard__icon" aria-hidden="true">{p.data.icon ?? '◇'}</span>
-                <h3 class="pcard__title">{p.data.title}</h3>
+                <span class="pcard__icon" aria-hidden="true">{wg.data.icon ?? '◇'}</span>
+                <h3 class="pcard__title">{wg.data.title}</h3>
               </div>
-              <p class="pcard__lede">{p.data.lede}</p>
-              <span class="pcard__cta">{liteCtaLabelTxt}</span>
+              <p class="pcard__lede">{wg.data.lede}</p>
+              <span class="pcard__cta">Join the working group →</span>
             </a>
           </li>
         ))}
@@ -130,27 +143,27 @@ const fmtDate = (d?: Date) =>
 
     {variant === 'shelf' && (
       <ol class="pgallery__shelf">
-        {projects.map(p => (
+        {entries.map(({ wg }) => (
           <li class="pcard pcard--shelf">
-            <a class="pcard__hit pcard__hit--row" href={projectHref(p)}>
-              <span class="pcard__shelf-icon" aria-hidden="true">{p.data.icon ?? '◯'}</span>
+            <a class="pcard__hit pcard__hit--row" href={workingGroupHref(wg)}>
+              <span class="pcard__shelf-icon" aria-hidden="true">{wg.data.icon ?? '◯'}</span>
               <div class="pcard__shelf-text">
-                <h3 class="pcard__title pcard__title--shelf">{p.data.title}</h3>
-                <p class="pcard__lede pcard__lede--shelf">{p.data.lede}</p>
+                <h3 class="pcard__title pcard__title--shelf">{wg.data.title}</h3>
+                <p class="pcard__lede pcard__lede--shelf">{wg.data.lede}</p>
               </div>
               <div class="pcard__shelf-meta">
-                {p.data.date_initiated && (
+                {wg.data.date_initiated && (
                   <span class="pcard__shelf-date">
-                    <abbr title="Initiated">init</abbr> {fmtDate(p.data.date_initiated)}
+                    <abbr title="Initiated">init</abbr> {fmtDate(wg.data.date_initiated)}
                   </span>
                 )}
-                {p.data.date_archived && (
+                {wg.data.date_archived && (
                   <span class="pcard__shelf-date">
-                    <abbr title="Archived">arch</abbr> {fmtDate(p.data.date_archived)}
+                    <abbr title="Archived">arch</abbr> {fmtDate(wg.data.date_archived)}
                   </span>
                 )}
-                <span class="pcard__status pcard__status--inline" data-status={p.data.status}>
-                  <span class="sr-only">Status: </span>{statusLabel(p.data.status)}
+                <span class="pcard__status pcard__status--inline" data-status={wg.data.status}>
+                  <span class="sr-only">Status: </span>{statusLabel(wg.data.status)}
                 </span>
               </div>
             </a>
@@ -375,6 +388,33 @@ const fmtDate = (d?: Date) =>
     background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
     color: var(--color-text-muted);
     border: 1px solid var(--color-border);
+  }
+
+  /* Active-projects chip row — the headline differentiator vs project cards */
+  .pcard__projects {
+    margin: 0.375rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--color-text);
+  }
+  .pcard__projects-label {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+  }
+  .pcard__projects-name {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  .pcard__projects-sep {
+    color: var(--color-text-muted);
+  }
+  .pcard__projects-more {
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.75rem;
   }
 
   /* ---------- Variant: mission-brief ---------- */

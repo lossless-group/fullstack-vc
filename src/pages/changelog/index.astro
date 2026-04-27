@@ -5,7 +5,21 @@ import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import BannerWithOverlay from '../../components/changelog/BannerWithOverlay.astro';
 
 const all = await getCollection('changelog');
-const sorted = all.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Sort by date desc, then by within-day index desc so multiple same-day
+// entries stack newest-first (e.g. 2026-04-27_03 above _02 above _01).
+// Entry id looks like "2026-04-27_03" (or with .md suffix depending on loader);
+// we extract the trailing _NN to break date ties.
+function entryIndex(id: string): number {
+  const match = id.match(/_(\d+)(?:\.md)?$/);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
+const sorted = all.sort((a, b) => {
+  const dateDelta = b.data.date.getTime() - a.data.date.getTime();
+  if (dateDelta !== 0) return dateDelta;
+  return entryIndex(b.id) - entryIndex(a.id);
+});
 
 function formatDate(d: Date): string {
   return d.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });

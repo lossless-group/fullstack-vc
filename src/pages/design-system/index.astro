@@ -159,10 +159,28 @@ const components = [
     props: 'project: ProjectEntry',
   },
   {
-    name: 'ProjectReader',
-    purpose: 'Reading column on /projects/[slug]/. Wraps the LFM-rendered MDAST tree in a 70ch prose container with global heading/paragraph/list styles. Top chrome: back-to-projects link + optional "Edit on source" link. Renders Sources component when citations are present.',
+    name: 'MarkdownReader',
+    purpose: 'Generic LFM-rendered reading column. Used by /projects/[slug]/ and /working-groups/[slug]/. Wraps an MDAST tree in a 70ch prose container with global heading/paragraph/list styles. Top chrome: optional back-link (configurable via backHref/backLabelTxt) + optional "Edit on source" link. Renders Sources when citations are present. Renamed from ProjectReader to make non-domain reuse explicit.',
     cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-body, --font-code',
-    props: 'tree: MDAST root, citations?: Citation[], editUrl?',
+    props: 'tree: MDAST root, citations?: Citation[], editUrl?, backHref? (default "/projects/"), backLabelTxt? (default "All projects")  → demo: /design-system/markdown/markdown-reader',
+  },
+  {
+    name: 'Section__WorkingGroupGallery',
+    purpose: 'Sibling to Section__ProjectGallery — same four variants and CSS, but the data shape is enriched: each entry carries the WorkingGroupEntry plus its currently-active projects (pre-joined by the loader). The portfolio and mission-brief variant cards add a small chip row showing 1–3 of the WG\'s active projects, which is the headline differentiator vs. project cards.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-secondary, --color-surface, --color-border, --color-background, --color-status-active, --color-status-proposed, --color-status-archived, --font-display, --font-body, --font-code',
+    props: 'contextSetterTxt?, headingTxt?, introTxt?, entries: WorkingGroupWithProjects[], variant?: "portfolio"|"mission-brief"|"lite"|"shelf" (default "portfolio"), emptyHide?: boolean (default true)  → demo: /design-system/sections/working-group-gallery',
+  },
+  {
+    name: 'JumboPopdown__WorkingGroups',
+    purpose: 'Sibling to JumboPopdown__Projects. Header-mounted dropdown surfacing active (and optionally proposed) working groups. Same hover-open + click-toggle, Esc closes, arrow keys navigate, mobile becomes a bottom drawer. Mounted in Header.astro alongside the Projects popdown.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-status-*, --font-display, --font-code',
+    props: 'triggerLabelTxt? (default "Working Groups"), workingGroups: WorkingGroupEntry[], showProposed?: boolean (default true)  → demo: /design-system/components/jumbo-popdown-working-groups',
+  },
+  {
+    name: 'WorkingGroupMetadataDisplay',
+    purpose: 'Sibling to ProjectMetadataDisplay. Below-hero metadata strip on /working-groups/[slug]/. Same shape because the WG schema is currently a clone of the projects schema: status pill, cadence, last-activity timestamp, leads + members rosters, external link icon row, optional RSVP CTA, scope paragraph.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-status-*, --color__bone, --font-display, --font-code',
+    props: 'workingGroup: WorkingGroupEntry',
   },
 ];
 ---
@@ -463,6 +481,21 @@ class?:           extra class name(s)
         <p class="ds-subpage-eyebrow">Components</p>
         <p class="ds-subpage-title">JumboPopdown__Projects</p>
         <p class="ds-subpage-note">Header dropdown · keyboard + a11y.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/sections/working-group-gallery">
+        <p class="ds-subpage-eyebrow">Sections</p>
+        <p class="ds-subpage-title">Section__WorkingGroupGallery</p>
+        <p class="ds-subpage-note">Same 4 variants + active-projects chip row.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/components/jumbo-popdown-working-groups">
+        <p class="ds-subpage-eyebrow">Components</p>
+        <p class="ds-subpage-title">JumboPopdown__WorkingGroups</p>
+        <p class="ds-subpage-note">Sibling popdown for the WG header item.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/markdown/markdown-reader">
+        <p class="ds-subpage-eyebrow">Markdown</p>
+        <p class="ds-subpage-title">MarkdownReader</p>
+        <p class="ds-subpage-note">Renamed from ProjectReader · generic.</p>
       </a>
     </div>
   </section>

@@ -12,12 +12,16 @@ working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
 cadence: "Weekly · Tuesdays 12:00 PT"
+working_group_slugs:
+  - hack-and-ship
+  - data-driven-venture
 links:
   spec: "https://www.lossless.group/projects/gallery/memopop-ai"
 tags: [Investment-Memos, Diligence-Workflow, Agentic-Research, Decision-Support]
 category: "Decision Support"
 origin: "Ported from lossless.group"
 icon: "📑"
+image_prompt: "Isometric vector illustration of a structured investment memo unfolding mid-air, pages laid out in a zig-zag 3D pattern in deep navy space. Each page glows with subtle violet section dividers and tiny amber footnote pills. Floating beside the memo: a small holographic queryable archive panel with cyan filter chips and a magnifying lens. Translucent blue threads connect the memo to a stylized diligence-call icon (a glowing waveform) and a model spreadsheet rendered as rows of subtle code-font numerics. Devtools-meets-dojo aesthetic, deep navy background with violet → cyan accents, restrained light bloom, no human figures, no text."
 banner_overlay: "gradient"
 publish: true
 feature_in_popdown: true

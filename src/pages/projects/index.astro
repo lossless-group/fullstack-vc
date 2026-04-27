@@ -12,15 +12,21 @@ const [active, proposed, archived] = await Promise.all([
   loadProjectsByStatus('archived'),
 ]);
 
-const heroImage = '/imageRep__AgenticVC-Dojo.webp';
+// PNG (not WEBP) — WhatsApp and iMessage are inconsistent with WebP for OG
+// share previews. The .png variant exists alongside .webp in /public/.
+const heroImage = '/imageRep__AgenticVC-Dojo.png';
 ---
 
 <BaseThemeLayout
   title="Projects · FullStack VC"
   description="Active working-group projects in the FullStack VC peer learning community."
+  image={heroImage}
+  ogType="website"
 >
   <!-- Hero. Falls back to plain message hierarchy if no banner image is available
-       (production deploys: replace heroImage with a real /og/projects.png). -->
+       (production deploys: replace heroImage with a real /og/projects.png).
+       The same image is passed to BaseThemeLayout above so the page's own OG
+       share image matches what visitors see on the page. -->
   <HeroBanner
     image={heroImage}
     imageAlt=""
@@ -29,7 +35,7 @@ const heroImage = '/imageRep__AgenticVC-Dojo.webp';
     height="standard"
     contextSetterTxt="Projects to Learn and Use · Peer Learning"
     headerTxt="Projects, proposed by you, built together."
-    subheaderTxt="Challenges, Working Groups, and Projects in the FullStack VC community."
+    subheaderTxt="Gain momentum and collaborate with the KF SIG + FullStack VC community."
     supportingTxt="We work together to learn skills we can all apply as individuals with the intention of impacting your firm — and the projects below are how the community puts that into practice.</br></br>At the very least, you can develop AI Superpowers and reduce burnout."
     ctaLabelTxt="Propose a project"
     ctaHref="/projects/propose"

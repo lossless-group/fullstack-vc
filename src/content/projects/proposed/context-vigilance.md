@@ -12,12 +12,15 @@ working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
 cadence: "TBD"
+working_group_slugs:
+  - hack-and-ship
 links:
   spec: "https://www.lossless.group/projects/gallery/context-vigilance"
 tags: [Agentic-Workflows, Context-Engineering, Memory, Trust-Boundaries, AI-Practice]
 category: "Agentic Practice"
 origin: "Ported from lossless.group"
 icon: "🛡️"
+image_prompt: "Isometric vector illustration of a guardian motif: a small translucent shield in violet hovering over a stack of context document tiles arranged like steps. Below the shield, a tiny memory layer represented by a horizontal row of colored ribbons (violet, lime, amber) sliding through a glowing checkpoint gate. Subtle cyan trust-boundary lines surround a central agent node rendered as a small geometric core. Above, a single small star ornament marking vigilance. Devtools-meets-dojo aesthetic, deep navy background, restrained light bloom, violet → lime accents, no human figures, no text."
 banner_overlay: "gradient"
 publish: true
 feature_in_popdown: true

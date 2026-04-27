@@ -1,0 +1,122 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import Reader from '../../../components/markdown/MarkdownReader.astro';
+import { parseMarkdown } from '@lossless-group/lfm';
+
+// Sample markdown content showing typical prose: heading, list, link, code, blockquote.
+const sampleMd = `## Why this exists
+
+Most VC content is either polished-but-late or fast-but-shallow. There's a third option:
+**substantive content shipped at the cadence of a working analyst desk** — citation-rich, written
+to a standard that survives scrutiny.
+
+### What we share
+
+- Real drafts in flight (sanitized)
+- Editorial style rules expressed as code (lintable)
+- Tools and prototypes — currently spinning around [Content Farm](/projects/content-farm/)
+
+> Show your work-in-progress. The act of showing is the work.
+
+Inline code looks like \`parseMarkdown(entry.body)\` returning a normalized MDAST tree.
+`;
+
+const tree = await parseMarkdown(sampleMd);
+const citations = (tree as any)?.data?.citations?.ordered ?? [];
+---
+
+<BaseThemeLayout
+  title="Component · MarkdownReader"
+  description="Generic LFM-rendered reading column. Used by /projects/[slug]/ and /working-groups/[slug]/."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Design System · Markdown
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      MarkdownReader
+    </h1>
+    <p style="color: var(--color-text-muted);">
+      Generic LFM-rendered reading column. Wraps an MDAST tree in a 70ch column with prose styling. Top chrome: optional back-link + optional "Edit on source" link. Renders <code style="font-family: var(--font-code); color: var(--color-primary);">Sources</code> at the bottom when citations are non-empty.
+    </p>
+    <p style="color: var(--color-text-muted); margin-top: 0.75rem; font-family: var(--font-code); font-size: 0.8125rem;">
+      Renamed from <code style="background: var(--color-surface); padding: 0.1em 0.3em; border-radius: 0.25rem;">ProjectReader</code> in changelog 2026-04-27 (03) to make its non-domain reuse explicit.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">Default — back to projects</h2>
+    <p class="ds-block-note">
+      Without overriding <code>backHref</code> / <code>backLabelTxt</code>, the back link defaults to "← All projects" pointing to <code>/projects/</code>.
+    </p>
+    <div class="ds-reader-stage">
+      <Reader tree={tree} citations={citations} editUrl="https://example.com/edit" />
+    </div>
+  </section>
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">Custom back-link — used by working-groups detail page</h2>
+    <p class="ds-block-note">
+      Pass <code>backHref</code> and <code>backLabelTxt</code> to point the back link elsewhere. Both pages that consume this component (projects, working-groups) use this pattern.
+    </p>
+    <div class="ds-reader-stage">
+      <Reader
+        tree={tree}
+        citations={citations}
+        backHref="/working-groups/"
+        backLabelTxt="All working groups"
+      />
+    </div>
+  </section>
+
+  <details class="text-sm mt-8">
+    <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + tokens</summary>
+    <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<MarkdownReader
+  tree={tree}                 /* MDAST root from parseMarkdown() */
+  citations={citations}       /* tree.data.citations.ordered */
+  editUrl="..."               /* optional: 'Edit on source' link */
+  backHref="/projects/"       /* default: '/projects/' */
+  backLabelTxt="All projects" /* default: 'All projects' */
+/>
+
+/* Tokens read */
+--color-text, --color-text-muted, --color-primary, --color-surface, --color-border,
+--font-display, --font-body, --font-code`}</pre>
+  </details>
+</BaseThemeLayout>
+
+<style is:global>
+  .ds-block {
+    margin-bottom: 4rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .ds-block:last-of-type { border-bottom: none; }
+  .ds-block-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .ds-block-note {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+  }
+  .ds-block-note code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+  }
+  .ds-reader-stage {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+  }
+</style>

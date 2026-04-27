@@ -12,6 +12,8 @@ working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
 cadence: "TBD"
+working_group_slugs:
+  - hack-and-ship
 links:
   repo: "https://github.com/lossless-group/astro-knots"
   spec: "https://www.lossless.group/projects/gallery/astro-knots"
@@ -19,6 +21,7 @@ tags: [Astro, Monorepo, Pattern-Library, Site-Architecture, Component-Reuse]
 category: "Site Infrastructure"
 origin: "Ported from lossless.group"
 icon: "🪢"
+image_prompt: "Isometric vector illustration of a knotted bundle of glowing ropes in deep navy space, each rope a different color (violet, cyan, lime, amber, magenta) representing a distinct website. The ropes converge at a central rounded knot point — the umbrella repo — but each rope continues outward to its own small luminous module floating in space around the knot. Around the central knot, fine cyan grid-lines hint at code structure. Subtle violet bloom around the knot. Devtools-meets-dojo aesthetic, deep navy background, restrained light bloom, no human figures, no text, abstract architectural feel."
 banner_overlay: "gradient"
 publish: true
 feature_in_popdown: true

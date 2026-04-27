@@ -12,6 +12,9 @@ working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
 cadence: "Bi-weekly · Mondays 14:00 PT"
+working_group_slugs:
+  - professional-grade-content-development
+  - tech-stack-deep-dives
 links:
   repo: "https://github.com/lossless-group/astro-knots"
   spec: "https://github.com/lossless-group/astro-knots/blob/main/context-v/specs/Codifying-a-Comprehensive-Extended-Markdown-Flavor-and-Shared-Package.md"
@@ -19,6 +22,7 @@ tags: [Markdown, Remark, Rehype, Citations, Directives, Shared-Package]
 category: "Content Infrastructure"
 origin: "Astro Knots umbrella"
 icon: "📝"
+image_prompt: "Isometric vector illustration of a glowing markdown manuscript in deep navy space, pages annotated with subtle violet directive markers (`:::callout`-style chevrons) and tiny amber citation pills in the margin. Beside the manuscript, a translucent pipeline of stacked rectangular plugin nodes glows in cyan, each labeled only with abstract dots — text stripped. A soft violet bloom traces the path from the manuscript through the pipeline. Devtools-meets-dojo aesthetic, restrained light bloom, deep navy background with violet → cyan → lime accents, no human figures, no text."
 banner_overlay: "gradient"
 publish: true
 feature_in_popdown: true

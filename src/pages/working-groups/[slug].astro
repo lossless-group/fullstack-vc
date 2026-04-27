@@ -1,0 +1,208 @@
+---
+export const prerender = true;
+
+import { parseMarkdown } from '@lossless-group/lfm';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import HeroBanner from '../../components/heroes/HeroBannerWithMessageHierarchy.astro';
+import HeroContentCoreMessage from '../../components/heroes/HeroContentCoreMessage.astro';
+import WorkingGroupMetadataDisplay from '../../components/sections/WorkingGroupMetadataDisplay.astro';
+import Section__ProjectGallery from '../../components/sections/Section__ProjectGallery.astro';
+import MarkdownReader from '../../components/markdown/MarkdownReader.astro';
+import {
+  loadAllWorkingGroups,
+  loadProjectsForWorkingGroup,
+  workingGroupHref,
+  workingGroupSlug,
+  statusLabel,
+} from '../../lib/load-working-groups';
+
+export async function getStaticPaths() {
+  const all = await loadAllWorkingGroups();
+  return all.map(entry => ({
+    params: { slug: entry.data.slug ?? entry.id.replace(/\.md$/, '').split('/').pop() },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const wgSlug = workingGroupSlug(entry);
+
+const tree = await parseMarkdown(entry.body ?? '');
+const citations = (tree as any)?.data?.citations?.ordered ?? [];
+
+// Cross-collection join: all projects whose working_group_slugs includes this WG.
+const allProjects = await loadProjectsForWorkingGroup(wgSlug);
+const currentProjects = allProjects.filter(p => p.data.status === 'active');
+const proposedProjects = allProjects.filter(p => p.data.status === 'proposed');
+const pastProjects = allProjects.filter(p => p.data.status === 'archived');
+
+// Adjacent WG nav (prev/next within same status group)
+const all = await loadAllWorkingGroups();
+const sameStatus = all.filter(wg => wg.data.status === d.status && wg.id !== entry.id);
+const idx = sameStatus.findIndex(wg => wg.id === entry.id);
+const prev = idx > 0 ? sameStatus[idx - 1] : sameStatus[sameStatus.length - 1];
+const next = idx >= 0 && idx < sameStatus.length - 1 ? sameStatus[idx + 1] : sameStatus[0];
+
+const editUrl = d.links?.spec ?? d.links?.repo;
+const ogImageOverride = d.hero_image ?? d.og_image;
+const ogDescription = d.summary ?? d.lede;
+---
+
+<BaseThemeLayout
+  title={`${d.title} · FullStack VC`}
+  description={ogDescription}
+  image={ogImageOverride}
+  ogType="article"
+>
+  {ogImageOverride ? (
+    <HeroBanner
+      image={ogImageOverride}
+      imageAlt={d.title}
+      overlay={d.banner_overlay ?? 'gradient'}
+      align="left"
+      height="standard"
+      contextSetterTxt={`${statusLabel(d.status)} · ${d.working_group_name ?? d.category ?? 'Working Group'}`}
+      headerTxt={d.title}
+      subheaderTxt={d.lede}
+    />
+  ) : (
+    <section class="wgdetail-hero">
+      <div class="wgdetail-hero__inner">
+        <HeroContentCoreMessage
+          contextSetter={`${statusLabel(d.status)} · ${d.working_group_name ?? d.category ?? 'Working Group'}`}
+          headerTxt={d.title}
+          subheaderTxt={d.lede}
+        />
+      </div>
+    </section>
+  )}
+
+  <div class="wgdetail-meta-wrap">
+    <WorkingGroupMetadataDisplay workingGroup={entry} />
+  </div>
+
+  {currentProjects.length > 0 && (
+    <div class="wgdetail-projects-wrap">
+      <Section__ProjectGallery
+        contextSetterTxt="Current"
+        headingTxt="Active projects"
+        introTxt="Projects this working group is currently running."
+        projects={currentProjects}
+        variant="lite"
+        liteCtaLabelTxt="Learn more →"
+      />
+    </div>
+  )}
+
+  {proposedProjects.length > 0 && (
+    <div class="wgdetail-projects-wrap">
+      <Section__ProjectGallery
+        contextSetterTxt="Proposed"
+        headingTxt="Projects under consideration"
+        projects={proposedProjects}
+        variant="lite"
+        liteCtaLabelTxt="Learn more →"
+      />
+    </div>
+  )}
+
+  <MarkdownReader
+    tree={tree}
+    citations={citations}
+    editUrl={editUrl}
+    backHref="/working-groups/"
+    backLabelTxt="All working groups"
+  />
+
+  {pastProjects.length > 0 && (
+    <div class="wgdetail-projects-wrap">
+      <Section__ProjectGallery
+        contextSetterTxt="Past projects"
+        headingTxt="Archive"
+        introTxt="Projects this working group ran before — read for the lessons learned."
+        projects={pastProjects}
+        variant="shelf"
+      />
+    </div>
+  )}
+
+  {sameStatus.length > 0 && (
+    <nav class="wgdetail-adjacent" aria-label="Adjacent working groups">
+      <a class="wgdetail-adjacent__link" href={workingGroupHref(prev)}>
+        <span class="wgdetail-adjacent__dir">← Previous</span>
+        <span class="wgdetail-adjacent__title">{prev.data.title}</span>
+      </a>
+      <a class="wgdetail-adjacent__link wgdetail-adjacent__link--right" href={workingGroupHref(next)}>
+        <span class="wgdetail-adjacent__dir">Next →</span>
+        <span class="wgdetail-adjacent__title">{next.data.title}</span>
+      </a>
+    </nav>
+  )}
+</BaseThemeLayout>
+
+<style>
+  .wgdetail-hero {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .wgdetail-hero__inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 7vw, 5rem) 1.5rem clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .wgdetail-meta-wrap {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .wgdetail-projects-wrap {
+    max-width: 70ch;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+  }
+
+  .wgdetail-adjacent {
+    max-width: 70ch;
+    margin: 0 auto 4rem;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .wgdetail-adjacent__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.125rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 150ms ease, transform 150ms ease;
+  }
+  .wgdetail-adjacent__link:hover {
+    border-color: var(--fx-card-border-hover);
+    transform: translateY(-1px);
+  }
+  .wgdetail-adjacent__link--right { text-align: right; align-items: flex-end; }
+  .wgdetail-adjacent__dir {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .wgdetail-adjacent__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+  @media (max-width: 640px) {
+    .wgdetail-adjacent { grid-template-columns: 1fr; }
+    .wgdetail-adjacent__link--right { text-align: left; align-items: flex-start; }
+  }
+</style>

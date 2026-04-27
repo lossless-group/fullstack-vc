@@ -12,12 +12,15 @@ working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
 cadence: "TBD"
+working_group_slugs:
+  - data-driven-venture
 links:
   spec: "https://www.lossless.group/projects/gallery/augment-it/specs/data-augmentation-workflow-with-microfrontends"
 tags: [Data-Augmentation, Micro-Frontends, Investment-Data, Workflow-Composition]
 category: "Data Workflows"
 origin: "Ported from lossless.group"
 icon: "✨"
+image_prompt: "Isometric vector illustration of small modular UI tiles floating in deep navy space, each tile a translucent violet card carrying a single-purpose data primitive (a domain enrichment node, a job-title normalizer, a signal scorer, a deduplication ring). Threads of cyan light connect three of the tiles into a small composed workflow at the foreground. Above the composition, a soft amber pulse marker shows a recent augmentation run. Devtools-meets-dojo aesthetic, deep navy background, restrained light bloom, violet → cyan → amber accents, no human figures, no text."
 banner_overlay: "gradient"
 publish: true
 feature_in_popdown: true
