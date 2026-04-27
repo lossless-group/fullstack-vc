@@ -2,6 +2,8 @@
 chapter_number: 2
 title: "Proprietary Dealflow & Dealflow Management"
 lede: "Earn the inbound, route the inbound, say \"no\" fast and well, and get invited to oversubscribed rounds."
+image_prompt: "A network of nested glass funnels arranged in concentric tiers, streams of light entering from countless directions and routing through a central sorting prism, gates opening and closing in sequence"
+og_image: "/og/venture-workflows/02-proprietary-dealflow-and-dealflow-management__3864ee05.png"
 tags:
   - "Sourcing-Engines"
   - "Founder-Friendly-Nos"

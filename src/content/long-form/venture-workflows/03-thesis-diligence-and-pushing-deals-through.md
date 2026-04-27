@@ -2,6 +2,8 @@
 chapter_number: 3
 title: "Thesis, Diligence & Pushing Deals Through"
 lede: "Build a point of view, run diligence sprints, and move through committee without losing the founder."
+image_prompt: "A geological cross-section of layered translucent strata being scanned by precision instruments, beams of light tracing each stratum, a magnifying chamber suspended at the core revealing a single luminous core sample"
+og_image: "/og/venture-workflows/03-thesis-diligence-and-pushing-deals-through__7bcdd5c8.png"
 tags:
   - "Investment-Thesis"
   - "Diligence-Sprints"
@@ -145,10 +147,6 @@ When Capital Invent moves to diligence, they send the founders a formal letter d
 The Social Capital Partnership has a streamlined, proprietary way of doing quantitative diligence called [Magic 8-Ball](https://analytics.socialcapital.com/eightball/login?mode=select), which aims to standardize product-market fit metrics.  In particular, they dive in using a methodology called cohort analysis, which reveals whether the company is getting better over time. Entrepreneurs can use or adapt a query script on their database or analytics tools to generate a CSV file containing key company metrics, and after uploading it Magic 8-Ball generates insights for both the entrepreneurs and the Social Capital diligence process.[^41]  
 `![][image19]`
 
-
-***
-
-## Sources
 
 [^26]:  Friend, Tad, “[Tomorrow's Advance Man: Marc Andreessen's plan to win the future](https://www.newyorker.com/magazine/2015/05/18/tomorrows-advance-man),” The New Yorker, May 18, 2015\.
 

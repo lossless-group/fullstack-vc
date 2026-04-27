@@ -2,6 +2,8 @@
 chapter_number: 4
 title: "Winning Deals"
 lede: "Personal brand, fast trust, and valuation gymnastics — what makes the founder pick you."
+image_prompt: "Two crystalline geometric forms reaching across a void to grasp the same suspended key at the meeting point, ribbons of light weaving a handshake between them, faceted gemstone trust at the center"
+og_image: "/og/venture-workflows/04-winning-deals__edb67ae8.png"
 tags:
   - "Why-Founders-Pick-You"
   - "Personal-Brand"
@@ -75,10 +77,6 @@ Gui Decourt, Partner of Monashees, emphasizes the importance of developing value
 
 Monashees believes supporting entrepreneurs is one of the core elements of the firm’s strategy. Having a controlling mindset or distorted idea of the role they play in the company ends up hurting the company and the entrepreneur, therefore firms have to be explicit in the ways they want to serve and deliver to the companies they work with. By truly believing in helping companies you are in contact with, you build a brand recognition in the entrepreneurial community that will attract good entrepreneurs to your firm. 
 
-
-***
-
-## Sources
 
 [^42]:  8VC, “[Do VCs Know What Entrepreneurs Really Want?](https://medium.com/8vc-news/do-vcs-know-what-entrepreneurs-really-want-a923582f9647)” Medium: Blog, June 6, 2017\.
 

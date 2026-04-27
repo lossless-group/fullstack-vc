@@ -2,6 +2,8 @@
 chapter_number: 1
 title: "Strategy Development & Raising a Fund"
 lede: "How emerging managers grind through hundreds of LP meetings, build the team, and close anchors."
+image_prompt: "An ascending architectural lattice rising from a single seed-stone, hundreds of distant lantern-lights converging toward a central anchor foundation, scaffolding mid-construction, geometric horizon"
+og_image: "/og/venture-workflows/01-strategy-development-and-raising-a-fund__5737a285.png"
 tags:
   - "Emerging-Managers"
   - "Anchor-LPs"
@@ -201,10 +203,6 @@ Templates give strong starting points and guidance based on the content of the s
 #### Cleaning Up Images:
 Many points are made with illustrative imagery. However, simply downloading or clipping images and adding them to the presentation often makes the presentation look sloppy. 
 
-
-***
-
-## Sources
 
 [^20]:  Morris, Rhett, “[Entrepreneurial Experience Separates Top Tier VCs from Other Investors](https://techcrunch.com/2015/12/02/entrepreneurial-experience-separates-top-vcs-from-other-investors/),” TechCrunch, December 2, 2-15.
 

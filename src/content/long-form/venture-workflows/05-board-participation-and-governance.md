@@ -2,6 +2,8 @@
 chapter_number: 5
 title: "Board Participation & Governance"
 lede: "Showing up, value-add vs. busywork, and knowing when to be impermanent."
+image_prompt: "A circular chamber of empty geometric seats orbiting a luminous central beacon, lines of accountability radiating outward, one chair gently glowing while another dissolves into particles, marble-and-glass round table"
+og_image: "/og/venture-workflows/05-board-participation-and-governance__58f1a7df.png"
 tags:
   - "Board-Seats"
   - "Observer-Rights"
@@ -56,9 +58,5 @@ Five or six years ago, being a Board Director in Southeast Asia was a very passi
 ### Highlight Walking Ventures on Impermanent Board Seats
 Tim Jackson of Walking Ventures observes that partners who serve on a large number of Board of Directors can be at risk of failing to make a meaningful contribution to all of the different companies due to bandwidth constraints. He also believes that individuals can only add value at the board level relative to the stage of company building, so Walking Ventures believes you should only take a board seat when the company is at a stage when you can add the most value. Tim explains that in order to provide value to the companies that he holds a Board position with, he sets the expectation that he will only occupy the seat for one year. As the company grows, the spot can be given up to later stage investors who may have more appropriate expertise. 
 
-
-***
-
-## Sources
 
 [^49]:  Wilson, Fred, “[Investor VCs and Operator VCs](http://avc.com/2017/05/investor-vcs-and-operator-vcs/),” AVC: Blog, May 2017\.

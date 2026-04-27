@@ -2,6 +2,8 @@
 chapter_number: 10
 title: "Exits, Auctions, Secondary, Liquidity & Distributions"
 lede: "Selling early, secondaries, distributions — the M&A grind and the end of the J-curve."
+image_prompt: "A luminous bridge arcing from a glowing reservoir across a horizon-line to a fleet of waiting vessels, particles of value crossing in measured waves, a J-curve resolving into a calm plateau at sunrise"
+og_image: "/og/venture-workflows/10-exits-secondary-liquidity-and-distributions__4e4712ab.png"
 tags:
   - "Secondary-Sales"
   - "Tender-Offers"
@@ -50,10 +52,6 @@ Cervin tracks their seed companies with a sense of purpose, and one of the goals
 
 Using this model, Cervin was able to see liquidity and distribute cash returns to LPs faster than other venture capital strategies. Building on their success, they were able to raise a larger second fund with little friction.  
 
-
-***
-
-## Sources
 
 [^59]:  Friend, Tad, “Tommorow’s Advance Man: Marc Andreesen’s plan to win the future,” The New Yorker, May 18, 2015\. https://www.newyorker.com/magazine/2015/05/18/tomorrows-advance-man
 

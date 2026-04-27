@@ -2,6 +2,8 @@
 chapter_number: 7
 title: "Portfolio Tracking, Modeling & Follow-On Management"
 lede: "Internal dashboards, portfolio review cadences, and follow-on decision frameworks."
+image_prompt: "A floating vertical lattice of translucent dashboards arranged in tiers, ribbons of data flowing between them, decision gates illuminating sequentially, a measured pulse traveling through the network"
+og_image: "/og/venture-workflows/07-portfolio-tracking-modeling-and-follow-on-management__faa3c753.png"
 tags:
   - "Portfolio-Dashboards"
   - "Reserves-Modeling"

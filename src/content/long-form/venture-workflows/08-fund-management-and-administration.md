@@ -2,6 +2,8 @@
 chapter_number: 8
 title: "Fund Management & Administration"
 lede: "Fund admin, investment committee design, and the often-invisible non-investing roles."
+image_prompt: "An intricate cascading mechanism of crystal channels and counterweights, liquid light flowing through tiered chambers, interlocking gears beneath a polished surface, a quiet engine room of order"
+og_image: "/og/venture-workflows/08-fund-management-and-administration__41f82888.png"
 tags:
   - "Fund-Admin-Stack"
   - "IC-Design"
@@ -81,10 +83,6 @@ Relative to other firms their size, Emergence Capital has a sizable finance team
 ### Highlighting KEF Investments: Investment Committee Management
 Prashant Mehta of KEF Investments is in charge of strategic planning and monitoring of the group and largely works on the fixed income side of investing. When dealing with an investment committee, he explains speaking to each member of the IC before the decision meeting is imperative. By listing out the pros and cons individually, problems can be resolved or discussed out before making a decision. If there are surprises in the investment committee board meeting, the deal will most likely not go through, whether it is a good or bad investment. 
 
-
-***
-
-## Sources
 
 [^56]:  Olsen, Dana. “[New Aspect Ventures COO talks VC operations, diversity](https://pitchbook.com/news/articles/new-aspect-ventures-coo-talks-vc-operations-diversity),” PitchBook Blog, September 2017\.
 

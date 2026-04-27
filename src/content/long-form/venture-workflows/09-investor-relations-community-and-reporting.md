@@ -2,6 +2,8 @@
 chapter_number: 9
 title: "Investor Relations, Community & Reporting"
 lede: "Quarterly reports, LP days, and building a community around your fund."
+image_prompt: "An open glass ledger of luminous pages floating in a colonnaded hall, soft beams projecting outward from the spine into a semicircle of waiting lanterns, a calm public square of light"
+og_image: "/og/venture-workflows/09-investor-relations-community-and-reporting__5ce90e04.png"
 tags:
   - "Quarterly-Letters"
   - "AGM-Playbook"
@@ -80,9 +82,5 @@ Below is an example from a two years old crowdsourcing platform company.
 
 ## Case Studies
 ## Highlights
-
-***
-
-## Sources
 
 [^58]:  Douvos, Chris, “[All About the Benjamins](https://superlp.com/2013/09/24/allaboutthebenjamins/),” Super LP: Blog, September 24, 2013\.

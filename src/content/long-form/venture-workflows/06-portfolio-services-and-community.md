@@ -2,6 +2,8 @@
 chapter_number: 6
 title: "Portfolio Services & Community"
 lede: "Service offers, community programs, growth acceleration, and \"one-battle\" frameworks."
+image_prompt: "A constellation of small workstations connected by glowing threads, a central greenhouse of seedlings tended by streams of warm light, satellites of resources orbiting the cluster"
+og_image: "/og/venture-workflows/06-portfolio-services-and-community__780ae7db.png"
 tags:
   - "Platform-Teams"
   - "Customer-Intros"
@@ -108,10 +110,6 @@ After serving several CEOs in 2018, he believes that independent CEO Coaches hav
 
 Jackson uses assessments like Myers Briggs (fill in more here), which he pays a modest subscription for, and spends a full day with the CEO and management team. He then writes a full report with a plan for options the CEO may choose to work on. The CEO then identifies a few key areas for development. The two then keep regular web meetings where they stay in close communication on the development of the CEO in the highlighted areas.  
 
-
-***
-
-## Sources
 
 [^50]:  Fritjofsson, Carl. [Do VC’s Really Add Value? Founders Say Sometimes](https://hackernoon.com/do-vcs-really-add-value-founders-say-sometimes-f27bb956eb8c). Medium: June 10, 2018\.
 
