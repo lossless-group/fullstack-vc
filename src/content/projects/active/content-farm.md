@@ -1,21 +1,21 @@
 ---
 title: "Content Farm"
 slug: "content-farm"
-lede: "Editorial workflows that turn raw research into investor-grade narrative — at the cadence of an investment desk, not a magazine."
-summary: "Content Farm is a working group exploring how a small VC team can produce sharp, defensible thought leadership without hiring a content team. We're codifying the loop from research notes → outline → draft → cite-check → publish, with agents doing the dull middle and humans doing the sharp ends."
-scope: "Editorial pipelines; agentic drafting; citation discipline; publishing automation. Out of scope: SEO arbitrage, ghost-written op-eds, paid placements."
+lede: "Editorial workflows that turn raw research into investor-grade narrative — at the cadence and quality of an analyst or thought leader."
+summary: "Content Farm for professonal grade content development - exploring how a small VC team can produce sharp, defensible thought leadership rapidly, accurately, and exceeding expectation."
+scope: "Editorial pipelines; market research; agentic drafting; citation discipline; publishing automation."
 status: active
 date_initiated: 2025-09-01
 date_last_activity: 2026-04-22
-working_group_name: "Content Farm WG"
+working_group_name: "Professional Grade Content Development"
 working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
-cadence: "Bi-weekly · Wednesdays 10:00 PT"
+cadence: "Bi-weekly · WhatsApp chat"
 links:
   repo: "https://github.com/lossless-group/content-farm"
   spec: "https://www.lossless.group/projects/gallery/content-farm"
-tags: [Editorial-Workflow, Agentic-Drafting, Citations, Publishing, Investment-Memos]
+tags: [Editorial-Workflow, Agentic-Drafting, Content-Automation, Market-Research]
 category: "Workflow Pipelines"
 origin: "Ported from lossless.group"
 icon: "🌾"
@@ -43,12 +43,22 @@ The bet is that agentic tooling collapses the parts that are tedious (transcript
 3. **Editorial styleguide as code** — house style rules expressed as lintable rules, not PDF style guides.
 4. **Publish surface integration** — clean handoff into the site's content collections (no copy-paste).
 
+>[!ALERT] Tool Preferences
+> - We're currently building plugins for Obsidian that handle the research-to-outline loop and cite-aware drafting.
+> - Our current experience is Perplexity - both native chat app and API integration - gives higher quality output than other tools.
+> - Open to all ideas and tool preferences.  Everyone is figuring out their stack and workflow.
+
 ## Working group expectations
 
-- Show up for the bi-weekly. Bring your draft, not just your opinions.
-- Pick one piece in flight to shadow each cycle.
-- Read the cited sources for at least one piece per month. Citations exist to be checked.
+- Show up for some bi-weekly check-ins. Attempt to use various tools, including homegrown projects. Bring your drafts, show your output, share your wins and struggles.
+- Develop original content that makes you proud, and share frustrations and shortcomings.
+- Maintain high expectations for quality and rigor, as you would a professional analyst or visible thought leader.
+- A bonus if you are willing to publish content as a guest on relevant sites.
 
 ## Current focus
 
-Migrating the citation system off bespoke regex onto the LFM hex-code standard. See [Lossless Flavored Markdown](/projects/lossless-flavored-markdown) for the shared package.
+- Obsidian plugins for research-to-outline and cite-aware drafting.
+  - Currently have working prototypes:
+    - Perplexed: a research-to-outline-to-draft tool: uses Perplexity API. or Perplexical on local machine to use an outline, do research, and make initial drafts.
+    - Cite-Wide: citation-aware editing and validation: uses parsers to extract citations from drafts, instantly renumber, and manage unique citations across many files. 
+- Lossless Flavored Markdown: a comprehensive markdown extension for academic, financial, and technical writing that can be rendered beautifully on the web. See [Lossless Flavored Markdown](/projects/lossless-flavored-markdown) for the shared package.

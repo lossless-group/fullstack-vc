@@ -4,7 +4,7 @@ slug: "lossless-flavored-markdown"
 lede: "A named, versioned extended markdown flavor — and the shared remark/rehype package that backs it — so every Lossless site renders content the same way."
 summary: "LFM (Lossless Flavored Markdown) is the working group codifying the markdown features the network actually uses — citations with hex-code identifiers, directive-based callouts, GFM tables, image directives, and a wishlist of polyglot trigger syntaxes. The output is the @lossless-group/lfm package, published to GitHub Packages and JSR."
 scope: "Markdown spec; shared remark/rehype pipeline; citation handling; directive system; component routing. Out of scope: a new MDX, a new content CMS."
-status: active
+status: archived
 date_initiated: 2026-01-25
 date_last_activity: 2026-04-26
 working_group_name: "LFM WG"

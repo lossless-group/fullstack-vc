@@ -1,17 +1,17 @@
 ---
 title: "Context Vigilance"
 slug: "context-vigilance"
-lede: "A practice and a toolkit for keeping AI agents honest — managing the context they read, what they remember, and what they're allowed to change."
+lede: "A practical framework for keeping AI agents performant and accurate — managing the context they read, what they remember, and what they're allowed to change."
 summary: "Context Vigilance is the working group studying the discipline of running agents day-to-day inside a working firm. We codify what context to feed, when to checkpoint, when to compact, and where the trust boundaries belong."
 scope: "Agent context engineering; memory hygiene; trust boundaries; review motions for agent-authored work. Out of scope: model selection, model training, prompt-as-product."
-status: active
+status: proposed
 date_initiated: 2026-01-15
 date_last_activity: 2026-04-26
 working_group_name: "Context Vigilance WG"
 working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
-cadence: "Weekly · Fridays 11:00 PT"
+cadence: "TBD"
 links:
   spec: "https://www.lossless.group/projects/gallery/context-vigilance"
 tags: [Agentic-Workflows, Context-Engineering, Memory, Trust-Boundaries, AI-Practice]

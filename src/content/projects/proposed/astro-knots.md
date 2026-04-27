@@ -1,17 +1,17 @@
 ---
 title: "Astro Knots"
 slug: "astro-knots"
-lede: "A pseudo-monorepo of Astro sites for the Lossless network — pattern library, shared markdown pipeline, and a place where small client teams ship fast without drift."
-summary: "Astro Knots is the working group maintaining the umbrella repo that hosts FullStack VC, Hypernova, Cilantro, The Water Foundation, Dark Matter, and others as git submodules. We're learning, in public, where shared packages help and where copy-and-adapt is honest."
+lede: "A pseudo-monorepo for premium Venture websites — a pattern library and docs that manage context to expedite high quality website development and iteration. Designed for the Astro Framework with a touch of Svelte."
+summary: "Premium functional, elegant websites with VC feature sets. We're learning, in public, where shared packages help and where copy-and-adapt is honest."
 scope: "Workspace structure; site templates; shared markdown pipeline (LFM); pattern extraction from client work. Out of scope: a true monorepo where every component is shared at runtime."
-status: active
+status: proposed
 date_initiated: 2025-06-01
 date_last_activity: 2026-04-27
 working_group_name: "Astro Knots WG"
 working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
-cadence: "Bi-weekly · Mondays 11:00 PT"
+cadence: "TBD"
 links:
   repo: "https://github.com/lossless-group/astro-knots"
   spec: "https://www.lossless.group/projects/gallery/astro-knots"

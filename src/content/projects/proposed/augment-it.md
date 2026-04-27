@@ -1,17 +1,17 @@
 ---
 title: "Augment It"
 slug: "augment-it"
-lede: "Data augmentation workflows wired through micro-frontends — a working group exploring how investment teams can enrich, normalize, and act on messy external data without buying yet another vendor."
-summary: "Augment It is the working group building tooling that turns raw, messy investment data (founder profiles, market signals, portfolio updates) into clean, queryable, action-ready artifacts. The interface is a set of micro-frontends a non-engineer can compose without help."
-scope: "Data augmentation pipelines; micro-frontend composition; vendor-free enrichment workflows. Out of scope: a CRM. We're building the layer underneath your CRM."
-status: active
+lede: "Data augmentation workflows that take any data source and performs research, updates and augments data, and restructures it for both humans and machines."
+summary: "Augment It is tooling that turns raw, messy investment data (founder profiles, market signals, portfolio updates) into clean, queryable, action-ready artifacts."
+scope: "Data augmentation pipelines; micro-frontend composition; vendor-free enrichment workflows. Out of scope: a CRM. We're building the layer alongside your CRM."
+status: proposed
 date_initiated: 2025-11-01
 date_last_activity: 2026-04-20
-working_group_name: "Augment It WG"
+working_group_name: "Data-Driven Investment Practice"
 working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
-cadence: "Weekly · Thursdays 13:00 PT"
+cadence: "TBD"
 links:
   spec: "https://www.lossless.group/projects/gallery/augment-it/specs/data-augmentation-workflow-with-microfrontends"
 tags: [Data-Augmentation, Micro-Frontends, Investment-Data, Workflow-Composition]

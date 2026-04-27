@@ -136,4 +136,18 @@ const {
     align-items: center;
     text-align: center;
   }
+
+  /* Banner-context typography boosts: legibility over photographic backgrounds.
+     The plain HeroContentCoreMessage uses --color-text-muted for the eyebrow
+     and supporting paragraph — fine on a card surface, too quiet over an
+     image. Brighten + shadow only when composed inside the banner. */
+  .hero-banner__content :global(.hero-core__eyebrow) {
+    color: var(--color-text);
+    text-shadow: 0 1px 6px color-mix(in srgb, var(--color-background) 55%, transparent);
+  }
+  .hero-banner__content :global(.hero-core__supporting) {
+    color: color-mix(in srgb, var(--color-text) 88%, var(--color-text-muted));
+    font-size: 1.0625rem;
+    text-shadow: 0 1px 8px color-mix(in srgb, var(--color-background) 55%, transparent);
+  }
 </style>

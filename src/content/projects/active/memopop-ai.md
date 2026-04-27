@@ -2,7 +2,7 @@
 title: "MemoPop AI"
 slug: "memopop-ai"
 lede: "Investment memos that pop — structured, citation-rich, and generated alongside the diligence rather than after it."
-summary: "MemoPop AI is the working group rethinking the investment memo as a living artifact: drafted in parallel with diligence, structured for both human reading and machine querying, and traceable back to every source."
+summary: "MemoPop AI is streamlining the investment memo: drafted in parallel with diligence, structured for both human reading and AI assistance, and traceable back to every source."
 scope: "Memo structure; diligence-to-memo pipeline; partner-meeting-ready outputs; queryable memo archives. Out of scope: replacing the partner meeting itself."
 status: active
 date_initiated: 2025-10-15
@@ -11,7 +11,7 @@ working_group_name: "MemoPop WG"
 working_group_leads:
   - name: "Michael Staton"
     role: "Lead"
-cadence: "Weekly · Tuesdays 14:00 PT"
+cadence: "Weekly · Tuesdays 12:00 PT"
 links:
   spec: "https://www.lossless.group/projects/gallery/memopop-ai"
 tags: [Investment-Memos, Diligence-Workflow, Agentic-Research, Decision-Support]
