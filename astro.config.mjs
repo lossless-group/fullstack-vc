@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import { loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
@@ -21,6 +21,36 @@ export default defineConfig({
   // generation via `export const prerender = true;` at the top of each page.
   output: 'server',
   adapter: vercel(),
+
+  // Astro 6 stable Fonts API. Emits @font-face + the named CSS variables that
+  // theme.css's Tier 2 semantic tokens (--font-display/-body/-code) reference.
+  // Don't redeclare these `--font__*` names anywhere else — Astro owns them.
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: 'Inter',
+      cssVariable: '--font__inter',
+      weights: [400, 600, 700],
+      subsets: ['latin'],
+      fallbacks: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+    },
+    {
+      provider: fontProviders.google(),
+      name: 'Space Grotesk',
+      cssVariable: '--font__space-grotesk',
+      weights: [600, 700],
+      subsets: ['latin'],
+      fallbacks: ['Inter', 'system-ui', 'sans-serif'],
+    },
+    {
+      provider: fontProviders.google(),
+      name: 'JetBrains Mono',
+      cssVariable: '--font__jetbrains-mono',
+      weights: [400, 600],
+      subsets: ['latin'],
+      fallbacks: ['Fira Code', 'ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
+    },
+  ],
 
   server: {
     port: 4324,

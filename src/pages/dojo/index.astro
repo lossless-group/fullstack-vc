@@ -107,6 +107,18 @@ const areasIntro = 'Ten workflow areas that show up across nearly every venture 
   containerClass="px-6 py-16 md:py-24"
 >
   <div class="dojo-shell">
+    <!-- Brand banner — Agentic VC Skill Dojo identity image.
+         Uses /og-default.png deliberately (custom Kauffman-logo + SVG-overlay
+         composite); same file the OG / Twitter card defaults reference. -->
+    <section class="dojo-banner" aria-label="Agentic VC Skill Dojo — hosted by Kauffman Fellows AI SIG and FullStack VC">
+      <img
+        src="/og-default.png"
+        alt="Agentic VC Skill Dojo — hosted by Kauffman Fellows AI SIG and FullStack VC"
+        loading="eager"
+        decoding="async"
+      />
+    </section>
+
     <!-- Top: 2/3 hero · 1/3 alternate CTA -->
     <section class="dojo-top">
       <div class="dojo-top__primary">
@@ -150,6 +162,25 @@ const areasIntro = 'Ten workflow areas that show up across nearly every venture 
     display: flex;
     flex-direction: column;
     gap: 5rem;
+  }
+
+  .dojo-banner {
+    margin: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    background: var(--fx-card-bg);
+    line-height: 0; /* kill the inline-image baseline gap */
+  }
+  .dojo-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* Tighter spacing on mobile so the banner doesn't push everything else off-screen */
+  @media (max-width: 600px) {
+    .dojo-banner { border-radius: 0.75rem; }
   }
 
   .dojo-top {

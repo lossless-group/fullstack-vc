@@ -1,0 +1,27 @@
+---
+// Renders a date in one of the named styles via formatDate(), wrapped in a
+// semantic <time datetime="YYYY-MM-DD"> element so machine readers, screen
+// readers, and copy-paste all get a clean canonical date.
+//
+// Default style is 'long' (April 26, 2026) — the legible form for body prose
+// and chapter meta. Pass `style="reverse-medium"` for the year-first variant.
+
+import { formatDate, toIsoDate, type DateInput, type DateStyle } from '../../lib/format-date';
+
+interface Props {
+  /** Date object, ISO date string ('2026-04-26'), or full ISO timestamp. */
+  date: DateInput;
+  /** Output style. Defaults to 'long'. */
+  style?: DateStyle;
+  /** Optional class name passed through to the <time> element. */
+  class?: string;
+}
+
+const { date, style = 'long', class: className } = Astro.props;
+const display = formatDate(date, style);
+const iso = toIsoDate(date);
+---
+
+{display && (
+  <time datetime={iso} class={className}>{display}</time>
+)}

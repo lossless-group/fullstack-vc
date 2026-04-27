@@ -1,21 +1,26 @@
 ---
 export const prerender = true;
-import { getCollection, render, type GetStaticPaths } from 'astro:content';
+import { getCollection } from 'astro:content';
+import { parseMarkdown } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
+import Sources from '../../components/markdown/Sources.astro';
 import { inferWebinarStatus } from '../../lib/webinar-status';
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export async function getStaticPaths() {
   const webinars = await getCollection('webinars');
   return webinars.map(entry => ({
     params: { id: entry.id },
     props: { entry },
   }));
-};
+}
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const data = entry.data;
 const status = inferWebinarStatus(data);
+
+const tree = await parseMarkdown(entry.body ?? '');
+const citations = (tree as any).data?.citations?.ordered ?? [];
 
 const date = data.date_scheduled;
 const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'America/New_York' }).toUpperCase();
@@ -38,6 +43,8 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
 <BaseThemeLayout
   title={`${data.title} · Agentic VC Dojo`}
   description={data.lede ?? `Webinar: ${data.title}`}
+  image="/og-default.png"
+  ogType="article"
   containerClass="px-6 py-12 max-w-3xl mx-auto"
 >
   <a href="/webinars" class="back-link">← All sessions</a>
@@ -95,7 +102,8 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
     )}
 
     <div class="webinar-detail__body">
-      <Content />
+      <AstroMarkdown node={tree} />
+      <Sources citations={citations} />
     </div>
   </article>
 </BaseThemeLayout>
@@ -356,6 +364,51 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
     margin: 0 0 1em;
     color: var(--color-text-muted);
     font-style: italic;
+  }
+  .webinar-detail__body :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 1.75rem 0;
+  }
+  .webinar-detail__body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1.25em;
+    font-size: 0.9375rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .webinar-detail__body :global(thead) {
+    background: var(--color-surface);
+  }
+  .webinar-detail__body :global(th),
+  .webinar-detail__body :global(td) {
+    text-align: left;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+  .webinar-detail__body :global(th) {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .webinar-detail__body :global(tbody tr:last-child td) { border-bottom: 0; }
+  .webinar-detail__body :global(tbody tr:hover) {
+    background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+  }
+  .webinar-detail__body :global(sup a) {
+    text-decoration: none;
+    padding: 0 0.2em;
+    border-radius: 0.2em;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    font-size: 0.7em;
+    font-weight: 600;
   }
 
   /* Responsive — collapse the date column on narrow screens */

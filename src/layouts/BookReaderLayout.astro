@@ -1,0 +1,658 @@
+---
+// ============================================================================
+// BookReaderLayout
+//
+// Page chrome for a single chapter of a long-form book on FullStack VC.
+// Wraps BaseThemeLayout (theme/mode toggle, header, footer) with the
+// long-form-specific surface: top banner with overlaid chapter title,
+// chapter meta block, optional "in this chapter" outline, the article
+// body slot, and a bottom prev/next nav.
+//
+// Container queries (NOT viewport media queries) drive the four layout
+// modes from the spec — Mobile / Tablet / Half Screen / Desktop. The
+// reader element declares itself as a container so split-screen and
+// embedded contexts respond to their actual width.
+//
+// What this layout does NOT do (deferred to v0.2 / v0.3):
+//   - Mobile collapsing ToC bar (port from Lossless Group reader)
+//   - Desktop right-margin ToC sidebar (IntersectionObserver-driven)
+//   - Top triptych preview cards flanking the banner
+//   - Swipe navigation
+//   - Section-share / quote-share buttons
+//   - Save-my-place via localStorage
+// ============================================================================
+
+import BaseThemeLayout from './BaseThemeLayout.astro';
+import BannerWithOverlay from '../components/changelog/BannerWithOverlay.astro';
+import ReadingProgressBar from '../components/read/ReadingProgressBar.astro';
+import ChapterMeta from '../components/read/ChapterMeta.astro';
+import ContentPreviewNavCard from '../components/read/ContentPreviewNavCard.astro';
+
+interface Props {
+  /** Page title (full <title> tag content, including site suffix). */
+  title: string;
+  /** Page description for OG/Twitter meta. */
+  description?: string;
+  /** Chapter number (1-based). */
+  chapterNumber: number;
+  /** Chapter title text rendered as the banner overlay H1. */
+  chapterTitle: string;
+  /** Chapter lede — appears under the banner title. */
+  chapterLede?: string;
+  /** Eyebrow above the banner title — defaults to `Venture Handbook · Chapter NN`. */
+  chapterEyebrow?: string;
+  /** Banner image src. Defaults to /og-default.png until per-chapter banners are generated. */
+  bannerSrc?: string;
+  /** Tags for chip row beneath the meta block. */
+  tags?: string[];
+  /** Subsection outline — renders as a small "In this chapter" block above the body. */
+  subsectionOutline?: string[];
+  /** Reading time in minutes (computed by caller from word count). */
+  readingMinutes?: number;
+  /** Word count of the body (computed by caller). */
+  wordCount?: number;
+  /** Primary author for the meta block. */
+  author?: string;
+  /** Last-updated date for the meta block. */
+  updated?: Date | null;
+  /** Source organization for provenance line in meta block. */
+  sourceOrganization?: string;
+  /** Previous chapter link — null if this is chapter 1. */
+  prev?: { href: string; title: string; number: number; lede?: string; tags?: string[] } | null;
+  /** Next chapter link — null if this is the last chapter. */
+  next?: { href: string; title: string; number: number; lede?: string; tags?: string[] } | null;
+  /** Back-link href (defaults to /read/venture-handbook/). */
+  backHref?: string;
+  /** Back-link label. */
+  backLabel?: string;
+}
+
+const {
+  title,
+  description,
+  chapterNumber,
+  chapterTitle,
+  chapterLede,
+  chapterEyebrow,
+  bannerSrc = '/og-default.png',
+  tags,
+  subsectionOutline,
+  readingMinutes,
+  wordCount,
+  author,
+  updated,
+  sourceOrganization,
+  prev,
+  next,
+  backHref = '/read/venture-handbook/',
+  backLabel = '← All chapters',
+} = Astro.props;
+
+function pad(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+const eyebrow = chapterEyebrow ?? `Venture Handbook · Chapter ${pad(chapterNumber)}`;
+---
+
+<BaseThemeLayout
+  title={title}
+  description={description}
+  image={bannerSrc}
+  containerClass="book-reader-page"
+  ogType="article"
+>
+  <ReadingProgressBar target=".book-reader__body" />
+
+  <a href="#book-reader-content" class="book-reader__skip-link">Skip to chapter content</a>
+
+  <div class="book-reader">
+    <a href={backHref} class="book-reader__back">{backLabel}</a>
+
+    <div class="book-reader__triptych" aria-label="Chapter banner with previous and next chapter previews">
+      {prev ? (
+        <ContentPreviewNavCard
+          direction="prev"
+          number={prev.number}
+          title={prev.title}
+          lede={prev.lede}
+          tags={prev.tags}
+          href={prev.href}
+          variant="inline"
+        />
+      ) : <span class="book-reader__triptych-spacer" aria-hidden="true" />}
+
+      <div class="book-reader__banner">
+        <BannerWithOverlay
+          src={bannerSrc}
+          title={chapterTitle}
+          eyebrow={eyebrow}
+          subtitle={chapterLede}
+        />
+      </div>
+
+      {next ? (
+        <ContentPreviewNavCard
+          direction="next"
+          number={next.number}
+          title={next.title}
+          lede={next.lede}
+          tags={next.tags}
+          href={next.href}
+          variant="inline"
+        />
+      ) : <span class="book-reader__triptych-spacer" aria-hidden="true" />}
+    </div>
+
+    <div class="book-reader__column">
+      <ChapterMeta
+        chapterNumber={chapterNumber}
+        readingMinutes={readingMinutes}
+        wordCount={wordCount}
+        author={author}
+        updated={updated}
+        sourceOrganization={sourceOrganization}
+      />
+
+      {tags && tags.length > 0 && (
+        <ul class="book-reader__tags" aria-label="Chapter tags">
+          {tags.map(t => <li class="book-reader__tag">#{t}</li>)}
+        </ul>
+      )}
+
+      {subsectionOutline && subsectionOutline.length > 0 && (
+        <aside class="book-reader__outline" aria-label="In this chapter">
+          <h2 class="book-reader__outline-heading">In this chapter</h2>
+          <ol class="book-reader__outline-list">
+            {subsectionOutline.map(s => <li class="book-reader__outline-item">{s}</li>)}
+          </ol>
+        </aside>
+      )}
+
+      <article id="book-reader-content" class="book-reader__article">
+        <div class="book-reader__body">
+          <slot />
+        </div>
+      </article>
+
+      <nav class="book-reader__nav" aria-label="Chapter navigation">
+      {prev ? (
+        <ContentPreviewNavCard
+          direction="prev"
+          number={prev.number}
+          title={prev.title}
+          lede={prev.lede}
+          tags={prev.tags}
+          href={prev.href}
+          variant="block"
+        />
+      ) : <span class="book-reader__nav-spacer" aria-hidden="true" />}
+      {next ? (
+        <ContentPreviewNavCard
+          direction="next"
+          number={next.number}
+          title={next.title}
+          lede={next.lede}
+          tags={next.tags}
+          href={next.href}
+          variant="block"
+        />
+      ) : <span class="book-reader__nav-spacer" aria-hidden="true" />}
+      </nav>
+    </div>
+  </div>
+</BaseThemeLayout>
+
+<style is:global>
+  /* Inject sane container query setup at the page-container level so the reader
+     responds to its own width — works under split-screen, embedded iframes, etc. */
+  .book-reader-page {
+    container-type: inline-size;
+    container-name: reader;
+    padding: 0;
+  }
+</style>
+
+<style>
+  .book-reader {
+    --reader-column: 68ch;
+    --reader-outer: 100%;
+    --reader-prose-size: 1.0625rem;
+    --reader-prose-leading: 1.7;
+    --reader-triptych-gap: 1rem;
+    --reader-card-width: 4rem;       /* mobile chevron */
+
+    max-width: var(--reader-outer);
+    margin: 0 auto;
+    padding: 1.25rem 1rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  /* Reading-column wrapper — keeps body, meta, outline, bottom nav at ~70ch
+     while the triptych around the banner is free to break out wider. */
+  .book-reader__column {
+    width: 100%;
+    max-width: var(--reader-column);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* Top triptych — three-column grid: prev card, banner, next card.
+     The grid template flexes by container size (set in mode rules below).
+     align-items: stretch makes the banner cell match the cards' height; we
+     then override the banner figure's intrinsic 3:1 so the image fills the
+     cell as a "window" sized by the cards' content. */
+  .book-reader__triptych {
+    width: 100%;
+    max-width: var(--reader-outer);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--reader-card-width) minmax(0, 1fr) var(--reader-card-width);
+    gap: var(--reader-triptych-gap);
+    align-items: stretch;
+  }
+  .book-reader__triptych > .book-reader__banner {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+  }
+  /* Override BannerWithOverlay's intrinsic aspect so it fills the cell. The img
+     inside still uses object-fit: cover, so the actual image crops gracefully —
+     custom 3:1 banners look right; off-aspect fallbacks (like /og-default.png)
+     crop instead of stretching. */
+  .book-reader__triptych > .book-reader__banner > :global(.banner-overlay__wrapper),
+  .book-reader__triptych > .book-reader__banner > :global(.banner-overlay__link) {
+    flex: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .book-reader__triptych > .book-reader__banner :global(.banner-overlay) {
+    aspect-ratio: auto;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+  }
+  .book-reader__triptych-spacer { display: block; }
+
+  /* Skip link — visible on keyboard focus only */
+  .book-reader__skip-link {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    transform: translateY(-150%);
+    padding: 0.5rem 0.875rem;
+    background: var(--color-primary);
+    color: var(--color__bone);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    z-index: 60;
+    transition: transform 150ms ease;
+  }
+  .book-reader__skip-link:focus { transform: translateY(0); }
+
+  .book-reader__back {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+  .book-reader__back:hover { color: var(--color-primary); }
+
+  .book-reader__banner {
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .book-reader__tags {
+    list-style: none;
+    margin: -0.25rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.875rem;
+  }
+  .book-reader__tag {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    opacity: 0.85;
+  }
+
+  .book-reader__outline {
+    padding: 1.125rem 1.25rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    border-left: 3px solid var(--color-primary);
+  }
+  .book-reader__outline-heading {
+    margin: 0 0 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .book-reader__outline-list {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    counter-reset: outline;
+    display: grid;
+    gap: 0.25rem;
+    list-style: none;
+  }
+  .book-reader__outline-item {
+    counter-increment: outline;
+    position: relative;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    padding-left: 0.25rem;
+  }
+  .book-reader__outline-item::before {
+    content: counter(outline, decimal-leading-zero);
+    position: absolute;
+    left: -1.5rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-primary);
+    top: 0.18rem;
+  }
+
+  /* Article — the canvas. */
+  .book-reader__article {
+    margin: 0.5rem 0 0;
+  }
+
+  /* Body — the long-form prose layer. Drop-cap on first paragraph; generous
+     leading; ~70ch column already enforced by .book-reader max-width. */
+  .book-reader__body {
+    font-size: var(--reader-prose-size);
+    line-height: var(--reader-prose-leading);
+    color: var(--color-text);
+  }
+
+  .book-reader__body :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.625rem;
+    line-height: 1.2;
+    font-weight: 700;
+    margin: 2.5rem 0 0.75rem;
+    color: var(--color-text);
+    scroll-margin-top: 5rem;
+    position: relative;
+  }
+  .book-reader__body :global(h2)::before {
+    content: '';
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    background: var(--color-primary);
+    margin-bottom: 0.875rem;
+    border-radius: 1px;
+  }
+  .book-reader__body :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 2rem 0 0.5rem;
+    color: var(--color-text);
+    scroll-margin-top: 5rem;
+  }
+  .book-reader__body :global(h4) {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.4rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .book-reader__body :global(p)  { margin: 0 0 1.15em; }
+
+  /* Drop cap on the first paragraph after the article opens — ebook flourish */
+  .book-reader__body > :global(p:first-of-type::first-letter),
+  .book-reader__body :global(h2 + p::first-letter) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 3.4em;
+    line-height: 0.85;
+    float: left;
+    margin: 0.18em 0.18em -0.05em 0;
+    color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .book-reader__body :global(ul) { list-style: disc;    padding-left: 1.5em; margin: 0 0 1em; }
+  .book-reader__body :global(ol) { list-style: decimal; padding-left: 1.5em; margin: 0 0 1em; }
+  .book-reader__body :global(li) { margin-bottom: 0.4em; }
+  .book-reader__body :global(a)  {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition: color 120ms ease;
+  }
+  .book-reader__body :global(a:hover) { color: var(--color-primary-700, var(--color-primary)); }
+
+  .book-reader__body :global(code) {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .book-reader__body :global(pre) {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    overflow-x: auto;
+    margin: 0 0 1.25em;
+  }
+  .book-reader__body :global(pre code) { background: transparent; border: 0; padding: 0; }
+
+  .book-reader__body :global(blockquote) {
+    border-left: 3px solid var(--color-accent);
+    padding: 0.25rem 0 0.25rem 1.125rem;
+    margin: 1.5rem 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  .book-reader__body :global(hr) {
+    border: 0;
+    margin: 3rem auto;
+    width: 5rem;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-border) 30%,
+      var(--color-border) 70%,
+      transparent
+    );
+    overflow: visible;
+    position: relative;
+  }
+  .book-reader__body :global(hr)::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-primary);
+    background: var(--color-background);
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .book-reader__body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1.25em;
+    font-size: 0.9375rem;
+  }
+  .book-reader__body :global(th),
+  .book-reader__body :global(td) {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+  .book-reader__body :global(th) {
+    font-family: var(--font-code);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+  }
+
+  .book-reader__body :global(sup) {
+    font-size: 0.7em;
+    line-height: 1;
+  }
+  .book-reader__body :global(sup a) {
+    text-decoration: none;
+    padding: 0 0.2em;
+    border-radius: 0.2em;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .book-reader__body :global(sup a:hover) {
+    background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+
+  /* Bottom chapter nav — full-fidelity ContentPreviewNavCard pair */
+  .book-reader__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .book-reader__nav-spacer { visibility: hidden; min-height: 1px; }
+
+  /* ─────────────────────────────────────────────────────────────────
+     Container-query layout modes (per spec § Responsive Design)
+     Width AND aspect-ratio drive the mode, not viewport pixels.
+     ───────────────────────────────────────────────────────────────── */
+
+  /* Mobile (cw < 768px): tighter padding, chevron-only flanking buttons */
+  @container reader (max-width: 767px) {
+    .book-reader {
+      --reader-outer: 100%;
+      --reader-prose-size: 1rem;
+      --reader-card-width: 3.25rem;
+      --reader-triptych-gap: 0.5rem;
+      padding: 1rem 1rem 3rem;
+      gap: 1rem;
+    }
+    .book-reader__body :global(h2) { font-size: 1.375rem; margin-top: 2rem; }
+    .book-reader__body :global(h3) { font-size: 1.125rem; }
+    .book-reader__body > :global(p:first-of-type::first-letter),
+    .book-reader__body :global(h2 + p::first-letter) {
+      font-size: 2.6em;
+    }
+    .book-reader__nav { grid-template-columns: 1fr; gap: 0.75rem; }
+  }
+
+  /* Tablet (768–1023): wider column, medium preview cards (no tags) */
+  @container reader (min-width: 768px) and (max-width: 1023px) {
+    .book-reader {
+      --reader-outer: 100%;
+      --reader-column: 70ch;
+      --reader-card-width: 9rem;
+      --reader-triptych-gap: 0.75rem;
+      padding: 1.75rem 1.5rem 4rem;
+    }
+  }
+
+  /* Half Screen / Split Screen (1024 ≤ cw < 1280): slim ~200px cards flanking banner.
+     Note: container query aspect-ratio refers to the container's RENDERED aspect, which
+     is always portrait for a long scrolling page — so we use width-only thresholds. The
+     aspect-ratio dimension from the spec is correctly handled by viewport @media queries
+     where needed (e.g. for split-screen on a portrait window), not container queries. */
+  @container reader (min-width: 1024px) and (max-width: 1279px) {
+    .book-reader {
+      --reader-outer: 100%;
+      --reader-column: 64ch;
+      --reader-card-width: 12.5rem;
+      --reader-triptych-gap: 0.875rem;
+      padding: 2rem 1.5rem 4rem;
+    }
+  }
+
+  /* Desktop (cw ≥ 1280): full triptych, larger type, wider outer container */
+  @container reader (min-width: 1280px) {
+    .book-reader {
+      --reader-outer: 1100px;
+      --reader-column: 72ch;
+      --reader-card-width: 17rem;
+      --reader-triptych-gap: 1.25rem;
+      --reader-prose-size: 1.125rem;
+      padding: 2.5rem 2rem 5rem;
+    }
+    .book-reader__body :global(h2) { font-size: 1.75rem; }
+    .book-reader__body :global(h3) { font-size: 1.375rem; }
+  }
+
+  /* Viewport-portrait fallback: if the user IS in a tall split-screen window
+     (wide enough for desktop layout but visually portrait), force half-screen
+     density so the banner doesn't crowd the body. This is the case @container
+     aspect-ratio CAN'T detect — it requires viewport awareness. */
+  @media (min-width: 1280px) and (max-aspect-ratio: 13/10) {
+    @container reader (min-width: 1024px) {
+      .book-reader {
+        --reader-outer: 100%;
+        --reader-column: 64ch;
+        --reader-card-width: 12.5rem;
+        --reader-triptych-gap: 0.875rem;
+        padding: 2rem 1.5rem 4rem;
+        --reader-prose-size: 1.0625rem;
+      }
+    }
+  }
+
+  /* Reduced motion — kill the body micro-animations */
+  @media (prefers-reduced-motion: reduce) {
+    .book-reader__nav-link { transition: none; }
+    .book-reader__nav-link:hover { transform: none; }
+  }
+
+  /* Print stylesheet — clean single-chapter print */
+  @media print {
+    .reading-progress,
+    .book-reader__back,
+    .book-reader__triptych,
+    .book-reader__nav { display: none !important; }
+    .book-reader { max-width: 100%; padding: 0; }
+    .book-reader__column { max-width: 100%; }
+    .book-reader__body :global(h2) { page-break-before: always; }
+    .book-reader__body :global(h2):first-of-type { page-break-before: auto; }
+  }
+</style>

@@ -30,10 +30,9 @@
   --color__ink: #0a0c12;
   --color__amber-flare: #ffb84d;
 
-  /* Named fonts */
-  --font__inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font__space-grotesk: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  --font__jetbrains-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Consolas, monospace;
+  /* Font Tier 1 tokens (--font__inter, --font__space-grotesk, --font__jetbrains-mono)
+     are emitted by Astro's Fonts API — see the `fonts:` array in astro.config.mjs
+     and the <Font> components in BoilerPlateHTML.astro. Do not redeclare here. */
 }
 
 /* ----------------------------------------------------------------------------

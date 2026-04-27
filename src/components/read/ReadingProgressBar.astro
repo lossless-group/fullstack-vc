@@ -1,0 +1,67 @@
+---
+interface Props {
+  /** CSS selector for the article body element to track. */
+  target?: string;
+}
+const { target = '.book-reader__body' } = Astro.props;
+---
+
+<div class="reading-progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="reading-progress__fill"></div>
+</div>
+
+<script is:inline define:vars={{ target }}>
+  (() => {
+    const bar = document.querySelector('.reading-progress');
+    const fill = document.querySelector('.reading-progress__fill');
+    const article = document.querySelector(target);
+    if (!bar || !fill || !article) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let raf = 0;
+
+    function tick() {
+      raf = 0;
+      const rect = article.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const total = Math.max(1, rect.height - vh);
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      const pct = Math.round((scrolled / total) * 100);
+      fill.style.width = pct + '%';
+      bar.setAttribute('aria-valuenow', String(pct));
+    }
+
+    function onScroll() {
+      if (raf) return;
+      raf = requestAnimationFrame(tick);
+    }
+
+    tick();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    if (reduced) {
+      // Still render position; just no transition.
+      fill.style.transition = 'none';
+    }
+  })();
+</script>
+
+<style>
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 50;
+    pointer-events: none;
+  }
+  .reading-progress__fill {
+    height: 100%;
+    width: 0%;
+    background: var(--color-primary);
+    transition: width 80ms linear;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 60%, transparent);
+  }
+</style>

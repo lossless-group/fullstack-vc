@@ -1,0 +1,276 @@
+---
+// ============================================================================
+// ContentPreviewNavCard
+//
+// A previous / next chapter preview card. Visual echo of AreasOfVentureGrid:
+// same --fx-card-* tokens, same number-in-corner motif, same lede + tags rhythm.
+//
+// Two layout variants:
+//   - 'inline'  — adapts to the reader container size. On Desktop the card is
+//                 full-fidelity; on Half-Screen/Tablet the lede line-clamps and
+//                 tags trim; on Mobile the card collapses to a chevron-only
+//                 button. Use this in the top triptych beside the banner.
+//   - 'block'   — always full-fidelity, no chevron-only collapse. Use this at
+//                 the chapter end where there's room regardless of viewport.
+//
+// Direction-aware affordance: prev cards get a '‹' chevron top-left, next cards
+// get a '›' chevron top-right. The whole card is a single <a> so the entire
+// surface is clickable, not just the title.
+// ============================================================================
+
+interface Props {
+  direction: 'prev' | 'next';
+  number: number;
+  title: string;
+  lede?: string;
+  tags?: string[];
+  href: string;
+  /** Optional max-height; defaults to var(--reader-card-max-height) set on the parent. */
+  maxHeight?: string;
+  /** Number of lines the lede should clamp to. Default 4. */
+  ledeLineClamp?: number;
+  /** 'inline' adapts to container queries; 'block' is always full. Default 'inline'. */
+  variant?: 'inline' | 'block';
+}
+
+const {
+  direction,
+  number,
+  title,
+  lede,
+  tags,
+  href,
+  maxHeight,
+  ledeLineClamp = 4,
+  variant = 'inline',
+} = Astro.props;
+
+function pad(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+const directionLabel = direction === 'prev' ? 'Previous chapter' : 'Next chapter';
+const chevron = direction === 'prev' ? '‹' : '›';
+
+const styleStr = [
+  maxHeight ? `max-height:${maxHeight}` : '',
+  `--pnc-lede-clamp:${ledeLineClamp}`,
+].filter(Boolean).join(';');
+---
+
+<a
+  href={href}
+  class={`pnc pnc--${direction} pnc--${variant}`}
+  aria-label={`${directionLabel}: ${title}`}
+  style={styleStr}
+>
+  <span class="pnc__chevron" aria-hidden="true">{chevron}</span>
+
+  <span class="pnc__direction">
+    {direction === 'prev' ? 'Previous' : 'Next'}
+  </span>
+
+  <span class="pnc__number">Chapter {pad(number)}</span>
+
+  <h3 class="pnc__title">{title}</h3>
+
+  {lede && <p class="pnc__lede">{lede}</p>}
+
+  {tags && tags.length > 0 && (
+    <ul class="pnc__tags" aria-hidden="true">
+      {tags.slice(0, 3).map(t => <li class="pnc__tag">{t}</li>)}
+    </ul>
+  )}
+</a>
+
+<style>
+  .pnc {
+    --pnc-pad: 1rem 1.125rem;
+    --pnc-radius: 0.75rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: var(--pnc-pad);
+    border-radius: var(--pnc-radius);
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    isolation: isolate;
+    min-height: 0; /* allow grid children to shrink */
+  }
+  .pnc:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Direction-aware chevron — sits in the corner that matches travel direction */
+  .pnc__chevron {
+    position: absolute;
+    top: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    line-height: 1;
+    color: var(--color-primary);
+    opacity: 0.55;
+    transition: opacity 180ms ease, transform 180ms ease;
+    pointer-events: none;
+  }
+  .pnc--prev .pnc__chevron { left: 0.6rem; }
+  .pnc--next .pnc__chevron { right: 0.6rem; }
+  .pnc:hover .pnc__chevron { opacity: 1; }
+  .pnc--prev:hover .pnc__chevron { transform: translateX(-2px); }
+  .pnc--next:hover .pnc__chevron { transform: translateX(2px); }
+
+  .pnc--next { text-align: right; }
+
+  .pnc__direction {
+    font-family: var(--font-code);
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    /* Reserve space for the chevron */
+    padding-left: 1.4rem;
+  }
+  .pnc--next .pnc__direction { padding-left: 0; padding-right: 1.4rem; }
+
+  .pnc__number {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-primary);
+  }
+
+  .pnc__title {
+    margin: 0.1rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text);
+    /* Title can clamp to 3 lines max if the chapter title is unusually long */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pnc__lede {
+    margin: 0.25rem 0 0;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: var(--pnc-lede-clamp, 4);
+    line-clamp: var(--pnc-lede-clamp, 4);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pnc__tags {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0.5rem 0 0;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: flex-start;
+  }
+  .pnc--next .pnc__tags { justify-content: flex-end; }
+  .pnc__tag {
+    font-family: var(--font-code);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    padding: 0.15rem 0.45rem;
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     INLINE variant — adapts to the reader container width AND aspect ratio
+     ───────────────────────────────────────────────────────────────────── */
+
+  /* Mobile (cw < 768px): collapse to chevron-only button (~64px wide) */
+  @container reader (max-width: 767px) {
+    .pnc--inline {
+      padding: 0;
+      min-height: 4rem;
+      width: 4rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .pnc--inline .pnc__direction,
+    .pnc--inline .pnc__number,
+    .pnc--inline .pnc__title,
+    .pnc--inline .pnc__lede,
+    .pnc--inline .pnc__tags { display: none; }
+    .pnc--inline .pnc__chevron {
+      position: static;
+      font-size: 2rem;
+      opacity: 0.85;
+      padding: 0;
+    }
+  }
+
+  /* Tablet (768–1023): two-line lede, no tags */
+  @container reader (min-width: 768px) and (max-width: 1023px) {
+    .pnc--inline { --pnc-lede-clamp: 2; }
+    .pnc--inline .pnc__tags { display: none; }
+    .pnc--inline .pnc__title { font-size: 0.9375rem; }
+    .pnc--inline .pnc__lede { font-size: 0.75rem; }
+  }
+
+  /* Half Screen / Split Screen (1024-1279): three-line lede, max 2 tags */
+  @container reader (min-width: 1024px) and (max-width: 1279px) {
+    .pnc--inline { --pnc-lede-clamp: 3; max-width: 200px; }
+    .pnc--inline .pnc__tag:nth-child(n+3) { display: none; }
+  }
+
+  /* Desktop (≥1280): full fidelity */
+  @container reader (min-width: 1280px) {
+    .pnc--inline { --pnc-lede-clamp: 4; }
+    .pnc--inline .pnc__title { font-size: 1.0625rem; }
+  }
+
+  /* Portrait viewport fallback (split-screen on tall window): clamp inline cards
+     to slim variant even when container is wide. @container aspect-ratio reads
+     the container's rendered aspect (always portrait for long pages), so viewport
+     awareness has to come via @media. */
+  @media (min-width: 1280px) and (max-aspect-ratio: 13/10) {
+    @container reader (min-width: 1024px) {
+      .pnc--inline { --pnc-lede-clamp: 3; max-width: 200px; }
+      .pnc--inline .pnc__tag:nth-child(n+3) { display: none; }
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     BLOCK variant — always full, no responsive collapse. Used at chapter end.
+     Slightly larger than inline for a stronger "final destination" feel.
+     ───────────────────────────────────────────────────────────────────── */
+  .pnc--block {
+    --pnc-pad: 1.25rem 1.5rem;
+  }
+  .pnc--block .pnc__title { font-size: 1.0625rem; }
+  .pnc--block .pnc__lede  { font-size: 0.875rem; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .pnc, .pnc__chevron { transition: none; }
+    .pnc:hover { transform: none; }
+    .pnc--prev:hover .pnc__chevron,
+    .pnc--next:hover .pnc__chevron { transform: none; }
+  }
+</style>

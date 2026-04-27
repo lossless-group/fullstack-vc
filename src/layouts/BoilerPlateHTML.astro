@@ -1,4 +1,6 @@
 ---
+import { Font } from 'astro:assets';
+
 export interface Props {
   title?: string;
   description?: string;
@@ -41,6 +43,13 @@ const canonicalUrl = new URL(Astro.url.pathname, siteOrigin + '/').toString();
   {noindex && <meta name="robots" content="noindex, nofollow" />}
   <link rel="icon" href={favicon} type="image/svg+xml" />
   <link rel="canonical" href={canonicalUrl} />
+
+  <!-- Astro Fonts API — emits @font-face + the --font__* CSS variables
+       that theme.css's semantic tokens reference. Above-the-fold fonts
+       (Inter, Space Grotesk) are preloaded; mono is lazy. -->
+  <Font cssVariable="--font__inter" preload />
+  <Font cssVariable="--font__space-grotesk" preload />
+  <Font cssVariable="--font__jetbrains-mono" />
 
   <!-- Open Graph -->
   <meta property="og:type" content={ogType} />

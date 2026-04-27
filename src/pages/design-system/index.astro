@@ -4,6 +4,7 @@ import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ModeThemeToggle from '../../components/ui/ModeThemeToggle.astro';
 import WebinarCard from '../../components/webinars/WebinarCard.astro';
 import TextLinkSpan from '../../components/buttons/TextLinkSpan.astro';
+import ContentPreviewNavCard from '../../components/read/ContentPreviewNavCard.astro';
 
 // Synthetic data so all three status variants are inspectable side by side.
 const sampleData = {
@@ -102,6 +103,36 @@ const components = [
     purpose: 'Section that renders a 1/2/3-column responsive grid of "areas of venture" cards. Sourced from the Venture Handbook chapter structure; used at the bottom of /dojo.',
     cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-border, --font-display, --font-body, --font-code',
     props: 'eyebrow?, heading?, intro?, areas: Area[]  (number, title, lede, tags? — marketing hooks, not structural sub-sections)',
+  },
+  {
+    name: 'BookReaderLayout',
+    purpose: 'Page chrome around a single chapter. Wraps BaseThemeLayout. Composes ReadingProgressBar + skip link + top triptych (prev card + banner + next card) + ChapterMeta + tags + "in this chapter" outline + body slot + bottom prev/next cards. Container queries (NOT viewport media) drive four layout modes (Mobile / Tablet / Half-Screen / Desktop) per width AND aspect ratio.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-accent, --color-surface, --color-border, --color-background, --color__bone, --font-display, --font-body, --font-code; declares container-type: inline-size, container-name: reader on .book-reader-page; sets --reader-column, --reader-outer, --reader-card-width, --reader-prose-size by mode',
+    props: 'title, description?, chapterNumber, chapterTitle, chapterLede?, chapterEyebrow?, bannerSrc?, tags?, subsectionOutline?, readingMinutes?, wordCount?, author?, updated?, sourceOrganization?, prev?, next?, backHref?, backLabel?',
+  },
+  {
+    name: 'ReadingProgressBar',
+    purpose: 'Thin top-of-viewport stripe that tracks scroll position relative to the article body bounding rect (not the viewport). 3px tall, --color-primary fill, rAF-throttled scroll listener. Inline <script> via define:vars; respects prefers-reduced-motion (kills the width transition).',
+    cssContract: '--color-primary; uses color-mix() for the glow shadow',
+    props: 'target? (CSS selector for article body, default ".book-reader__body")',
+  },
+  {
+    name: 'ChapterMeta',
+    purpose: 'Slim, code-font row immediately below the chapter banner. Renders Chapter NN · X min read · word count · author · updated date · source org as a horizontal definition-list. Reading time computed by caller as ceil(words / 220).',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-border, --font-code',
+    props: 'chapterNumber, readingMinutes?, wordCount?, author?, updated?, sourceOrganization?',
+  },
+  {
+    name: 'FormattedDate',
+    purpose: 'Renders a date (Date object, ISO date string, or full ISO timestamp) in one of a small set of named styles inside a semantic <time datetime="YYYY-MM-DD"> element. Default style "long" → "April 26, 2026" (preferred for body prose and chapter meta). Other styles: "medium", "short", "iso", "reverse-medium" ("2026, Apr. 26"), "year-only". Backed by lib/format-date.ts which handles UTC normalization to avoid timezone-shift bugs.',
+    cssContract: '(none — inherits from context; passes through optional class= prop to the <time> element)',
+    props: 'date: Date | string | null; style?: "long" | "medium" | "short" | "iso" | "reverse-medium" | "year-only" (default "long"); class?',
+  },
+  {
+    name: 'ContentPreviewNavCard',
+    purpose: 'Prev / next chapter preview card. Visual echo of AreasOfVentureGrid (--fx-card-* tokens, number-in-corner motif, lede + tags rhythm) with direction-aware chevron (top-left for prev, top-right for next). Two variants: "inline" adapts to reader container size — full → slim → chevron-only — for the top triptych; "block" is always full for chapter-end placement.',
+    cssContract: '--fx-card-bg, --fx-card-border, --color-primary, --color-text, --color-text-muted, --color-border, --font-display, --font-body, --font-code; uses container queries on the reader container',
+    props: 'direction: "prev"|"next", number, title, lede?, tags?, href, maxHeight?, ledeLineClamp? (default 4), variant?: "inline"|"block" (default "inline")',
   },
 ];
 ---
@@ -275,6 +306,86 @@ class?:           extra class name(s)
     </details>
   </section>
 
+  <!-- ContentPreviewNavCard -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">ContentPreviewNavCard</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      Prev / next chapter card used by <code style="font-family: var(--font-code); color: var(--color-primary);">BookReaderLayout</code>.
+      Two variants: <code style="font-family: var(--font-code);">inline</code> adapts to the reader's container size (full → slim → chevron) for the top triptych beside the banner; <code style="font-family: var(--font-code);">block</code> is always full for chapter-end placement.
+      The visible variant of the inline cards below depends on the width of the catalog page itself — resize the window to see them flex.
+    </p>
+
+    <div class="ds-pnc-block">
+      <p class="ds-pnc-label">Variant: <code>block</code> — chapter-end pair</p>
+      <div class="ds-pnc-pair">
+        <ContentPreviewNavCard
+          direction="prev"
+          number={2}
+          title="Proprietary Dealflow & Dealflow Management"
+          lede={'Earn the inbound, route the inbound, say "no" fast and well, and get invited to oversubscribed rounds.'}
+          tags={['Sourcing-Engines', 'Inbound-Triage', 'CRM-for-VCs']}
+          href="#"
+          variant="block"
+        />
+        <ContentPreviewNavCard
+          direction="next"
+          number={4}
+          title="Winning Deals"
+          lede="Personal brand, fast trust, and valuation gymnastics — what makes the founder pick you."
+          tags={['Why-Founders-Pick-You', 'Personal-Brand', 'Term-Sheet-Timing']}
+          href="#"
+          variant="block"
+        />
+      </div>
+
+      <p class="ds-pnc-label" style="margin-top: 1.5rem;">Variant: <code>inline</code> — top-triptych adaptive (no container here, so full fidelity always shown; in BookReaderLayout this collapses by container size)</p>
+      <div class="ds-pnc-pair">
+        <ContentPreviewNavCard
+          direction="prev"
+          number={2}
+          title="Proprietary Dealflow & Dealflow Management"
+          lede={'Earn the inbound, route the inbound, say "no" fast and well, and get invited to oversubscribed rounds.'}
+          tags={['Sourcing-Engines', 'Inbound-Triage']}
+          href="#"
+          variant="inline"
+        />
+        <ContentPreviewNavCard
+          direction="next"
+          number={4}
+          title="Winning Deals"
+          lede="Personal brand, fast trust, and valuation gymnastics — what makes the founder pick you."
+          tags={['Why-Founders-Pick-You', 'Personal-Brand']}
+          href="#"
+          variant="inline"
+        />
+      </div>
+    </div>
+
+    <details class="text-sm mt-4">
+      <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + tokens</summary>
+      <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<ContentPreviewNavCard
+  direction="prev"  /* or "next" */
+  number={3}
+  title="Thesis, Diligence & Pushing Deals Through"
+  lede="Build a point of view…"
+  tags={['Investment-Thesis', 'Diligence-Sprints']}
+  href="/read/venture-handbook/.../"
+  variant="inline"  /* or "block" */
+/>
+
+/* Tokens */
+--fx-card-bg, --fx-card-border, --color-primary,
+--color-text, --color-text-muted, --color-border,
+--font-display, --font-body, --font-code
+
+/* Container queries (only fire under .book-reader-page → container reader) */
+< 768px        → chevron only
+768–1023       → slim, no tags, 2-line lede
+1024–1279      → ~200px wide, 3-line lede, 2 tags
+≥1280 (landscape) → full fidelity, 4-line lede`}</pre>
+    </details>
+  </section>
+
   <!-- Effect tokens reference -->
   <section class="mb-16">
     <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Effect tokens (--fx-*)</h2>
@@ -390,5 +501,30 @@ class?:           extra class name(s)
   .ds-btn-ghost:hover:not(:disabled) {
     color: var(--color-text);
     background: var(--color-surface);
+  }
+
+  /* ContentPreviewNavCard preview wrapper */
+  .ds-pnc-block {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+  }
+  .ds-pnc-label {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .ds-pnc-label code {
+    color: var(--color-primary);
+  }
+  .ds-pnc-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 640px) {
+    .ds-pnc-pair { grid-template-columns: 1fr; }
   }
 </style>

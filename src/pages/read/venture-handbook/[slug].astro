@@ -2,7 +2,7 @@
 export const prerender = true;
 import { getCollection } from 'astro:content';
 import { parseMarkdown } from '@lossless-group/lfm';
-import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import BookReaderLayout from '../../../layouts/BookReaderLayout.astro';
 import AstroMarkdown from '../../../components/markdown/AstroMarkdown.astro';
 import Sources from '../../../components/markdown/Sources.astro';
 
@@ -22,245 +22,58 @@ export async function getStaticPaths() {
 
 const { entry, prev, next } = Astro.props;
 const { data } = entry;
+const body = entry.body ?? '';
 
-const tree = await parseMarkdown(entry.body ?? '');
+const tree = await parseMarkdown(body);
 const citations = (tree as any).data?.citations?.ordered ?? [];
+
+// Word count: strip code fences + footnote defs, then count whitespace-separated tokens.
+const bodyText = body
+  .replace(/```[\s\S]*?```/g, ' ')
+  .replace(/^\[\^\d+\]:[\s\S]*?(?=\n\[\^|\n##|$)/gm, ' ');
+const wordCount = bodyText.split(/\s+/).filter(Boolean).length;
+// 220 wpm — long-tail-validated average for online prose (per spec).
+const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
 
 function chapterHref(e: any): string {
   return `/read/venture-handbook/${e.id.replace(/^\d+-/, '')}/`;
 }
 
-function pad(n: number): string {
-  return String(n).padStart(2, '0');
+function navProp(e: any) {
+  if (!e) return null;
+  return {
+    href: chapterHref(e),
+    title: e.data.title,
+    number: e.data.chapter_number,
+    lede: e.data.lede,
+    tags: e.data.tags,
+  };
 }
+const prevProp = navProp(prev);
+const nextProp = navProp(next);
+
+const author = (data as any).contributors?.[0] ?? 'Class 20 Living Draft';
+const updated: Date | null = (data as any).date_modified ?? (data as any).date_published ?? (data as any).date_authored ?? null;
 ---
 
-<BaseThemeLayout
+<BookReaderLayout
   title={`${data.title} · Venture Handbook · FullStack VC`}
-  description={data.summary ?? data.lede}
-  containerClass="px-6 py-12 max-w-3xl mx-auto"
+  description={(data as any).summary ?? data.lede}
+  chapterNumber={data.chapter_number}
+  chapterTitle={data.title}
+  chapterLede={data.lede}
+  chapterEyebrow={(data as any).chapter_eyebrow}
+  bannerSrc={(data as any).hero_image ?? (data as any).og_image}
+  tags={data.tags}
+  subsectionOutline={(data as any).subsection_outline}
+  readingMinutes={readingMinutes}
+  wordCount={wordCount}
+  author={author}
+  updated={updated}
+  sourceOrganization={(data as any).source_organization}
+  prev={prevProp}
+  next={nextProp}
 >
-  <a href="/read/venture-handbook/" class="back-link">← All chapters</a>
-
-  <article class="chapter">
-    <header class="chapter__head">
-      <span class="chapter__eyebrow">
-        Venture Handbook · Chapter {pad(data.chapter_number)}
-      </span>
-      <h1 class="chapter__title">{data.title}</h1>
-      {data.lede && <p class="chapter__lede">{data.lede}</p>}
-
-      {data.tags && data.tags.length > 0 && (
-        <div class="chapter__tags">
-          {data.tags.map((t: string) => <span class="chapter__tag">#{t}</span>)}
-        </div>
-      )}
-    </header>
-
-    <div class="chapter__body">
-      <AstroMarkdown node={tree} />
-    </div>
-
-    <Sources citations={citations} />
-  </article>
-
-  <nav class="chapter-nav" aria-label="Chapter navigation">
-    {prev ? (
-      <a href={chapterHref(prev)} class="chapter-nav__link chapter-nav__link--prev">
-        <span class="chapter-nav__direction">← Previous</span>
-        <span class="chapter-nav__number">Chapter {pad(prev.data.chapter_number)}</span>
-        <span class="chapter-nav__title">{prev.data.title}</span>
-      </a>
-    ) : <span class="chapter-nav__spacer" />}
-    {next ? (
-      <a href={chapterHref(next)} class="chapter-nav__link chapter-nav__link--next">
-        <span class="chapter-nav__direction">Next →</span>
-        <span class="chapter-nav__number">Chapter {pad(next.data.chapter_number)}</span>
-        <span class="chapter-nav__title">{next.data.title}</span>
-      </a>
-    ) : <span class="chapter-nav__spacer" />}
-  </nav>
-</BaseThemeLayout>
-
-<style>
-  .back-link {
-    display: inline-block;
-    font-family: var(--font-code);
-    font-size: 0.8125rem;
-    color: var(--color-text-muted);
-    text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: color 150ms ease;
-  }
-  .back-link:hover { color: var(--color-primary); }
-
-  .chapter {
-    padding: 2rem;
-    border-radius: 1rem;
-    background: var(--fx-card-bg);
-    border: 1px solid var(--fx-card-border);
-    box-shadow: var(--fx-card-shadow);
-  }
-  .chapter__head {
-    margin-bottom: 1.75rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-  .chapter__eyebrow {
-    display: block;
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-    margin-bottom: 0.625rem;
-  }
-  .chapter__title {
-    font-family: var(--font-display);
-    font-size: 2.25rem;
-    line-height: 1.15;
-    font-weight: 700;
-    color: var(--color-text);
-    margin: 0 0 0.875rem;
-  }
-  .chapter__lede {
-    font-size: 1.0625rem;
-    color: var(--color-text);
-    margin: 0 0 1rem;
-    line-height: 1.5;
-  }
-  .chapter__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .chapter__tag {
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    color: var(--color-primary);
-  }
-
-  /* Body — scoped prose styles to counter Tailwind preflight on rendered MDAST */
-  .chapter__body {
-    color: var(--color-text);
-    line-height: 1.7;
-    font-size: 1.0625rem;
-  }
-  .chapter__body :global(h2) {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin: 2.25rem 0 0.75rem;
-    color: var(--color-text);
-  }
-  .chapter__body :global(h3) {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 1.75rem 0 0.5rem;
-    color: var(--color-text);
-  }
-  .chapter__body :global(p)  { margin: 0 0 1.1em; }
-  .chapter__body :global(ul) { list-style: disc;    padding-left: 1.5em; margin: 0 0 1em; }
-  .chapter__body :global(ol) { list-style: decimal; padding-left: 1.5em; margin: 0 0 1em; }
-  .chapter__body :global(li) { margin-bottom: 0.4em; }
-  .chapter__body :global(a)  {
-    color: var(--color-primary);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-  .chapter__body :global(code) {
-    font-family: var(--font-code);
-    font-size: 0.875em;
-    padding: 0.125em 0.375em;
-    border-radius: 0.25rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-  }
-  .chapter__body :global(pre) {
-    font-family: var(--font-code);
-    font-size: 0.875rem;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    overflow-x: auto;
-    margin: 0 0 1em;
-  }
-  .chapter__body :global(pre code) { background: transparent; border: 0; padding: 0; }
-  .chapter__body :global(blockquote) {
-    border-left: 3px solid var(--color-primary);
-    padding-left: 1rem;
-    margin: 0 0 1em;
-    color: var(--color-text-muted);
-  }
-  .chapter__body :global(hr) {
-    border: 0;
-    border-top: 1px solid var(--color-border);
-    margin: 2rem 0;
-  }
-  .chapter__body :global(table) {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 0 1em;
-    font-size: 0.9375rem;
-  }
-  .chapter__body :global(th),
-  .chapter__body :global(td) {
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-  .chapter__body :global(th) {
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-text-muted);
-  }
-  .chapter__body :global(sup) {
-    font-size: 0.7em;
-  }
-
-  .chapter-nav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 2.5rem;
-  }
-  .chapter-nav__link {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 1rem 1.25rem;
-    border-radius: 0.75rem;
-    background: var(--fx-card-bg);
-    border: 1px solid var(--fx-card-border);
-    text-decoration: none;
-    transition: border-color 150ms ease;
-  }
-  .chapter-nav__link:hover { border-color: var(--color-primary); }
-  .chapter-nav__link--next { text-align: right; }
-  .chapter-nav__direction {
-    font-family: var(--font-code);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--color-text-muted);
-  }
-  .chapter-nav__number {
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    color: var(--color-primary);
-  }
-  .chapter-nav__title {
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--color-text);
-  }
-  .chapter-nav__spacer {
-    /* Reserve space when prev or next is missing */
-    visibility: hidden;
-  }
-</style>
+  <AstroMarkdown node={tree} />
+  <Sources citations={citations} />
+</BookReaderLayout>

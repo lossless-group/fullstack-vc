@@ -11,12 +11,13 @@
     "astro": "astro",
     "check": "astro check",
     "gen:banners": "node --experimental-strip-types --env-file=.env scripts/generate-changelog-banners.ts",
-    "gen:og": "node --experimental-strip-types --env-file=.env scripts/generate-og-image.ts"
+    "gen:og": "node --experimental-strip-types --env-file=.env scripts/generate-og-image.ts",
+    "gen:content-banners": "node --experimental-strip-types --env-file=.env scripts/generate-content-banners-on-dir.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
     "@astrojs/vercel": "^10.0.5",
-    "@lossless-group/lfm": "workspace:*",
+    "@lossless-group/lfm": "npm:@jsr/lossless-group__lfm@^0.2.1",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.7",
     "jose": "^6.2.2",
