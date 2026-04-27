@@ -3,11 +3,11 @@ chapter_number: 7
 title: "Portfolio Tracking, Modeling & Follow-On Management"
 lede: "Internal dashboards, portfolio review cadences, and follow-on decision frameworks."
 tags:
-  - "Portfolio dashboards"
-  - "Reserves modeling"
-  - "Follow-on math"
-  - "Markup signals"
-  - "Cohort analysis"
+  - "Portfolio-Dashboards"
+  - "Reserves-Modeling"
+  - "Follow-on-Math"
+  - "Markup-Signals"
+  - "Cohort-Analysis"
 
 published: false
 date_authored: 2016-06-01

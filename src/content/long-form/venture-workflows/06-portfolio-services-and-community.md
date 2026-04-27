@@ -3,11 +3,11 @@ chapter_number: 6
 title: "Portfolio Services & Community"
 lede: "Service offers, community programs, growth acceleration, and \"one-battle\" frameworks."
 tags:
-  - "Platform teams"
-  - "Customer intros"
-  - "One-battle framework"
-  - "Talent network"
-  - "Founder community"
+  - "Platform-Teams"
+  - "Customer-Intros"
+  - "One-Battle-Framework"
+  - "Talent-Network"
+  - "Founder-Community"
 
 published: false
 date_authored: 2016-06-01

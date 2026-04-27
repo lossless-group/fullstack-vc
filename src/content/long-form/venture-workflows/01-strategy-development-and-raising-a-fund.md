@@ -3,11 +3,11 @@ chapter_number: 1
 title: "Strategy Development & Raising a Fund"
 lede: "How emerging managers grind through hundreds of LP meetings, build the team, and close anchors."
 tags:
-  - "Emerging managers"
-  - "Anchor LPs"
-  - "Pre-marketing"
-  - "GP commit"
-  - "First close"
+  - "Emerging-Managers"
+  - "Anchor-LPs"
+  - "Pre-Marketing"
+  - "GP-Commit"
+  - "First-Close"
 
 published: false
 date_authored: 2016-06-01

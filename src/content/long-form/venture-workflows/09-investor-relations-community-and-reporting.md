@@ -3,11 +3,11 @@ chapter_number: 9
 title: "Investor Relations, Community & Reporting"
 lede: "Quarterly reports, LP days, and building a community around your fund."
 tags:
-  - "Quarterly letters"
-  - "AGM playbook"
-  - "Capital calls"
-  - "LP days"
-  - "DPI storytelling"
+  - "Quarterly-Letters"
+  - "AGM-Playbook"
+  - "Capital-Calls"
+  - "LP-Days"
+  - "DPI-Storytelling"
 
 published: false
 date_authored: 2016-06-01

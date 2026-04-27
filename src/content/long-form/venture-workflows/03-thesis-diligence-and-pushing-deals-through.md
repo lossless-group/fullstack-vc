@@ -3,11 +3,11 @@ chapter_number: 3
 title: "Thesis, Diligence & Pushing Deals Through"
 lede: "Build a point of view, run diligence sprints, and move through committee without losing the founder."
 tags:
-  - "Investment thesis"
-  - "Diligence sprints"
-  - "Reference calls"
-  - "IC dynamics"
-  - "Priority deals"
+  - "Investment-Thesis"
+  - "Diligence-Sprints"
+  - "Reference-Calls"
+  - "IC-Dynamics"
+  - "Priority-Deals"
 
 published: false
 date_authored: 2016-06-01

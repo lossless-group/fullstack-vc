@@ -3,11 +3,11 @@ chapter_number: 4
 title: "Winning Deals"
 lede: "Personal brand, fast trust, and valuation gymnastics — what makes the founder pick you."
 tags:
-  - "Why founders pick you"
-  - "Personal brand"
-  - "Term sheet timing"
-  - "Lead investor leverage"
-  - "Valuation gymnastics"
+  - "Why-Founders-Pick-You"
+  - "Personal-Brand"
+  - "Term-Sheet-Timing"
+  - "Lead-Investor-Leverage"
+  - "Valuation-Gymnastics"
 
 published: false
 date_authored: 2016-06-01

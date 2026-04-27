@@ -3,11 +3,11 @@ chapter_number: 5
 title: "Board Participation & Governance"
 lede: "Showing up, value-add vs. busywork, and knowing when to be impermanent."
 tags:
-  - "Board seats"
-  - "Observer rights"
-  - "Founder coaching"
-  - "Impermanent boards"
-  - "Crisis governance"
+  - "Board-Seats"
+  - "Observer-Rights"
+  - "Founder-Coaching"
+  - "Impermanent-Boards"
+  - "Crisis-Governance"
 
 published: false
 date_authored: 2016-06-01
