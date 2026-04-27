@@ -70,9 +70,86 @@ const ventureWorkflows = defineCollection({
   }).passthrough(),
 });
 
+const projects = defineCollection({
+  loader: glob({ pattern: ['**/*.md', '!**/README.md'], base: './src/content/projects' }),
+  schema: z.object({
+    // Identity
+    title:                 z.string(),
+    slug:                  z.string().optional(),
+    lede:                  z.string(),
+    summary:               z.string().optional(),
+    scope:                 z.string().optional(),
+
+    // Lifecycle
+    status:                z.enum(['active', 'proposed', 'archived']),
+    date_initiated:        z.coerce.date().optional(),
+    date_archived:         z.coerce.date().optional(),
+    date_last_activity:    z.coerce.date().optional(),
+
+    // Working group
+    working_group_name:    z.string().optional(),
+    working_group_leads:   z.array(z.object({
+      uuid:    z.string().optional(),
+      name:    z.string(),
+      role:    z.string().optional(),
+      profile: z.string().url().optional(),
+      avatar:  z.string().optional(),
+    })).optional(),
+    working_group_members: z.array(z.object({
+      uuid:    z.string().optional(),
+      name:    z.string(),
+      role:    z.string().optional(),
+      profile: z.string().url().optional(),
+      avatar:  z.string().optional(),
+    })).optional(),
+    members_count:         z.number().optional(),
+    cadence:               z.string().optional(),
+    rsvp_url:              z.string().url().optional(),
+
+    // External surfaces
+    links: z.object({
+      repo:   z.string().url().optional(),
+      site:   z.string().url().optional(),
+      demo:   z.string().url().optional(),
+      figma:  z.string().url().optional(),
+      spec:   z.string().url().optional(),
+      notes:  z.string().url().optional(),
+      videos: z.array(z.string().url()).optional(),
+    }).optional(),
+
+    // Discovery
+    tags:                  z.array(z.string()).optional(),
+    category:              z.string().optional(),
+    origin:                z.string().optional(),
+
+    // Display
+    hero_image:            z.string().optional(),
+    hero_image_prompt:     z.string().optional(),
+    thumbnail:             z.string().optional(),
+    icon:                  z.string().optional(),
+    banner_overlay:        z.enum(['gradient', 'scrim', 'none']).default('gradient'),
+    card_accent:           z.string().optional(),
+
+    // Behavior
+    publish:               z.boolean().default(true),
+    feature_in_popdown:    z.boolean().default(true),
+    popdown_order:         z.number().optional(),
+
+    // Authorship
+    authors:               z.array(z.string()).optional(),
+    augmented_with:        z.string().optional(),
+
+    // Versioning
+    at_semantic_version:   z.string().optional(),
+    date_created:          z.coerce.date().optional(),
+    date_modified:         z.coerce.date().optional(),
+  }).passthrough(),
+});
+
 export const collections = {
   pages,
   webinars,
   changelog,
   ventureWorkflows,
+  projects,
 };

@@ -134,6 +134,36 @@ const components = [
     cssContract: '--fx-card-bg, --fx-card-border, --color-primary, --color-text, --color-text-muted, --color-border, --font-display, --font-body, --font-code; uses container queries on the reader container',
     props: 'direction: "prev"|"next", number, title, lede?, tags?, href, maxHeight?, ledeLineClamp? (default 4), variant?: "inline"|"block" (default "inline")',
   },
+  {
+    name: 'HeroBannerWithMessageHierarchy',
+    purpose: 'Image-banner hero that wraps HeroContentCoreMessage. Three heights (short/standard/tall) × three overlays (gradient/scrim/none) × two alignments (left/center). Used by /projects/ and any project detail page that has a hero_image.',
+    cssContract: '--color-background, --color-surface, --color-text, --color-text-muted, --color-primary, --fx-headline-gradient, --fx-card-shadow, --fx-card-shadow-hover, --font-display, --font-body, --font-code',
+    props: 'image, imageAlt?, overlay?, align?, height?, contextSetterTxt?, headerTxt, subheaderTxt?, supportingTxt?, ctaLabelTxt?, ctaHref?  → demo: /design-system/heroes/hero-banner-with-message-hierarchy',
+  },
+  {
+    name: 'Section__ProjectGallery',
+    purpose: 'Renders a filtered set of projects in one of four variants: portfolio (Working Group Cards — default for active), mission-brief (numbered dossier — alternate "standard"), lite (proposed — dashed), shelf (archive — compact rows). Empty list + emptyHide → renders nothing.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-secondary, --color-surface, --color-border, --color-background, --color-status-active, --color-status-proposed, --color-status-archived, --font-display, --font-body, --font-code',
+    props: 'contextSetterTxt?, headingTxt?, introTxt?, projects: ProjectEntry[], variant?: "portfolio"|"mission-brief"|"lite"|"shelf" (default "portfolio"), emptyHide?: boolean (default true)  → demo: /design-system/sections/project-gallery',
+  },
+  {
+    name: 'JumboPopdown__Projects',
+    purpose: 'Header-mounted dropdown surfacing active (and optionally proposed) working-group projects. Conforms to context-v/blueprints/Jumbotron-Popdown-Patterns.md. Hover-open + click-toggle, Esc closes, arrow keys navigate, mobile becomes a bottom drawer.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-status-*, --font-display, --font-code',
+    props: 'triggerLabelTxt? (default "Projects"), projects: ProjectEntry[], showProposed?: boolean (default true)  → demo: /design-system/components/jumbo-popdown-projects',
+  },
+  {
+    name: 'ProjectMetadataDisplay',
+    purpose: 'Below-hero metadata strip on /projects/[slug]/. Status pill, cadence, last-activity timestamp, leads + members with avatars (initials fallback), external link icon row, optional RSVP CTA, scope paragraph.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-status-*, --color__bone, --font-display, --font-code',
+    props: 'project: ProjectEntry',
+  },
+  {
+    name: 'ProjectReader',
+    purpose: 'Reading column on /projects/[slug]/. Wraps the LFM-rendered MDAST tree in a 70ch prose container with global heading/paragraph/list styles. Top chrome: back-to-projects link + optional "Edit on source" link. Renders Sources component when citations are present.',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-body, --font-code',
+    props: 'tree: MDAST root, citations?: Citation[], editUrl?',
+  },
 ];
 ---
 
@@ -412,6 +442,31 @@ class?:           extra class name(s)
     </div>
   </section>
 
+  <!-- Sub-pages -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Sub-pages</h2>
+    <p class="mb-6" style="color: var(--color-text-muted);">
+      Component-specific demo pages — added in the same change that introduces the component.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a class="ds-subpage" href="/design-system/heroes/hero-banner-with-message-hierarchy">
+        <p class="ds-subpage-eyebrow">Heroes</p>
+        <p class="ds-subpage-title">HeroBannerWithMessageHierarchy</p>
+        <p class="ds-subpage-note">3 heights × 3 overlays × 2 alignments.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/sections/project-gallery">
+        <p class="ds-subpage-eyebrow">Sections</p>
+        <p class="ds-subpage-title">Section__ProjectGallery</p>
+        <p class="ds-subpage-note">portfolio · mission-brief · lite · shelf.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/components/jumbo-popdown-projects">
+        <p class="ds-subpage-eyebrow">Components</p>
+        <p class="ds-subpage-title">JumboPopdown__Projects</p>
+        <p class="ds-subpage-note">Header dropdown · keyboard + a11y.</p>
+      </a>
+    </div>
+  </section>
+
   <!-- Component index -->
   <section class="mb-16">
     <h2 class="text-2xl font-semibold mb-2" style="font-family: var(--font-display); color: var(--color-text);">Catalog index</h2>
@@ -501,6 +556,47 @@ class?:           extra class name(s)
   .ds-btn-ghost:hover:not(:disabled) {
     color: var(--color-text);
     background: var(--color-surface);
+  }
+
+  /* Sub-page nav cards */
+  .ds-subpage {
+    display: block;
+    padding: 1.125rem 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .ds-subpage:hover,
+  .ds-subpage:focus-visible {
+    border-color: var(--fx-card-border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--fx-card-shadow-hover);
+    outline: none;
+  }
+  .ds-subpage-eyebrow {
+    margin: 0 0 0.375rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .ds-subpage-title {
+    margin: 0 0 0.375rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .ds-subpage-note {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
   }
 
   /* ContentPreviewNavCard preview wrapper */

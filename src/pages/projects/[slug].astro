@@ -1,0 +1,142 @@
+---
+export const prerender = true;
+
+import { parseMarkdown } from '@lossless-group/lfm';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import HeroBanner from '../../components/heroes/HeroBannerWithMessageHierarchy.astro';
+import HeroContentCoreMessage from '../../components/heroes/HeroContentCoreMessage.astro';
+import ProjectMetadataDisplay from '../../components/sections/ProjectMetadataDisplay.astro';
+import ProjectReader from '../../components/sections/ProjectReader.astro';
+import { loadAllProjects, projectHref, statusLabel } from '../../lib/load-projects';
+
+export async function getStaticPaths() {
+  const all = await loadAllProjects();
+  return all.map(entry => ({
+    params: { slug: entry.data.slug ?? entry.id.replace(/\.md$/, '').split('/').pop() },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+
+const tree = await parseMarkdown(entry.body ?? '');
+const citations = (tree as any)?.data?.citations?.ordered ?? [];
+
+const all = await loadAllProjects();
+const sameStatus = all.filter(p => p.data.status === d.status && p.id !== entry.id);
+const idx = sameStatus.findIndex(p => p.id === entry.id);
+const prev = idx > 0 ? sameStatus[idx - 1] : sameStatus[sameStatus.length - 1];
+const next = idx >= 0 && idx < sameStatus.length - 1 ? sameStatus[idx + 1] : sameStatus[0];
+
+const editUrl = d.links?.spec ?? d.links?.repo;
+---
+
+<BaseThemeLayout
+  title={`${d.title} · FullStack VC`}
+  description={d.lede}
+  image={d.hero_image}
+  ogType="article"
+>
+  {d.hero_image ? (
+    <HeroBanner
+      image={d.hero_image}
+      imageAlt={d.title}
+      overlay={d.banner_overlay ?? 'gradient'}
+      align="left"
+      height="standard"
+      contextSetterTxt={`${statusLabel(d.status)} · ${d.working_group_name ?? d.category ?? 'Working Group'}`}
+      headerTxt={d.title}
+      subheaderTxt={d.lede}
+    />
+  ) : (
+    <section class="pdetail-hero">
+      <div class="pdetail-hero__inner">
+        <HeroContentCoreMessage
+          contextSetter={`${statusLabel(d.status)} · ${d.working_group_name ?? d.category ?? 'Working Group'}`}
+          headerTxt={d.title}
+          subheaderTxt={d.lede}
+        />
+      </div>
+    </section>
+  )}
+
+  <div class="pdetail-meta-wrap">
+    <ProjectMetadataDisplay project={entry} />
+  </div>
+
+  <ProjectReader tree={tree} citations={citations} editUrl={editUrl} />
+
+  {sameStatus.length > 0 && (
+    <nav class="pdetail-adjacent" aria-label="Adjacent projects">
+      <a class="pdetail-adjacent__link" href={projectHref(prev)}>
+        <span class="pdetail-adjacent__dir">← Previous</span>
+        <span class="pdetail-adjacent__title">{prev.data.title}</span>
+      </a>
+      <a class="pdetail-adjacent__link pdetail-adjacent__link--right" href={projectHref(next)}>
+        <span class="pdetail-adjacent__dir">Next →</span>
+        <span class="pdetail-adjacent__title">{next.data.title}</span>
+      </a>
+    </nav>
+  )}
+</BaseThemeLayout>
+
+<style>
+  .pdetail-hero {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .pdetail-hero__inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 7vw, 5rem) 1.5rem clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .pdetail-meta-wrap {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .pdetail-adjacent {
+    max-width: 70ch;
+    margin: 0 auto 4rem;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .pdetail-adjacent__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.125rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 150ms ease, transform 150ms ease;
+  }
+  .pdetail-adjacent__link:hover {
+    border-color: var(--fx-card-border-hover);
+    transform: translateY(-1px);
+  }
+  .pdetail-adjacent__link--right { text-align: right; align-items: flex-end; }
+  .pdetail-adjacent__dir {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .pdetail-adjacent__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+  @media (max-width: 640px) {
+    .pdetail-adjacent { grid-template-columns: 1fr; }
+    .pdetail-adjacent__link--right { text-align: left; align-items: flex-start; }
+  }
+</style>

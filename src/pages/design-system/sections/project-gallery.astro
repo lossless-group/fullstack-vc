@@ -1,0 +1,177 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import Section__ProjectGallery from '../../../components/sections/Section__ProjectGallery.astro';
+import { loadProjectsByStatus } from '../../../lib/load-projects';
+
+const [active, proposed, archived] = await Promise.all([
+  loadProjectsByStatus('active'),
+  loadProjectsByStatus('proposed'),
+  loadProjectsByStatus('archived'),
+]);
+---
+
+<BaseThemeLayout
+  title="Section · Project Gallery"
+  description="Four variants of Section__ProjectGallery: portfolio, mission-brief, lite, shelf."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Design System · Sections
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      Section__ProjectGallery
+    </h1>
+    <p style="color: var(--color-text-muted);">
+      Renders a filtered set of projects in one of four variants. Defaults to <code style="font-family: var(--font-code); color: var(--color-primary);">portfolio</code>.
+      Mission-brief is the alternate "standard" concept — keep it for sections of a different page where dossier rhythm fits better.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <!-- Variant: portfolio -->
+  <section class="ds-block">
+    <h2 class="ds-block-title">Variant: <code>portfolio</code> — Working Group Cards</h2>
+    <p class="ds-block-note">
+      Banner thumbnail (or icon fallback) + title + lede + leads + tag chips. Used by the active section on <code>/projects/</code>.
+    </p>
+    <Section__ProjectGallery
+      contextSetterTxt="In flight"
+      headingTxt="Active Working Groups"
+      introTxt="Projects with a working group meeting on a regular cadence."
+      projects={active}
+      variant="portfolio"
+    />
+  </section>
+
+  <!-- Variant: mission-brief -->
+  <section class="ds-block">
+    <h2 class="ds-block-title">Variant: <code>mission-brief</code> — Number-badge dossier</h2>
+    <p class="ds-block-note">
+      Number badge + monospace eyebrow + title + paragraph + cadence/status footer.
+      Echoes <code>AreasOfVentureGrid</code> rhythm — useful when projects are framed as a curriculum.
+    </p>
+    <Section__ProjectGallery
+      contextSetterTxt="Mission briefs"
+      headingTxt="Same data, dossier treatment"
+      introTxt="Same projects rendered in the mission-brief variant for comparison."
+      projects={active}
+      variant="mission-brief"
+    />
+  </section>
+
+  <!-- Variant: lite -->
+  <section class="ds-block">
+    <h2 class="ds-block-title">Variant: <code>lite</code> — Open-call cards</h2>
+    <p class="ds-block-note">
+      No thumbnail. Dashed border to communicate "not yet committed." Used by the proposed section on <code>/projects/</code>.
+    </p>
+    <Section__ProjectGallery
+      contextSetterTxt="Open call"
+      headingTxt="Proposed projects"
+      projects={proposed}
+      variant="lite"
+    />
+  </section>
+
+  <!-- Variant: shelf -->
+  <section class="ds-block">
+    <h2 class="ds-block-title">Variant: <code>shelf</code> — Archive rows</h2>
+    <p class="ds-block-note">
+      Compact horizontal rows. Date metadata in monospace. Used by the archived section on <code>/projects/</code>.
+    </p>
+    <Section__ProjectGallery
+      contextSetterTxt="Prior work"
+      headingTxt="Archive"
+      projects={archived}
+      variant="shelf"
+    />
+  </section>
+
+  <!-- Empty-state behavior -->
+  <section class="ds-block">
+    <h2 class="ds-block-title">Empty list — <code>emptyHide: true</code></h2>
+    <p class="ds-block-note">
+      With an empty <code>projects</code> array and <code>emptyHide: true</code> (the default), the section renders nothing — no header, no spacer.
+      The dotted box below is just a hint that <em>something</em> is there in the source; in production there'd be no DOM at all.
+    </p>
+    <div class="ds-empty-hint">
+      <Section__ProjectGallery
+        contextSetterTxt="Empty"
+        headingTxt="Should be invisible"
+        projects={[]}
+        variant="portfolio"
+      />
+      <p class="ds-empty-hint-label">↑ nothing rendered above this line</p>
+    </div>
+  </section>
+
+  <details class="text-sm mt-8">
+    <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + tokens</summary>
+    <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<Section__ProjectGallery
+  contextSetterTxt="In flight"
+  headingTxt="Active Working Groups"
+  introTxt="Optional intro paragraph."
+  projects={projects}              // pre-filtered ProjectEntry[]
+  variant="portfolio"              // 'portfolio' | 'mission-brief' | 'lite' | 'shelf'
+  emptyHide={true}                 // if true, empty list renders nothing
+/>
+
+/* Tokens read */
+--fx-card-bg, --fx-card-border, --fx-card-border-hover,
+--fx-card-shadow, --fx-card-shadow-hover,
+--color-text, --color-text-muted, --color-primary,
+--color-secondary, --color-surface, --color-border, --color-background,
+--color-status-active, --color-status-proposed, --color-status-archived,
+--font-display, --font-body, --font-code`}</pre>
+  </details>
+</BaseThemeLayout>
+
+<style is:global>
+  .ds-block {
+    margin-bottom: 4rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .ds-block:last-of-type { border-bottom: none; }
+  .ds-block-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .ds-block-title code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    background: var(--color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-border);
+  }
+  .ds-block-note {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+  }
+  .ds-block-note code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+  }
+  .ds-empty-hint {
+    padding: 1rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 0.5rem;
+  }
+  .ds-empty-hint-label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+  }
+</style>

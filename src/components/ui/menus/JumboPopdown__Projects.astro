@@ -1,0 +1,406 @@
+---
+/* JumboPopdown__Projects
+   Header-mounted dropdown that surfaces the network's working-group projects.
+   Conforms to context-v/blueprints/Jumbotron-Popdown-Patterns.md.
+
+   Behavior:
+     - Hover-open + click-toggle (touch-friendly).
+     - Esc closes; Tab cycles through items inside the menu.
+     - role="menu" + role="menuitem" for AT navigation.
+     - Respects prefers-reduced-motion.
+     - Receives a pre-loaded, pre-sorted projects array — no runtime fetches. */
+
+import type { ProjectEntry } from '../../../lib/load-projects';
+import { projectHref, statusLabel } from '../../../lib/load-projects';
+
+export interface Props {
+  triggerLabelTxt?: string;
+  projects: ProjectEntry[];
+  showProposed?: boolean;
+}
+
+const {
+  triggerLabelTxt = 'Projects',
+  projects,
+  showProposed = true,
+} = Astro.props;
+
+const active = projects.filter(p => p.data.status === 'active');
+const proposed = showProposed ? projects.filter(p => p.data.status === 'proposed') : [];
+---
+
+<div class="jpop" data-jpop>
+  <button
+    type="button"
+    class="jpop__trigger"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="jpop-projects-panel"
+    data-jpop-trigger
+  >
+    {triggerLabelTxt}
+    <span class="jpop__chevron" aria-hidden="true">▾</span>
+  </button>
+
+  <div
+    id="jpop-projects-panel"
+    class="jpop__panel"
+    role="menu"
+    aria-label="Working-group projects"
+    data-jpop-panel
+    hidden
+  >
+    <div class="jpop__panel-inner">
+      <header class="jpop__head">
+        <p class="jpop__eyebrow">Working Groups</p>
+        <p class="jpop__lede">Active projects in the FullStack VC community.</p>
+      </header>
+
+      {active.length > 0 && (
+        <ul class="jpop__grid">
+          {active.map(p => (
+            <li>
+              <a class="jpop__item" role="menuitem" href={projectHref(p)}>
+                <span class="jpop__item-icon" aria-hidden="true">{p.data.icon ?? '◆'}</span>
+                <span class="jpop__item-text">
+                  <span class="jpop__item-title">
+                    {p.data.title}
+                    <span class="jpop__dot" data-status={p.data.status} aria-hidden="true"></span>
+                  </span>
+                  <span class="jpop__item-desc">{p.data.summary ?? p.data.lede}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {proposed.length > 0 && (
+        <div class="jpop__section jpop__section--proposed">
+          <p class="jpop__section-label">Proposed · open call</p>
+          <ul class="jpop__grid jpop__grid--lite">
+            {proposed.map(p => (
+              <li>
+                <a class="jpop__item jpop__item--lite" role="menuitem" href={projectHref(p)}>
+                  <span class="jpop__item-icon" aria-hidden="true">{p.data.icon ?? '◇'}</span>
+                  <span class="jpop__item-text">
+                    <span class="jpop__item-title">
+                      {p.data.title}
+                      <span class="jpop__dot" data-status={p.data.status} aria-hidden="true"></span>
+                    </span>
+                    <span class="jpop__item-desc">{p.data.lede}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <footer class="jpop__foot">
+        <a class="jpop__foot-link" href="/projects/" role="menuitem">
+          View all projects <span aria-hidden="true">→</span>
+        </a>
+        <a class="jpop__foot-link jpop__foot-link--secondary" href="/projects/propose" role="menuitem">
+          Propose a project <span aria-hidden="true">+</span>
+        </a>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+  type Wrap = HTMLElement;
+
+  function setOpen(wrap: Wrap, open: boolean) {
+    const trigger = wrap.querySelector<HTMLButtonElement>('[data-jpop-trigger]');
+    const panel = wrap.querySelector<HTMLElement>('[data-jpop-panel]');
+    if (!trigger || !panel) return;
+    trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    panel.hidden = !open;
+    wrap.classList.toggle('is-open', open);
+  }
+
+  function isOpen(wrap: Wrap): boolean {
+    return wrap.classList.contains('is-open');
+  }
+
+  function init() {
+    document.querySelectorAll<HTMLElement>('[data-jpop]').forEach((wrap) => {
+      const trigger = wrap.querySelector<HTMLButtonElement>('[data-jpop-trigger]');
+      const panel = wrap.querySelector<HTMLElement>('[data-jpop-panel]');
+      if (!trigger || !panel) return;
+
+      let hoverTimer: number | undefined;
+
+      const open = () => setOpen(wrap, true);
+      const close = () => setOpen(wrap, false);
+      const toggle = () => (isOpen(wrap) ? close() : open());
+
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggle();
+      });
+
+      // Hover open with a small delay (and cancel-on-leave delay too)
+      const matchesPointerFine = window.matchMedia('(pointer: fine)').matches;
+      if (matchesPointerFine) {
+        wrap.addEventListener('mouseenter', () => {
+          window.clearTimeout(hoverTimer);
+          hoverTimer = window.setTimeout(open, 80);
+        });
+        wrap.addEventListener('mouseleave', () => {
+          window.clearTimeout(hoverTimer);
+          hoverTimer = window.setTimeout(close, 160);
+        });
+      }
+
+      // Esc closes; arrow keys move within menu items
+      wrap.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen(wrap)) {
+          e.preventDefault();
+          close();
+          trigger.focus();
+          return;
+        }
+        if (!isOpen(wrap)) return;
+        const items = Array.from(panel.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+        if (items.length === 0) return;
+        const idx = items.indexOf(document.activeElement as HTMLElement);
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const next = items[(idx + 1 + items.length) % items.length] ?? items[0];
+          next.focus();
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prev = items[(idx - 1 + items.length) % items.length] ?? items[items.length - 1];
+          prev.focus();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          items[0]?.focus();
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          items[items.length - 1]?.focus();
+        }
+      });
+
+      // Click outside closes
+      document.addEventListener('click', (e) => {
+        if (!isOpen(wrap)) return;
+        if (wrap.contains(e.target as Node)) return;
+        close();
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  .jpop {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .jpop__trigger {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 150ms ease;
+  }
+  .jpop__trigger:hover,
+  .jpop__trigger:focus-visible,
+  .jpop.is-open .jpop__trigger {
+    color: var(--color-text);
+    outline: none;
+  }
+  .jpop__chevron {
+    font-size: 0.75rem;
+    transition: transform 200ms ease;
+  }
+  .jpop.is-open .jpop__chevron {
+    transform: translateY(1px) rotate(180deg);
+    color: var(--color-primary);
+  }
+
+  .jpop__panel {
+    position: absolute;
+    top: calc(100% + 0.625rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+    min-width: 38rem;
+    max-width: min(56rem, calc(100vw - 2rem));
+    border-radius: 1rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow-hover);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+    opacity: 0;
+    transform: translate(-50%, -6px);
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+  .jpop.is-open .jpop__panel[hidden] { display: block; }
+  .jpop.is-open .jpop__panel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jpop__panel { transition: none; }
+  }
+
+  .jpop__panel-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  .jpop__head { display: flex; flex-direction: column; gap: 0.25rem; }
+  .jpop__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .jpop__lede {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 0.9375rem;
+  }
+
+  .jpop__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .jpop__grid--lite { gap: 0.375rem; }
+
+  .jpop__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.625rem;
+    color: var(--color-text);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+  }
+  .jpop__item:hover,
+  .jpop__item:focus-visible {
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    border-color: var(--color-border);
+    outline: none;
+  }
+  .jpop__item-icon {
+    font-size: 1.25rem;
+    line-height: 1.2;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+  .jpop__item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .jpop__item-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .jpop__item-desc {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .jpop__dot {
+    width: 0.5rem; height: 0.5rem;
+    border-radius: 999px;
+    display: inline-block;
+    background: var(--color-text-muted);
+    box-shadow: 0 0 6px var(--color-text-muted);
+  }
+  .jpop__dot[data-status="active"]   { background: var(--color-status-active);   box-shadow: 0 0 8px var(--color-status-active); }
+  .jpop__dot[data-status="proposed"] { background: var(--color-status-proposed); box-shadow: 0 0 8px var(--color-status-proposed); }
+  .jpop__dot[data-status="archived"] { background: var(--color-status-archived); box-shadow: none; }
+
+  .jpop__section { display: flex; flex-direction: column; gap: 0.5rem; }
+  .jpop__section--proposed {
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--color-border);
+  }
+  .jpop__section-label {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+  }
+  .jpop__item--lite {
+    border-style: dashed;
+  }
+
+  .jpop__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+  }
+  .jpop__foot-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+  .jpop__foot-link:hover { color: var(--color-text); }
+  .jpop__foot-link--secondary { color: var(--color-text-muted); }
+  .jpop__foot-link--secondary:hover { color: var(--color-primary); }
+
+  /* Mobile: full-width drawer instead of centered popdown */
+  @media (max-width: 720px) {
+    .jpop__panel {
+      position: fixed;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transform: none;
+      max-width: 100%;
+      min-width: 0;
+      border-radius: 1rem 1rem 0 0;
+    }
+    .jpop.is-open .jpop__panel { transform: none; }
+    .jpop__grid { grid-template-columns: 1fr; }
+  }
+</style>

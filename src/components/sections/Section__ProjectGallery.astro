@@ -1,0 +1,509 @@
+---
+/* Section__ProjectGallery
+   Renders a filtered set of projects as a card grid. One component, four
+   variants:
+     - 'portfolio'      — Working Group Cards (banner image + leads + tags). Default for active.
+     - 'mission-brief'  — Number badge + monospace eyebrow + paragraph + icon row.
+     - 'lite'           — Compact card, no thumbnail, "join" CTA. Used for proposed.
+     - 'shelf'          — Horizontal list rows with archive metadata. Used for archived.
+
+   Reads only Tier-2 semantic tokens. Empty list + emptyHide → renders nothing. */
+
+import type { ProjectEntry } from '../../lib/load-projects';
+import { projectHref, statusLabel } from '../../lib/load-projects';
+
+export type GalleryVariant = 'portfolio' | 'mission-brief' | 'lite' | 'shelf';
+
+export interface Props {
+  contextSetterTxt?: string;
+  headingTxt?: string;
+  introTxt?: string;
+  projects: ProjectEntry[];
+  variant?: GalleryVariant;
+  emptyHide?: boolean;
+}
+
+const {
+  contextSetterTxt,
+  headingTxt,
+  introTxt,
+  projects,
+  variant = 'portfolio',
+  emptyHide = true,
+} = Astro.props;
+
+if (emptyHide && projects.length === 0) {
+  // Render nothing
+}
+
+const fmtDate = (d?: Date) =>
+  d ? d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
+---
+
+{(!emptyHide || projects.length > 0) && (
+  <section class={`pgallery pgallery--${variant}`}>
+    <header class="pgallery__header">
+      {contextSetterTxt && <p class="pgallery__eyebrow">{contextSetterTxt}</p>}
+      {headingTxt && <h2 class="pgallery__heading">{headingTxt}</h2>}
+      {introTxt && <p class="pgallery__intro">{introTxt}</p>}
+    </header>
+
+    {variant === 'portfolio' && (
+      <ol class="pgallery__grid pgallery__grid--portfolio">
+        {projects.map(p => (
+          <li class="pcard pcard--portfolio">
+            <a class="pcard__hit" href={projectHref(p)}>
+              <div class="pcard__banner" aria-hidden="true">
+                {p.data.thumbnail
+                  ? <img class="pcard__banner-img" src={p.data.thumbnail} alt="" loading="lazy" />
+                  : p.data.hero_image
+                    ? <img class="pcard__banner-img" src={p.data.hero_image} alt="" loading="lazy" />
+                    : <div class="pcard__banner-fallback"><span class="pcard__icon">{p.data.icon ?? '◆'}</span></div>
+                }
+                <span class="pcard__status" data-status={p.data.status}>
+                  <span class="sr-only">Status: </span>{statusLabel(p.data.status)}
+                </span>
+              </div>
+              <div class="pcard__body">
+                <h3 class="pcard__title">{p.data.title}</h3>
+                <p class="pcard__lede">{p.data.lede}</p>
+                {p.data.working_group_leads && p.data.working_group_leads.length > 0 && (
+                  <p class="pcard__leads">
+                    {p.data.working_group_leads.map(l => l.name).join(' · ')}
+                  </p>
+                )}
+                {p.data.tags && p.data.tags.length > 0 && (
+                  <ul class="pcard__tags">
+                    {p.data.tags.slice(0, 3).map(t => <li>{t}</li>)}
+                  </ul>
+                )}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    {variant === 'mission-brief' && (
+      <ol class="pgallery__grid pgallery__grid--mission">
+        {projects.map((p, i) => (
+          <li class="pcard pcard--mission">
+            <a class="pcard__hit" href={projectHref(p)}>
+              <div class="pcard__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
+              <p class="pcard__brief-eyebrow">{p.data.category ?? p.data.working_group_name ?? 'Working Group'}</p>
+              <h3 class="pcard__title">{p.data.title}</h3>
+              <p class="pcard__brief-body">{p.data.summary ?? p.data.lede}</p>
+              <div class="pcard__brief-foot">
+                {p.data.cadence && <span class="pcard__cadence">{p.data.cadence}</span>}
+                <span class="pcard__status pcard__status--inline" data-status={p.data.status}>
+                  <span class="sr-only">Status: </span>{statusLabel(p.data.status)}
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    {variant === 'lite' && (
+      <ol class="pgallery__grid pgallery__grid--lite">
+        {projects.map(p => (
+          <li class="pcard pcard--lite">
+            <a class="pcard__hit" href={projectHref(p)}>
+              <div class="pcard__lite-head">
+                <span class="pcard__icon" aria-hidden="true">{p.data.icon ?? '◇'}</span>
+                <h3 class="pcard__title">{p.data.title}</h3>
+              </div>
+              <p class="pcard__lede">{p.data.lede}</p>
+              <span class="pcard__cta">Join the working group →</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    {variant === 'shelf' && (
+      <ol class="pgallery__shelf">
+        {projects.map(p => (
+          <li class="pcard pcard--shelf">
+            <a class="pcard__hit pcard__hit--row" href={projectHref(p)}>
+              <span class="pcard__shelf-icon" aria-hidden="true">{p.data.icon ?? '◯'}</span>
+              <div class="pcard__shelf-text">
+                <h3 class="pcard__title pcard__title--shelf">{p.data.title}</h3>
+                <p class="pcard__lede pcard__lede--shelf">{p.data.lede}</p>
+              </div>
+              <div class="pcard__shelf-meta">
+                {p.data.date_initiated && (
+                  <span class="pcard__shelf-date">
+                    <abbr title="Initiated">init</abbr> {fmtDate(p.data.date_initiated)}
+                  </span>
+                )}
+                {p.data.date_archived && (
+                  <span class="pcard__shelf-date">
+                    <abbr title="Archived">arch</abbr> {fmtDate(p.data.date_archived)}
+                  </span>
+                )}
+                <span class="pcard__status pcard__status--inline" data-status={p.data.status}>
+                  <span class="sr-only">Status: </span>{statusLabel(p.data.status)}
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+  </section>
+)}
+
+<style>
+  .pgallery {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .pgallery__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    max-width: 64ch;
+  }
+  .pgallery__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .pgallery__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.625rem, 3vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+  }
+  .pgallery__intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+
+  /* ---------- Grids ---------- */
+  .pgallery__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .pgallery__grid--portfolio {
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .pgallery__grid--portfolio { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1100px) {
+    .pgallery__grid--portfolio { grid-template-columns: repeat(3, 1fr); }
+  }
+  .pgallery__grid--mission {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .pgallery__grid--mission { grid-template-columns: 1fr 1fr; }
+  }
+  .pgallery__grid--lite {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+  @media (min-width: 720px) {
+    .pgallery__grid--lite { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .pgallery__shelf {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* ---------- Card base ---------- */
+  .pcard { margin: 0; }
+  .pcard__hit {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    height: 100%;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    overflow: hidden;
+  }
+  .pcard__hit:hover,
+  .pcard__hit:focus-visible {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+    outline: none;
+  }
+  .pcard__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+  .pcard__lede {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+    font-size: 0.9375rem;
+  }
+
+  /* ---------- Status badge ---------- */
+  .pcard__status {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: color-mix(in srgb, var(--color-background) 80%, transparent);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .pcard__status::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--badge-color, var(--color-text-muted));
+    box-shadow: 0 0 8px var(--badge-color, transparent);
+  }
+  .pcard__status[data-status="active"]   { --badge-color: var(--color-status-active); }
+  .pcard__status[data-status="proposed"] { --badge-color: var(--color-status-proposed); }
+  .pcard__status[data-status="archived"] { --badge-color: var(--color-status-archived); }
+
+  .pcard__status--inline {
+    position: static;
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    padding: 0;
+    color: var(--color-text-muted);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---------- Variant: portfolio ---------- */
+  .pcard--portfolio .pcard__banner {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .pcard__banner-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
+  .pcard__banner-fallback {
+    width: 100%; height: 100%;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 18%, var(--color-surface)),
+      color-mix(in srgb, var(--color-secondary) 12%, var(--color-surface)));
+  }
+  .pcard__icon {
+    font-size: 2.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--color-primary) 30%, transparent));
+  }
+  .pcard--portfolio .pcard__body {
+    padding: 1.125rem 1.125rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .pcard__leads {
+    margin: 0.25rem 0 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .pcard__tags {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .pcard__tags li {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+  }
+
+  /* ---------- Variant: mission-brief ---------- */
+  .pcard--mission .pcard__hit {
+    padding: 1.5rem 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    position: relative;
+  }
+  .pcard__num {
+    font-family: var(--font-code);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-primary);
+    opacity: 0.85;
+    letter-spacing: -0.04em;
+  }
+  .pcard__brief-eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .pcard__brief-body {
+    margin: 0;
+    color: var(--color-text);
+    line-height: 1.55;
+    font-size: 0.9375rem;
+  }
+  .pcard__brief-foot {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .pcard__cadence { line-height: 1.3; }
+
+  /* ---------- Variant: lite ---------- */
+  .pcard--lite .pcard__hit {
+    padding: 1.125rem 1.125rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    border-style: dashed;
+  }
+  .pcard__lite-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .pcard__lite-head .pcard__icon {
+    font-size: 1.25rem;
+    filter: none;
+  }
+  .pcard__cta {
+    margin-top: auto;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+  }
+
+  /* ---------- Variant: shelf ---------- */
+  .pcard--shelf .pcard__hit {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    background: transparent;
+    box-shadow: none;
+    padding: 0.875rem 0.5rem;
+    transform: none;
+  }
+  .pcard--shelf .pcard__hit:hover,
+  .pcard--shelf .pcard__hit:focus-visible {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    transform: none;
+    box-shadow: none;
+  }
+  .pcard__hit--row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+  }
+  .pcard__shelf-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    width: 2rem;
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+  .pcard__title--shelf {
+    font-size: 1rem;
+    margin-bottom: 0.125rem;
+  }
+  .pcard__lede--shelf {
+    font-size: 0.875rem;
+  }
+  .pcard__shelf-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    min-width: 9rem;
+  }
+  .pcard__shelf-meta abbr {
+    color: var(--color-primary);
+    text-decoration: none;
+    margin-right: 0.25rem;
+  }
+  @media (max-width: 640px) {
+    .pcard__hit--row {
+      grid-template-columns: auto 1fr;
+    }
+    .pcard__shelf-meta {
+      grid-column: 2;
+      align-items: flex-start;
+      flex-direction: row;
+      flex-wrap: wrap;
+      min-width: 0;
+      text-align: left;
+    }
+  }
+</style>

@@ -48,6 +48,11 @@
   --color-secondary: var(--color__cyan-vapor);
   --color-accent: var(--color__lime-terminal);
 
+  /* Status — same across modes; intensity adjusts naturally via card surface */
+  --color-status-active: var(--color__lime-terminal);
+  --color-status-proposed: var(--color__amber-flare);
+  --color-status-archived: var(--color__graphite-400);
+
   /* Typography */
   --font-display: var(--font__space-grotesk);
   --font-heading-1: var(--font__space-grotesk);

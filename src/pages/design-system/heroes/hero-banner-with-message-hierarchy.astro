@@ -1,0 +1,122 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import HeroBanner from '../../../components/heroes/HeroBannerWithMessageHierarchy.astro';
+
+const sample = '/imageRep__AgenticVC-Dojo.webp';
+---
+
+<BaseThemeLayout
+  title="Hero · Banner with Message Hierarchy"
+  description="Image-banner hero composing HeroContentCoreMessage. Three heights × three overlays."
+  noindex={true}
+>
+  <div class="px-6 py-10 max-w-6xl mx-auto">
+    <header class="mb-8">
+      <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+        Design System · Heroes
+      </p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+        HeroBannerWithMessageHierarchy
+      </h1>
+      <p style="color: var(--color-text-muted);">
+        Wraps <code style="font-family: var(--font-code); color: var(--color-primary);">HeroContentCoreMessage</code> with a full-bleed image banner.
+        Toggle modes to verify legibility in light / dark / vibrant.
+      </p>
+    </header>
+
+    <ModeThemeToggle />
+  </div>
+
+  <section class="ds-stack">
+    <p class="ds-label">height: <code>standard</code> · overlay: <code>gradient</code> · align: <code>left</code> (default for /projects/)</p>
+    <HeroBanner
+      image={sample}
+      imageAlt=""
+      overlay="gradient"
+      align="left"
+      height="standard"
+      contextSetterTxt="Working Groups · Peer Learning"
+      headerTxt="Projects shipped together."
+      subheaderTxt="Active working groups in the FullStack VC community."
+      supportingTxt="We don't ship for the sake of shipping. We ship to learn — and the projects below are how the community puts that into practice."
+      ctaLabelTxt="Propose a project"
+      ctaHref="#"
+    />
+
+    <p class="ds-label">height: <code>short</code> · overlay: <code>scrim</code> · align: <code>center</code></p>
+    <HeroBanner
+      image={sample}
+      imageAlt=""
+      overlay="scrim"
+      align="center"
+      height="short"
+      contextSetterTxt="Center-aligned"
+      headerTxt="Centered, scrim-overlaid."
+      subheaderTxt="For pages where the message should anchor the page rather than lead from a side."
+    />
+
+    <p class="ds-label">height: <code>tall</code> · overlay: <code>none</code> · align: <code>left</code> · without CTA</p>
+    <HeroBanner
+      image={sample}
+      imageAlt=""
+      overlay="none"
+      align="left"
+      height="tall"
+      contextSetterTxt="Editorial · No overlay"
+      headerTxt="Tall hero, no overlay."
+      subheaderTxt="Use only when the underlying image is intentionally low-contrast — otherwise the type will fight the photo."
+      supportingTxt="Tall variant is for hero moments — landing pages, key narratives. Pair with editorial photography that already cooperates with the type."
+    />
+  </section>
+
+  <div class="px-6 py-10 max-w-6xl mx-auto">
+    <details class="text-sm mt-8">
+      <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + tokens</summary>
+      <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<HeroBanner
+  image="/og/projects.png"
+  imageAlt=""
+  overlay="gradient"          /* 'gradient' | 'scrim' | 'none' */
+  align="left"                /* 'left' | 'center' */
+  height="standard"           /* 'short' | 'standard' | 'tall' */
+
+  contextSetterTxt="..."      /* renders into eyebrow */
+  headerTxt="..."             /* renders into headline (h1) */
+  subheaderTxt="..."          /* renders into subheader (h2) */
+  supportingTxt="..."         /* renders into supporting paragraph */
+  ctaLabelTxt="..."           /* renders into CTA button label */
+  ctaHref="..."
+/>
+
+/* Tokens read */
+--color-background, --color-surface, --color-text, --color-text-muted,
+--color-primary, --fx-headline-gradient, --fx-card-shadow, --fx-card-shadow-hover,
+--font-display, --font-body, --font-code`}</pre>
+    </details>
+  </div>
+</BaseThemeLayout>
+
+<style is:global>
+  .ds-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .ds-label {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .ds-label code {
+    color: var(--color-primary);
+    background: var(--color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-border);
+  }
+</style>

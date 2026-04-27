@@ -1,6 +1,10 @@
 ---
 import ModeToggle from '../ui/ModeToggle.astro';
 import SocialsFaviconRow from './SocialsFaviconRow.astro';
+import JumboPopdown__Projects from '../ui/menus/JumboPopdown__Projects.astro';
+import { loadProjectsForPopdown } from '../../lib/load-projects';
+
+const popdownProjects = await loadProjectsForPopdown({ showProposed: true, maxItems: 6 });
 ---
 
 <header class="site-header">
@@ -12,6 +16,7 @@ import SocialsFaviconRow from './SocialsFaviconRow.astro';
 
     <nav class="site-header__nav" aria-label="Primary">
       <a href="/dojo" class="site-header__link">Dojo</a>
+      <JumboPopdown__Projects projects={popdownProjects} triggerLabelTxt="Projects" />
       <a href="/webinars" class="site-header__link">Webinars</a>
       <a href="/changelog" class="site-header__link">Changelog</a>
       <a href="/login" class="site-header__link site-header__link--cta">Log in</a>

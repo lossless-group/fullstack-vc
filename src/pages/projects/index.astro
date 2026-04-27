@@ -1,0 +1,66 @@
+---
+export const prerender = true;
+
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import HeroBanner from '../../components/heroes/HeroBannerWithMessageHierarchy.astro';
+import Section__ProjectGallery from '../../components/sections/Section__ProjectGallery.astro';
+import { loadProjectsByStatus } from '../../lib/load-projects';
+
+const [active, proposed, archived] = await Promise.all([
+  loadProjectsByStatus('active'),
+  loadProjectsByStatus('proposed'),
+  loadProjectsByStatus('archived'),
+]);
+
+const heroImage = '/imageRep__AgenticVC-Dojo.webp';
+---
+
+<BaseThemeLayout
+  title="Projects · FullStack VC"
+  description="Active working-group projects in the FullStack VC peer learning community."
+>
+  <!-- Hero. Falls back to plain message hierarchy if no banner image is available
+       (production deploys: replace heroImage with a real /og/projects.png). -->
+  <HeroBanner
+    image={heroImage}
+    imageAlt=""
+    overlay="gradient"
+    align="left"
+    height="standard"
+    contextSetterTxt="Working Groups · Peer Learning"
+    headerTxt="Projects shipped together."
+    subheaderTxt="Active working groups in the FullStack VC community."
+    supportingTxt="We don't ship for the sake of shipping. We ship to learn — and the projects below are how the community puts that into practice."
+    ctaLabelTxt="Propose a project"
+    ctaHref="/projects/propose"
+  />
+
+  <div class="px-6 py-16 max-w-6xl mx-auto flex flex-col gap-20">
+    <!-- Active: portfolio variant (default standard concept) -->
+    <Section__ProjectGallery
+      contextSetterTxt="In flight"
+      headingTxt="Active Working Groups"
+      introTxt="Projects with a working group meeting on a regular cadence. Click in for the spec, the cadence, and the people."
+      projects={active}
+      variant="portfolio"
+    />
+
+    <!-- Proposed: lite variant -->
+    <Section__ProjectGallery
+      contextSetterTxt="Open call"
+      headingTxt="Proposed — looking for working-group members"
+      introTxt="Projects in the queue that need 4–6 committed members to start. Reach out via the Dojo if one resonates."
+      projects={proposed}
+      variant="lite"
+    />
+
+    <!-- Archived: shelf variant -->
+    <Section__ProjectGallery
+      contextSetterTxt="Prior work"
+      headingTxt="Archive"
+      introTxt="Projects we shut down deliberately. Read these — failure modes are some of the best content the community produces."
+      projects={archived}
+      variant="shelf"
+    />
+  </div>
+</BaseThemeLayout>

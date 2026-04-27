@@ -1,0 +1,139 @@
+---
+/* HeroBannerWithMessageHierarchy
+   Image-banner hero that wraps HeroContentCoreMessage. Used by the projects
+   index and (when hero_image is present) by individual project detail pages.
+
+   Per CLAUDE.md two-tier token rule: this component reads only Tier-2
+   semantic tokens. */
+
+import HeroContentCoreMessage from './HeroContentCoreMessage.astro';
+
+export interface Props {
+  // Banner imagery
+  image: string;
+  imageAlt?: string;
+  overlay?: 'gradient' | 'scrim' | 'none';
+  align?: 'left' | 'center';
+  height?: 'short' | 'standard' | 'tall';
+
+  // Message hierarchy — text-content props end with `Txt`. The visual
+  // elements (eyebrow, headline, subheader, supporting paragraph, CTA)
+  // are owned by HeroContentCoreMessage.
+  contextSetterTxt?: string;
+  headerTxt: string;
+  subheaderTxt?: string;
+  supportingTxt?: string;
+  ctaLabelTxt?: string;
+  ctaHref?: string;
+}
+
+const {
+  image,
+  imageAlt = '',
+  overlay = 'gradient',
+  align = 'left',
+  height = 'standard',
+  contextSetterTxt,
+  headerTxt,
+  subheaderTxt,
+  supportingTxt,
+  ctaLabelTxt,
+  ctaHref,
+} = Astro.props;
+---
+
+<section
+  class={`hero-banner hero-banner--${height} hero-banner--align-${align}`}
+  data-overlay={overlay}
+>
+  <div class="hero-banner__image-wrap" aria-hidden={imageAlt ? undefined : 'true'}>
+    <img class="hero-banner__image" src={image} alt={imageAlt} loading="eager" />
+    {overlay !== 'none' && <div class={`hero-banner__overlay hero-banner__overlay--${overlay}`}></div>}
+  </div>
+
+  <div class="hero-banner__content">
+    <HeroContentCoreMessage
+      contextSetter={contextSetterTxt}
+      headerTxt={headerTxt}
+      subheaderTxt={subheaderTxt}
+      supportingTxt={supportingTxt}
+      ctaHref={ctaHref}
+      ctaLabel={ctaLabelTxt}
+    />
+  </div>
+</section>
+
+<style>
+  .hero-banner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--color-surface);
+  }
+  .hero-banner--short    { min-height: clamp(20rem, 38vw, 26rem); }
+  .hero-banner--standard { min-height: clamp(26rem, 50vw, 35rem); }
+  .hero-banner--tall     { min-height: clamp(35rem, 64vw, 45rem); }
+
+  .hero-banner__image-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero-banner__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .hero-banner__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  /* Gradient: stronger at the side where content sits → lighter on the far side */
+  .hero-banner--align-left .hero-banner__overlay--gradient {
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-background) 92%, transparent) 0%,
+      color-mix(in srgb, var(--color-background) 80%, transparent) 35%,
+      color-mix(in srgb, var(--color-background) 35%, transparent) 75%,
+      transparent 100%
+    );
+  }
+  .hero-banner--align-center .hero-banner__overlay--gradient {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-background) 25%, transparent) 0%,
+      color-mix(in srgb, var(--color-background) 70%, transparent) 60%,
+      color-mix(in srgb, var(--color-background) 88%, transparent) 100%
+    );
+  }
+  .hero-banner__overlay--scrim {
+    background: color-mix(in srgb, var(--color-background) 65%, transparent);
+  }
+
+  .hero-banner__content {
+    position: relative;
+    z-index: 1;
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 8vw, 6rem) 1.5rem;
+    display: flex;
+    align-items: center;
+    min-height: inherit;
+  }
+  .hero-banner--align-left  .hero-banner__content { justify-content: flex-start; }
+  .hero-banner--align-center .hero-banner__content { justify-content: center; text-align: center; }
+
+  /* Constrain the inner message hierarchy to a readable measure */
+  .hero-banner__content :global(.hero-core) {
+    max-width: 56ch;
+  }
+  .hero-banner--align-center :global(.hero-core) {
+    align-items: center;
+    text-align: center;
+  }
+</style>
