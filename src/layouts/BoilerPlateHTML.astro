@@ -5,6 +5,13 @@ export interface Props {
   themeClass?: string;
   favicon?: string;
   noindex?: boolean;
+  /**
+   * Path to the OG/Twitter card image, relative to the site root (e.g. `/og-default.png`).
+   * Resolved against `Astro.site` to produce the absolute URL social platforms require.
+   * Generate the default image with `pnpm --filter fullstack-vc gen:og`.
+   */
+  image?: string;
+  ogType?: 'website' | 'article';
 }
 
 const {
@@ -13,7 +20,15 @@ const {
   themeClass = "theme-default",
   favicon = "/favicon.svg",
   noindex = false,
+  image = "/og-default.png",
+  ogType = "website",
 } = Astro.props;
+
+// Social platforms require absolute URLs. Astro.site is set in astro.config.mjs;
+// fall back to the request origin so dev previews still emit valid tags.
+const siteOrigin = Astro.site?.toString().replace(/\/$/, '') ?? Astro.url.origin;
+const ogImage = new URL(image, siteOrigin + '/').toString();
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin + '/').toString();
 ---
 
 <!DOCTYPE html>
@@ -25,6 +40,23 @@ const {
   <meta name="description" content={description} />
   {noindex && <meta name="robots" content="noindex, nofollow" />}
   <link rel="icon" href={favicon} type="image/svg+xml" />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={ogType} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:site_name" content="FullStack VC" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
 
   <!-- Pre-paint mode application to avoid FOUC -->
   <script is:inline>

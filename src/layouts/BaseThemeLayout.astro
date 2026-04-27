@@ -10,6 +10,9 @@ export interface Props {
   noindex?: boolean;
   containerClass?: string;
   hideChrome?: boolean;
+  /** Override the OG/Twitter card image for this page (path from site root). */
+  image?: string;
+  ogType?: 'website' | 'article';
 }
 
 const {
@@ -19,6 +22,8 @@ const {
   noindex = false,
   containerClass = '',
   hideChrome = false,
+  image,
+  ogType,
 } = Astro.props;
 ---
 
@@ -27,6 +32,8 @@ const {
   description={description}
   themeClass={themeClass}
   noindex={noindex}
+  image={image}
+  ogType={ogType}
 >
   <div class="min-h-screen flex flex-col">
     {!hideChrome && <Header />}

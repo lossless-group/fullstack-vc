@@ -10,14 +10,17 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "gen:banners": "node --experimental-strip-types --env-file=.env scripts/generate-changelog-banners.ts"
+    "gen:banners": "node --experimental-strip-types --env-file=.env scripts/generate-changelog-banners.ts",
+    "gen:og": "node --experimental-strip-types --env-file=.env scripts/generate-og-image.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
     "@astrojs/vercel": "^10.0.5",
+    "@lossless-group/lfm": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.7",
     "jose": "^6.2.2",
+    "mdast-util-to-string": "^4.0.0",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2"
   },
