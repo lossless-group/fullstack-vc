@@ -24,8 +24,13 @@ current_stack:
     notes: "Fast, feature-rich terminal emulator with GPU acceleration."
   - tool: hermes-agent
     added: 2026-04-28
-aspirational_stack: []
-abandoned_stack: []
+aspirational_stack:
+  - tool: crew-ai
+    intent: "Want to evaluate for VC diligence workflows."
+abandoned_stack:
+  - tool: cursor
+    abandoned: 2026-03-15
+    reason: "Switched to Windsurf — Cascade's memory + project rules suit my workflow better."
 ---
 
 Founder of Lossless Group and FullStack VC. Building the Agentic VC Dojo as a place for venture capitalists to practice using AI in their actual workflows.

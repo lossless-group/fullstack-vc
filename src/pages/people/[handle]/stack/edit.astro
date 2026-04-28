@@ -1,0 +1,93 @@
+---
+// Server-rendered. Auth gate. Hosts the StackBuilder Svelte island.
+//
+// The user must be logged in AND the URL handle must match their session subject.
+// On match, we prefill the form from their existing participants/{handle}.md
+// content collection entry (if any).
+
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../../../layouts/BaseThemeLayout.astro';
+import StackBuilder from '../../../../components/stack/StackBuilder.svelte';
+import { verifySession, SESSION_COOKIE_NAME } from '../../../../lib/session';
+import { matchesRoster } from '../../../../lib/oauth-roster';
+
+const { handle } = Astro.params;
+if (!handle) return Astro.redirect('/people', 302);
+
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+if (!session) {
+  // Not logged in — bounce to login, then redirect back here after.
+  return Astro.redirect(`/login?next=${encodeURIComponent(`/people/${handle}/stack/edit`)}`, 302);
+}
+
+// Only the owner can edit their own profile. Subject match is the gate.
+if (session.provider !== 'github' || session.subject.toLowerCase() !== handle.toLowerCase()) {
+  return Astro.redirect(`/people/${handle}`, 302);
+}
+
+const rosterEntry = matchesRoster(session);
+if (!rosterEntry) {
+  return Astro.redirect(`/login/not-on-roster?provider=${session.provider}`, 302);
+}
+
+// Prefill from existing participant entry if present.
+const allParticipants = await getCollection('participants');
+const existing = allParticipants.find(p => p.data.handle === handle);
+
+const initialName        = existing?.data.name ?? rosterEntry.name ?? session.name ?? '';
+const initialFirm        = existing?.data.firm ?? rosterEntry.firm ?? '';
+const initialPublic      = existing?.data.public_profile ?? false;
+const initialCurrent     = (existing?.data.current_stack ?? []).map(s => ({
+  tool: s.tool,
+  added: s.added ? new Date(s.added).toISOString().slice(0, 10) : undefined,
+  notes: s.notes,
+}));
+const avatar = existing?.data.headshot ?? existing?.data.github_avatar ?? session.avatar;
+---
+
+<BaseThemeLayout
+  title="Edit your stack · FullStack VC"
+  description="Edit the tools you use, your firm, and your public profile."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-3xl mx-auto"
+>
+  <a href={`/people/${handle}`} class="back-link">← View public profile</a>
+
+  <StackBuilder
+    client:load
+    handle={handle}
+    initialName={initialName}
+    initialFirm={initialFirm}
+    initialPublic={initialPublic}
+    initialCurrent={initialCurrent}
+    avatar={avatar}
+  />
+
+  <p class="logout-row">
+    <a class="logout-link" href="/api/auth/logout">Log out</a>
+  </p>
+</BaseThemeLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 150ms ease;
+  }
+  .back-link:hover { color: var(--color-primary); }
+  .logout-row {
+    margin-top: 2rem;
+  }
+  .logout-link {
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .logout-link:hover { color: var(--color-primary); }
+</style>

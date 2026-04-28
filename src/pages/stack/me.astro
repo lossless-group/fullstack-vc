@@ -1,118 +1,18 @@
 ---
-// Server-rendered (no `prerender = true`) — needs the request cookies.
-import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+// Backward-compat redirector. The edit surface lives at /people/{handle}/edit.
+// /stack/me is kept so old bookmarks + the prior OAuth callback target still work.
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
-import { matchesRoster } from '../../lib/oauth-roster';
 
 const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
 if (!session) return Astro.redirect('/login', 302);
-
-const rosterEntry = matchesRoster(session);
-// Defensive: a valid session should always match the roster, but if the roster
-// changed and a previously-valid user is now off it, send them home.
-if (!rosterEntry) return Astro.redirect('/login/not-on-roster?provider=' + session.provider, 302);
+if (session.provider === 'github') {
+  return Astro.redirect(`/people/${session.subject}/stack/edit`, 302);
+}
+// LinkedIn-provider users use an opaque `sub` for subject; for v0.5 we don't
+// have a stable handle for them. Send them to the public people index.
+return Astro.redirect('/people', 302);
 ---
 
-<BaseThemeLayout
-  title="Your Stack · FullStack VC"
-  description="Edit your stack — tools you use, tools you want, tools you've moved on from."
-  containerClass="px-6 py-12 max-w-3xl mx-auto"
->
-  <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
-    Logged in via {session.provider} · Kauffman {rosterEntry.kauffman_class}
-  </p>
-
-  <header class="me-header">
-    {session.avatar && <img class="me-avatar" src={session.avatar} alt="" width="56" height="56" />}
-    <div>
-      <h1 class="me-title">{rosterEntry.name ?? session.name ?? session.subject}</h1>
-      {rosterEntry.firm && <p class="me-firm">{rosterEntry.firm}</p>}
-    </div>
-  </header>
-
-  <section class="me-section">
-    <h2 class="me-section-title">Your stack</h2>
-    <p style="color: var(--color-text-muted); font-family: var(--font-code); font-size: 0.875rem;">
-      // The stack-builder UI lands in v0.2 of the Interactive Stack Display.
-      // For now this page just confirms the auth flow works end-to-end.
-    </p>
-    <p class="me-public-link">
-      <a href={`/people/${session.subject}`}>
-        View your public profile <span aria-hidden="true">→</span>
-      </a>
-    </p>
-  </section>
-
-  <footer class="me-footer">
-    <a href="/api/auth/logout" class="logout">Log out</a>
-  </footer>
-</BaseThemeLayout>
-
-<style>
-  .me-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .me-avatar {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    border: 1px solid var(--color-border);
-  }
-  .me-title {
-    font-family: var(--font-display);
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin: 0;
-  }
-  .me-firm {
-    margin: 0.25rem 0 0;
-    color: var(--color-text-muted);
-    font-family: var(--font-code);
-    font-size: 0.875rem;
-  }
-  .me-section {
-    padding: 1.5rem;
-    border-radius: 0.875rem;
-    background: var(--fx-card-bg);
-    border: 1px solid var(--fx-card-border);
-    margin-bottom: 2rem;
-  }
-  .me-section-title {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 0.75rem;
-  }
-  .me-public-link {
-    margin: 1rem 0 0;
-  }
-  .me-public-link a {
-    font-family: var(--font-code);
-    font-size: 0.875rem;
-    color: var(--color-primary);
-    text-decoration: none;
-    border-bottom: 1px dashed currentColor;
-    padding-bottom: 0.0625rem;
-    transition: color 150ms ease, border-color 150ms ease;
-  }
-  .me-public-link a:hover {
-    color: var(--color-text);
-    border-bottom-color: var(--color-text);
-  }
-  .me-footer {
-    margin-top: 2rem;
-  }
-  .logout {
-    color: var(--color-text-muted);
-    font-family: var(--font-code);
-    font-size: 0.8125rem;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-  .logout:hover { color: var(--color-primary); }
-</style>
+<!-- Unreachable: Astro.redirect() above always returns. This stub exists only
+     to satisfy Astro's "every page has a template" check. -->
+<p>Redirecting…</p>

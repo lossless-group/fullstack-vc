@@ -1,7 +1,7 @@
 {
   "name": "fullstack-vc",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "packageManager": "pnpm@10.15.0",
   "scripts": {
@@ -17,12 +17,14 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
+    "@astrojs/svelte": "^8.0.5",
     "@astrojs/vercel": "^10.0.5",
     "@lossless-group/lfm": "npm:@jsr/lossless-group__lfm@^0.2.1",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.7",
     "jose": "^6.2.2",
     "mdast-util-to-string": "^4.0.0",
+    "svelte": "^5.55.4",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2"
   },

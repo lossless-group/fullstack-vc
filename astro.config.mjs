@@ -2,6 +2,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 import { loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
+import svelte from '@astrojs/svelte';
 import path from 'path';
 
 // Load .env into process.env so server endpoints can read non-PUBLIC_ vars
@@ -21,6 +22,9 @@ export default defineConfig({
   // generation via `export const prerender = true;` at the top of each page.
   output: 'server',
   adapter: vercel(),
+
+  // Svelte islands for the interactive bits — StackBuilder is the first one.
+  integrations: [svelte()],
 
   // Astro 6 stable Fonts API. Emits @font-face + the named CSS variables that
   // theme.css's Tier 2 semantic tokens (--font-display/-body/-code) reference.

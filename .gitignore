@@ -2,6 +2,10 @@
 dist/
 .astro/
 
+# secrets
+private/
+*.pem
+
 # dependencies
 node_modules/
 

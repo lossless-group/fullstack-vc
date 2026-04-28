@@ -35,11 +35,27 @@ function emailsForEntry(entry: RosterEntry): string[] {
  * Resolve a session to its roster entry, or null if the user is not on the
  * allowlist. Use the returned entry to backfill participant profile fields
  * (kauffman_class, name, firm) on first login.
+ *
+ * Match precedence:
+ *   GitHub provider:   handle match → verified-email match (fallback).
+ *   LinkedIn provider: email match (primary or alias).
+ *
+ * The GitHub email fallback exists because most webinar registrants are
+ * roster'd by email; we don't always know their GitHub handle in advance.
+ * The fallback only fires when we have a session.email — the GitHub OAuth
+ * callback already fetches the user's primary verified email, so this is
+ * always populated for real GitHub logins.
  */
 export function matchesRoster(session: SessionPayload): RosterEntry | null {
   if (session.provider === 'github') {
     const handle = session.subject.toLowerCase();
-    return ROSTER.find(r => r.github?.toLowerCase() === handle) ?? null;
+    const byHandle = ROSTER.find(r => r.github?.toLowerCase() === handle);
+    if (byHandle) return byHandle;
+    if (session.email) {
+      const email = session.email.toLowerCase();
+      return ROSTER.find(r => emailsForEntry(r).includes(email)) ?? null;
+    }
+    return null;
   }
   if (session.provider === 'linkedin' && session.email) {
     const email = session.email.toLowerCase();

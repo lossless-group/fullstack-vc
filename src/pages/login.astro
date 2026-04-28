@@ -2,9 +2,14 @@
 import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
 import { verifySession, SESSION_COOKIE_NAME } from '../lib/session';
 
-// If already logged in, bounce straight to /stack/me.
+// If already logged in, bounce straight to the user's edit surface.
 const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
-if (session) return Astro.redirect('/stack/me', 302);
+if (session) {
+  if (session.provider === 'github') {
+    return Astro.redirect(`/people/${session.subject}/stack/edit`, 302);
+  }
+  return Astro.redirect('/people', 302);
+}
 ---
 
 <BaseThemeLayout

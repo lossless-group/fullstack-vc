@@ -107,5 +107,13 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const token = await signSession(session);
   cookies.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
 
-  return redirect('/stack/me', 302);
+  // Honor a `next=` param from the original login link if present (e.g., the
+  // edit page redirects unauthed users to /login?next=/people/foo/edit, and
+  // we round-trip them back here on success). Otherwise default to the user's
+  // own edit page.
+  const next = url.searchParams.get('state-next'); // forwarded by /login if needed
+  const dest = next && next.startsWith('/') && !next.startsWith('//')
+    ? next
+    : `/people/${ghUser.login}/stack/edit`;
+  return redirect(dest, 302);
 };
