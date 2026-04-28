@@ -3,6 +3,7 @@ export const prerender = true;
 import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
 import TextLinkSpan from '../components/buttons/TextLinkSpan.astro';
 import Section__HowItWorks from '../components/sections/Section__HowItWorks.astro';
+import AlertDisplay from '../components/ui/AlertDisplay.astro';
 ---
 
 <BaseThemeLayout
@@ -14,6 +15,14 @@ import Section__HowItWorks from '../components/sections/Section__HowItWorks.astr
       <a href="/brand-kit">Brand Kit</a>
       <a href="/design-system">Design System</a>
     </TextLinkSpan>
+  </div>
+
+  <div class="px-6 pt-4 max-w-4xl mx-auto">
+    <AlertDisplay id="fsvc-not-a-vc-2026-04">
+      <strong>FullStack VC is NOT a VC</strong>, or even a company. It's an information and
+      organization hub for the Kauffman Fellows AI SIG, and facilitates the Agentic VC Dojo.
+      We only make it a website because it's useful, and we can, and it's rad.
+    </AlertDisplay>
   </div>
 
   <section class="px-6 pt-12 pb-24 max-w-4xl mx-auto">
