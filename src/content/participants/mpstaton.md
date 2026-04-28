@@ -49,6 +49,8 @@ aspirational_stack:
     notes: "Workflow automation, mostly self-hosted."
   - tool: crew-ai
     intent: "Want to evaluate for VC diligence workflows."
+  - tool: firecrawl
+    intent: "Attempt to use for web scraping and content extraction."
 abandoned_stack:
   - tool: cursor
     abandoned: 2026-03-15

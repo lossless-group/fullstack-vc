@@ -21,8 +21,8 @@ const surveyModules = import.meta.glob<{ default: any }>(
 );
 
 export async function getStaticPaths() {
-  const webinars = await getCollection('webinars');
-  return webinars.map(entry => ({
+  const sessions = await getCollection('sessions');
+  return sessions.map(entry => ({
     params: { id: entry.id },
     props: { entry },
   }));
@@ -66,7 +66,7 @@ const survey = surveyModules[surveyKey]?.default ?? null;
   ogType="article"
   containerClass="px-6 py-12 max-w-3xl mx-auto"
 >
-  <a href="/webinars" class="back-link">← All sessions</a>
+  <a href="/sessions" class="back-link">← All sessions</a>
 
   <article class={`webinar-detail webinar-detail--${status.toLowerCase()}`}>
     <header class="webinar-detail__head">

@@ -100,8 +100,8 @@ const participants = defineCollection({
   }),
 });
 
-const webinars = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/webinars' }),
+const sessions = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/sessions' }),
   schema: z.object({
     title: z.string(),
     lede: z.string().optional(),
@@ -356,7 +356,7 @@ const workingGroups = defineCollection({
 
 export const collections = {
   pages,
-  webinars,
+  sessions,
   changelog,
   ventureWorkflows,
   projects,
