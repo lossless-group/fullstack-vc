@@ -182,6 +182,24 @@ const components = [
     cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-status-*, --color__bone, --font-display, --font-code',
     props: 'workingGroup: WorkingGroupEntry',
   },
+  {
+    name: 'ToolCard (stack)',
+    purpose: 'Tool entry visual for /stack — favicon + name + tagline + description + tag chips, with optional 16:9 screenshot at top. Visual ancestor: lossless.group/toolkit cards. Accepts partial tool entries (Obsidian-pasted files have sparse frontmatter). Optional annotation line surfaces stack-tier context (notes / intent / reason).',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
+    props: 'slug: string, data: ToolEntryData (partial), small?: boolean, notes?: string, intent?: string, reason?: string, abandoned?: string',
+  },
+  {
+    name: 'ParticipantCard (stack)',
+    purpose: 'Profile chip for /stack/people index. Avatar with primary halo + name + firm + role + tool-count + Kauffman class. Visual vocabulary copied from Section__WebinarPresenters avatar pattern. Whole card is a link to /stack/people/[handle].',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
+    props: 'handle: string, name: string, firm?: string, role?: string, avatar?: string, toolCount?: number, kauffmanClass?: number',
+  },
+  {
+    name: 'ParticipantStackView (stack)',
+    purpose: 'Three-tier stack panel: Current / Aspirational / Moved on from. Resolves tool slugs to entries from the `tools` content collection at render time. Missing references render as ghost cards so registry gaps surface visually. Used on /stack/people/[handle].',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
+    props: 'currentStack?, aspirationalStack?, abandonedStack? (each: { tool: slug, ...tier-specific fields }[])',
+  },
 ];
 ---
 

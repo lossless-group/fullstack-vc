@@ -1,6 +1,7 @@
 ---
 import BoilerPlateHTML from './BoilerPlateHTML.astro';
 import Header from '../components/basics/Header.astro';
+import Footer from '../components/basics/Footer.astro';
 import '../styles/global.css';
 
 export interface Props {
@@ -40,6 +41,7 @@ const {
     <main class={`flex-1 ${containerClass}`}>
       <slot />
     </main>
+    {!hideChrome && <Footer />}
   </div>
 
   <!-- Boot the switchers — no-op on SSR, hydrates client-side -->
