@@ -1,0 +1,478 @@
+---
+/* Section__HowItWorks
+   Below-hero explainer for the home page. Frames the Dojo against the
+   Kauffman Fellowship + Special Interest Groups (wisdom & network →
+   contextual knowledge), and positions FullStack VC as the procedural-skill
+   counterpart. Then renders a three-tier relationship diagram
+   (Dojo → All Hands ‖ Working Groups → Projects) and four explainer cards.
+
+   Pure semantic tokens. Mode-aware. No props — all copy lives in this file
+   so the home page composes it as a one-liner. */
+---
+
+<section class="hiw" aria-labelledby="hiw-heading">
+  <header class="hiw__header">
+    <p class="hiw__eyebrow">How the Dojo works</p>
+    <h2 id="hiw-heading" class="hiw__heading">
+      Wisdom and network alone <span class="hiw__heading-accent">aren't enough anymore.</span>
+    </h2>
+    <div class="hiw__intro">
+      <p>
+        The <strong>Kauffman Fellowship</strong> — and its alumni <strong>Special Interest Groups</strong> —
+        do something the venture industry can't get without them: <em>contextual</em> knowledge,
+        pattern recognition, relationships, exposure to deals and ideas across an unmatched network.
+        That's what wisdom is, in venture. Vital, and not going anywhere.
+      </p>
+      <p>
+        But the new VC job also requires <em>procedural</em> craft — writing the prompts,
+        wiring the agents, querying the data, shipping the workflow that turns scattered signal into
+        a partner-meeting-ready memo. That part is hands, not just heads. It's a different muscle,
+        learned by doing alongside other people who are also doing.
+      </p>
+      <p class="hiw__intro-pop">
+        <strong>The Dojo</strong> is where members of the Kauffman + adjacent VC community come to
+        practice that craft together. It's <em>complementary</em> with the Fellowship — not a
+        replacement. No degree, no professors, no curriculum to graduate from.
+        Just a working community of practice.
+      </p>
+    </div>
+  </header>
+
+  <!-- Hierarchy diagram: Dojo → All Hands → (Working Groups → Projects) -->
+  <div class="hiw__diagram" role="img" aria-label="Hierarchy: the Dojo orchestrates All Hands; All Hands is the parent of both Working Groups and Projects; Working Groups choose and run Projects.">
+    <!-- Tier 1: Dojo -->
+    <div class="hiw__tier hiw__tier--top">
+      <div class="hiw__node hiw__node--dojo">
+        <p class="hiw__node-label">The Dojo</p>
+        <p class="hiw__node-sub">FullStack VC · community of practice</p>
+      </div>
+    </div>
+
+    <!-- Tier 2: All Hands (alone, parent of WG + Projects) -->
+    <div class="hiw__tier hiw__tier--mid">
+      <div class="hiw__node hiw__node--all-hands">
+        <p class="hiw__node-label">All Hands</p>
+        <p class="hiw__node-sub">Monthly · everyone welcome</p>
+      </div>
+    </div>
+
+    <!-- Tier 3: Working Groups → Projects (siblings, with arrow showing flow) -->
+    <div class="hiw__tier hiw__tier--bot">
+      <div class="hiw__node hiw__node--working-groups">
+        <p class="hiw__node-label">Working Groups</p>
+        <p class="hiw__node-sub">Theme-based · member-led</p>
+      </div>
+
+      <div class="hiw__arrow" aria-hidden="true">
+        <svg viewBox="0 0 80 16" preserveAspectRatio="none" focusable="false">
+          <line x1="0" y1="8" x2="68" y2="8" stroke="currentColor" stroke-width="2" />
+          <polygon points="68,2 80,8 68,14" fill="currentColor" />
+        </svg>
+      </div>
+
+      <div class="hiw__node hiw__node--projects">
+        <p class="hiw__node-label">Projects</p>
+        <p class="hiw__node-sub">Concrete work · many-to-many</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Explainer: outer container = the Dojo (border + violet tint).
+       Left zone = Dojo's own intro panel.
+       Right zone = a 3-card grid for All Hands / Working Groups / Projects. -->
+  <div class="hiw__cards" role="group" aria-label="Components of the Dojo community">
+    <article class="hiw__dojo-panel">
+      <p class="hiw__card-eyebrow">Umbrella</p>
+      <h3 class="hiw__card-title hiw__card-title--dojo">The Dojo</h3>
+      <p class="hiw__card-body">
+        FullStack VC's working community. A place to build hard-skill fluency in AI, agents, data,
+        and workflows alongside peers — not a program with a syllabus, but a practice with people.
+      </p>
+      <p class="hiw__dojo-tagline">Inside the Dojo:</p>
+    </article>
+
+    <ul class="hiw__children">
+      <li class="hiw__card">
+        <p class="hiw__card-eyebrow">Watering hole</p>
+        <h3 class="hiw__card-title">All Hands</h3>
+        <p class="hiw__card-body">
+          Monthly Zoom webinar facilitated by the Kauffman Fellows Community Manager. A guest presenter
+          for part of the meeting; working groups present results for the rest. <em>Open to all.</em>
+          The right entry point if you're "just curious" — most members start here.
+        </p>
+        <a class="hiw__card-link" href="/webinars/">See upcoming All Hands →</a>
+      </li>
+
+      <li class="hiw__card">
+        <p class="hiw__card-eyebrow">Practice layer</p>
+        <h3 class="hiw__card-title">Working Groups</h3>
+        <p class="hiw__card-body">
+          Theme-based small communities led by members. Cadence varies — some meet weekly, some
+          rarely meet and collaborate digitally instead. Soft expectations about participation
+          (social, not enforced). Each group self-organizes around recurring problems.
+        </p>
+        <a class="hiw__card-link" href="/working-groups/">Browse working groups →</a>
+      </li>
+
+      <li class="hiw__card">
+        <p class="hiw__card-eyebrow">Concrete work</p>
+        <h3 class="hiw__card-title">Projects</h3>
+        <p class="hiw__card-body">
+          Specific artifacts that working groups commit to building or learning together — a
+          workflow, a prototype, a methodology, a library. Many-to-many with working groups (one
+          project can serve multiple groups, one group can run several projects).
+        </p>
+        <a class="hiw__card-link" href="/projects/">See active projects →</a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hiw {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 6vw, 5rem) 1.5rem clamp(4rem, 8vw, 6rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  /* ---------- Header ---------- */
+  .hiw__header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 52rem;
+  }
+  .hiw__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .hiw__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.875rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-text);
+  }
+  .hiw__heading-accent {
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--color-primary);
+  }
+  .hiw__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .hiw__intro p {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--color-text);
+  }
+  .hiw__intro strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .hiw__intro em {
+    color: var(--color-primary);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .hiw__intro-pop {
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border);
+    color: var(--color-text);
+  }
+
+  /* ---------- Hierarchy diagram ---------- */
+  .hiw__diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;            /* tier spacing controlled by per-tier padding + connectors */
+    padding: 2.5rem 1.5rem;
+    border-radius: 1rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+  }
+  .hiw__tier {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    position: relative;
+  }
+  /* Tier vertical spacing — the trailing padding leaves room for the connector. */
+  .hiw__tier--top { padding-bottom: 2rem; }
+  .hiw__tier--mid { padding-bottom: 2rem; }
+  .hiw__tier--bot { padding-top: 0; }
+
+  /* ---- Connector lines ---- */
+  /* Tier 1 → Tier 2: single vertical line down from Dojo to All Hands. */
+  .hiw__tier--top::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0.5rem;
+    width: 2px;
+    height: 1.5rem;
+    background: var(--color-primary);
+    opacity: 0.55;
+    transform: translateX(-50%);
+  }
+  /* Tier 2 → Tier 3: vertical drop from All Hands, then horizontal branch
+     reaching the centers of Working Groups (left) and Projects (right). */
+  .hiw__tier--mid::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 2px;
+    height: 1rem;
+    background: var(--color-primary);
+    opacity: 0.55;
+    transform: translateX(-50%);
+  }
+  .hiw__tier--bot::before {
+    content: '';
+    position: absolute;
+    top: -1rem;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background: var(--color-primary);
+    opacity: 0.55;
+  }
+  /* Drop-down stubs from the horizontal branch to each child node. */
+  .hiw__tier--bot .hiw__node--working-groups::before,
+  .hiw__tier--bot .hiw__node--projects::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -1rem;
+    width: 2px;
+    height: 1rem;
+    background: var(--color-primary);
+    opacity: 0.55;
+    transform: translateX(-50%);
+  }
+
+  /* Tier nodes (cards) */
+  .hiw__node {
+    flex: 0 1 auto;
+    min-width: 14rem;
+    max-width: 22rem;
+    padding: 1.125rem 1.5rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    position: relative;
+  }
+  .hiw__node:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+  }
+  .hiw__node--dojo {
+    border: 1px solid var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    max-width: 32rem;
+  }
+  .hiw__node--all-hands { max-width: 26rem; }
+  .hiw__node--working-groups { max-width: 18rem; }
+  .hiw__node--projects { max-width: 18rem; }
+
+  .hiw__node-label {
+    margin: 0 0 0.375rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+  .hiw__node--dojo .hiw__node-label {
+    font-size: 1.375rem;
+    color: var(--color-primary);
+  }
+  .hiw__node-sub {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ---- Arrow connector: Working Groups → Projects ---- */
+  .hiw__arrow {
+    flex: 0 0 auto;
+    width: 4rem;
+    height: 1rem;
+    color: var(--color-primary);
+    opacity: 0.85;
+    align-self: center;
+  }
+  .hiw__arrow svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Mobile: stack Tier 3 vertically; rotate arrow + swap horizontal branch
+     for a single vertical line from All Hands. */
+  @media (max-width: 640px) {
+    .hiw__tier--bot {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    /* Hide the horizontal branch + the per-node drop stubs in stacked mode;
+       the existing vertical drop from All Hands suffices. */
+    .hiw__tier--bot::before { display: none; }
+    .hiw__tier--bot .hiw__node--working-groups::before,
+    .hiw__tier--bot .hiw__node--projects::before { display: none; }
+
+    /* Arrow becomes a downward connector between WG and Projects. */
+    .hiw__arrow {
+      width: 1rem;
+      height: 2rem;
+      transform: rotate(90deg);
+    }
+  }
+
+  /* ---------- Explainer: Dojo container with 3 children inside ----------
+     Outer .hiw__cards = the Dojo card (border + violet tint).
+     Left zone = Dojo's intro panel; right zone = the 3 child cards.
+     Mirrors the diagram: All Hands / Working Groups / Projects all live
+     under the Dojo umbrella, visualized as nested cards inside a
+     primary-bordered container. */
+  .hiw__cards {
+    border: 1px solid var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 6%, var(--fx-card-bg));
+    border-radius: 1rem;
+    padding: 1.75rem;
+    box-shadow: var(--fx-card-shadow);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  @media (min-width: 1100px) {
+    .hiw__cards {
+      /* Wide: Dojo intro on the left (~16rem), 3 child cards on the right. */
+      grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  /* Left zone — Dojo intro panel (no separate border; the outer container
+     already provides it. Just content. Anchored top-left.) */
+  .hiw__dojo-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.25rem;
+  }
+  .hiw__dojo-tagline {
+    margin: auto 0 0;
+    padding-top: 0.875rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    border-top: 1px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  }
+
+  /* Right zone — 3 child cards, sub-grid */
+  .hiw__children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .hiw__children { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Card style — the three children. They sit ON the violet-tinted Dojo
+     surface, so they use --fx-card-bg (which is the un-tinted card bg)
+     to "pop out" of the container. */
+  .hiw__card {
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .hiw__card:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+  .hiw__card-eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .hiw__card-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+  .hiw__card-title--dojo {
+    color: var(--color-primary);
+    font-size: 1.625rem;
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hiw__card-body {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-text);
+    flex: 1;
+  }
+  .hiw__card-body em {
+    color: var(--color-primary);
+    font-style: italic;
+  }
+  .hiw__card-link {
+    margin-top: auto;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+  .hiw__card-link:hover {
+    color: var(--color-text);
+  }
+</style>

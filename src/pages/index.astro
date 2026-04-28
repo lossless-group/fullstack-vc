@@ -2,6 +2,7 @@
 export const prerender = true;
 import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
 import TextLinkSpan from '../components/buttons/TextLinkSpan.astro';
+import Section__HowItWorks from '../components/sections/Section__HowItWorks.astro';
 ---
 
 <BaseThemeLayout
@@ -46,14 +47,7 @@ import TextLinkSpan from '../components/buttons/TextLinkSpan.astro';
     >
       Join the Dojo
     </a>
-
-    <div
-      class="mt-20 p-6 rounded-xl"
-      style="background: var(--fx-card-bg); border: 1px solid var(--fx-card-border); box-shadow: var(--fx-card-shadow);"
-    >
-      <p style="color: var(--color-text-muted); font-family: var(--font-code); font-size: 0.875rem;">
-        // status: scaffolding · brand TBD · iterate from here
-      </p>
-    </div>
   </section>
+
+  <Section__HowItWorks />
 </BaseThemeLayout>
