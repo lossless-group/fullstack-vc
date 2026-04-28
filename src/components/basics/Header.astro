@@ -3,6 +3,7 @@ import ModeToggle from '../ui/ModeToggle.astro';
 import SocialsFaviconRow from './SocialsFaviconRow.astro';
 import JumboPopdown__Projects from '../ui/menus/JumboPopdown__Projects.astro';
 import JumboPopdown__WorkingGroups from '../ui/menus/JumboPopdown__WorkingGroups.astro';
+import MobileNav from './MobileNav.astro';
 import { loadProjectsForPopdown } from '../../lib/load-projects';
 import { loadWorkingGroupsForPopdown } from '../../lib/load-working-groups';
 
@@ -31,6 +32,7 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     <div class="site-header__actions">
       <SocialsFaviconRow github="https://github.com/lossless-group/fullstack-vc" />
       <ModeToggle />
+      <MobileNav popdownProjects={popdownProjects} popdownWorkingGroups={popdownWorkingGroups} />
     </div>
   </div>
 </header>
@@ -103,6 +105,10 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    /* Anchor the right-side cluster regardless of nav visibility.
+       The desktop nav also has margin-left: auto, but when nav is
+       display:none on mobile, this rule keeps the actions pinned right. */
+    margin-left: auto;
   }
   @media (max-width: 640px) {
     .site-header__nav {
