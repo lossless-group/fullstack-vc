@@ -14,14 +14,14 @@
   <header class="hiw__header">
     <p class="hiw__eyebrow">How the Dojo works</p>
     <h2 id="hiw-heading" class="hiw__heading">
-      Wisdom and network alone <span class="hiw__heading-accent">aren't enough anymore.</span>
+      Wisdom and network + <span class="hiw__heading-accent">a deliberate tech stack and AI mastery</span> can make you a <span class="hiw__heading-accent"> FullStack VC</span>
     </h2>
     <div class="hiw__intro">
       <p>
         The <strong>Kauffman Fellowship</strong> — and its alumni <strong>Special Interest Groups</strong> —
         do something the venture industry can't get without them: <em>contextual</em> knowledge,
         pattern recognition, relationships, exposure to deals and ideas across an unmatched network.
-        That's what wisdom is, in venture. Vital, and not going anywhere.
+        Wisdom and acces are paramount in venture. Vital, and not going anywhere.
       </p>
       <p>
         But the new VC job also requires <em>procedural</em> craft — writing the prompts,
@@ -187,7 +187,16 @@
   .hiw__intro em {
     color: var(--color-primary);
     font-style: italic;
-    font-weight: 500;
+    font-weight: 700;
+  }
+  :global([data-mode="light"]) .hiw__intro em {
+    color: #5b21b6;
+  }
+  :global([data-mode="dark"]) .hiw__intro em {
+    color: #c4b5fd;
+  }
+  :global([data-mode="vibrant"]) .hiw__intro em {
+    color: #caff5c;
   }
   .hiw__intro-pop {
     padding-top: 0.5rem;
@@ -476,3 +485,4 @@
     color: var(--color-text);
   }
 </style>
+

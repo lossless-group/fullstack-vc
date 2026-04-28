@@ -1,0 +1,116 @@
+---
+/* Section__WebinarFirmsRepresented
+   Wrapping grid of firm-name pills, one per distinct firm in the registrant
+   list. Multi-attendee firms get a small count badge. */
+
+interface Firm {
+  name: string;
+  domains: string[];
+  count: number;
+}
+interface Props {
+  firms: Firm[];
+}
+
+const { firms } = Astro.props;
+---
+
+<section class="wsfirms" aria-labelledby="wsfirms-heading">
+  <p class="wsfirms__eyebrow">In the room</p>
+  <h2 id="wsfirms-heading" class="wsfirms__heading">
+    {firms.length} firms <span class="wsfirms__heading-accent">already on the registrant list</span>
+  </h2>
+  <p class="wsfirms__lede">
+    Funds, family offices, and operator-led shops — early-stage to growth, North America to MENA to LATAM to SE Asia.
+  </p>
+
+  <ul class="wsfirms__grid" role="list">
+    {firms.map(firm => (
+      <li class="wsfirms__pill">
+        <span class="wsfirms__name">{firm.name}</span>
+        {firm.count > 1 && (
+          <span class="wsfirms__count" aria-label={`${firm.count} attendees from ${firm.name}`}>
+            ×{firm.count}
+          </span>
+        )}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .wsfirms {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+  .wsfirms__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .wsfirms__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .wsfirms__heading-accent {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .wsfirms__lede {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+  }
+
+  .wsfirms__grid {
+    list-style: none;
+    margin: 0;
+    padding: 1.25rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .wsfirms__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    padding: 0.4375rem 0.875rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    transition: border-color 150ms ease, color 150ms ease, transform 150ms ease;
+  }
+  .wsfirms__pill:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-1px);
+  }
+  .wsfirms__count {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 0.0625rem 0.375rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  }
+</style>

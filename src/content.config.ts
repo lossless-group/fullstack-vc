@@ -18,10 +18,32 @@ const webinars = defineCollection({
     date_scheduled: z.coerce.date(),
     date_posted: z.coerce.date().optional(),
     durationMinutes: z.number().optional(),
+    hosts: z.array(z.string()).optional(),
     presenters: z.array(z.string()).optional(),
+    // Richer presenter blocks driving the avatar-card section. When present,
+    // the page renders these as a card list and suppresses the simple "With"
+    // text row. Each entry can carry a topic (the demo they're presenting on).
+    presenterDetails: z.array(z.object({
+      name: z.string(),
+      firm: z.string().optional(),
+      role: z.string().optional(),
+      headshot: z.string().optional(),
+      linkedin: z.string().url().optional(),
+      topic: z.string().optional(),
+    })).optional(),
     tags: z.array(z.string()).optional(),
     rsvpUrl: z.string().url().optional(),
     recordingUrl: z.string().url().optional(),
+    og_image: z.string().optional(),
+    // Partner co-branding mark (e.g., Kauffman Fellows). When set, the page
+    // renders a mode-aware logo block at the top of the article.
+    partnerMark: z.object({
+      name: z.string(),
+      light: z.string(),
+      dark: z.string(),
+      vibrant: z.string(),
+      url: z.string().url().optional(),
+    }).optional(),
     // status is NOT in frontmatter — derived at render time from date_scheduled.
     // See: src/lib/webinar-status.ts
   }),

@@ -140,6 +140,14 @@ const areasIntro = 'Ten workflow areas that show up across nearly every venture 
           ctaHref="/changelog"
           ctaLabel="Browse the dispatches"
         />
+
+        <AlternateCta
+          title="Read a sample Venture Handbook"
+          bodyHtml={`<p>Perspective and Practice of venture — sourcing, diligence, winning deals, governance, exits, and everything between. The Kauffman Fellows Class 20 living draft, rendered as a book-style reader on the open web.</p>`}
+          trailingHtml={`Adapted from the <a href="https://kauffmanfellows.org">Kauffman Fellows</a> Class 20 living draft.`}
+          ctaHref="/read/venture-handbook"
+          ctaLabel="Skim the Handbook"
+        />
       </div>
     </section>
 
@@ -196,5 +204,10 @@ const areasIntro = 'Ten workflow areas that show up across nearly every venture 
     }
   }
   .dojo-top__primary { min-width: 0; }
-  .dojo-top__aside { min-width: 0; }
+  .dojo-top__aside {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 </style>

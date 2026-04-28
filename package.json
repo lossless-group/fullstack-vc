@@ -12,7 +12,8 @@
     "check": "astro check",
     "gen:banners": "node --experimental-strip-types --env-file=.env scripts/generate-changelog-banners.ts",
     "gen:og": "node --experimental-strip-types --env-file=.env scripts/generate-og-image.ts",
-    "gen:content-banners": "node --experimental-strip-types --env-file=.env scripts/generate-content-banners-on-dir.ts"
+    "gen:content-banners": "node --experimental-strip-types --env-file=.env scripts/generate-content-banners-on-dir.ts",
+    "gen:webinar-survey": "node --experimental-strip-types scripts/build-webinar-survey.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",

@@ -1,0 +1,139 @@
+---
+/* Section__WebinarSurveyStats
+   4-tile headline grid that frames the registrant survey. Reads only the
+   `totals` slice of the survey JSON. Pure semantic tokens, mode-aware. */
+
+interface Totals {
+  registered: number;
+  surveyed: number;
+  firms: number;
+  activeRate: number;
+}
+interface Props {
+  totals: Totals;
+  contextSetterTxt?: string;
+}
+
+const { totals, contextSetterTxt = "Who's already in the room" } = Astro.props;
+---
+
+<section class="wsstats" aria-labelledby="wsstats-heading">
+  <p class="wsstats__eyebrow">{contextSetterTxt}</p>
+  <h2 id="wsstats-heading" class="wsstats__heading">
+    A working room of <span class="wsstats__heading-accent">VCs already building</span>
+  </h2>
+
+  <ul class="wsstats__grid" role="list">
+    <li class="wsstats__tile">
+      <span class="wsstats__num">{totals.registered}</span>
+      <span class="wsstats__label">Registered</span>
+      <span class="wsstats__hint">Kauffman Fellows + invited peers</span>
+    </li>
+    <li class="wsstats__tile">
+      <span class="wsstats__num">{totals.firms}</span>
+      <span class="wsstats__label">Firms represented</span>
+      <span class="wsstats__hint">Distinct funds, on five continents</span>
+    </li>
+    <li class="wsstats__tile">
+      <span class="wsstats__num">{totals.activeRate}<span class="wsstats__unit">%</span></span>
+      <span class="wsstats__label">Already building</span>
+      <span class="wsstats__hint">Of survey respondents — workflows, agents, or both</span>
+    </li>
+    <li class="wsstats__tile">
+      <span class="wsstats__num">{totals.surveyed}</span>
+      <span class="wsstats__label">Shared their context</span>
+      <span class="wsstats__hint">Survey responses we'll workshop together</span>
+    </li>
+  </ul>
+</section>
+
+<style>
+  .wsstats {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+  .wsstats__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .wsstats__heading {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .wsstats__heading-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .wsstats__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.875rem;
+  }
+  @media (min-width: 720px) {
+    .wsstats__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  .wsstats__tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.25rem 1rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  }
+  .wsstats__tile:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+  .wsstats__num {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-primary);
+    letter-spacing: -0.03em;
+  }
+  .wsstats__unit {
+    font-size: 0.6em;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-left: 0.05em;
+  }
+  .wsstats__label {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 0.125rem;
+  }
+  .wsstats__hint {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+</style>

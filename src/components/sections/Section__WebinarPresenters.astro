@@ -1,0 +1,243 @@
+---
+/* Section__WebinarPresenters
+   Presenter showcase used inside the webinar detail card. Each presenter
+   gets a row: avatar + name/firm/role on the left, "presenting on" topic on
+   the right. Mobile collapses topic below. Optional `hosts` line under the
+   cards (rendered when the page passes a non-empty array). */
+
+interface Presenter {
+  name: string;
+  firm?: string;
+  role?: string;
+  headshot?: string;
+  linkedin?: string;
+  topic?: string;
+}
+interface Props {
+  presenters: Presenter[];
+  hosts?: string[];
+}
+
+const { presenters, hosts = [] } = Astro.props;
+
+function initials(name: string): string {
+  return name.split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
+}
+---
+
+<section class="wpres" aria-labelledby="wpres-heading">
+  <header class="wpres__head">
+    <p class="wpres__eyebrow">With</p>
+    <h2 id="wpres-heading" class="wpres__heading">Speed-demo presenters</h2>
+  </header>
+
+  <ul class="wpres__list" role="list">
+    {presenters.map(p => (
+      <li class="wpres__row">
+        <div class="wpres__person">
+          {p.headshot ? (
+            <img class="wpres__avatar" src={p.headshot} alt="" loading="lazy" decoding="async" />
+          ) : (
+            <span class="wpres__avatar wpres__avatar--initials" aria-hidden="true">{initials(p.name)}</span>
+          )}
+          <div class="wpres__id">
+            <p class="wpres__name">
+              {p.linkedin
+                ? <a href={p.linkedin} target="_blank" rel="noopener noreferrer">{p.name}</a>
+                : p.name}
+            </p>
+            {p.firm && <p class="wpres__firm">{p.firm}</p>}
+            {p.role && <p class="wpres__role">{p.role}</p>}
+          </div>
+        </div>
+        {p.topic && (
+          <div class="wpres__topic">
+            <span class="wpres__topic-eyebrow">Presenting on</span>
+            <p class="wpres__topic-body">{p.topic}</p>
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
+
+  {hosts.length > 0 && (
+    <p class="wpres__hosts">
+      <span class="wpres__hosts-label">Hosted by</span>
+      <span class="wpres__hosts-names">{hosts.join(' & ')}</span>
+    </p>
+  )}
+</section>
+
+<style>
+  .wpres {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0 0 1.75rem;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .wpres__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .wpres__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .wpres__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .wpres__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .wpres__row {
+    display: grid;
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .wpres__row:hover {
+    border-color: var(--fx-card-border-hover);
+    transform: translateX(2px);
+    box-shadow: var(--fx-card-shadow);
+  }
+
+  .wpres__person {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .wpres__avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+    flex: 0 0 auto;
+  }
+  .wpres__avatar--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+  .wpres__id { min-width: 0; display: flex; flex-direction: column; gap: 0.0625rem; }
+  .wpres__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+  .wpres__name a {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--color-primary), var(--color-primary));
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 200ms ease, color 150ms ease;
+  }
+  .wpres__name a:hover {
+    color: var(--color-primary);
+    background-size: 100% 1px;
+  }
+  .wpres__firm {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+  .wpres__role {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .wpres__topic {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1875rem;
+    padding-left: 1rem;
+    border-left: 2px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  }
+  .wpres__topic-eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .wpres__topic-body {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+
+  .wpres__hosts {
+    margin: 0.25rem 0 0;
+    padding-top: 0.625rem;
+    border-top: 1px dashed var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+    font-size: 0.875rem;
+  }
+  .wpres__hosts-label {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .wpres__hosts-names {
+    color: var(--color-text);
+  }
+
+  /* Mobile: stack topic below the person row */
+  @media (max-width: 600px) {
+    .wpres__row { grid-template-columns: 1fr; gap: 0.625rem; }
+    .wpres__topic {
+      padding-left: 0;
+      padding-top: 0.625rem;
+      border-left: 0;
+      border-top: 1px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+    }
+  }
+</style>

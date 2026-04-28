@@ -1,7 +1,7 @@
 ---
 title: "Dealflow OS"
 slug: "dealflow-os"
-lede: "A proposed working group on building a personal dealflow operating system — sourcing, triage, and 'no' as a craft."
+lede: "A dealflow operating system — sourcing, triage, and 'no' as a craft."
 summary: "Dealflow OS is the working group we want to start: investing as an information-processing problem, where the bottleneck is your ability to say no fast and well. Looking for 4–6 committed members."
 status: proposed
 date_initiated: 2026-04-15

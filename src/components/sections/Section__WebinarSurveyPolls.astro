@@ -1,0 +1,277 @@
+---
+/* Section__WebinarSurveyPolls
+   Two sub-blocks fed from the survey JSON:
+     1. Horizontal bar chart of the "current experience" multi-select.
+     2. Tool-stack maturity matrix (3 rows × Simple/Intermediate/Not-yet).
+   Pure CSS, no charting library — bars are flexbox + width:%. */
+
+interface ExpItem { label: string; count: number }
+type ToolKey = 'native' | 'local' | 'builders';
+interface ToolRow {
+  key: ToolKey;
+  label: string;
+  hint: string;
+  counts: { simple: number; intermediate: number; advanced: number; none: number };
+}
+interface Props {
+  experience: ExpItem[];
+  toolStack: { rows: ToolRow[] };
+  surveyed: number;
+}
+
+const { experience, toolStack, surveyed } = Astro.props;
+
+const expMax = Math.max(1, ...experience.map(e => e.count));
+const expRows = experience.map(e => ({
+  ...e,
+  pct: Math.round((e.count / expMax) * 100),
+  share: Math.round((e.count / Math.max(1, surveyed)) * 100),
+}));
+
+// 4 cells per row: simple, intermediate, advanced, not-yet. We show Advanced
+// even when zero because the *absence* is itself signal — it tells you where
+// the room is calibrated. Cell intensity = count / surveyed.
+const toolCells = toolStack.rows.map(row => {
+  const total = surveyed;
+  const cells = [
+    { key: 'simple',       label: 'Simple',       count: row.counts.simple },
+    { key: 'intermediate', label: 'Intermediate', count: row.counts.intermediate },
+    { key: 'advanced',     label: 'Advanced',     count: row.counts.advanced },
+    { key: 'none',         label: 'Not yet',      count: row.counts.none },
+  ];
+  return { ...row, cells, total };
+});
+---
+
+<section class="wspolls" aria-labelledby="wspolls-heading">
+  <p class="wspolls__eyebrow">Where the room sits today</p>
+  <h2 id="wspolls-heading" class="wspolls__heading">
+    Pre-event survey signal
+  </h2>
+  <p class="wspolls__lede">
+    {surveyed} registrants answered. Multi-select on the experience question, single-pick per tier on tools.
+  </p>
+
+  <div class="wspolls__block">
+    <h3 class="wspolls__block-title">How they describe their AI/agentic practice</h3>
+    <ul class="wspolls__bars" role="list">
+      {expRows.map(row => (
+        <li class="wspolls__bar-row">
+          <span class="wspolls__bar-label" title={row.label}>{row.label}</span>
+          <span
+            class="wspolls__bar-track"
+            role="meter"
+            aria-valuenow={row.count}
+            aria-valuemin={0}
+            aria-valuemax={surveyed}
+            aria-label={`${row.label}: ${row.count} of ${surveyed}`}
+          >
+            <span class="wspolls__bar-fill" style={`width: ${row.pct}%`}></span>
+          </span>
+          <span class="wspolls__bar-count">{row.count}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="wspolls__block">
+    <h3 class="wspolls__block-title">Tool stack — what they're already using</h3>
+    <div class="wspolls__matrix" role="table" aria-label="Tool stack maturity matrix">
+      <div class="wspolls__matrix-head" role="row">
+        <span></span>
+        <span role="columnheader">Simple</span>
+        <span role="columnheader">Intermediate</span>
+        <span role="columnheader">Advanced</span>
+        <span role="columnheader">Not yet</span>
+      </div>
+      {toolCells.map(row => (
+        <div class="wspolls__matrix-row" role="row">
+          <div class="wspolls__matrix-rowhead" role="rowheader">
+            <span class="wspolls__matrix-rowlabel">{row.label}</span>
+            <span class="wspolls__matrix-rowhint">{row.hint}</span>
+          </div>
+          {row.cells.map(cell => {
+            const intensity = row.total > 0 ? Math.min(1, cell.count / row.total) : 0;
+            const cls = cell.key === 'none' ? 'wspolls__cell wspolls__cell--mute' : 'wspolls__cell';
+            return (
+              <div
+                class={cls}
+                role="cell"
+                style={`--cell-intensity: ${intensity};`}
+                aria-label={`${row.label} — ${cell.label}: ${cell.count}`}
+              >
+                <span class="wspolls__cell-count">{cell.count}</span>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .wspolls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+  .wspolls__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .wspolls__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .wspolls__lede {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+  }
+
+  /* ---- Block wrapper (shared by bars + matrix) ---- */
+  .wspolls__block {
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+  }
+  .wspolls__block + .wspolls__block { margin-top: 1rem; }
+  .wspolls__block-title {
+    margin: 0 0 1rem;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* ---- Bars ---- */
+  .wspolls__bars {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .wspolls__bar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(6rem, 14rem) auto;
+    gap: 0.875rem;
+    align-items: center;
+  }
+  .wspolls__bar-label {
+    font-size: 0.875rem;
+    color: var(--color-text);
+    line-height: 1.35;
+  }
+  .wspolls__bar-track {
+    position: relative;
+    height: 0.625rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+  .wspolls__bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 999px;
+    transition: width 250ms ease;
+  }
+  .wspolls__bar-count {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    min-width: 1.5rem;
+  }
+
+  /* ---- Matrix ---- */
+  .wspolls__matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+  }
+  .wspolls__matrix-head,
+  .wspolls__matrix-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(4, minmax(0, 1fr));
+    gap: 0.375rem;
+    align-items: stretch;
+  }
+  .wspolls__matrix-head {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    padding: 0 0.5rem;
+  }
+  .wspolls__matrix-head > span {
+    text-align: center;
+    padding: 0 0.25rem;
+  }
+  .wspolls__matrix-rowhead {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .wspolls__matrix-rowlabel {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+  .wspolls__matrix-rowhint {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    margin-top: 0.125rem;
+  }
+  .wspolls__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 0.5rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--color-primary) calc(var(--cell-intensity, 0) * 70%), var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-primary) calc(var(--cell-intensity, 0) * 50%), var(--color-border));
+    color: var(--color-text);
+    font-family: var(--font-code);
+    font-weight: 600;
+    transition: background 200ms ease, border-color 200ms ease;
+  }
+  .wspolls__cell--mute {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+  }
+  .wspolls__cell-count { font-size: 1rem; }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 600px) {
+    .wspolls__bar-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .wspolls__bar-track { grid-column: 1 / -1; }
+  }
+</style>

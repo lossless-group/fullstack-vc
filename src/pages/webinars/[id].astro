@@ -6,6 +6,19 @@ import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
 import Sources from '../../components/markdown/Sources.astro';
 import { inferWebinarStatus } from '../../lib/webinar-status';
+import Section__WebinarSurveyStats from '../../components/sections/Section__WebinarSurveyStats.astro';
+import Section__WebinarSurveyPolls from '../../components/sections/Section__WebinarSurveyPolls.astro';
+import Section__WebinarFirmsRepresented from '../../components/sections/Section__WebinarFirmsRepresented.astro';
+import Section__WebinarSurveyVoices from '../../components/sections/Section__WebinarSurveyVoices.astro';
+import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
+
+// Eager-load all curated survey JSONs at build time. Each webinar id maps to
+// at most one file in src/data/webinar-survey/<id>.json. Pages without a
+// matching file render exactly as before.
+const surveyModules = import.meta.glob<{ default: any }>(
+  '../../data/webinar-survey/*.json',
+  { eager: true }
+);
 
 export async function getStaticPaths() {
   const webinars = await getCollection('webinars');
@@ -36,8 +49,14 @@ const time = date.toLocaleString('en-US', {
 });
 
 const presentersStr = (data.presenters ?? []).join(' · ');
+const presenterDetails = data.presenterDetails ?? [];
+const hasPresenterCards = presenterDetails.length > 0;
+const partner = data.partnerMark ?? null;
 const ctaHref = status === 'Recorded' ? data.recordingUrl : data.rsvpUrl;
 const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ? 'Join now' : 'RSVP';
+
+const surveyKey = `../../data/webinar-survey/${entry.id}.json`;
+const survey = surveyModules[surveyKey]?.default ?? null;
 ---
 
 <BaseThemeLayout
@@ -73,7 +92,7 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
         <dt>When</dt>
         <dd>{weekday}, {month} {day} · {time} · {data.durationMinutes ?? 60} min</dd>
       </div>
-      {presentersStr && (
+      {presentersStr && !hasPresenterCards && (
         <div class="webinar-detail__meta-row">
           <dt>With</dt>
           <dd>{presentersStr}</dd>
@@ -89,16 +108,46 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
       )}
     </dl>
 
-    {ctaHref && (
-      <a
-        href={ctaHref}
-        class="webinar-detail__cta"
-        target={status === 'Recorded' ? '_blank' : undefined}
-        rel={status === 'Recorded' ? 'noopener noreferrer' : undefined}
-      >
-        {ctaLabel}
-        <span aria-hidden="true">→</span>
-      </a>
+    {(partner || ctaHref) && (
+      <div class="webinar-detail__action-row">
+        {partner && (
+          <aside class="webinar-detail__partner" aria-label={`Presented in partnership with ${partner.name}`}>
+            <span class="webinar-detail__partner-label">In partnership with</span>
+            {partner.url ? (
+              <a href={partner.url} target="_blank" rel="noopener noreferrer" class="webinar-detail__partner-link">
+                <img src={partner.light}   alt={partner.name} class="webinar-detail__partner-img webinar-detail__partner-img--light"   loading="lazy" decoding="async" />
+                <img src={partner.dark}    alt={partner.name} class="webinar-detail__partner-img webinar-detail__partner-img--dark"    loading="lazy" decoding="async" />
+                <img src={partner.vibrant} alt={partner.name} class="webinar-detail__partner-img webinar-detail__partner-img--vibrant" loading="lazy" decoding="async" />
+              </a>
+            ) : (
+              <span class="webinar-detail__partner-link">
+                <img src={partner.light}   alt={partner.name} class="webinar-detail__partner-img webinar-detail__partner-img--light"   loading="lazy" decoding="async" />
+                <img src={partner.dark}    alt={partner.name} class="webinar-detail__partner-img webinar-detail__partner-img--dark"    loading="lazy" decoding="async" />
+                <img src={partner.vibrant} alt={partner.name} class="webinar-detail__partner-img webinar-detail__partner-img--vibrant" loading="lazy" decoding="async" />
+              </span>
+            )}
+          </aside>
+        )}
+
+        {ctaHref && (
+          <a
+            href={ctaHref}
+            class="webinar-detail__cta"
+            target={status === 'Recorded' ? '_blank' : undefined}
+            rel={status === 'Recorded' ? 'noopener noreferrer' : undefined}
+          >
+            {ctaLabel}
+            <span aria-hidden="true">→</span>
+          </a>
+        )}
+      </div>
+    )}
+
+    {hasPresenterCards && (
+      <Section__WebinarPresenters
+        presenters={presenterDetails}
+        hosts={data.hosts ?? []}
+      />
     )}
 
     <div class="webinar-detail__body">
@@ -106,6 +155,19 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
       <Sources citations={citations} />
     </div>
   </article>
+
+  {survey && (
+    <div class="webinar-survey">
+      <Section__WebinarSurveyStats totals={survey.totals} />
+      <Section__WebinarSurveyPolls
+        experience={survey.experience}
+        toolStack={survey.toolStack}
+        surveyed={survey.totals.surveyed}
+      />
+      <Section__WebinarFirmsRepresented firms={survey.firms} />
+      <Section__WebinarSurveyVoices quotes={survey.quotes} />
+    </div>
+  )}
 </BaseThemeLayout>
 
 <style>
@@ -265,20 +327,33 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
     color: var(--color-text-muted);
   }
 
+  /* Action row — partner mark on the left, RSVP/CTA on the right. The
+     partner takes its natural width; the button is hugged to the right
+     edge. On narrow screens the row wraps and stacks. */
+  .webinar-detail__action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 2rem;
+    flex-wrap: wrap;
+  }
+
   /* CTA */
   .webinar-detail__cta {
     display: inline-flex;
     align-items: center;
     gap: 0.625rem;
-    padding: 0.75rem 1.25rem;
+    padding: 0.875rem 1.5rem;
     border-radius: 0.625rem;
     background: var(--color-primary);
     color: var(--color__bone);
     font-family: var(--font-code);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 600;
+    letter-spacing: 0.04em;
     text-decoration: none;
-    margin-bottom: 2rem;
+    flex: 0 0 auto;
     transition: box-shadow 150ms ease, transform 150ms ease;
   }
   .webinar-detail__cta:hover {
@@ -294,6 +369,57 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
     border-color: var(--color-primary);
     color: var(--color-primary);
   }
+
+  /* Partner mark — horizontal credit strip on the left of the action row.
+     Label and logo sit on a single row, separated by a thin vertical rule.
+     No card chrome — this is attribution, not a competing CTA. */
+  .webinar-detail__partner {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .webinar-detail__partner-label {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    line-height: 1.2;
+    max-width: 6rem;
+    flex: 0 0 auto;
+    padding-right: 0.875rem;
+    border-right: 1px solid var(--color-border);
+  }
+  .webinar-detail__partner-link {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    transition: opacity 150ms ease;
+  }
+  .webinar-detail__partner-link:hover { opacity: 0.85; }
+  .webinar-detail__partner-img {
+    display: none;
+    height: 3.5rem;
+    width: auto;
+    max-width: 100%;
+  }
+  @media (max-width: 600px) {
+    .webinar-detail__partner-img { height: 2.75rem; }
+    .webinar-detail__partner-label { max-width: 5rem; }
+  }
+  /* Default (no data-mode set) → fall back to the light variant. */
+  .webinar-detail__partner-img--light { display: block; }
+  /* Mode-aware swaps. The data-mode attribute lives on a parent set by the
+     site's ThemeSwitcher utility (see Section__HowItWorks for prior art). */
+  :global([data-mode="dark"]) .webinar-detail__partner-img--light    { display: none; }
+  :global([data-mode="dark"]) .webinar-detail__partner-img--dark     { display: block; }
+  :global([data-mode="vibrant"]) .webinar-detail__partner-img--light { display: none; }
+  :global([data-mode="vibrant"]) .webinar-detail__partner-img--vibrant { display: block; }
 
   /* Body markdown — minimal scoped prose styles to counter Tailwind preflight */
   .webinar-detail__body {

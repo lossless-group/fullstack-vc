@@ -12,6 +12,28 @@ presenters:
   - Wesley Barrow, Correlation Ventures
   - Nicholas Cooper, Parslee.ai
   - Michael Staton, Fullstack VC
+presenterDetails:
+  - name: Marcus Brotman
+    firm: Launch
+    headshot: /images/presenter-headshots/headshot__Marcus-Brotman.jpeg
+    linkedin: https://www.linkedin.com/in/marcus-brotman/
+    topic: Intake forms + OpenClaw + Notion for better deal-pipeline insights.
+  - name: Wesley Barrow
+    firm: Correlation Ventures
+    headshot: /images/presenter-headshots/headshot__Wesley-Barrow.jpeg
+    linkedin: https://www.linkedin.com/in/wesleybarrow/
+    topic: Zo Computer for portfolio & pipeline news monitoring.
+  - name: Nicholas Cooper
+    firm: Parslee.ai
+    headshot: /images/presenter-headshots/headshot__Nicholas-Cooper.jpeg
+    linkedin: https://www.linkedin.com/in/nicholasjcooper/
+    topic: Context management for sharper Agent Executive Assistants.
+partnerMark:
+  name: Kauffman Fellows
+  light: /trademark__Kauffman-Fellows--Light-Mode.svg
+  dark: /trademark__Kauffman-Fellows--Dark-Mode--Lightest.png
+  vibrant: /trademark__Kauffman-Fellows--Vibrant.svg
+  url: https://www.kauffmanfellows.org/
 tags:
   - Agentic-AI
   - Venture-Capital
@@ -20,8 +42,6 @@ tags:
 og_image: /og-default.png
 rsvpUrl: https://kf.events/4dx46fx
 ---
-
-![Agentic VC Dojo Launch](https://file-paa.zoom.us/qRdFcB-rQXK4N1IT3iy9GA/Mi4zLlsaakhGVAfmRMn-Hk02DVOgs45h11aDpE1AldD7bOzP/Screenshot%202025-02-10%20at%202.31.31%E2%80%AFPM.png?attachType=preview&subType=1920x1920)
 
 The kickoff session for the Agentic VC Dojo. 
 

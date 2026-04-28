@@ -1,0 +1,428 @@
+{
+  "generatedAt": "2026-04-28T04:35:19.466Z",
+  "webinarId": "2026-05_agentic-vc-dojo-launch",
+  "totals": {
+    "registered": 49,
+    "surveyed": 31,
+    "firms": 29,
+    "activeRate": 74,
+    "attended": 2
+  },
+  "experience": [
+    {
+      "label": "Lone-Wolf, Active Experimenting (prompting, simple automations)",
+      "count": 14
+    },
+    {
+      "label": "Organizational, Active Experimenting",
+      "count": 10
+    },
+    {
+      "label": "Building personal workflows (e.g., multi-step tools, APIs, or agents)",
+      "count": 9
+    },
+    {
+      "label": "Internal conversations, little action",
+      "count": 8
+    },
+    {
+      "label": "Building organizational workflows (e.g., multi-step tools, APIs, or agents)",
+      "count": 5
+    },
+    {
+      "label": "No hands-on experience, curious",
+      "count": 4
+    },
+    {
+      "label": "Consistent personal workflows with big impact",
+      "count": 3
+    },
+    {
+      "label": "Consistent personal workflows with little impact",
+      "count": 3
+    },
+    {
+      "label": "Consistent organizational workflows with little impact",
+      "count": 1
+    },
+    {
+      "label": "Consistent organizational workflows with big impact",
+      "count": 1
+    }
+  ],
+  "toolStack": {
+    "rows": [
+      {
+        "key": "native",
+        "label": "Native LLM apps",
+        "hint": "ChatGPT, Claude, Perplexity",
+        "counts": {
+          "simple": 20,
+          "intermediate": 6,
+          "advanced": 0,
+          "none": 5
+        }
+      },
+      {
+        "key": "local",
+        "label": "Local AI workspaces",
+        "hint": "Ollama, LM Studio, MSTY",
+        "counts": {
+          "simple": 21,
+          "intermediate": 0,
+          "advanced": 0,
+          "none": 10
+        }
+      },
+      {
+        "key": "builders",
+        "label": "Agent workflow builders",
+        "hint": "n8n, Flowise, OpenClaw, Dynamiq",
+        "counts": {
+          "simple": 18,
+          "intermediate": 2,
+          "advanced": 0,
+          "none": 11
+        }
+      }
+    ]
+  },
+  "firms": [
+    {
+      "name": "468 Capital",
+      "domains": [
+        "468cap.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Acasia Ventures",
+      "domains": [
+        "acasia.ventures"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Aire Labs",
+      "domains": [
+        "airelabs.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Alpha JWC Ventures",
+      "domains": [
+        "alphajwc.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Atlantica Ventures",
+      "domains": [
+        "atlanticaventures.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Audaz Capital",
+      "domains": [
+        "audaz.capital"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Blueprint",
+      "domains": [
+        "blueprint.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Cometa",
+      "domains": [
+        "cometa.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Defined VC",
+      "domains": [
+        "definedvc.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Determined Capital",
+      "domains": [
+        "determined-capital.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Domo Invest",
+      "domains": [
+        "domoinvest.com.br"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Domo VC",
+      "domains": [
+        "domo.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "DPI",
+      "domains": [
+        "dpi-llp.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Feature VC",
+      "domains": [
+        "featuresvc.co"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Genoa Ventures",
+      "domains": [
+        "genoavc.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "iMena",
+      "domains": [
+        "imena.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Invest2Innovate",
+      "domains": [
+        "invest2innovate.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Josi Health",
+      "domains": [
+        "josihealth.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Kauffman Fellows",
+      "domains": [
+        "kfp.org"
+      ],
+      "count": 1
+    },
+    {
+      "name": "KB Partners",
+      "domains": [
+        "kbpartners.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Last Mile Ventures",
+      "domains": [
+        "lastmileventures.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "LoftyInc",
+      "domains": [
+        "loftyinc.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Medici Capital",
+      "domains": [
+        "medicicap.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Mercury Fund",
+      "domains": [
+        "mercuryfund.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "MGV",
+      "domains": [
+        "mgv.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Monashees",
+      "domains": [
+        "monashees.com",
+        "monashees.com.br"
+      ],
+      "count": 2
+    },
+    {
+      "name": "Motley Fool Ventures",
+      "domains": [
+        "foolventures.com"
+      ],
+      "count": 2
+    },
+    {
+      "name": "Novel GP",
+      "domains": [
+        "novelgp.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Prose Ventures",
+      "domains": [
+        "proseventures.com"
+      ],
+      "count": 1
+    }
+  ],
+  "wants": [
+    "Learn how to get started with the basics.",
+    "Would love to see what others are doing for fundraising.",
+    "Best practices for solo GP to get 80% there with 20% effort.",
+    "Understanding of the quality of the output as right now that's what is lacking for me",
+    "use cases, best practices",
+    "Tools and best practices",
+    "architecture, tools and best practices for getting the structure set up in a secure and effective way",
+    "Practical first and second steps",
+    "Use cases and architecture",
+    "architecture, tools,"
+  ],
+  "quotes": [
+    {
+      "persona": "An emerging-manager GP",
+      "body": "Automating the horrible parts of being an emerging manager. Maybe we should create a Kauffman toolset.",
+      "source": "building"
+    },
+    {
+      "persona": "A fund operator",
+      "body": "An agentic VC stack for diligence, fund reporting, admin and portfolio support.",
+      "source": "building"
+    },
+    {
+      "persona": "A LATAM seed investor",
+      "body": "End-to-end automations across sourcing, screening, follow-ups, and internal evaluation — with AI summarizing calls, extracting key insights, and keeping deal-flow data organized. The goal: less manual overhead, more consistency, a more responsive investment process.",
+      "source": "building"
+    },
+    {
+      "persona": "An early-stage life-sciences investor",
+      "body": "Exploring an \"agent-powered autonomous startup\" — 4–5 PhD-level agents doing the research, as an experiment.",
+      "source": "building"
+    },
+    {
+      "persona": "An early-stage research-heavy investor",
+      "body": "Automating the grunt work: top-of-funnel curation, deep market research, market maps.",
+      "source": "building"
+    }
+  ],
+  "firmsOverrides": {},
+  "_candidates": [
+    {
+      "_name": "Carlos Murguia",
+      "_firm": "Audaz Capital",
+      "body": "I am currently building automations to streamline exploratory calls with founders, as well as broader investment workflows. This includes designing an end-to-end process flow for sourcing, initial screening, follow-ups, and internal evaluation. I am also implementing automated reminders to ensure timely engagement with founders and consistent progress across deals. On the reporting side, I am developing systems to standardize investor updates and internal tracking, leveraging AI to summarize calls, extract key insights, and maintain organized deal flow data. The goal is to reduce manual overhead, improve consistency, and create a more scalable and responsive investment process.",
+      "source": "building"
+    },
+    {
+      "_name": "Mike Moradi",
+      "_firm": "(personal)",
+      "body": "Using co-pilot enterprise sparingly (mostly for MS integration and email drafting), and Claude Team for most everything else, we have built a basic IR/fundraising engine, and audit/accounting support, which have been quite game-changing for us. On a scale of 1-10, I think we're still a 3-4.",
+      "source": "achieved"
+    },
+    {
+      "_name": "Ainhoa (\"Noa\") Maiz",
+      "_firm": "(personal)",
+      "body": "Automate the grunt work in my day to day life. Example use cases: create/curate/prioritize top of funnel, deep market research, market maps, etc.",
+      "source": "building"
+    },
+    {
+      "_name": "Roald Sieberath",
+      "_firm": "(personal)",
+      "body": "Exploring use case of \"Agent powered autonomous startup\" esp. in life sciences, with 4-5 PhD-level agents doing research (as an experiment)",
+      "source": "building"
+    },
+    {
+      "_name": "Mike Moradi",
+      "_firm": "(personal)",
+      "body": "Automating the horrible parts of being an emerging manager. Maybe we should create a Kauffman toolset.",
+      "source": "building"
+    },
+    {
+      "_name": "Ainhoa (\"Noa\") Maiz",
+      "_firm": "(personal)",
+      "body": "architecture, tools and best practices for getting the structure set up in a secure and effective way",
+      "source": "wanted"
+    },
+    {
+      "_name": "Ben Metcalfe",
+      "_firm": "(personal)",
+      "body": "Understanding of the quality of the output as right now that's what is lacking for me",
+      "source": "wanted"
+    },
+    {
+      "_name": "Mark Trevitt",
+      "_firm": "Defined VC",
+      "body": "Agentic VC stack for diligence, fund reporting, admin and portfolio support.",
+      "source": "building"
+    },
+    {
+      "_name": "Srinivas Ananth",
+      "_firm": "(personal)",
+      "body": "Agentic workflows for deal triaging, due diligence, and memo creation.",
+      "source": "building"
+    },
+    {
+      "_name": "Richard Yen",
+      "_firm": "Medici Capital",
+      "body": "Best practices for solo GP to get 80% there with 20% effort.",
+      "source": "wanted"
+    },
+    {
+      "_name": "Ben Metcalfe",
+      "_firm": "(personal)",
+      "body": "Personal and business EA like tasks, automated firm tasks",
+      "source": "building"
+    },
+    {
+      "_name": "Mike Moradi",
+      "_firm": "(personal)",
+      "body": "Would love to see what others are doing for fundraising.",
+      "source": "wanted"
+    },
+    {
+      "_name": "Jonathan Charles",
+      "_firm": "(personal)",
+      "body": "Learn how to get started with the basics.",
+      "source": "wanted"
+    },
+    {
+      "_name": "Dharmadi Gusanto",
+      "_firm": "Alpha JWC Ventures",
+      "body": "Investment due diligence and evaluation",
+      "source": "building"
+    },
+    {
+      "_name": "Punit Chiniwalla",
+      "_firm": "(personal)",
+      "body": "Practical first and second steps",
+      "source": "wanted"
+    }
+  ]
+}

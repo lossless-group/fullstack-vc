@@ -1,0 +1,163 @@
+---
+/* Section__WebinarSurveyVoices
+   Hand-curated, anonymized pull quotes from the registrant survey. The
+   `persona` field replaces any individual name/firm — see the build script
+   and the curated JSON for the editorial decision. */
+
+type Source = 'building' | 'achieved' | 'wanted';
+interface Quote { persona: string; body: string; source: Source }
+interface Props {
+  quotes: Quote[];
+}
+
+const { quotes } = Astro.props;
+
+const sourceLabel: Record<Source, string> = {
+  building: 'Building now',
+  achieved: 'Already shipped',
+  wanted:   'Wants to learn',
+};
+---
+
+{quotes.length > 0 && (
+  <section class="wsvoices" aria-labelledby="wsvoices-heading">
+    <p class="wsvoices__eyebrow">Voices from the survey</p>
+    <h2 id="wsvoices-heading" class="wsvoices__heading">
+      What this room <span class="wsvoices__heading-accent">is actually working on</span>
+    </h2>
+    <p class="wsvoices__lede">
+      Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday.
+    </p>
+
+    <ul class="wsvoices__grid" role="list">
+      {quotes.map(q => (
+        <li class={`wsvoices__card wsvoices__card--${q.source}`}>
+          <span class="wsvoices__mark" aria-hidden="true">"</span>
+          <p class="wsvoices__body">{q.body}</p>
+          <footer class="wsvoices__meta">
+            <span class="wsvoices__persona">— {q.persona}</span>
+            <span class={`wsvoices__tag wsvoices__tag--${q.source}`}>{sourceLabel[q.source]}</span>
+          </footer>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .wsvoices {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+  .wsvoices__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .wsvoices__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .wsvoices__heading-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .wsvoices__lede {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+  }
+
+  .wsvoices__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .wsvoices__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .wsvoices__card {
+    position: relative;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  }
+  .wsvoices__card:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .wsvoices__mark {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.875rem;
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--color-primary);
+    opacity: 0.25;
+    pointer-events: none;
+    user-select: none;
+  }
+  .wsvoices__body {
+    margin: 0;
+    padding-left: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-text);
+    font-style: italic;
+  }
+  .wsvoices__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border);
+  }
+  .wsvoices__persona {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .wsvoices__tag {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.1875rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .wsvoices__tag--building { color: var(--color-primary); }
+  .wsvoices__tag--achieved { color: var(--color-accent, var(--color-primary)); }
+  .wsvoices__tag--wanted   { color: var(--color-text-muted); }
+</style>
