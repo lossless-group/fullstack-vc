@@ -9,6 +9,7 @@ title: 'Astro: The web framework for content-driven websites'
 date_modified: 2025-09-27
 date_created: 2025-03-30
 og_image: 'https://astro.build/og/astro.jpg'
+og_favicon: 'https://astro.build/favicon.svg'
 tags: [Web-Frameworks, Software-Development, Frameworks, Static-Site-Generators]
 aliases: [Astro Framework, Astro SSG, Astro Static Site Generator]
 ---

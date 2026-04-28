@@ -1,6 +1,11 @@
 ---
-export const prerender = true;
+// SSR per blueprint v2 §4.1: live session pages need per-request access to
+// OAuth cookies (auth state for the poll voting UI) and to the latest Poll +
+// PollResult rows from Astro DB. Dropping prerender + getStaticPaths so the
+// route is dynamic; recorded-webinar pages still benefit from Vercel's edge
+// caching of SSR responses.
 import { getCollection } from 'astro:content';
+import { db, Session as DbSession, Poll as DbPoll, PollResult as DbPollResult, eq } from 'astro:db';
 import { parseMarkdown } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
@@ -11,6 +16,10 @@ import Section__WebinarSurveyPolls from '../../components/sections/Section__Webi
 import Section__WebinarFirmsRepresented from '../../components/sections/Section__WebinarFirmsRepresented.astro';
 import Section__WebinarSurveyVoices from '../../components/sections/Section__WebinarSurveyVoices.astro';
 import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
+import PollEmbed from '../../components/polls/PollEmbed.svelte';
+import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
+import { matchesRoster } from '../../lib/oauth-roster';
+import type { PollSnapshot, PollTemplate } from '../../lib/poll-templates';
 
 // Eager-load all curated survey JSONs at build time. Each webinar id maps to
 // at most one file in src/data/webinar-survey/<id>.json. Pages without a
@@ -20,16 +29,57 @@ const surveyModules = import.meta.glob<{ default: any }>(
   { eager: true }
 );
 
-export async function getStaticPaths() {
-  const sessions = await getCollection('sessions');
-  return sessions.map(entry => ({
-    params: { id: entry.id },
-    props: { entry },
-  }));
+// ── Resolve the markdown entry for this slug (404 if missing) ─────────────
+const { id } = Astro.params;
+const sessions = await getCollection('sessions');
+const entry = sessions.find(e => e.id === id);
+if (!entry) {
+  return Astro.redirect('/sessions');
+}
+const data = entry.data;
+
+// ── Look up the DB Session matching this slug, if any ─────────────────────
+// If found, fetch its polls + cached results and render <PollEmbed /> islands.
+// If not found, the session has no live-poll component (existing webinars).
+const dbSession = await db.select().from(DbSession).where(eq(DbSession.slug, id!)).get();
+
+let pollSnapshots: PollSnapshot[] = [];
+if (dbSession) {
+  const polls = await db.select().from(DbPoll).where(eq(DbPoll.session_id, dbSession.id)).all();
+  // Fetch all results in parallel.
+  const results = await Promise.all(
+    polls.map(p => db.select().from(DbPollResult).where(eq(DbPollResult.poll_id, p.id)).get())
+  );
+  pollSnapshots = polls.map((poll, i) => {
+    const result = results[i] ?? null;
+    const resultsHidden =
+      poll.results_visibility === 'host-only' ||
+      (poll.results_visibility === 'on-close' && poll.status !== 'closed');
+    return {
+      poll_id: poll.id,
+      title: poll.title,
+      prompt: poll.prompt,
+      template: poll.template as PollTemplate,
+      options: (poll.options ?? null) as any,
+      allow_revote: !!poll.allow_revote,
+      results_visibility: poll.results_visibility as 'live' | 'on-close' | 'host-only',
+      anonymous_display: !!poll.anonymous_display,
+      status: poll.status as 'draft' | 'scheduled' | 'open' | 'closed',
+      total_votes: result?.total_votes ?? 0,
+      total_votes_visible: !resultsHidden,
+      tallies: resultsHidden ? null : (result?.tallies ?? null),
+      last_aggregated_at: result?.last_aggregated_at
+        ? new Date(result.last_aggregated_at).toISOString()
+        : null,
+    };
+  });
 }
 
-const { entry } = Astro.props;
-const data = entry.data;
+// ── Auth state (session cookie + roster check) ────────────────────────────
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+const rosterEntry = session ? matchesRoster(session) : null;
+const isAuthenticated = !!session && !!rosterEntry;
+const displayName = rosterEntry?.name ?? session?.name ?? null;
 const status = inferWebinarStatus(data);
 
 const tree = await parseMarkdown(entry.body ?? '');
@@ -156,6 +206,29 @@ const survey = surveyModules[surveyKey]?.default ?? null;
     </div>
   </article>
 
+  {pollSnapshots.length > 0 && (
+    <section class="session-polls" aria-labelledby="session-polls-heading">
+      <header class="session-polls__header">
+        <h2 id="session-polls-heading" class="session-polls__heading">Live polls</h2>
+        <p class="session-polls__lede">
+          Vote during the meeting. Results develop in real time.
+        </p>
+      </header>
+      <div class="session-polls__list">
+        {pollSnapshots.map(snapshot => (
+          <PollEmbed
+            client:load
+            pollId={snapshot.poll_id}
+            initialState={snapshot}
+            isAuthenticated={isAuthenticated}
+            displayName={displayName}
+            variant="card"
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
   {survey && (
     <div class="webinar-survey">
       <Section__WebinarSurveyStats totals={survey.totals} />
@@ -171,6 +244,33 @@ const survey = surveyModules[surveyKey]?.default ?? null;
 </BaseThemeLayout>
 
 <style>
+  .session-polls {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .session-polls__header { display: flex; flex-direction: column; gap: 0.375rem; }
+  .session-polls__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  .session-polls__lede {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+  }
+  .session-polls__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .back-link {
     display: inline-block;
     font-family: var(--font-code);

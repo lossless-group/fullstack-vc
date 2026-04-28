@@ -3,6 +3,7 @@ site_uuid: 52269f2a-4940-4cf4-9339-651facdc7a0b
 url: https://jina.ai/
 slug: jina-ai
 og_image: https://jina.ai/banner.png
+og_favicon: "https://jina.ai/icons/favicon-32x32.png"
 title: 'Jina AI: Your Search Foundation, Supercharged.'
 date_modified: 2025-05-28
 date_created: 2025-03-30

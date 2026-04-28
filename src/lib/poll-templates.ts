@@ -42,6 +42,36 @@ export type ValidationResult<T> =
   | { ok: true;  value: T }
   | { ok: false; error: string };
 
+// ─── Snapshot (UI contract) ────────────────────────────────────────────────
+// Shape passed from the Astro page → <PollEmbed /> → template components.
+// Astro page server-renders the initial snapshot from `astro:db`; the
+// orchestrator merges live updates from /api/polls/[id]/results.json.
+export interface PollSnapshot {
+  // — Static metadata (set once at SSR; never refreshed) —
+  poll_id: string;
+  title: string;
+  prompt: string;
+  template: PollTemplate;
+  options: PollOption[] | SlidingScaleConfig | null;
+  allow_revote: boolean;
+  results_visibility: 'live' | 'on-close' | 'host-only';
+  anonymous_display: boolean;
+
+  // — Live-updating fields (refreshed via interval polling) —
+  status: 'draft' | 'scheduled' | 'open' | 'closed';
+  total_votes: number;
+  total_votes_visible: boolean;
+  tallies: unknown | null;
+  last_aggregated_at: string | null;
+}
+
+// Wire-format payload that the templates emit and the orchestrator POSTs
+// to /api/polls/[id]/votes. The server re-validates with validateVotePayload().
+export type VoteSubmissionPayload =
+  | { value: boolean }                     // boolean
+  | { option_ids: [string] | string[] }    // single-select / multi-select
+  | { value: number };                     // sliding-scale
+
 // ─── Validator ──────────────────────────────────────────────────────────────
 // Validates a raw POST body against the poll's template + options.
 // Returns the canonicalized payload (e.g. trims, coerces) or an error message.
