@@ -1,0 +1,337 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ToolCard from '../../components/stack/ToolCard.astro';
+import ParticipantCard from '../../components/stack/ParticipantCard.astro';
+
+const allParticipants = await getCollection('participants');
+const visiblePeople = allParticipants.filter(p => p.data.public_profile);
+
+// Aggregate tool adoption across visible people. Counts only the *current*
+// stack — aspirational/abandoned add noise to "what the room is using now."
+const toolCounts = new Map<string, number>();
+for (const p of visiblePeople) {
+  for (const item of p.data.current_stack ?? []) {
+    toolCounts.set(item.tool, (toolCounts.get(item.tool) ?? 0) + 1);
+  }
+}
+
+const allTools = await getCollection('tools');
+const toolsBySlug = new Map(allTools.map(t => [t.id, t]));
+
+// Rank tools by adoption desc, then alphabetic. Cap at 8 for the front door.
+const rankedTools = Array.from(toolCounts.entries())
+  .map(([slug, count]) => ({ slug, count, tool: toolsBySlug.get(slug) }))
+  .filter(r => r.tool)
+  .sort((a, b) => b.count - a.count || a.slug.localeCompare(b.slug))
+  .slice(0, 8);
+
+// People with at least one stack item (current/aspirational/abandoned).
+const peopleCards = visiblePeople
+  .filter(p => {
+    const total =
+      (p.data.current_stack?.length ?? 0) +
+      (p.data.aspirational_stack?.length ?? 0) +
+      (p.data.abandoned_stack?.length ?? 0);
+    return total > 0;
+  })
+  .map(p => {
+    const total =
+      (p.data.current_stack?.length ?? 0) +
+      (p.data.aspirational_stack?.length ?? 0) +
+      (p.data.abandoned_stack?.length ?? 0);
+    return {
+      handle: p.data.handle,
+      name: p.data.name,
+      firm: p.data.firm,
+      role: p.data.role,
+      avatar: p.data.headshot ?? p.data.github_avatar,
+      toolCount: total,
+      kauffmanClass: p.data.kauffman_class,
+    };
+  });
+
+const totalRegistered = allParticipants.length;
+const totalToolsTracked = toolCounts.size;
+---
+
+<BaseThemeLayout
+  title="Stacks · FullStack VC"
+  description="The community stack — tools VCs in the Agentic VC Dojo are actually running their firms on."
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <!-- Hero -->
+  <section class="stacks-hero">
+    <p class="stacks-hero__eyebrow">Agentic VC Dojo · Community stack</p>
+    <h1 class="stacks-hero__title">
+      What VCs <span class="stacks-hero__title-accent">actually run</span> their firms on
+    </h1>
+    <p class="stacks-hero__lede">
+      A working catalog of the tools, agents, and workflows that Dojo members use today —
+      tracked in markdown, edited in public, never behind a vendor's API.
+    </p>
+    <div class="stacks-hero__cta-row">
+      <a class="stacks-hero__cta stacks-hero__cta--primary" href="/stack/me">
+        Publish your stack <span aria-hidden="true">→</span>
+      </a>
+      <a class="stacks-hero__cta stacks-hero__cta--ghost" href="/people">
+        Browse members
+      </a>
+    </div>
+    {(peopleCards.length > 0 || totalToolsTracked > 0) && (
+      <p class="stacks-hero__stats">
+        <span><strong>{peopleCards.length}</strong> public profile{peopleCards.length === 1 ? '' : 's'}</span>
+        <span class="stacks-hero__stats-sep">·</span>
+        <span><strong>{totalToolsTracked}</strong> tool{totalToolsTracked === 1 ? '' : 's'} in current use</span>
+      </p>
+    )}
+  </section>
+
+  <!-- Tools -->
+  <section class="stacks-section">
+    <header class="stacks-section__head">
+      <p class="stacks-section__eyebrow">In the room</p>
+      <h2 class="stacks-section__title">Most-used tools</h2>
+      <p class="stacks-section__lede">
+        Tools that members actively run today — sorted by how many people in the Dojo are using each one.
+      </p>
+    </header>
+
+    {rankedTools.length === 0 ? (
+      <p class="stacks-empty">
+        No tools tracked yet. Members publish theirs by adding a participant entry with a <code>current_stack</code>.
+      </p>
+    ) : (
+      <ul class="stacks-tools-grid" role="list">
+        {rankedTools.map(({ slug, count, tool }) => (
+          <li class="stacks-tools-cell">
+            <ToolCard
+              slug={slug}
+              data={tool!.data}
+              notes={count > 1 ? `${count} members using` : undefined}
+            />
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  <!-- People -->
+  <section class="stacks-section">
+    <header class="stacks-section__head">
+      <p class="stacks-section__eyebrow">Who's sharing</p>
+      <h2 class="stacks-section__title">Members with public stacks</h2>
+      <p class="stacks-section__lede">
+        Click in to see what each person currently runs, what they're eyeing, and what they've moved on from.
+      </p>
+    </header>
+
+    {peopleCards.length === 0 ? (
+      <p class="stacks-empty">
+        No public profiles yet — be the first.
+      </p>
+    ) : (
+      <ul class="stacks-people-grid" role="list">
+        {peopleCards.map(c => (
+          <li>
+            <ParticipantCard {...c} />
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {peopleCards.length > 0 && (
+      <p class="stacks-section__more">
+        <a href="/people">Browse all members →</a>
+      </p>
+    )}
+  </section>
+</BaseThemeLayout>
+
+<style>
+  /* ---------- Hero ---------- */
+  .stacks-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 52rem;
+    margin-bottom: 4rem;
+  }
+  .stacks-hero__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .stacks-hero__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--color-text);
+  }
+  .stacks-hero__title-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stacks-hero__lede {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-text);
+    max-width: 42rem;
+  }
+  .stacks-hero__cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 0.5rem;
+  }
+  .stacks-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: box-shadow 150ms ease, transform 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  .stacks-hero__cta--primary {
+    background: var(--color-primary);
+    color: var(--color__bone);
+  }
+  .stacks-hero__cta--primary:hover {
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateX(2px);
+  }
+  .stacks-hero__cta--ghost {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+  .stacks-hero__cta--ghost:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .stacks-hero__stats {
+    margin: 0.75rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+  .stacks-hero__stats strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .stacks-hero__stats-sep { opacity: 0.5; }
+
+  /* ---------- Sections ---------- */
+  .stacks-section {
+    margin-bottom: 3rem;
+  }
+  .stacks-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4375rem;
+    margin-bottom: 1.25rem;
+    max-width: 42rem;
+  }
+  .stacks-section__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .stacks-section__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .stacks-section__lede {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .stacks-section__more {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+  }
+  .stacks-section__more a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px dashed currentColor;
+    padding-bottom: 0.0625rem;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .stacks-section__more a:hover {
+    color: var(--color-text);
+    border-bottom-color: var(--color-text);
+  }
+
+  .stacks-empty {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    border: 1px dashed var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .stacks-empty code {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  /* ---------- Grids ---------- */
+  .stacks-tools-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 600px) { .stacks-tools-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .stacks-tools-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1300px) { .stacks-tools-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .stacks-tools-cell { display: flex; }
+  .stacks-tools-cell > * { width: 100%; }
+
+  .stacks-people-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+  @media (min-width: 720px) { .stacks-people-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .stacks-people-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

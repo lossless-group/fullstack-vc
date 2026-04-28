@@ -1,0 +1,182 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ParticipantStackView from '../../components/stack/ParticipantStackView.astro';
+
+export async function getStaticPaths() {
+  const participants = await getCollection('participants');
+  return participants.map(entry => ({
+    params: { handle: entry.data.handle },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const p = entry.data;
+
+const isPrivate = !p.public_profile;
+---
+
+<BaseThemeLayout
+  title={`${p.name} · FullStack VC`}
+  description={p.firm ? `${p.name} (${p.firm}) — current, aspirational, and abandoned tools.` : `${p.name}'s public profile and tool stack.`}
+  containerClass="px-6 py-12 max-w-5xl mx-auto"
+>
+  <a href="/people" class="back-link">← All people</a>
+
+  <header class="participant-head">
+    {(p.headshot ?? p.github_avatar) ? (
+      <img class="participant-head__avatar" src={p.headshot ?? p.github_avatar} alt="" loading="eager" decoding="async" />
+    ) : (
+      <span class="participant-head__avatar participant-head__avatar--initials" aria-hidden="true">
+        {p.name.split(/\s+/).slice(0, 2).map(n => n[0]?.toUpperCase()).join('')}
+      </span>
+    )}
+    <div class="participant-head__id">
+      <p class="participant-head__eyebrow">
+        {p.kauffman_class && <span>Kauffman {p.kauffman_class}</span>}
+        {p.kauffman_class && p.role && <span class="participant-head__sep">·</span>}
+        {p.role && <span>{p.role}</span>}
+      </p>
+      <h1 class="participant-head__name">{p.name}</h1>
+      {p.firm && <p class="participant-head__firm">{p.firm}</p>}
+      <p class="participant-head__links">
+        {p.github && <a href={p.github} target="_blank" rel="noopener noreferrer">GitHub</a>}
+        {p.linkedin && <a href={p.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
+      </p>
+    </div>
+  </header>
+
+  {isPrivate ? (
+    <section class="private-stub">
+      <h2>This profile is private</h2>
+      <p>
+        {p.name} hasn't opted in to a public stack page yet. Members can flip
+        <code>public_profile: true</code> in their participant entry to share their stack with the community.
+      </p>
+    </section>
+  ) : (
+    <ParticipantStackView
+      currentStack={p.current_stack}
+      aspirationalStack={p.aspirational_stack}
+      abandonedStack={p.abandoned_stack}
+    />
+  )}
+</BaseThemeLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 150ms ease;
+  }
+  .back-link:hover { color: var(--color-primary); }
+
+  .participant-head {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .participant-head__avatar {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 14%, transparent);
+    flex: 0 0 auto;
+  }
+  .participant-head__avatar--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  .participant-head__id { min-width: 0; }
+  .participant-head__eyebrow {
+    margin: 0 0 0.375rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4375rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+  }
+  .participant-head__sep { opacity: 0.5; }
+  .participant-head__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .participant-head__firm {
+    margin: 0.3125rem 0 0;
+    color: var(--color-primary);
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+  }
+  .participant-head__links {
+    margin: 0.625rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+  }
+  .participant-head__links a {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color 150ms ease;
+  }
+  .participant-head__links a:hover { color: var(--color-primary); }
+
+  .private-stub {
+    padding: 2rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px dashed var(--color-border);
+    color: var(--color-text);
+  }
+  .private-stub h2 {
+    margin: 0 0 0.625rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  .private-stub p {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+  .private-stub code {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 600px) {
+    .participant-head { flex-direction: column; align-items: flex-start; }
+    .participant-head__name { font-size: 1.625rem; }
+  }
+</style>

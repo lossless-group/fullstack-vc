@@ -1,0 +1,132 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ParticipantCard from '../../components/stack/ParticipantCard.astro';
+
+const all = await getCollection('participants');
+const visible = all.filter(p => p.data.public_profile);
+const hiddenCount = all.length - visible.length;
+
+const cards = visible.map(p => {
+  const stackTotal =
+    (p.data.current_stack?.length ?? 0) +
+    (p.data.aspirational_stack?.length ?? 0) +
+    (p.data.abandoned_stack?.length ?? 0);
+  return {
+    handle: p.data.handle,
+    name: p.data.name,
+    firm: p.data.firm,
+    role: p.data.role,
+    avatar: p.data.headshot ?? p.data.github_avatar,
+    toolCount: stackTotal,
+    kauffmanClass: p.data.kauffman_class,
+  };
+});
+---
+
+<BaseThemeLayout
+  title="People · FullStack VC"
+  description="Members of the Agentic VC Dojo — VCs sharing what they build with, what they want to evaluate, and what they've moved on from."
+  containerClass="px-6 py-12 max-w-5xl mx-auto"
+>
+  <header class="stack-index-head">
+    <p class="stack-index-eyebrow">Agentic VC Dojo · Community members</p>
+    <h1 class="stack-index-title">
+      Who's <span class="stack-index-title-accent">actually building</span> in the Dojo
+    </h1>
+    <p class="stack-index-lede">
+      Public profiles of VCs sharing the tools they use today, the ones they're eyeing, and the ones they've moved on from.
+    </p>
+  </header>
+
+  {cards.length === 0 ? (
+    <p class="stack-index-empty">
+      No public profiles yet. Members can publish theirs by setting <code>public_profile: true</code> in their participant entry.
+    </p>
+  ) : (
+    <ul class="stack-index-grid" role="list">
+      {cards.map(c => (
+        <li>
+          <ParticipantCard {...c} />
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {hiddenCount > 0 && (
+    <p class="stack-index-private-note">
+      {hiddenCount} member{hiddenCount === 1 ? "'s" : "s'"} profile{hiddenCount === 1 ? ' is' : 's are'} private.
+    </p>
+  )}
+</BaseThemeLayout>
+
+<style>
+  .stack-index-head {
+    margin-bottom: 2rem;
+  }
+  .stack-index-eyebrow {
+    margin: 0 0 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .stack-index-title {
+    margin: 0 0 0.625rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.875rem, 4vw, 2.625rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .stack-index-title-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stack-index-lede {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 38rem;
+  }
+
+  .stack-index-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+  @media (min-width: 720px) {
+    .stack-index-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1100px) {
+    .stack-index-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .stack-index-empty,
+  .stack-index-private-note {
+    margin: 1.5rem 0 0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    border: 1px dashed var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .stack-index-empty code {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+/* ParticipantCard
+   Profile chip for the /stack/people index. Visual vocabulary copied from
+   Section__WebinarPresenters (avatar with primary halo, name in display
+   font, firm in code font + primary color). Pure Astro, mode-aware. */
+
+interface Props {
+  handle: string;
+  name: string;
+  firm?: string;
+  role?: string;
+  avatar?: string;
+  toolCount?: number;
+  kauffmanClass?: number;
+}
+
+const { handle, name, firm, role, avatar, toolCount, kauffmanClass } = Astro.props;
+
+function initials(n: string): string {
+  return n.split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
+}
+---
+
+<a class="pcard" href={`/people/${handle}`}>
+  {avatar ? (
+    <img class="pcard__avatar" src={avatar} alt="" loading="lazy" decoding="async" />
+  ) : (
+    <span class="pcard__avatar pcard__avatar--initials" aria-hidden="true">{initials(name)}</span>
+  )}
+  <div class="pcard__id">
+    <p class="pcard__name">{name}</p>
+    {firm && <p class="pcard__firm">{firm}</p>}
+    {role && <p class="pcard__role">{role}</p>}
+    {(toolCount !== undefined || kauffmanClass !== undefined) && (
+      <p class="pcard__meta">
+        {toolCount !== undefined && <span>{toolCount} tools</span>}
+        {toolCount !== undefined && kauffmanClass !== undefined && <span class="pcard__sep">·</span>}
+        {kauffmanClass !== undefined && <span>Kauffman {kauffmanClass}</span>}
+      </p>
+    )}
+  </div>
+</a>
+
+<style>
+  .pcard {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .pcard:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .pcard__avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+    flex: 0 0 auto;
+  }
+  .pcard__avatar--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+
+  .pcard__id { min-width: 0; display: flex; flex-direction: column; gap: 0.0625rem; }
+  .pcard__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+  .pcard__firm {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+  .pcard__role {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .pcard__meta {
+    margin: 0.125rem 0 0;
+    display: flex;
+    gap: 0.375rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .pcard__sep { opacity: 0.5; }
+</style>

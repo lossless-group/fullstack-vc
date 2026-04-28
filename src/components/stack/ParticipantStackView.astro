@@ -1,0 +1,173 @@
+---
+/* ParticipantStackView
+   Three-tier stack panel: Current / Aspirational / Abandoned. Resolves tool
+   slugs to entries from the `tools` content collection at render time and
+   passes them to ToolCard. Missing tool references render as "ghost" cards
+   so data integrity issues surface visually. */
+
+import { getCollection } from 'astro:content';
+import ToolCard from './ToolCard.astro';
+
+interface CurrentEntry { tool: string; added?: Date; notes?: string }
+interface AspirationalEntry { tool: string; intent?: string }
+interface AbandonedEntry { tool: string; abandoned?: Date; reason?: string }
+
+interface Props {
+  currentStack?: CurrentEntry[];
+  aspirationalStack?: AspirationalEntry[];
+  abandonedStack?: AbandonedEntry[];
+}
+
+const { currentStack = [], aspirationalStack = [], abandonedStack = [] } = Astro.props;
+
+// Resolve tool slugs in one pass — content collections aren't keyed by slug
+// at access time, so we build a lookup map from the full collection.
+const allTools = await getCollection('tools');
+const toolsBySlug = new Map(allTools.map(t => [t.id, t]));
+
+function resolve(slug: string) {
+  return toolsBySlug.get(slug);
+}
+
+const dateStr = (d?: Date) => d ? d.toISOString().slice(0, 10) : undefined;
+
+const tiers = [
+  { key: 'current',      label: 'Current stack',     entries: currentStack,      empty: 'No current stack listed.' },
+  { key: 'aspirational', label: 'Aspirational',      entries: aspirationalStack, empty: 'Nothing aspirational listed.' },
+  { key: 'abandoned',    label: 'Moved on from',     entries: abandonedStack,    empty: 'Nothing abandoned listed.' },
+] as const;
+---
+
+<div class="psv">
+  {tiers.map(tier => (
+    <section class={`psv__tier psv__tier--${tier.key}`} aria-labelledby={`psv-${tier.key}`}>
+      <header class="psv__tier-head">
+        <h2 id={`psv-${tier.key}`} class="psv__tier-title">{tier.label}</h2>
+        <span class="psv__tier-count">{tier.entries.length}</span>
+      </header>
+
+      {tier.entries.length === 0 ? (
+        <p class="psv__empty">{tier.empty}</p>
+      ) : (
+        <ul class="psv__grid" role="list">
+          {tier.entries.map(entry => {
+            const tool = resolve(entry.tool);
+            if (!tool) {
+              // Ghost card — referenced tool isn't in the registry yet
+              return (
+                <li class="psv__cell">
+                  <article class="psv__ghost" aria-label={`Missing tool entry: ${entry.tool}`}>
+                    <p class="psv__ghost-name">{entry.tool}</p>
+                    <p class="psv__ghost-hint">Tool entry not yet added to registry</p>
+                  </article>
+                </li>
+              );
+            }
+            return (
+              <li class="psv__cell">
+                <ToolCard
+                  slug={tool.id}
+                  data={tool.data}
+                  notes={tier.key === 'current' ? entry.notes : undefined}
+                  intent={tier.key === 'aspirational' ? entry.intent : undefined}
+                  reason={tier.key === 'abandoned' ? entry.reason : undefined}
+                  abandoned={tier.key === 'abandoned' ? dateStr(entry.abandoned) : undefined}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  ))}
+</div>
+
+<style>
+  .psv {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .psv__tier-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+  }
+  .psv__tier-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .psv__tier--current .psv__tier-title    { color: var(--color-text); }
+  .psv__tier--aspirational .psv__tier-title { color: var(--color-primary); }
+  .psv__tier--abandoned .psv__tier-title  { color: var(--color-text-muted); }
+
+  .psv__tier-count {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+  }
+
+  .psv__empty {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    border: 1px dashed var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-style: italic;
+  }
+
+  .psv__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 600px) {
+    .psv__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .psv__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .psv__cell { display: flex; }
+  .psv__cell > * { width: 100%; }
+
+  /* Ghost card — referenced tool not in registry */
+  .psv__ghost {
+    width: 100%;
+    padding: 1rem 1.125rem;
+    border-radius: 0.875rem;
+    border: 1px dashed var(--color-border);
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .psv__ghost-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .psv__ghost-hint {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>

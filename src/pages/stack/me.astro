@@ -36,6 +36,11 @@ if (!rosterEntry) return Astro.redirect('/login/not-on-roster?provider=' + sessi
       // The stack-builder UI lands in v0.2 of the Interactive Stack Display.
       // For now this page just confirms the auth flow works end-to-end.
     </p>
+    <p class="me-public-link">
+      <a href={`/people/${session.subject}`}>
+        View your public profile <span aria-hidden="true">→</span>
+      </a>
+    </p>
   </section>
 
   <footer class="me-footer">
@@ -82,6 +87,22 @@ if (!rosterEntry) return Astro.redirect('/login/not-on-roster?provider=' + sessi
     font-weight: 600;
     color: var(--color-text);
     margin: 0 0 0.75rem;
+  }
+  .me-public-link {
+    margin: 1rem 0 0;
+  }
+  .me-public-link a {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px dashed currentColor;
+    padding-bottom: 0.0625rem;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .me-public-link a:hover {
+    color: var(--color-text);
+    border-bottom-color: var(--color-text);
   }
   .me-footer {
     margin-top: 2rem;

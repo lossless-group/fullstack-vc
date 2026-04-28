@@ -10,6 +10,83 @@ const pages = defineCollection({
   }),
 });
 
+// Tools — the canonical registry of apps/services that participants reference
+// in their stacks. Schema is a strict superset of the Lossless Obsidian
+// Tooling/* frontmatter (Jina + OpenGraph fetch pipeline) so files can be
+// copy-pasted in unchanged. Slug = filename (lowercase-dasherized) is the URL.
+const tools = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/tools' }),
+  schema: z.object({
+    site_uuid: z.string().optional(),
+    site_name: z.string().optional(),
+    title: z.string().optional(),
+    zinger: z.string().optional(),
+    url: z.string().url().optional(),
+    url_aliases: z.array(z.string().url()).optional(),
+
+    tags: z.array(z.string()).optional(),
+    category: z.string().optional(),
+
+    og_screenshot_url: z.string().url().optional(),
+    og_favicon: z.string().url().optional(),
+    og_image: z.string().url().optional(),
+    logo_light: z.string().url().optional(),
+    logo_dark: z.string().url().optional(),
+
+    description_site_cp: z.string().optional(),
+    description: z.string().optional(),
+    og_title: z.string().optional(),
+    og_url: z.string().url().optional(),
+
+    jina_last_request: z.coerce.date().optional(),
+    jina_error: z.string().optional(),
+    og_last_fetch: z.coerce.date().optional(),
+    date_modified: z.coerce.date().optional(),
+    date_created: z.coerce.date().optional(),
+
+    oss: z.boolean().optional(),
+    pricing: z.string().optional(),
+    youtube_channel_url: z.string().url().optional(),
+  }).passthrough(),
+});
+
+// Participants — Dojo community members. Slim schema for the v0.1 vertical
+// slice; the OAuth handshake doesn't depend on any of these fields, but the
+// `/stack/people/[handle]` and `/stack/people` index pages do.
+const participants = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/participants' }),
+  schema: z.object({
+    handle: z.string(),
+    name: z.string(),
+    firm: z.string().optional(),
+    role: z.string().optional(),
+    kauffman_class: z.number().optional(),
+    github: z.string().url().optional(),
+    github_avatar: z.string().url().optional(),
+    // Local headshot path — takes priority over github_avatar when set.
+    // Lives under /public/images/participant-headshots/.
+    headshot: z.string().optional(),
+    linkedin: z.string().url().optional(),
+    public_profile: z.boolean().default(false),
+    joined_dojo: z.coerce.date().optional(),
+
+    current_stack: z.array(z.object({
+      tool: z.string(),
+      added: z.coerce.date().optional(),
+      notes: z.string().optional(),
+    })).optional(),
+    aspirational_stack: z.array(z.object({
+      tool: z.string(),
+      intent: z.string().optional(),
+    })).optional(),
+    abandoned_stack: z.array(z.object({
+      tool: z.string(),
+      abandoned: z.coerce.date().optional(),
+      reason: z.string().optional(),
+    })).optional(),
+  }),
+});
+
 const webinars = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/webinars' }),
   schema: z.object({
@@ -271,4 +348,6 @@ export const collections = {
   ventureWorkflows,
   projects,
   workingGroups,
+  tools,
+  participants,
 };
