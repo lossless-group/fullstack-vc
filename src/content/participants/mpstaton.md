@@ -18,8 +18,6 @@ current_stack:
     notes: "Pair-programming front-end work — Cascade keeps me in flow state."
   - tool: ghostty
     added: 2026-04-28
-  - tool: cursor
-    added: 2026-04-28
 aspirational_stack: []
 abandoned_stack: []
 ---
