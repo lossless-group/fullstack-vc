@@ -7,5 +7,5 @@ title: Ideogram
 description: "Image generation for everyone"
 og_image: "https://ideogram.ai/assets/meta-tag.png"
 og_favicon: "https://ideogram.ai/favicon.ico"
-tags: [Image-Generators, AI-Toolkit]
+tags: [Image-Generators, AI-Toolkit, Text-to-Image, API-Integrations]
 ---

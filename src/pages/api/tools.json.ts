@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
       site_name: t.data.site_name,
       title: t.data.title,
       zinger: t.data.zinger,
-      og_favicon: t.data.og_favicon,
+      og_favicon: t.data.og_favicon ?? t.data.favicon,
       tags: t.data.tags ?? [],
     }))
     .sort((a, b) => (a.site_name ?? a.slug).localeCompare(b.site_name ?? b.slug));

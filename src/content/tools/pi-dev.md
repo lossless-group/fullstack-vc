@@ -9,5 +9,4 @@ title: Pi.dev
 description: "A terminal-based coding agent"
 og_image: https://pi.dev/social.png
 og_favicon: "https://pi.dev/favicon.svg"
-og_last_fetch: "2026-04-28T16:50:11.911Z"
 ---

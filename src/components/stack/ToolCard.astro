@@ -21,6 +21,11 @@ interface ToolEntryData {
   logo_dark?: string;
   description_site_cp?: string;
   description?: string;
+  // Bare-name aliases inherited from Obsidian Tooling frontmatter.
+  // Renderer falls back from og_* to these when the og_* form is absent.
+  image?: string;
+  favicon?: string;
+  hero_image_url?: string;
 }
 
 interface Props {
@@ -40,8 +45,8 @@ const { slug, data, small = false, notes, intent, reason, abandoned } = Astro.pr
 const displayName = data.site_name ?? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 const tagline = data.zinger ?? data.title ?? '';
 const description = data.description_site_cp ?? data.description ?? '';
-const screenshot = data.og_screenshot_url ?? data.og_image;
-const favicon = data.og_favicon;
+const screenshot = data.og_screenshot_url ?? data.og_image ?? data.image ?? data.hero_image_url;
+const favicon = data.og_favicon ?? data.favicon;
 const tags = data.tags ?? [];
 
 // Annotation line — whichever stack tier passed context.

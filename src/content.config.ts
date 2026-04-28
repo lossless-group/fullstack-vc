@@ -33,6 +33,14 @@ const tools = defineCollection({
     logo_light: z.string().url().optional(),
     logo_dark: z.string().url().optional(),
 
+    // Bare-name aliases — the Lossless Obsidian Tooling frontmatter uses
+    // these instead of the `og_*` forms. Both are accepted so paste-import
+    // works without renaming; renderers fall back from og_* → bare name.
+    image: z.string().url().optional(),
+    favicon: z.string().url().optional(),
+    aliases: z.array(z.string()).optional(),
+    hero_image_url: z.string().url().optional(),
+
     description_site_cp: z.string().optional(),
     description: z.string().optional(),
     og_title: z.string().optional(),
@@ -46,6 +54,11 @@ const tools = defineCollection({
 
     oss: z.boolean().optional(),
     pricing: z.string().optional(),
+    publish: z.boolean().optional(),
+    product_of: z.string().optional(),
+    docs_url: z.string().url().optional(),
+    github_profile_url: z.string().url().optional(),
+    github_repo_url: z.string().url().optional(),
     youtube_channel_url: z.string().url().optional(),
   }).passthrough(),
 });

@@ -1,0 +1,113 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import AlertDisplay from '../../../components/ui/AlertDisplay.astro';
+---
+
+<BaseThemeLayout
+  title="Component · AlertDisplay"
+  description="Inline announcement bar with dismiss; session-scoped."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-4xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Design System · Components
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      AlertDisplay
+    </h1>
+    <p style="color: var(--color-text-muted);">
+      Inline announcement bar with primary-tinted gradient and an "×" dismiss button. Sits above the section/page it's mounted in. Dismissal is per-id and per-session (<code style="font-family: var(--font-code);">sessionStorage</code>) — same alert never shows twice in one browsing session, but reappears on a future visit.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">announce <code>(default)</code></h2>
+    <p class="ds-block-note">Primary→secondary gradient. Use for site-wide, non-urgent context-setting messages.</p>
+    <AlertDisplay id="ds-demo-announce">
+      <strong>FullStack VC is NOT a VC</strong>, or even a company. It's an information and
+      organization hub for the Kauffman Fellows AI SIG, and facilitates the Agentic VC Dojo.
+    </AlertDisplay>
+  </section>
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">info</h2>
+    <p class="ds-block-note">Lighter primary tint. Use for ambient context that doesn't need to "pop."</p>
+    <AlertDisplay id="ds-demo-info" variant="info" text="Heads up — the May All Hands will be recorded and posted to /webinars within 48 hours." />
+  </section>
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">warning</h2>
+    <p class="ds-block-note">Amber tint that survives all three modes.</p>
+    <AlertDisplay id="ds-demo-warning" variant="warning">
+      Scheduled maintenance: GitHub commits to the registry will pause from 02:00–04:00 UTC on Sunday.
+    </AlertDisplay>
+  </section>
+
+  <section class="ds-block">
+    <h2 class="ds-block-title">center alignment</h2>
+    <p class="ds-block-note">Pass <code>align="center"</code> for short, centered messages.</p>
+    <AlertDisplay id="ds-demo-center" align="center" text="Welcome — the dojo opens to applicants 2026-05-15." />
+  </section>
+
+  <details class="text-sm mt-8">
+    <summary style="color: var(--color-text-muted); cursor: pointer; font-family: var(--font-code);">Props + behavior</summary>
+    <pre class="mt-3 p-4 rounded overflow-x-auto" style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); font-family: var(--font-code); font-size: 0.8125rem;">{`<AlertDisplay
+  id="some-stable-id"          /* required — sessionStorage dismiss key */
+  variant="announce"           /* "announce" | "info" | "warning" — default "announce" */
+  align="left"                 /* "left" | "center" — default "left" */
+  text="Optional fallback string"
+>
+  <!-- default slot beats the text prop when both are provided -->
+  <strong>Bold lede.</strong> Body copy with <a href="...">links</a>.
+</AlertDisplay>
+
+/* Behavior */
+- On click of the × button: sessionStorage.setItem('alert-dismissed:{id}', '1')
+- On hydration: if that key is set, the alert hides itself
+- Cleared automatically when the browser tab closes — alert reappears next visit
+- SSR-safe: markup always renders; dismiss is post-hydration only
+
+/* Tokens read */
+--color-primary, --color-secondary, --color-surface, --color-text, --color-text-muted,
+--color-border, --fx-card-shadow`}</pre>
+  </details>
+</BaseThemeLayout>
+
+<style is:global>
+  .ds-block {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .ds-block:last-of-type { border-bottom: none; }
+  .ds-block-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .ds-block-title code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    background: var(--color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-border);
+  }
+  .ds-block-note {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+  }
+  .ds-block-note code {
+    color: var(--color-primary);
+    font-family: var(--font-code);
+  }
+</style>

@@ -3,11 +3,22 @@
    Below-hero explainer for the home page. Frames the Dojo against the
    Kauffman Fellowship + Special Interest Groups (wisdom & network →
    contextual knowledge), and positions FullStack VC as the procedural-skill
-   counterpart. Then renders a three-tier relationship diagram
-   (Dojo → All Hands ‖ Working Groups → Projects) and four explainer cards.
+   counterpart. Renders a three-tier relationship diagram
+   (Dojo → All Hands ‖ Working Groups → Projects).
 
-   Pure semantic tokens. Mode-aware. No props — all copy lives in this file
-   so the home page composes it as a one-liner. */
+   Container width matches the hero (max-w-4xl) so the home page reads as a
+   single column. The wider Dojo-components breakdown lives in
+   Section__DojoComponents and ships on /about.
+
+   Pure semantic tokens. Mode-aware. One optional prop:
+     - hideMore: suppresses the "Learn more about the Dojo →" footer link
+       (use on /about, where the link would self-reference). */
+
+export interface Props {
+  hideMore?: boolean;
+}
+
+const { hideMore = false } = Astro.props;
 ---
 
 <section class="hiw" aria-labelledby="hiw-heading">
@@ -78,60 +89,19 @@
     </div>
   </div>
 
-  <!-- Explainer: outer container = the Dojo (border + violet tint).
-       Left zone = Dojo's own intro panel.
-       Right zone = a 3-card grid for All Hands / Working Groups / Projects. -->
-  <div class="hiw__cards" role="group" aria-label="Components of the Dojo community">
-    <article class="hiw__dojo-panel">
-      <p class="hiw__card-eyebrow">Umbrella</p>
-      <h3 class="hiw__card-title hiw__card-title--dojo">Dojo</h3>
-      <p class="hiw__card-body">
-        Kauffman AI SIG & FullStack VC's working community. A place to build hard-skill fluency in AI, agents, data,
-        and workflows alongside peers — not a program with a syllabus, but a practice with people.
-      </p>
-      <p class="hiw__dojo-tagline">Inside the Dojo:</p>
-    </article>
-
-    <ul class="hiw__children">
-      <li class="hiw__card">
-        <p class="hiw__card-eyebrow">Watering hole</p>
-        <h3 class="hiw__card-title">All Hands</h3>
-        <p class="hiw__card-body">
-          Monthly Zoom webinar facilitated by the Kauffman Fellows Community Manager. A guest presenter
-          for part of the meeting; working groups present results for the rest. <em>Open to all.</em>
-          The right entry point if you're "just curious" — most members start here.
-        </p>
-        <a class="hiw__card-link" href="/webinars/">See upcoming All Hands →</a>
-      </li>
-
-      <li class="hiw__card">
-        <p class="hiw__card-eyebrow">Practice layer</p>
-        <h3 class="hiw__card-title">Working Groups</h3>
-        <p class="hiw__card-body">
-          Theme-based small communities led by members. Cadence varies — some meet weekly, some
-          rarely meet and collaborate digitally instead. Soft expectations about participation
-          (social, not enforced). Each group self-organizes around recurring problems.
-        </p>
-        <a class="hiw__card-link" href="/working-groups/">Browse working groups →</a>
-      </li>
-
-      <li class="hiw__card">
-        <p class="hiw__card-eyebrow">Concrete work</p>
-        <h3 class="hiw__card-title">Projects</h3>
-        <p class="hiw__card-body">
-          Specific artifacts that working groups commit to building or learning together — a
-          workflow, a prototype, a methodology, a library. Many-to-many with working groups (one
-          project can serve multiple groups, one group can run several projects).
-        </p>
-        <a class="hiw__card-link" href="/projects/">See active projects →</a>
-      </li>
-    </ul>
-  </div>
+  {!hideMore && (
+    <p class="hiw__more">
+      <a class="hiw__more-link" href="/about">Learn more about the Dojo <span aria-hidden="true">→</span></a>
+    </p>
+  )}
 </section>
 
 <style>
   .hiw {
-    max-width: 72rem;
+    /* 56rem = max-w-4xl, matches the hero's column on /index.astro so margins
+       stay uniform down the home page. The wider Dojo-components breakdown
+       lives in Section__DojoComponents and ships on /about. */
+    max-width: 56rem;
     margin: 0 auto;
     padding: clamp(3rem, 6vw, 5rem) 1.5rem clamp(4rem, 8vw, 6rem);
     display: flex;
@@ -363,126 +333,21 @@
     }
   }
 
-  /* ---------- Explainer: Dojo container with 3 children inside ----------
-     Outer .hiw__cards = the Dojo card (border + violet tint).
-     Left zone = Dojo's intro panel; right zone = the 3 child cards.
-     Mirrors the diagram: All Hands / Working Groups / Projects all live
-     under the Dojo umbrella, visualized as nested cards inside a
-     primary-bordered container. */
-  .hiw__cards {
-    border: 1px solid var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 6%, var(--fx-card-bg));
-    border-radius: 1rem;
-    padding: 1.75rem;
-    box-shadow: var(--fx-card-shadow);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    align-items: start;
+  /* ---------- "Learn more" link to /about ---------- */
+  .hiw__more {
+    margin: 0;
+    text-align: center;
   }
-  @media (min-width: 1100px) {
-    .hiw__cards {
-      /* Wide: Dojo intro on the left (~16rem), 3 child cards on the right. */
-      grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
-      gap: 2rem;
-    }
-  }
-
-  /* Left zone — Dojo intro panel (no separate border; the outer container
-     already provides it. Just content. Anchored top-left.) */
-  .hiw__dojo-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 0.25rem;
-  }
-  .hiw__dojo-tagline {
-    margin: auto 0 0;
-    padding-top: 0.875rem;
+  .hiw__more-link {
     font-family: var(--font-code);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--color-text-muted);
-    border-top: 1px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
-  }
-
-  /* Right zone — 3 child cards, sub-grid */
-  .hiw__children {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  @media (min-width: 720px) {
-    .hiw__children { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  /* Card style — the three children. They sit ON the violet-tinted Dojo
-     surface, so they use --fx-card-bg (which is the un-tinted card bg)
-     to "pop out" of the container. */
-  .hiw__card {
-    padding: 1.5rem;
-    border-radius: 0.875rem;
-    background: var(--fx-card-bg);
-    border: 1px solid var(--fx-card-border);
-    box-shadow: var(--fx-card-shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
-  }
-  .hiw__card:hover {
-    border-color: var(--fx-card-border-hover);
-    box-shadow: var(--fx-card-shadow-hover);
-    transform: translateY(-2px);
-  }
-  .hiw__card-eyebrow {
-    margin: 0;
-    font-family: var(--font-code);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    color: var(--color-text-muted);
-  }
-  .hiw__card-title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-text);
-    letter-spacing: -0.01em;
-  }
-  .hiw__card-title--dojo {
-    color: var(--color-primary);
-    font-size: 1.625rem;
-    background: var(--fx-headline-gradient, none);
-    -webkit-background-clip: text;
-            background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hiw__card-body {
-    margin: 0;
-    font-size: 0.9375rem;
-    line-height: 1.55;
-    color: var(--color-text);
-    flex: 1;
-  }
-  .hiw__card-body em {
-    color: var(--color-primary);
-    font-style: italic;
-  }
-  .hiw__card-link {
-    margin-top: auto;
-    font-family: var(--font-code);
-    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
     color: var(--color-primary);
     text-decoration: none;
     transition: color 150ms ease;
   }
-  .hiw__card-link:hover {
+  .hiw__more-link:hover {
     color: var(--color-text);
   }
 </style>

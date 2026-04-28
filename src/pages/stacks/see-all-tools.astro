@@ -1,0 +1,135 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ToolCard from '../../components/stack/ToolCard.astro';
+
+const allTools = await getCollection('tools');
+const allParticipants = await getCollection('participants');
+
+// Adoption count per tool — surfaces a "N members using" annotation when
+// the tool actually shows up in someone's current_stack. Doesn't affect
+// inclusion: the page is "see all," so every tool entry renders.
+const toolCounts = new Map<string, number>();
+for (const p of allParticipants) {
+  if (!p.data.public_profile) continue;
+  for (const item of p.data.current_stack ?? []) {
+    toolCounts.set(item.tool, (toolCounts.get(item.tool) ?? 0) + 1);
+  }
+}
+
+// Alphabetic by display name (site_name or slug). The front-door /stacks
+// page does adoption-ranked; this one is a flat catalog.
+const tools = allTools
+  .map(t => ({
+    slug: t.id,
+    data: t.data,
+    count: toolCounts.get(t.id) ?? 0,
+    displayName: (t.data.site_name ?? t.id).toLowerCase(),
+  }))
+  .sort((a, b) => a.displayName.localeCompare(b.displayName));
+---
+
+<BaseThemeLayout
+  title="All tools · Stacks · FullStack VC"
+  description="Every tool in the Agentic VC Dojo registry — alphabetical, no filters."
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <section class="all-tools-hero">
+    <p class="all-tools-hero__eyebrow">
+      <a href="/stacks" class="all-tools-hero__back">← Stacks</a>
+    </p>
+    <h1 class="all-tools-hero__title">All tools in the registry</h1>
+    <p class="all-tools-hero__lede">
+      <strong>{tools.length}</strong> tool{tools.length === 1 ? '' : 's'} tracked. Alphabetical, no filters — the front-door
+      <a href="/stacks">/stacks</a> page surfaces only the most-adopted handful.
+    </p>
+  </section>
+
+  {tools.length === 0 ? (
+    <p class="all-tools-empty">No tools in the registry yet.</p>
+  ) : (
+    <ul class="all-tools-grid" role="list">
+      {tools.map(({ slug, data, count }) => (
+        <li class="all-tools-cell">
+          <ToolCard
+            slug={slug}
+            data={data}
+            notes={count > 0 ? `${count} member${count === 1 ? '' : 's'} using` : undefined}
+          />
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseThemeLayout>
+
+<style>
+  .all-tools-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    max-width: 48rem;
+    margin-bottom: 2.5rem;
+  }
+  .all-tools-hero__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .all-tools-hero__back {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+  .all-tools-hero__back:hover { color: var(--color-primary); }
+  .all-tools-hero__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .all-tools-hero__lede {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-text-muted);
+  }
+  .all-tools-hero__lede strong { color: var(--color-text); font-weight: 600; }
+  .all-tools-hero__lede a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px dashed currentColor;
+    padding-bottom: 0.0625rem;
+  }
+  .all-tools-hero__lede a:hover { color: var(--color-text); border-bottom-color: var(--color-text); }
+
+  .all-tools-empty {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    border: 1px dashed var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .all-tools-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 600px) { .all-tools-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .all-tools-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1300px) { .all-tools-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .all-tools-cell { display: flex; }
+  .all-tools-cell > * { width: 100%; }
+</style>

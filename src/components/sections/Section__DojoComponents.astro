@@ -1,0 +1,228 @@
+---
+/* Section__DojoComponents
+   Wider companion to Section__HowItWorks. Renders the Dojo umbrella
+   container with three child cards (All Hands, Working Groups, Projects).
+   Lives on /about because the 3-card grid wants ≥1100px to read well.
+   Pure semantic tokens. Mode-aware. No props. */
+---
+
+<section class="djc" aria-labelledby="djc-heading">
+  <header class="djc__header">
+    <p class="djc__eyebrow">Inside the Dojo</p>
+    <h2 id="djc-heading" class="djc__heading">How the pieces fit together</h2>
+    <p class="djc__lede">
+      The <strong>Dojo</strong> is the umbrella. Inside it: a monthly <em>All Hands</em> webinar that's
+      open to everyone, member-led <em>Working Groups</em> that meet on their own cadence, and concrete
+      <em>Projects</em> that working groups commit to building together.
+    </p>
+  </header>
+
+  <div class="djc__cards" role="group" aria-label="Components of the Dojo community">
+    <article class="djc__dojo-panel">
+      <p class="djc__card-eyebrow">Umbrella</p>
+      <h3 class="djc__card-title djc__card-title--dojo">Dojo</h3>
+      <p class="djc__card-body">
+        Kauffman AI SIG & FullStack VC's working community. A place to build hard-skill fluency in AI, agents, data,
+        and workflows alongside peers — not a program with a syllabus, but a practice with people.
+      </p>
+      <p class="djc__dojo-tagline">Inside the Dojo:</p>
+    </article>
+
+    <ul class="djc__children">
+      <li class="djc__card">
+        <p class="djc__card-eyebrow">Watering hole</p>
+        <h3 class="djc__card-title">All Hands</h3>
+        <p class="djc__card-body">
+          Monthly Zoom webinar facilitated by the Kauffman Fellows Community Manager. A guest presenter
+          for part of the meeting; working groups present results for the rest. <em>Open to all.</em>
+          The right entry point if you're "just curious" — most members start here.
+        </p>
+        <a class="djc__card-link" href="/webinars/">See upcoming All Hands →</a>
+      </li>
+
+      <li class="djc__card">
+        <p class="djc__card-eyebrow">Practice layer</p>
+        <h3 class="djc__card-title">Working Groups</h3>
+        <p class="djc__card-body">
+          Theme-based small communities led by members. Cadence varies — some meet weekly, some
+          rarely meet and collaborate digitally instead. Soft expectations about participation
+          (social, not enforced). Each group self-organizes around recurring problems.
+        </p>
+        <a class="djc__card-link" href="/working-groups/">Browse working groups →</a>
+      </li>
+
+      <li class="djc__card">
+        <p class="djc__card-eyebrow">Concrete work</p>
+        <h3 class="djc__card-title">Projects</h3>
+        <p class="djc__card-body">
+          Specific artifacts that working groups commit to building or learning together — a
+          workflow, a prototype, a methodology, a library. Many-to-many with working groups (one
+          project can serve multiple groups, one group can run several projects).
+        </p>
+        <a class="djc__card-link" href="/projects/">See active projects →</a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .djc {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 6vw, 5rem) 1.5rem clamp(4rem, 8vw, 6rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  .djc__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    max-width: 52rem;
+  }
+  .djc__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .djc__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-text);
+  }
+  .djc__lede {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--color-text);
+  }
+  .djc__lede strong { color: var(--color-text); font-weight: 600; }
+  .djc__lede em {
+    color: var(--color-primary);
+    font-style: italic;
+    font-weight: 700;
+  }
+  :global([data-mode="light"]) .djc__lede em { color: #5b21b6; }
+  :global([data-mode="dark"]) .djc__lede em { color: #c4b5fd; }
+  :global([data-mode="vibrant"]) .djc__lede em { color: #caff5c; }
+
+  /* Outer Dojo container — violet-tinted card holding the umbrella +
+     three children. Mirrors the hierarchy diagram visually. */
+  .djc__cards {
+    border: 1px solid var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 6%, var(--fx-card-bg));
+    border-radius: 1rem;
+    padding: 1.75rem;
+    box-shadow: var(--fx-card-shadow);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  @media (min-width: 1100px) {
+    .djc__cards {
+      grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  .djc__dojo-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.25rem;
+  }
+  .djc__dojo-tagline {
+    margin: auto 0 0;
+    padding-top: 0.875rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    border-top: 1px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  }
+
+  .djc__children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .djc__children { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .djc__card {
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .djc__card:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+  .djc__card-eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .djc__card-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+  .djc__card-title--dojo {
+    color: var(--color-primary);
+    font-size: 1.625rem;
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .djc__card-body {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-text);
+    flex: 1;
+  }
+  .djc__card-body em {
+    color: var(--color-primary);
+    font-style: italic;
+  }
+  .djc__card-link {
+    margin-top: auto;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+  .djc__card-link:hover {
+    color: var(--color-text);
+  }
+</style>

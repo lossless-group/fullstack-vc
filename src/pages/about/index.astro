@@ -1,0 +1,63 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import Section__HowItWorks from '../../components/sections/Section__HowItWorks.astro';
+import Section__DojoComponents from '../../components/sections/Section__DojoComponents.astro';
+---
+
+<BaseThemeLayout
+  title="About — FullStack VC"
+  description="What the Agentic VC Dojo is, who it's for, and how its pieces fit together."
+>
+  <section class="about-hero">
+    <p class="about-hero__eyebrow">About</p>
+    <h1 class="about-hero__heading">The Agentic VC Dojo</h1>
+    <p class="about-hero__lede">
+      A working community for venture professionals practicing AI in their daily craft.
+      Wisdom and network are paramount in venture — and procedural fluency with AI is the
+      complement that makes the modern operating environment legible.
+    </p>
+  </section>
+
+  <Section__HowItWorks hideMore={true} />
+  <Section__DojoComponents />
+</BaseThemeLayout>
+
+<style>
+  .about-hero {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 6vw, 5rem) 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .about-hero__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .about-hero__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--color-text);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .about-hero__lede {
+    margin: 0;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    max-width: 44rem;
+  }
+</style>

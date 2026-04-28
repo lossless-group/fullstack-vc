@@ -39,6 +39,12 @@ const components = [
     props: '— (no props yet)',
   },
   {
+    name: 'AlertDisplay',
+    purpose: 'Inline announcement bar with primary-tinted gradient and an "×" dismiss button. Sits above the section/page it\'s mounted in. Dismissal is per-id and per-session (sessionStorage) — same alert never shows twice in one browsing session, but reappears on a future visit. Content via default slot (HTML/components) or text prop.',
+    cssContract: '--color-primary, --color-secondary, --color-surface, --color-text, --color-text-muted, --color-border, --fx-card-shadow',
+    props: 'id (required, dismiss key), text? (string fallback), variant? ("announce"|"info"|"warning", default "announce"), align? ("left"|"center", default "left")  → demo: /design-system/components/alert-display',
+  },
+  {
     name: 'BaseThemeLayout',
     purpose: 'Site-wide layout wrapper. Applies theme class on <html>, boots theme + mode switchers, imports global.css.',
     cssContract: '(none directly — sets up the contract for descendants)',
@@ -175,6 +181,12 @@ const components = [
     purpose: 'Sibling to JumboPopdown__Projects. Header-mounted dropdown surfacing active (and optionally proposed) working groups. Same hover-open + click-toggle, Esc closes, arrow keys navigate, mobile becomes a bottom drawer. Mounted in Header.astro alongside the Projects popdown.',
     cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-status-*, --font-display, --font-code',
     props: 'triggerLabelTxt? (default "Working Groups"), workingGroups: WorkingGroupEntry[], showProposed?: boolean (default true)  → demo: /design-system/components/jumbo-popdown-working-groups',
+  },
+  {
+    name: 'JumboPopdown__More',
+    purpose: 'Third sibling popdown. Surfaces secondary destinations (Stacks, People) under a "More" trigger. Static items — no collection backing, edit the items array in the component to add destinations. Same hover-open + click-toggle, Esc closes, arrow keys navigate, mobile becomes a bottom drawer.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
+    props: 'triggerLabelTxt? (default "More")  → demo: /design-system/components/jumbo-popdown-more',
   },
   {
     name: 'WorkingGroupMetadataDisplay',
@@ -509,6 +521,16 @@ class?:           extra class name(s)
         <p class="ds-subpage-eyebrow">Components</p>
         <p class="ds-subpage-title">JumboPopdown__WorkingGroups</p>
         <p class="ds-subpage-note">Sibling popdown for the WG header item.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/components/jumbo-popdown-more">
+        <p class="ds-subpage-eyebrow">Components</p>
+        <p class="ds-subpage-title">JumboPopdown__More</p>
+        <p class="ds-subpage-note">Static "More" popdown — Stacks + People.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/components/alert-display">
+        <p class="ds-subpage-eyebrow">Components</p>
+        <p class="ds-subpage-title">AlertDisplay</p>
+        <p class="ds-subpage-note">Dismissable announcement bar · session-scoped.</p>
       </a>
       <a class="ds-subpage" href="/design-system/markdown/markdown-reader">
         <p class="ds-subpage-eyebrow">Markdown</p>
