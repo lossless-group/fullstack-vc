@@ -1,0 +1,168 @@
+---
+/* ToolTipIndicator
+   Subtle "?" circle that reveals an explanatory bubble on hover OR focus.
+   Touch users tap to focus the trigger (bubble shows); tap elsewhere blurs.
+   Zero JS — :hover + :focus-within on the wrapper drive visibility.
+
+   Pass the explanatory copy via the default slot (HTML allowed) OR the
+   `text` prop (string fallback). Slot wins when both are present. */
+
+export interface Props {
+  /** Plain-text fallback when no slot content is provided. */
+  text?: string;
+  /** Bubble placement relative to the trigger. Default: 'top'. */
+  position?: 'top' | 'bottom';
+  /** CSS width for the bubble. Default: '18rem'. */
+  width?: string;
+  /** Accessible label for the trigger. Default: 'More information'. */
+  label?: string;
+  /** Trigger glyph size in px. Default: 16. */
+  size?: number;
+}
+
+const {
+  text,
+  position = 'top',
+  width = '18rem',
+  label = 'More information',
+  size = 16,
+} = Astro.props;
+
+const hasSlot = Astro.slots.has('default');
+---
+
+<span
+  class:list={['tooltip-indicator', `tooltip-indicator--${position}`]}
+  style={`--tt-width: ${width};`}
+>
+  <button
+    type="button"
+    class="tooltip-indicator__trigger"
+    aria-label={label}
+  >
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="8" cy="8" r="6.75" />
+      <path d="M6 6.4c0-1.1.9-2 2-2s2 .9 2 1.9c0 .9-.6 1.3-1.2 1.7-.5.3-.8.6-.8 1.2v.4" />
+      <circle cx="8" cy="11.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  </button>
+
+  <span class="tooltip-indicator__bubble" role="tooltip">
+    {hasSlot ? <slot /> : text}
+  </span>
+</span>
+
+<style>
+  .tooltip-indicator {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;          /* keep the trigger flush with surrounding text */
+    vertical-align: middle;
+  }
+
+  .tooltip-indicator__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    cursor: help;
+    transition: color 150ms ease, transform 150ms ease;
+  }
+  .tooltip-indicator__trigger:hover,
+  .tooltip-indicator:focus-within .tooltip-indicator__trigger {
+    color: var(--color-primary);
+    transform: scale(1.06);
+  }
+  .tooltip-indicator__trigger:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .tooltip-indicator__bubble {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    width: max-content;
+    max-width: var(--tt-width);
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    text-align: left;
+    white-space: normal;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 120ms ease;
+  }
+
+  /* Placement variants */
+  .tooltip-indicator--top .tooltip-indicator__bubble {
+    bottom: calc(100% + 0.5rem);
+  }
+  .tooltip-indicator--bottom .tooltip-indicator__bubble {
+    top: calc(100% + 0.5rem);
+  }
+
+  /* Reveal on hover OR focus-within */
+  .tooltip-indicator:hover .tooltip-indicator__bubble,
+  .tooltip-indicator:focus-within .tooltip-indicator__bubble {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Tiny pointer arrow on the bubble */
+  .tooltip-indicator__bubble::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+  }
+  .tooltip-indicator--top .tooltip-indicator__bubble::after {
+    bottom: -0.3125rem;
+    border-top: 0;
+    border-left: 0;
+  }
+  .tooltip-indicator--bottom .tooltip-indicator__bubble::after {
+    top: -0.3125rem;
+    border-bottom: 0;
+    border-right: 0;
+  }
+
+  /* Slot content gets sensible inline defaults */
+  .tooltip-indicator__bubble :global(strong) { color: var(--color-text); }
+  .tooltip-indicator__bubble :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .tooltip-indicator__bubble :global(p) { margin: 0; }
+  .tooltip-indicator__bubble :global(p + p) { margin-top: 0.5em; }
+</style>

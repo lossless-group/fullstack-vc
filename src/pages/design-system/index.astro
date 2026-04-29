@@ -212,6 +212,18 @@ const components = [
     cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
     props: 'currentStack?, aspirationalStack?, abandonedStack? (each: { tool: slug, ...tier-specific fields }[])',
   },
+  {
+    name: 'CtaBtnWithAuthIcons',
+    purpose: 'Primary CTA button that shows which auth providers (linkedin, github) the destination accepts. Provider glyphs sit on the leading edge of the button with a thin divider before the label. Same chrome as HeroContentCoreMessage\'s default CTA so it slots in via the hero\'s `cta` named slot. Used on /dojo for the "Join by creating an account" entry point.',
+    cssContract: '--color-primary, --color__bone, --font-code, --fx-card-shadow, --fx-card-shadow-hover',
+    props: 'href: string, label: string, providers?: ("linkedin"|"github")[] (default both, order preserved), external? (default false), iconSize? (default 18)',
+  },
+  {
+    name: 'ToolTipIndicator',
+    purpose: 'Subtle "?" circle that reveals an explanatory bubble on hover OR focus. Touch users tap the trigger to focus it (bubble shows); tapping elsewhere blurs. Zero JS — :hover + :focus-within drive visibility. Pass copy via the default slot (HTML allowed) or the `text` prop. Use anywhere the UI risks the "wait, why?" reaction (auth gates, jargon, surprising defaults).',
+    cssContract: '--color-text-muted, --color-primary, --color-text, --fx-card-bg, --fx-card-border, --fx-card-shadow, --font-body; internal: --tt-width (overridable via prop)',
+    props: 'text? (string fallback), position?: "top"|"bottom" (default "top"), width? (default "18rem"), label? (default "More information"), size? (default 16)',
+  },
 ];
 ---
 

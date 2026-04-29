@@ -27,11 +27,6 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
 ---
 
 <header class="site-header">
-  <div class="site-header__utility">
-    <div class="site-header__utility-inner">
-      <a href="/about" class="site-header__utility-link">About</a>
-    </div>
-  </div>
   <div class="site-header__inner">
     <a href="/" class="site-header__brand" aria-label="FullStack VC home">
       <img src="/favicon.svg" alt="" width="28" height="28" />
@@ -81,7 +76,7 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     </nav>
 
     <div class="site-header__actions">
-      <SocialsFaviconRow github="https://github.com/lossless-group/fullstack-vc" />
+      <SocialsFaviconRow github="https://github.com/lossless-group/fullstack-vc" linkedin="https://www.linkedin.com/company/fullstack-vc" />
       <ModeToggle />
       <MobileNav popdownProjects={popdownProjects} popdownWorkingGroups={popdownWorkingGroups} />
     </div>
@@ -97,29 +92,6 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-border);
-  }
-  .site-header__utility {
-    border-bottom: 1px solid var(--color-border);
-  }
-  .site-header__utility-inner {
-    max-width: 80rem;
-    margin: 0 auto;
-    padding: 0.3125rem 1.5rem;
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-  .site-header__utility-link {
-    color: var(--color-text-muted);
-    text-decoration: none;
-    font-family: var(--font-code);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    transition: color 150ms ease;
-  }
-  .site-header__utility-link:hover {
-    color: var(--color-text);
   }
   .site-header__inner {
     max-width: 80rem;
@@ -277,9 +249,6 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
   }
   @media (max-width: 640px) {
     .site-header__nav {
-      display: none;
-    }
-    .site-header__utility {
       display: none;
     }
   }

@@ -6,6 +6,10 @@ dist/
 private/
 *.pem
 
+# Working files with PII (registrant CSVs, personal-contact notes).
+# Anything under context-v/extra/ stays local-only — public repo, real emails.
+context-v/extra/
+
 # dependencies
 node_modules/
 
