@@ -29,6 +29,8 @@ const HOST_USER_ID = 'mpstaton';
 const POLL_QA_PARTICIPATION_ID = 'poll_qa_participation-mode';
 const POLL_QA_AI_USE_CASES_ID  = 'poll_qa_ai-use-cases';
 const POLL_QA_NERDY_SCALE_ID   = 'poll_qa_nerdy-scale';
+const POLL_QA_KEEPS_YOU_UP_ID  = 'poll_qa_keeps-you-up';
+const POLL_QA_INTEREST_AVAIL_ID = 'poll_qa_interest-availability';
 
 const now = new Date();
 
@@ -37,12 +39,18 @@ console.log(`Wiping prior QA rows for session: ${SESSION_ID}`);
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_QA_PARTICIPATION_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_QA_AI_USE_CASES_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_QA_NERDY_SCALE_ID));
+await db.delete(Vote).where(eq(Vote.poll_id, POLL_QA_KEEPS_YOU_UP_ID));
+await db.delete(Vote).where(eq(Vote.poll_id, POLL_QA_INTEREST_AVAIL_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_QA_PARTICIPATION_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_QA_AI_USE_CASES_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_QA_NERDY_SCALE_ID));
+await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_QA_KEEPS_YOU_UP_ID));
+await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_QA_INTEREST_AVAIL_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_QA_PARTICIPATION_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_QA_AI_USE_CASES_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_QA_NERDY_SCALE_ID));
+await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_QA_KEEPS_YOU_UP_ID));
+await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_QA_INTEREST_AVAIL_ID));
 await db.delete(Poll).where(eq(Poll.session_id, SESSION_ID));
 await db.delete(Session).where(eq(Session.id, SESSION_ID));
 
@@ -150,6 +158,73 @@ await db.insert(Poll).values([
   },
 ]);
 
+// ─── Poll 4: What keeps you up at night? (multi-select, 11 options) ────────
+console.log(`Inserting QA Poll: ${POLL_QA_KEEPS_YOU_UP_ID}`);
+await db.insert(Poll).values([
+  {
+    id: POLL_QA_KEEPS_YOU_UP_ID,
+    session_id: SESSION_ID,
+    title: '[QA] What keeps you up at night',
+    prompt: 'What keeps you up at night?',
+    template: 'multi-select',
+    options: [
+      { id: 'email-overload',            label: 'Email overload' },
+      { id: 'brand-recognition',         label: 'Brand recognition' },
+      { id: 'winning-next-deal',         label: 'Winning the Next Deal' },
+      { id: 'preparing-fundraise',       label: 'Preparing the Next Fundraise' },
+      { id: 'closing-lp-commitments',    label: 'Closing LP Commitments from Current Pipeline' },
+      { id: 'portfolio-mayhem',          label: 'Portfolio Mayhem' },
+      { id: 'not-getting-back',          label: 'Not getting back to people' },
+      { id: 'finding-next-decacorn',     label: 'Finding the next Decacorn' },
+      { id: 'knowing-what-to-prioritize', label: 'Knowing what to prioritize' },
+      { id: 'current-team',              label: 'Getting the most out of your Current Team' },
+      { id: 'auditors',                  label: 'Feeding some auditors asking for things.' },
+    ],
+    status: 'open',
+    visibility: 'session-attendees',
+    results_visibility: 'on-close',
+    anonymous_display: true,
+    allow_revote: true,
+    last_vote_at: null,
+    created_by: HOST_USER_ID,
+    created_at: now,
+    updated_at: now,
+  },
+]);
+
+// ─── Poll 5: Interest vs availability (sliding-scale, no-neutral) ──────────
+console.log(`Inserting QA Poll: ${POLL_QA_INTEREST_AVAIL_ID}`);
+await db.insert(Poll).values([
+  {
+    id: POLL_QA_INTEREST_AVAIL_ID,
+    session_id: SESSION_ID,
+    title: '[QA] Interest vs availability',
+    prompt: 'How might your interest and availability collide?',
+    template: 'sliding-scale',
+    options: {
+      min: -3,
+      max: 3,
+      step: 1,
+      default_value: -1,
+      exclude: [0],
+      labels: {
+        min: 'No way to make time for anything else',
+        max: 'If I see value, I make time',
+      },
+      show_distribution: true,
+    },
+    status: 'open',
+    visibility: 'session-attendees',
+    results_visibility: 'live',
+    anonymous_display: true,
+    allow_revote: true,
+    last_vote_at: null,
+    created_by: HOST_USER_ID,
+    created_at: now,
+    updated_at: now,
+  },
+]);
+
 console.log('');
 console.log(`✓ QA session seeded and ALL POLLS PRE-OPENED: ${SESSION_SLUG}`);
 console.log(`  /sessions/${SESSION_SLUG}     ← test URL (not on /sessions/ listing)`);
@@ -158,6 +233,8 @@ console.log('QA polls (status: open):');
 console.log(`  - ${POLL_QA_PARTICIPATION_ID}   (boolean, results live)`);
 console.log(`  - ${POLL_QA_AI_USE_CASES_ID}        (multi-select, results on-close)`);
 console.log(`  - ${POLL_QA_NERDY_SCALE_ID}         (sliding-scale, -3..+3 no-neutral)`);
+console.log(`  - ${POLL_QA_KEEPS_YOU_UP_ID}        (multi-select, results on-close)`);
+console.log(`  - ${POLL_QA_INTEREST_AVAIL_ID}  (sliding-scale, -3..+3 no-neutral)`);
 console.log('');
 console.log('To close one and see the on-close reveal:');
 console.log(`  POLL_ID=${POLL_QA_AI_USE_CASES_ID} STATUS=closed pnpm set-poll-status --remote`);

@@ -21,6 +21,8 @@ const HOST_USER_ID = 'mpstaton';
 const POLL_PARTICIPATION_ID = 'poll_dojo-launch-2026-04-29_participation-mode';
 const POLL_AI_USE_CASES_ID  = 'poll_dojo-launch-2026-04-29_ai-use-cases';
 const POLL_NERDY_SCALE_ID   = 'poll_dojo-launch-2026-04-29_nerdy-scale';
+const POLL_KEEPS_YOU_UP_ID  = 'poll_dojo-launch-2026-04-29_keeps-you-up';
+const POLL_INTEREST_AVAIL_ID = 'poll_dojo-launch-2026-04-29_interest-availability';
 
 const now = new Date();
 
@@ -30,12 +32,18 @@ console.log(`Wiping existing rows for session: ${SESSION_ID}`);
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_PARTICIPATION_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_AI_USE_CASES_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_NERDY_SCALE_ID));
+await db.delete(Vote).where(eq(Vote.poll_id, POLL_KEEPS_YOU_UP_ID));
+await db.delete(Vote).where(eq(Vote.poll_id, POLL_INTEREST_AVAIL_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_PARTICIPATION_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_AI_USE_CASES_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_NERDY_SCALE_ID));
+await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_KEEPS_YOU_UP_ID));
+await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_INTEREST_AVAIL_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_PARTICIPATION_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_AI_USE_CASES_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_NERDY_SCALE_ID));
+await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_KEEPS_YOU_UP_ID));
+await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_INTEREST_AVAIL_ID));
 await db.delete(Poll).where(eq(Poll.session_id, SESSION_ID));
 await db.delete(Session).where(eq(Session.id, SESSION_ID));
 
@@ -148,6 +156,73 @@ await db.insert(Poll).values([
   },
 ]);
 
+// ─── Poll 4: What keeps you up at night? (multi-select) ────────────────────
+console.log(`Inserting Poll: ${POLL_KEEPS_YOU_UP_ID}`);
+await db.insert(Poll).values([
+  {
+    id: POLL_KEEPS_YOU_UP_ID,
+    session_id: SESSION_ID,
+    title: 'What keeps you up at night',
+    prompt: 'What keeps you up at night?',
+    template: 'multi-select',
+    options: [
+      { id: 'email-overload',            label: 'Email overload' },
+      { id: 'brand-recognition',         label: 'Brand recognition' },
+      { id: 'winning-next-deal',         label: 'Winning the Next Deal' },
+      { id: 'preparing-fundraise',       label: 'Preparing the Next Fundraise' },
+      { id: 'closing-lp-commitments',    label: 'Closing LP Commitments from Current Pipeline' },
+      { id: 'portfolio-mayhem',          label: 'Portfolio Mayhem' },
+      { id: 'not-getting-back',          label: 'Not getting back to people' },
+      { id: 'finding-next-decacorn',     label: 'Finding the next Decacorn' },
+      { id: 'knowing-what-to-prioritize', label: 'Knowing what to prioritize' },
+      { id: 'current-team',              label: 'Getting the most out of your Current Team' },
+      { id: 'auditors',                  label: 'Feeding some auditors asking for things.' },
+    ],
+    status: 'draft',
+    visibility: 'session-attendees',
+    results_visibility: 'on-close',
+    anonymous_display: true,
+    allow_revote: true,
+    last_vote_at: null,
+    created_by: HOST_USER_ID,
+    created_at: now,
+    updated_at: now,
+  },
+]);
+
+// ─── Poll 5: Interest vs availability (sliding-scale, no-neutral) ──────────
+console.log(`Inserting Poll: ${POLL_INTEREST_AVAIL_ID}`);
+await db.insert(Poll).values([
+  {
+    id: POLL_INTEREST_AVAIL_ID,
+    session_id: SESSION_ID,
+    title: 'Interest vs availability',
+    prompt: 'How might your interest and availability collide?',
+    template: 'sliding-scale',
+    options: {
+      min: -3,
+      max: 3,
+      step: 1,
+      default_value: -1,
+      exclude: [0],
+      labels: {
+        min: 'No way to make time for anything else',
+        max: 'If I see value, I make time',
+      },
+      show_distribution: true,
+    },
+    status: 'draft',
+    visibility: 'session-attendees',
+    results_visibility: 'live',
+    anonymous_display: true,
+    allow_revote: true,
+    last_vote_at: null,
+    created_by: HOST_USER_ID,
+    created_at: now,
+    updated_at: now,
+  },
+]);
+
 console.log('');
 console.log(`✓ Seeded production session: ${SESSION_SLUG}`);
 console.log(`  /sessions/${SESSION_SLUG}`);
@@ -156,6 +231,8 @@ console.log('Polls (all currently draft):');
 console.log(`  - ${POLL_PARTICIPATION_ID}    (boolean)`);
 console.log(`  - ${POLL_AI_USE_CASES_ID}      (multi-select)`);
 console.log(`  - ${POLL_NERDY_SCALE_ID}        (sliding-scale, -3..+3 no-neutral)`);
+console.log(`  - ${POLL_KEEPS_YOU_UP_ID}       (multi-select)`);
+console.log(`  - ${POLL_INTEREST_AVAIL_ID}  (sliding-scale, -3..+3 no-neutral)`);
 console.log('');
 console.log('To open a poll during the meeting:');
 console.log(`  POLL_ID=${POLL_PARTICIPATION_ID} STATUS=open pnpm set-poll-status`);
