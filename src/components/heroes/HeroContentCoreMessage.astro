@@ -39,7 +39,9 @@ const {
     <p class="hero-core__supporting" set:html={supportingTxt}></p>
   )}
 
-  {ctaHref && ctaLabel && (
+  {Astro.slots.has('cta') ? (
+    <div class="hero-core__cta-row"><slot name="cta" /></div>
+  ) : ctaHref && ctaLabel && (
     <div class="hero-core__cta-row">
       <a href={ctaHref} class="hero-core__cta">{ctaLabel}</a>
     </div>

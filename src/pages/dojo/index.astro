@@ -3,6 +3,7 @@ export const prerender = true;
 
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import HeroContentCoreMessage from '../../components/heroes/HeroContentCoreMessage.astro';
+import CtaBtnWithAuthIcons from '../../components/buttons/CtaBtnWithAuthIcons.astro';
 import AlternateCta from '../../components/heroes/AlternateCta.astro';
 import AreasOfVentureGrid, { type Area } from '../../components/sections/AreasOfVentureGrid.astro';
 
@@ -26,7 +27,7 @@ const trailingTxt = 'A content series by the <a href="https://kauffmanfellows.or
    The intended endpoint is roughly /api/o-auth/dojo/join — wired here to the
    existing /login entry until the dedicated dojo-join route exists.
 ----------- */
-const ctaText = 'Join the Dojo';
+const ctaText = 'Join by creating an account';
 const ctaLink = '/login';
 
 /* -----------
@@ -127,9 +128,14 @@ const areasIntro = 'Ten workflow areas that show up across nearly every venture 
           headerTxt={headerTxt}
           subheaderTxt={subheaderTxt}
           supportingTxt={supportingTxt}
-          ctaHref={ctaLink}
-          ctaLabel={ctaText}
-        />
+        >
+          <CtaBtnWithAuthIcons
+            slot="cta"
+            href={ctaLink}
+            label={ctaText}
+            providers={['linkedin', 'github']}
+          />
+        </HeroContentCoreMessage>
       </div>
 
       <div class="dojo-top__aside">

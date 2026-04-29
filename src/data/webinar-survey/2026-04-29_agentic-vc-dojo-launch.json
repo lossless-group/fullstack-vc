@@ -1,41 +1,41 @@
 {
-  "generatedAt": "2026-04-28T04:35:19.466Z",
+  "generatedAt": "2026-04-29T06:03:22.980Z",
   "webinarId": "2026-05_agentic-vc-dojo-launch",
   "totals": {
-    "registered": 49,
-    "surveyed": 31,
-    "firms": 29,
-    "activeRate": 74,
-    "attended": 2
+    "registered": 60,
+    "surveyed": 40,
+    "firms": 37,
+    "activeRate": 73,
+    "attended": 6
   },
   "experience": [
     {
       "label": "Lone-Wolf, Active Experimenting (prompting, simple automations)",
-      "count": 14
+      "count": 17
     },
     {
       "label": "Organizational, Active Experimenting",
-      "count": 10
+      "count": 12
     },
     {
       "label": "Building personal workflows (e.g., multi-step tools, APIs, or agents)",
-      "count": 9
+      "count": 12
     },
     {
       "label": "Internal conversations, little action",
-      "count": 8
+      "count": 11
     },
     {
       "label": "Building organizational workflows (e.g., multi-step tools, APIs, or agents)",
-      "count": 5
+      "count": 6
     },
     {
       "label": "No hands-on experience, curious",
-      "count": 4
+      "count": 5
     },
     {
       "label": "Consistent personal workflows with big impact",
-      "count": 3
+      "count": 4
     },
     {
       "label": "Consistent personal workflows with little impact",
@@ -43,7 +43,7 @@
     },
     {
       "label": "Consistent organizational workflows with little impact",
-      "count": 1
+      "count": 2
     },
     {
       "label": "Consistent organizational workflows with big impact",
@@ -57,10 +57,10 @@
         "label": "Native LLM apps",
         "hint": "ChatGPT, Claude, Perplexity",
         "counts": {
-          "simple": 20,
-          "intermediate": 6,
+          "simple": 24,
+          "intermediate": 9,
           "advanced": 0,
-          "none": 5
+          "none": 7
         }
       },
       {
@@ -68,10 +68,10 @@
         "label": "Local AI workspaces",
         "hint": "Ollama, LM Studio, MSTY",
         "counts": {
-          "simple": 21,
+          "simple": 29,
           "intermediate": 0,
           "advanced": 0,
-          "none": 10
+          "none": 11
         }
       },
       {
@@ -79,10 +79,10 @@
         "label": "Agent workflow builders",
         "hint": "n8n, Flowise, OpenClaw, Dynamiq",
         "counts": {
-          "simple": 18,
+          "simple": 25,
           "intermediate": 2,
           "advanced": 0,
-          "none": 11
+          "none": 13
         }
       }
     ]
@@ -117,6 +117,13 @@
       "count": 1
     },
     {
+      "name": "Amplifica Capital",
+      "domains": [
+        "amplifica.capital"
+      ],
+      "count": 1
+    },
+    {
       "name": "Atlantica Ventures",
       "domains": [
         "atlanticaventures.com"
@@ -138,9 +145,23 @@
       "count": 1
     },
     {
+      "name": "Cherry Rock Capital",
+      "domains": [
+        "cherryrockcapital.com"
+      ],
+      "count": 1
+    },
+    {
       "name": "Cometa",
       "domains": [
         "cometa.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Corner Ventures",
+      "domains": [
+        "cornerventures.com"
       ],
       "count": 1
     },
@@ -183,6 +204,20 @@
       "name": "Feature VC",
       "domains": [
         "featuresvc.co"
+      ],
+      "count": 1
+    },
+    {
+      "name": "FirstMark",
+      "domains": [
+        "firstmark.com"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Garage Capital",
+      "domains": [
+        "garage.vc"
       ],
       "count": 1
     },
@@ -243,6 +278,13 @@
       "count": 1
     },
     {
+      "name": "M25 Ventures",
+      "domains": [
+        "m25vc.com"
+      ],
+      "count": 1
+    },
+    {
       "name": "Medici Capital",
       "domains": [
         "medicicap.com"
@@ -291,18 +333,36 @@
         "proseventures.com"
       ],
       "count": 1
+    },
+    {
+      "name": "Walking VC",
+      "domains": [
+        "walking.vc"
+      ],
+      "count": 1
+    },
+    {
+      "name": "Wild Basin Investments",
+      "domains": [
+        "wildbasininv.com"
+      ],
+      "count": 1
     }
   ],
   "wants": [
     "Learn how to get started with the basics.",
+    "architecture and best practices",
     "Would love to see what others are doing for fundraising.",
+    "All the above!",
     "Best practices for solo GP to get 80% there with 20% effort.",
     "Understanding of the quality of the output as right now that's what is lacking for me",
     "use cases, best practices",
     "Tools and best practices",
     "architecture, tools and best practices for getting the structure set up in a secure and effective way",
     "Practical first and second steps",
+    "tools, good use cases",
     "Use cases and architecture",
+    "Best practices, examples use cases of tech stack, how to get started.",
     "architecture, tools,"
   ],
   "quotes": [
@@ -347,6 +407,12 @@
       "source": "achieved"
     },
     {
+      "_name": "Adrianna Samaniego",
+      "_firm": "Cherry Rock Capital",
+      "body": "I’ve been some simple integrations across our CRM and enrichment tools to help manage dealflow and on the initial pass a framework and agentic workflow that gives a priority score by deal to help prioritization.",
+      "source": "building"
+    },
+    {
       "_name": "Ainhoa (\"Noa\") Maiz",
       "_firm": "(personal)",
       "body": "Automate the grunt work in my day to day life. Example use cases: create/curate/prioritize top of funnel, deep market research, market maps, etc.",
@@ -371,6 +437,12 @@
       "source": "wanted"
     },
     {
+      "_name": "Abhinaya Konduru",
+      "_firm": "M25 Ventures",
+      "body": "Exploring to combine various personal workflows to be accessible across organization.",
+      "source": "building"
+    },
+    {
       "_name": "Ben Metcalfe",
       "_firm": "(personal)",
       "body": "Understanding of the quality of the output as right now that's what is lacking for me",
@@ -387,6 +459,12 @@
       "_firm": "(personal)",
       "body": "Agentic workflows for deal triaging, due diligence, and memo creation.",
       "source": "building"
+    },
+    {
+      "_name": "Adrianna Samaniego",
+      "_firm": "Cherry Rock Capital",
+      "body": "Best practices, examples use cases of tech stack, how to get started.",
+      "source": "wanted"
     },
     {
       "_name": "Richard Yen",
@@ -407,6 +485,12 @@
       "source": "wanted"
     },
     {
+      "_name": "Adrianna Samaniego",
+      "_firm": "Cherry Rock Capital",
+      "body": "I’m still very early working through kinks.",
+      "source": "achieved"
+    },
+    {
       "_name": "Jonathan Charles",
       "_firm": "(personal)",
       "body": "Learn how to get started with the basics.",
@@ -422,6 +506,12 @@
       "_name": "Punit Chiniwalla",
       "_firm": "(personal)",
       "body": "Practical first and second steps",
+      "source": "wanted"
+    },
+    {
+      "_name": "Abhinaya Konduru",
+      "_firm": "M25 Ventures",
+      "body": "architecture and best practices",
       "source": "wanted"
     }
   ]

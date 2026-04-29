@@ -19,7 +19,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 const SOURCE_CSV = new URL(
-  '../context-v/extra/2026-04-26_AI-SIG_AI-Skill-Dojo-Reg_report.csv',
+  '../context-v/extra/2026-04-29_AI-SIG_AI-Skill-Dojo-Reg_report-v2.csv',
   import.meta.url
 ).pathname;
 
@@ -61,6 +61,17 @@ const FIRM_NAMES: Record<string, string> = {
   'lastmileventures.com': 'Last Mile Ventures',
   'josihealth.com': 'Josi Health',
   'kfp.org': 'Kauffman Fellows',
+  // Added with v2 CSV (2026-04-29): the 8 new firms that came in alongside
+  // the 11 new registrants. Fallback name-cleanup did not produce something
+  // we'd want to ship — these are the public brand names.
+  'm25vc.com': 'M25 Ventures',
+  'cherryrockcapital.com': 'Cherry Rock Capital',
+  'amplifica.capital': 'Amplifica Capital',
+  'cornerventures.com': 'Corner Ventures',
+  'firstmark.com': 'FirstMark',
+  'garage.vc': 'Garage Capital',
+  'wildbasininv.com': 'Wild Basin Investments',
+  'walking.vc': 'Walking VC',
 };
 
 // Domains we treat as personal/non-firm. Excluded from the firms list.

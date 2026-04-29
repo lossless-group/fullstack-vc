@@ -134,38 +134,51 @@ const PollEvent = defineTable({
 // flow that committed a markdown participant file on each new account, which
 // produced commit-history pollution (one commit per signup).
 //
-// `id` is a composite of provider + subject (e.g. "github:mpstaton" or
-// "linkedin:abc123"). If the same person signs in with both GitHub and
-// LinkedIn they will appear as two rows for v0.0.1 — unifying identities is
-// a v0.0.2+ concern.
+// IDENTITY MODEL (one row per *person*, not per provider login):
+//   `id` = the lowercased roster email — the canonical identity of a Kauffman
+//   Fellow. This matches Vote.user_id (which also uses the lowercased roster
+//   email), so user records and vote attribution share the same key.
 //
-// This table is intentionally NOT joined to Vote.user_id today: Vote.user_id
-// stays as the raw `session.subject` so existing tally code keeps working.
-// The User row is informational (audit trail + future profile source).
+//   Each provider connection is a NULLABLE COLUMN on this row, not a separate
+//   row. A Fellow who signs in with GitHub gets a row with `github_handle`
+//   populated; if they later sign in with LinkedIn against the same roster
+//   email, the SAME row gets `linkedin_sub` filled in. The UI can then
+//   detect "this user has only one provider linked" and nudge them to add
+//   the other.
+//
+//   Fallback: if a roster entry has no email (rare — GitHub-handle-only
+//   entries), id falls back to "<provider>:<provider_subject>". Those users
+//   can't dual-provider anyway since LinkedIn matching requires email, so
+//   the fallback case stays single-provider by definition.
 //
 // Roster gating still uses src/content/kauffman_roster.json via
-// matchesRoster() — adding a row to this table is recording a successful
-// login, not granting access.
+// matchesRoster() — writing a row here records a login, it does NOT grant
+// access.
 const User = defineTable({
   columns: {
-    id: column.text({ primaryKey: true }),       // "<provider>:<provider_subject>"
-    provider: column.text(),                     // 'github' | 'linkedin'
-    provider_subject: column.text(),             // GitHub login OR LinkedIn sub claim
+    id: column.text({ primaryKey: true }),       // canonical = lowercased roster email
     email: column.text({ optional: true }),
     name: column.text({ optional: true }),
     avatar: column.text({ optional: true }),
-    // Enrichment from kauffman_roster.json at login time. Snapshotted onto
-    // the row so /people pages don't have to re-load the JSON every render.
+    // Provider connections — either or both populated. Indexed unique below
+    // so we can look a user up by either provider identifier in O(1).
+    github_handle: column.text({ optional: true }),
+    linkedin_sub: column.text({ optional: true }),
+    // Roster enrichment, snapshotted at login so /people pages don't have to
+    // re-read kauffman_roster.json on every render.
     kauffman_class: column.number({ optional: true }),
     firm: column.text({ optional: true }),
-    // Audit timestamps.
+    // Most recent provider used to log in — drives the "you signed in with X
+    // last time" hint in the login UI.
+    last_provider: column.text(),                // 'github' | 'linkedin'
     first_login_at: column.date(),
     last_login_at: column.date(),
     created_at: column.date(),
     updated_at: column.date(),
   },
   indexes: {
-    provider_subject_unique: { on: ['provider', 'provider_subject'], unique: true },
+    github_handle_unique: { on: ['github_handle'], unique: true },
+    linkedin_sub_unique: { on: ['linkedin_sub'], unique: true },
   },
 });
 
