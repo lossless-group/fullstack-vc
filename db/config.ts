@@ -129,6 +129,46 @@ const PollEvent = defineTable({
   },
 });
 
+// ─── User ────────────────────────────────────────────────────────────────────
+// Account record written on every successful OAuth login. Replaces the prior
+// flow that committed a markdown participant file on each new account, which
+// produced commit-history pollution (one commit per signup).
+//
+// `id` is a composite of provider + subject (e.g. "github:mpstaton" or
+// "linkedin:abc123"). If the same person signs in with both GitHub and
+// LinkedIn they will appear as two rows for v0.0.1 — unifying identities is
+// a v0.0.2+ concern.
+//
+// This table is intentionally NOT joined to Vote.user_id today: Vote.user_id
+// stays as the raw `session.subject` so existing tally code keeps working.
+// The User row is informational (audit trail + future profile source).
+//
+// Roster gating still uses src/content/kauffman_roster.json via
+// matchesRoster() — adding a row to this table is recording a successful
+// login, not granting access.
+const User = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),       // "<provider>:<provider_subject>"
+    provider: column.text(),                     // 'github' | 'linkedin'
+    provider_subject: column.text(),             // GitHub login OR LinkedIn sub claim
+    email: column.text({ optional: true }),
+    name: column.text({ optional: true }),
+    avatar: column.text({ optional: true }),
+    // Enrichment from kauffman_roster.json at login time. Snapshotted onto
+    // the row so /people pages don't have to re-load the JSON every render.
+    kauffman_class: column.number({ optional: true }),
+    firm: column.text({ optional: true }),
+    // Audit timestamps.
+    first_login_at: column.date(),
+    last_login_at: column.date(),
+    created_at: column.date(),
+    updated_at: column.date(),
+  },
+  indexes: {
+    provider_subject_unique: { on: ['provider', 'provider_subject'], unique: true },
+  },
+});
+
 export default defineDb({
-  tables: { Session, Poll, Vote, PollResult, PollEvent },
+  tables: { Session, Poll, Vote, PollResult, PollEvent, User },
 });

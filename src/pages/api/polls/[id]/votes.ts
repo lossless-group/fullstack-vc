@@ -38,7 +38,17 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
   const rosterEntry = matchesRoster(session);
   if (!rosterEntry) return json({ error: 'not on roster' }, 403);
 
-  const user_id = session.subject;
+  // Canonical voter identity: the roster entry is the source of truth for
+  // "who this person is," regardless of which OAuth provider they signed in
+  // with. Using the roster email (lowercased) as Vote.user_id means a
+  // GitHub login and a LinkedIn login by the same Fellow share one Vote row,
+  // and the (poll_id, user_id) unique index correctly enforces one vote per
+  // person — not one vote per provider.
+  //
+  // Fallback to session.subject only when the roster entry has no email
+  // (GitHub-handle-only entries; rare). Those users can't dual-provider
+  // anyway, so the fallback is safe.
+  const user_id = (rosterEntry.email ?? session.subject).toLowerCase();
 
   // ── Load poll + verify it's open ────────────────────────────────────────
   const poll = await db.select().from(Poll).where(eq(Poll.id, id)).get();

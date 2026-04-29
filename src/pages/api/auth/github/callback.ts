@@ -5,6 +5,7 @@
 import type { APIRoute } from 'astro';
 import { signSession, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, type SessionPayload } from '../../../../lib/session';
 import { matchesRoster } from '../../../../lib/oauth-roster';
+import { recordUserLogin } from '../../../../lib/user-record';
 
 const STATE_COOKIE = 'fsvc_oauth_state_github';
 
@@ -103,7 +104,11 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     return redirect(`/login/not-on-roster?provider=github&handle=${encodeURIComponent(ghUser.login)}`, 302);
   }
 
-  // 6. Sign the session cookie and redirect to the app
+  // 6. Stamp the User row (best-effort; replaces the old markdown-commit
+  //    account-creation flow). Errors are swallowed inside the helper.
+  await recordUserLogin(session, rosterEntry);
+
+  // 7. Sign the session cookie and redirect to the app
   const token = await signSession(session);
   cookies.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
 
