@@ -1,0 +1,383 @@
+---
+/**
+ * OneSlideDeck — Reveal.js deck rendered inside the normal site chrome.
+ *
+ * Architecture:
+ *   - Wraps in BaseThemeLayout, so Header, Footer, theme + mode switchers
+ *     are all available (the deck inherits whatever mode the user picked).
+ *   - The Reveal canvas is constrained to a 16:9 box. A "Present" button
+ *     calls `requestFullscreen()` on that box; Reveal calls `layout()` on
+ *     fullscreenchange so it re-fits cleanly to the viewport and back.
+ *   - Mode is NOT forced. Vibrant gives you neon. Dark is the default for
+ *     new visitors. Light is light. The deck reads --color-* tokens.
+ *
+ * GSAP integration: any `<section data-gsap="my-id">` triggers
+ *   window.__slideAnimations["my-id"](currentSlide, Reveal)
+ * on slidechanged + once on initial load (if registered). Decks register
+ * timelines via their own <script is:inline> block.
+ */
+
+import BaseThemeLayout from './BaseThemeLayout.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Disable the GSAP runtime if a deck doesn't need it. */
+  withGsap?: boolean;
+}
+
+const {
+  title = 'Presentation',
+  description,
+  withGsap = true,
+} = Astro.props;
+---
+
+<BaseThemeLayout
+  title={title}
+  description={description}
+  noindex={true}
+  containerClass="slide-deck-page"
+>
+  <!-- Reveal.js core stylesheet — HTML5 allows <link rel="stylesheet"> in body. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.min.css" />
+
+  <section class="slide-deck">
+    <header class="slide-deck__bar" aria-label="Presentation controls">
+      <a class="slide-deck__back" href="/slides">← All slides</a>
+      <h1 class="slide-deck__title">{title}</h1>
+      <div class="slide-deck__actions">
+        <button type="button" class="slide-deck__btn" data-action="restart" title="Restart deck (R)">
+          ↺ Restart
+        </button>
+        <button type="button" class="slide-deck__btn slide-deck__btn--primary" data-action="present" title="Present fullscreen (F)">
+          ⛶ Present
+        </button>
+      </div>
+    </header>
+
+    <div class="slide-deck__stage" id="slide-deck-stage">
+      <div class="reveal">
+        <div class="slides">
+          <slot />
+        </div>
+      </div>
+    </div>
+
+    <p class="slide-deck__hint">
+      <kbd>→</kbd> next · <kbd>↓</kbd> nested · <kbd>F</kbd> fullscreen ·
+      <kbd>S</kbd> speaker notes · <kbd>ESC</kbd> overview
+    </p>
+  </section>
+
+  <script is:inline src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/markdown/markdown.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.min.js"></script>
+
+  {withGsap && (
+    <script is:inline src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  )}
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var plugins = [];
+      if (window.RevealMarkdown) plugins.push(RevealMarkdown);
+      if (window.RevealHighlight) plugins.push(RevealHighlight);
+      if (window.RevealNotes) plugins.push(RevealNotes);
+
+      Reveal.initialize({
+        embedded: true,
+        controls: true,
+        progress: true,
+        slideNumber: 'c/t',
+        history: true,
+        center: true,
+        touch: true,
+        hideInactiveCursor: true,
+        transition: 'slide',
+        backgroundTransition: 'fade',
+        width: 1600,
+        height: 900,
+        margin: 0.08,
+        minScale: 0.2,
+        maxScale: 1.6,
+        navigationMode: 'grid',
+        keyboardCondition: 'focused',
+        plugins: plugins,
+      });
+
+      // GSAP slide-animation registry (see component header).
+      window.__slideAnimations = window.__slideAnimations || {};
+      function fireSlideAnim(slide) {
+        if (!slide || !window.gsap) return;
+        var key = slide.dataset && slide.dataset.gsap;
+        if (key && typeof window.__slideAnimations[key] === 'function') {
+          try { window.__slideAnimations[key](slide, Reveal); }
+          catch (err) { console.warn('[slides-gsap] animation "' + key + '" threw:', err); }
+        }
+      }
+      Reveal.on('ready',        function (e) { fireSlideAnim(e.currentSlide); });
+      Reveal.on('slidechanged', function (e) { fireSlideAnim(e.currentSlide); });
+
+      // Stage controls — fullscreen / restart.
+      var stage = document.getElementById('slide-deck-stage');
+      var presentBtn = document.querySelector('[data-action="present"]');
+      var restartBtn = document.querySelector('[data-action="restart"]');
+
+      function enterFullscreen() {
+        if (!stage) return;
+        var req = stage.requestFullscreen || stage.webkitRequestFullscreen || stage.msRequestFullscreen;
+        if (req) req.call(stage);
+      }
+      function exitFullscreen() {
+        var ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        if (ex) ex.call(document);
+      }
+      function isFullscreen() {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+      }
+      function toggleFullscreen() {
+        if (isFullscreen()) exitFullscreen(); else enterFullscreen();
+      }
+
+      if (presentBtn) presentBtn.addEventListener('click', toggleFullscreen);
+      if (restartBtn) restartBtn.addEventListener('click', function () { Reveal.slide(0, 0); });
+
+      // Keep Reveal sized correctly when the stage gains/loses fullscreen.
+      ['fullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(function (evt) {
+        document.addEventListener(evt, function () {
+          // small async tick so the stage's bounding box settles
+          setTimeout(function () { Reveal.layout(); }, 60);
+        });
+      });
+
+      // Manual F key — only when the stage is the active surface.
+      document.addEventListener('keydown', function (e) {
+        var tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          toggleFullscreen();
+        }
+      });
+    });
+  </script>
+</BaseThemeLayout>
+
+<style is:global>
+  /* The deck page is a flex column that fills the viewport so the stage can
+     claim remaining height under the site Header. Footer is hidden because
+     it would push the stage off-screen — the back link in the deck bar
+     replaces footer navigation while presenting. */
+  .slide-deck-page {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 0px);
+  }
+  body:has(.slide-deck-page) .site-footer { display: none; }
+
+  .slide-deck {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem 1.25rem;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: 0;
+  }
+
+  .slide-deck__bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .slide-deck__back {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .slide-deck__back:hover { color: var(--color-primary); border-color: var(--color-primary); }
+
+  .slide-deck__title {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .slide-deck__actions { display: flex; gap: 0.5rem; }
+  .slide-deck__btn {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.5rem 0.875rem;
+    cursor: pointer;
+    transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+  }
+  .slide-deck__btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .slide-deck__btn--primary {
+    color: var(--color__bone);
+    background: var(--color-primary);
+    border-color: transparent;
+  }
+  .slide-deck__btn--primary:hover {
+    color: var(--color__bone);
+    background: color-mix(in srgb, var(--color-primary) 85%, white);
+    border-color: transparent;
+  }
+
+  /* The stage holds Reveal at a 16:9 aspect ratio. Fullscreen flips it to
+     viewport-fill via the :fullscreen pseudo-class. */
+  .slide-deck__stage {
+    flex: 1;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: calc(100vh - 220px);
+    border-radius: 0.875rem;
+    overflow: hidden;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    position: relative;
+  }
+  .slide-deck__stage:fullscreen {
+    aspect-ratio: auto;
+    max-height: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: 0;
+    background: var(--color-background);
+  }
+
+  /* Neutralize Reveal's core white-background defaults so the stage's
+     theme-token background shows through. */
+  .slide-deck__stage .reveal,
+  .slide-deck__stage .reveal-viewport {
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: transparent !important;
+  }
+  .slide-deck__stage .reveal .slides,
+  .slide-deck__stage .reveal .slides > section,
+  .slide-deck__stage .reveal .slides > section > section {
+    background: transparent;
+  }
+
+  /* Typography inside slides — reads only Tier-2 semantic tokens. */
+  .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+    font-family: var(--font-display);
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    text-transform: none;
+    margin-top: 0;
+  }
+  .reveal h1 { font-size: 3.25rem; line-height: 1.05; font-weight: 700; }
+  .reveal h2 { font-size: 2.25rem; line-height: 1.1;  font-weight: 700; }
+  .reveal h3 { font-size: 1.5rem;  line-height: 1.2;  font-weight: 600; }
+  .reveal p, .reveal li { color: var(--color-text); line-height: 1.5; }
+  .reveal a { color: var(--color-primary); text-decoration: none; transition: color 150ms ease; }
+  .reveal a:hover { color: var(--color-secondary); }
+  .reveal strong { color: var(--color-primary); }
+  .reveal em { color: var(--color-text-muted); font-style: italic; }
+  .reveal blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1rem;
+    margin: 1rem auto;
+    color: var(--color-text-muted);
+    font-style: italic;
+    background: transparent;
+    box-shadow: none;
+    max-width: 60rem;
+  }
+  .reveal pre, .reveal code { font-family: var(--font-code); }
+  .reveal pre {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: var(--fx-card-shadow);
+  }
+  .reveal :not(pre) > code {
+    background: var(--color-surface);
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-border);
+    font-size: 0.85em;
+    color: var(--color-text);
+  }
+  .reveal .progress { color: var(--color-primary); }
+  .reveal .controls { color: var(--color-primary); }
+  .reveal .slide-number {
+    font-family: var(--font-code);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    color: var(--color-text-muted);
+    border-radius: 0.25rem;
+  }
+
+  /* Title-slide convention used by decks. */
+  .reveal .title-slide { text-align: center; }
+  .reveal .title-slide .eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin: 0 0 1.25rem;
+  }
+  .reveal .title-slide .gradient-headline,
+  .reveal .gradient-headline {
+    background: var(--fx-headline-gradient);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .slide-deck__hint {
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .slide-deck__hint kbd {
+    font-family: var(--font-code);
+    color: var(--color-primary);
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    margin: 0 0.125rem;
+  }
+
+  /* In fullscreen: hide the surrounding chrome (bar, hint) so it's pure deck. */
+  .slide-deck:has(.slide-deck__stage:fullscreen) .slide-deck__bar,
+  .slide-deck:has(.slide-deck__stage:fullscreen) .slide-deck__hint {
+    display: none;
+  }
+</style>

@@ -5,12 +5,26 @@
    and the curated JSON for the editorial decision. */
 
 type Source = 'building' | 'achieved' | 'wanted';
-interface Quote { persona: string; body: string; source: Source }
+interface Quote { persona: string; body: string; source: Source; featured?: boolean }
 interface Props {
   quotes: Quote[];
+  id?: string;
+  eyebrowTxt?: string;
+  headingTxt: string;
+  headingAccentTxt: string;
+  ledeTxt?: string;
 }
 
-const { quotes } = Astro.props;
+const {
+  quotes,
+  id = 'wsvoices',
+  eyebrowTxt = 'Voices from the survey',
+  headingTxt,
+  headingAccentTxt,
+  ledeTxt,
+} = Astro.props;
+
+const headingId = `${id}-heading`;
 
 const sourceLabel: Record<Source, string> = {
   building: 'Building now',
@@ -20,18 +34,22 @@ const sourceLabel: Record<Source, string> = {
 ---
 
 {quotes.length > 0 && (
-  <section class="wsvoices" aria-labelledby="wsvoices-heading">
-    <p class="wsvoices__eyebrow">Voices from the survey</p>
-    <h2 id="wsvoices-heading" class="wsvoices__heading">
-      What this room <span class="wsvoices__heading-accent">is actually working on</span>
+  <section class="wsvoices" aria-labelledby={headingId}>
+    <p class="wsvoices__eyebrow">{eyebrowTxt}</p>
+    <h2 id={headingId} class="wsvoices__heading">
+      {headingTxt}{' '}<span class="wsvoices__heading-accent">{headingAccentTxt}</span>
     </h2>
-    <p class="wsvoices__lede">
-      Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday.
-    </p>
+    {ledeTxt && (
+      <p class="wsvoices__lede">{ledeTxt}</p>
+    )}
 
     <ul class="wsvoices__grid" role="list">
       {quotes.map(q => (
-        <li class={`wsvoices__card wsvoices__card--${q.source}`}>
+        <li class={[
+          'wsvoices__card',
+          `wsvoices__card--${q.source}`,
+          q.featured && 'wsvoices__card--featured',
+        ].filter(Boolean).join(' ')}>
           <span class="wsvoices__mark" aria-hidden="true">"</span>
           <p class="wsvoices__body">{q.body}</p>
           <footer class="wsvoices__meta">
@@ -91,6 +109,7 @@ const sourceLabel: Record<Source, string> = {
   }
   @media (min-width: 720px) {
     .wsvoices__grid { grid-template-columns: repeat(2, 1fr); }
+    .wsvoices__card--featured { grid-column: 1 / -1; }
   }
 
   .wsvoices__card {

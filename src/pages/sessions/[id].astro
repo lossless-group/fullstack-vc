@@ -265,7 +265,22 @@ const survey = surveyModules[surveyKey]?.default ?? null;
         surveyed={survey.totals.surveyed}
       />
       <Section__WebinarFirmsRepresented firms={survey.firms} />
-      <Section__WebinarSurveyVoices quotes={survey.quotes} />
+      <Section__WebinarSurveyVoices
+        id="wsvoices-building"
+        quotes={survey.quotes}
+        headingTxt="What this room"
+        headingAccentTxt="is actually working on"
+        ledeTxt="Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday."
+      />
+      {survey.quotesWanted && survey.quotesWanted.length > 0 && (
+        <Section__WebinarSurveyVoices
+          id="wsvoices-asks"
+          quotes={survey.quotesWanted}
+          headingTxt="What this room is"
+          headingAccentTxt="hoping to take home"
+          ledeTxt="Free-response answers to 'what do you most want to get out of this session?' — lightly edited."
+        />
+      )}
     </div>
   )}
 </BaseThemeLayout>

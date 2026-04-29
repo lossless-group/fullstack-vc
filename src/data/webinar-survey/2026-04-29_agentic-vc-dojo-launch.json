@@ -390,6 +390,49 @@
       "persona": "An early-stage research-heavy investor",
       "body": "Automating the grunt work: top-of-funnel curation, deep market research, market maps.",
       "source": "building"
+    },
+    {
+      "persona": "A growth-stage diligence lead",
+      "body": "Simple integrations across our CRM and enrichment tools to manage dealflow — plus an agentic workflow that scores each deal for prioritization.",
+      "source": "building"
+    },
+    {
+      "persona": "A US Midwest seed investor",
+      "body": "Trying to combine various personal workflows so the whole organization can use them.",
+      "source": "building"
+    },
+    {
+      "persona": "A solo investor",
+      "body": "Agentic workflows for deal triaging, due diligence, and memo creation.",
+      "source": "building"
+    },
+    {
+      "persona": "An emerging-manager GP",
+      "body": "We've built a basic IR/fundraising engine and audit/accounting support — game-changing for us. Co-pilot enterprise for MS integration and email; Claude Team for most everything else. On a 1–10 scale, we're still a 3–4.",
+      "source": "achieved",
+      "featured": true
+    }
+  ],
+  "quotesWanted": [
+    {
+      "persona": "A solo GP",
+      "body": "Best practices for a solo GP to get 80% there with 20% effort.",
+      "source": "wanted"
+    },
+    {
+      "persona": "A frequent-experimenter solo partner",
+      "body": "Understanding output quality — that's what's lacking for me right now.",
+      "source": "wanted"
+    },
+    {
+      "persona": "A research-driven seed investor",
+      "body": "Architecture, tools, and best practices for getting the structure set up in a secure and effective way.",
+      "source": "wanted"
+    },
+    {
+      "persona": "An emerging-manager GP",
+      "body": "Would love to see what others are doing for fundraising.",
+      "source": "wanted"
     }
   ],
   "firmsOverrides": {},

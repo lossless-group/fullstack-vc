@@ -1,0 +1,31 @@
+---
+/**
+ * MarkdownSlideDeck — wraps OneSlideDeck and feeds raw markdown through
+ * Reveal's official markdown plugin. Slides separate with `---` (h-rule),
+ * nested slides with `--`. Frontmatter is stripped before handing off.
+ */
+import OneSlideDeck from './OneSlideDeck.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  content: string;
+  mode?: 'light' | 'dark' | 'vibrant' | null;
+}
+
+const { title, description, content, mode } = Astro.props;
+
+// Strip leading YAML frontmatter so it doesn't render as a literal "---" slide.
+const stripped = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+---
+
+<OneSlideDeck title={title} description={description} mode={mode}>
+  <section
+    data-markdown
+    data-separator="^\r?\n---\r?\n$"
+    data-separator-vertical="^\r?\n--\r?\n$"
+    data-separator-notes="^Note:"
+  >
+    <textarea data-template>{stripped}</textarea>
+  </section>
+</OneSlideDeck>

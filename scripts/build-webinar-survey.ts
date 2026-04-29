@@ -316,11 +316,13 @@ candidates.sort((a, b) => b.body.length - a.body.length);
 // ---------- Merge with hand-curated JSON if present ------------------------
 type CuratedQuote = { persona: string; body: string; source: 'building' | 'achieved' | 'wanted' };
 let curatedQuotes: CuratedQuote[] = [];
+let curatedQuotesWanted: CuratedQuote[] = [];
 let curatedFirms: Record<string, string> | null = null;
 if (existsSync(OUT_JSON)) {
   try {
     const prev = JSON.parse(readFileSync(OUT_JSON, 'utf8'));
     if (Array.isArray(prev.quotes)) curatedQuotes = prev.quotes;
+    if (Array.isArray(prev.quotesWanted)) curatedQuotesWanted = prev.quotesWanted;
     if (prev.firmsOverrides && typeof prev.firmsOverrides === 'object') curatedFirms = prev.firmsOverrides;
   } catch { /* ignore */ }
 }
@@ -354,6 +356,7 @@ const out = {
   // and move them up into this array. The script preserves whatever you put
   // here on re-runs.
   quotes: curatedQuotes,
+  quotesWanted: curatedQuotesWanted,
 
   // Domain → display-name overrides applied on top of FIRM_NAMES. Edit here
   // when a firm has a preferred public name not captured in the script.
