@@ -247,8 +247,9 @@
   .pq-sl__slider:active { cursor: grabbing; }
 
   .pq-sl__labels {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     gap: 0.5rem;
     font-family: var(--font-code);
     font-size: 0.6875rem;
@@ -256,9 +257,6 @@
     letter-spacing: 0.1em;
     color: var(--color-text-muted);
   }
-  .pq-sl__label-min { text-align: left; }
-  .pq-sl__label-mid { text-align: center; }
-  .pq-sl__label-max { text-align: right; }
 
   .pq-sl__submit {
     align-self: stretch;
