@@ -1,0 +1,26 @@
+---
+/* Projects__ProposeProject.astro
+   Thin wrapper over _ProposeEntityForm.astro. Exists as a named, scoped
+   component so pages and design-system entries can reach for the
+   project-specific form by intent rather than by configuring a generic. */
+
+import ProposeEntityForm from './_ProposeEntityForm.astro';
+
+export interface Props {
+  loggedIn: boolean;
+  providers: { github: boolean; linkedin: boolean };
+  userName?: string | null;
+  userAvatar?: string | null;
+}
+
+const { loggedIn, providers, userName, userAvatar } = Astro.props;
+---
+
+<ProposeEntityForm
+  kind="project"
+  kindLabel="Project"
+  loggedIn={loggedIn}
+  providers={providers}
+  userName={userName}
+  userAvatar={userAvatar}
+/>

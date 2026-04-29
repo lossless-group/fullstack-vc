@@ -1,0 +1,239 @@
+---
+// SSR — needs the session cookie to gate the form and to read recent
+// submissions out of the live Proposal table.
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import WorkingGroupsProposeWorkingGroup from '../../components/forms/WorkingGroups__ProposeWorkingGroup.astro';
+import { db, Proposal, User, desc, eq, and } from 'astro:db';
+import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
+import { matchesRoster } from '../../lib/oauth-roster';
+
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+const rosterEntry = session ? matchesRoster(session) : null;
+const loggedIn = !!session && !!rosterEntry;
+
+let providers = { github: false, linkedin: false };
+if (session) {
+  try {
+    const row = session.provider === 'github'
+      ? await db.select().from(User).where(eq(User.github_handle, session.subject)).get()
+      : await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    if (row) {
+      providers = { github: !!row.github_handle, linkedin: !!row.linkedin_sub };
+    } else {
+      providers[session.provider] = true;
+    }
+  } catch {
+    providers[session.provider] = true;
+  }
+}
+
+const recent = await db.select().from(Proposal)
+  .where(and(eq(Proposal.kind, 'working-group'), eq(Proposal.status, 'submitted')))
+  .orderBy(desc(Proposal.created_at))
+  .limit(10)
+  .all();
+
+function relTime(d: Date): string {
+  const ms = Date.now() - new Date(d).getTime();
+  const min = Math.floor(ms / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day}d ago`;
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+---
+
+<BaseThemeLayout
+  title="Propose a working group · FullStack VC"
+  description="Sketch a working group the dojo should run. No obligation to lead it yourself."
+  containerClass="px-6 py-12 max-w-3xl mx-auto"
+>
+  <a href="/working-groups" class="back-link">← All working groups</a>
+
+  <header class="propose-head">
+    <p class="propose-head__eyebrow">Open call · Working group</p>
+    <h1 class="propose-head__title">
+      Propose a <span class="propose-head__title-accent">working group</span>
+    </h1>
+    <p class="propose-head__lede">
+      Working groups are how dojos turn scattered curiosity -- a nagging feeling there <strong><em>must be others</em></strong> who feel the same way --
+      into a learning journey with friends. <u>Accountabilibuddies</u>. 
+      <br> <br>
+      Spot a theme, one nagging at you or inspiring you,
+      that deserves a regular cadence, a set of explorations - tests - experiments, and rally a community of people to learn it with you. Propose it.
+      You don't have to run it.
+    </p>
+  </header>
+
+  <WorkingGroupsProposeWorkingGroup
+    loggedIn={loggedIn}
+    providers={providers}
+    userName={session?.name ?? rosterEntry?.name ?? null}
+    userAvatar={session?.avatar ?? null}
+  />
+
+  {recent.length > 0 && (
+    <section class="propose-recent" aria-labelledby="propose-recent-h">
+      <header class="propose-recent__head">
+        <p class="propose-recent__eyebrow">Backlog</p>
+        <h2 id="propose-recent-h" class="propose-recent__title">Recent working-group proposals</h2>
+        <p class="propose-recent__lede">
+          What other members have sketched. Maintainer promotes promising
+          ones into <code>src/content/working-groups/proposed/</code>.
+        </p>
+      </header>
+      <ul class="propose-recent__list" role="list">
+        {recent.map(p => (
+          <li class="propose-recent__item">
+            <p class="propose-recent__item-title">{p.title}</p>
+            <p class="propose-recent__item-meta">
+              <span class="propose-recent__item-author">{p.user_name ?? p.user_handle ?? 'Anonymous'}</span>
+              <span class="propose-recent__item-sep" aria-hidden="true">·</span>
+              <time datetime={new Date(p.created_at).toISOString()}>{relTime(p.created_at)}</time>
+            </p>
+            <p class="propose-recent__item-body">{p.body}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseThemeLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 150ms ease;
+  }
+  .back-link:hover { color: var(--color-primary); }
+
+  .propose-head {
+    margin-bottom: 2rem;
+  }
+  .propose-head__eyebrow {
+    margin: 0 0 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .propose-head__title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.875rem, 4vw, 2.625rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .propose-head__title-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .propose-head__lede {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+
+  .propose-recent {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .propose-recent__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .propose-recent__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .propose-recent__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  .propose-recent__lede {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .propose-recent__lede code {
+    font-family: var(--font-code);
+    font-size: 0.85em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .propose-recent__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .propose-recent__item {
+    padding: 0.875rem 1rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .propose-recent__item-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .propose-recent__item-meta {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    display: flex;
+    gap: 0.375rem;
+    align-items: baseline;
+  }
+  .propose-recent__item-author { color: var(--color-primary); }
+  .propose-recent__item-sep { opacity: 0.5; }
+  .propose-recent__item-body {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-text);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

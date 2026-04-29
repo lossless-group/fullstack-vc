@@ -1,0 +1,425 @@
+---
+/* _ProposeEntityForm.astro
+   Shared body for /projects/propose and /working-groups/propose. Underscore
+   prefix marks it as a private internal — call it via the wrappers
+   (Projects__ProposeProject.astro / WorkingGroups__ProposeWorkingGroup.astro).
+
+   Three states, driven by the props passed in from the page frontmatter:
+     · loggedOut       → form dimmed, big "sign in to propose" cluster
+     · partial / full  → form active, provider cluster shows green/yellow rings
+                         and the "if you connect both, we love you more!" nudge
+                         when only one is linked.
+
+   Submits JSON to POST /api/proposals. On success, swaps the form for a
+   success card with a "submit another" link. */
+
+export interface Props {
+  /** 'project' | 'working-group' — passed through to /api/proposals. */
+  kind: 'project' | 'working-group';
+  /** Display label of the kind, e.g. "Project" or "Working Group". */
+  kindLabel: string;
+  /** True when the visitor has a verified session cookie. */
+  loggedIn: boolean;
+  /** Provider connection map. Both true = "in", one true = "partial". */
+  providers: { github: boolean; linkedin: boolean };
+  /** Best-effort display name for the signed-in user. */
+  userName?: string | null;
+  /** Avatar URL for the signed-in user. */
+  userAvatar?: string | null;
+}
+
+const {
+  kind,
+  kindLabel,
+  loggedIn,
+  providers,
+  userName = null,
+  userAvatar = null,
+} = Astro.props;
+
+const linkedCount = Number(providers.github) + Number(providers.linkedin);
+const allLinked = linkedCount === 2;
+const partial = loggedIn && !allLinked;
+---
+
+<section class:list={['propose-form', !loggedIn && 'propose-form--locked']}>
+  {/* Auth status cluster — always visible. Communicates "we know who you are
+      (or don't), and here's what's connected." */}
+  <div class="propose-form__auth">
+    <p class="propose-form__auth-msg">
+      {!loggedIn
+        ? "Sign in with GitHub or LinkedIn to submit a proposal."
+        : allLinked
+          ? `Signed in${userName ? ` as ${userName}` : ''} — both providers connected. ✦`
+          : "If you connect both, we love you more!"}
+    </p>
+    <div class="propose-form__providers">
+      <a
+        class="propose-form__provider"
+        href={providers.github ? undefined : '/api/auth/github/login'}
+        data-connected={providers.github ? 'true' : 'false'}
+        data-locked={!loggedIn ? 'true' : 'false'}
+        aria-label={providers.github ? 'GitHub connected' : 'Connect GitHub'}
+      >
+        <svg class="propose-form__provider-icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"
+          />
+        </svg>
+        <span class="propose-form__provider-label">GitHub</span>
+        <span class="propose-form__provider-state">
+          {providers.github ? 'Connected' : 'Connect'}
+        </span>
+      </a>
+
+      <a
+        class="propose-form__provider"
+        href={providers.linkedin ? undefined : '/api/auth/linkedin/login'}
+        data-connected={providers.linkedin ? 'true' : 'false'}
+        data-locked={!loggedIn ? 'true' : 'false'}
+        aria-label={providers.linkedin ? 'LinkedIn connected' : 'Connect LinkedIn'}
+      >
+        <svg class="propose-form__provider-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"
+          />
+        </svg>
+        <span class="propose-form__provider-label">LinkedIn</span>
+        <span class="propose-form__provider-state">
+          {providers.linkedin ? 'Connected' : 'Connect'}
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <p class="propose-form__pitch">
+    You can propose a {kindLabel.toLowerCase()} without any obligation to lead it
+    yourself. That said — proposals without a champion behind them often stall.
+    The ones that catch on are the ones whose author shows up to the next session
+    and says, <em>"this matters to me, here's why."</em>
+  </p>
+
+  <form class="propose-form__fields" data-propose-form data-kind={kind}>
+    <label class="propose-form__field">
+      <span class="propose-form__field-label">
+        Proposed name or title <span class="propose-form__field-hint">(draft)</span>
+      </span>
+      <input
+        type="text"
+        name="title"
+        required
+        minlength="3"
+        maxlength="140"
+        autocomplete="off"
+        placeholder={kind === 'project'
+          ? 'e.g. "Diligence-bot — agentic preliminary memo writer"'
+          : 'e.g. "AI-Assisted LP Communications"'}
+      />
+    </label>
+
+    <label class="propose-form__field">
+      <span class="propose-form__field-label">
+        A few thoughts, details, reasons — whatever comes to mind
+      </span>
+      <textarea
+        name="body"
+        required
+        minlength="10"
+        maxlength="4000"
+        rows="6"
+        placeholder="What's the problem? Why now? What would success look like? Any related tools or precedents?"
+      ></textarea>
+    </label>
+
+    <div class="propose-form__actions">
+      <button type="submit" class="propose-form__submit" data-propose-submit>
+        Submit proposal
+      </button>
+      <span class="propose-form__status" data-propose-status aria-live="polite"></span>
+    </div>
+  </form>
+
+  {!loggedIn && (
+    <div class="propose-form__locked-overlay" aria-hidden="true">
+      <span class="propose-form__locked-icon">🔒</span>
+      <span class="propose-form__locked-msg">Sign in above to enable the form</span>
+    </div>
+  )}
+</section>
+
+<script>
+  type FormEl = HTMLFormElement & { dataset: { kind: string } };
+
+  const forms = document.querySelectorAll<FormEl>('[data-propose-form]');
+  for (const form of forms) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submit = form.querySelector<HTMLButtonElement>('[data-propose-submit]');
+      const statusEl = form.querySelector<HTMLElement>('[data-propose-status]');
+      if (!submit || !statusEl) return;
+
+      const fd = new FormData(form);
+      const title = String(fd.get('title') ?? '').trim();
+      const body = String(fd.get('body') ?? '').trim();
+      const kind = form.dataset.kind;
+
+      submit.disabled = true;
+      statusEl.textContent = 'Submitting…';
+      statusEl.removeAttribute('data-state');
+
+      try {
+        const res = await fetch('/api/proposals', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ kind, title, body }),
+        });
+
+        if (res.status === 401) {
+          statusEl.textContent = 'You need to be signed in.';
+          statusEl.setAttribute('data-state', 'error');
+          submit.disabled = false;
+          return;
+        }
+        if (res.status === 403) {
+          statusEl.textContent = 'Your account is not on the roster yet.';
+          statusEl.setAttribute('data-state', 'error');
+          submit.disabled = false;
+          return;
+        }
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          statusEl.textContent = data.error ?? 'Something went wrong. Try again?';
+          statusEl.setAttribute('data-state', 'error');
+          submit.disabled = false;
+          return;
+        }
+
+        // Swap the form for a success message in place. A page reload
+        // would also work, but this lets the recent-proposals list below
+        // catch up on its own without losing the user's scroll position.
+        statusEl.textContent = 'Submitted. Refreshing…';
+        statusEl.setAttribute('data-state', 'ok');
+        setTimeout(() => window.location.reload(), 600);
+      } catch {
+        statusEl.textContent = 'Network error. Try again?';
+        statusEl.setAttribute('data-state', 'error');
+        submit.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .propose-form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+  }
+  .propose-form--locked .propose-form__fields {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* ── Auth cluster ─────────────────────────────────────────────────────── */
+  .propose-form__auth {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .propose-form__auth-msg {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+  .propose-form__providers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    max-width: 26rem;
+  }
+  .propose-form__provider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 150ms ease, transform 120ms ease;
+  }
+  .propose-form__provider:hover {
+    transform: translateY(-1px);
+  }
+  .propose-form__provider[data-connected="true"] {
+    border-color: rgba(34, 197, 94, 0.7);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35), 0 0 8px 1px rgba(34, 197, 94, 0.25);
+    pointer-events: none;
+    opacity: 0.92;
+  }
+  .propose-form__provider[data-connected="false"] {
+    border-color: rgba(245, 158, 11, 0.7);
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35), 0 0 8px 1px rgba(245, 158, 11, 0.25);
+  }
+  .propose-form__provider[data-connected="false"]:hover {
+    border-color: var(--color-primary);
+  }
+  .propose-form__provider-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-text);
+  }
+  .propose-form__provider-label {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .propose-form__provider-state {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .propose-form__provider[data-connected="true"] .propose-form__provider-state {
+    color: rgb(34, 197, 94);
+  }
+  .propose-form__provider[data-connected="false"] .propose-form__provider-state {
+    color: rgb(245, 158, 11);
+  }
+
+  /* ── Pitch copy ───────────────────────────────────────────────────────── */
+  .propose-form__pitch {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+  .propose-form__pitch em {
+    color: var(--color-text);
+    font-style: italic;
+  }
+
+  /* ── Fields ───────────────────────────────────────────────────────────── */
+  .propose-form__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: opacity 150ms ease;
+  }
+  .propose-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .propose-form__field-label {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text);
+  }
+  .propose-form__field-hint {
+    color: var(--color-text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.6875rem;
+  }
+  .propose-form__field input,
+  .propose-form__field textarea {
+    font-family: inherit;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    width: 100%;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .propose-form__field textarea {
+    resize: vertical;
+    min-height: 7rem;
+    font-family: var(--font-body);
+  }
+  .propose-form__field input:focus,
+  .propose-form__field textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+
+  /* ── Actions ──────────────────────────────────────────────────────────── */
+  .propose-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.875rem;
+  }
+  .propose-form__submit {
+    appearance: none;
+    border: 1px solid var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color__bone);
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    padding: 0.625rem 1.125rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: var(--fx-card-shadow);
+    transition: box-shadow 150ms ease, transform 150ms ease, opacity 150ms ease;
+  }
+  .propose-form__submit:hover:not(:disabled) {
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-1px);
+  }
+  .propose-form__submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .propose-form__status {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+  .propose-form__status[data-state="ok"]    { color: rgb(34, 197, 94); }
+  .propose-form__status[data-state="error"] { color: rgb(239, 68, 68); }
+
+  /* ── Locked-state overlay ─────────────────────────────────────────────── */
+  .propose-form__locked-overlay {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+  }
+  .propose-form__locked-icon { font-size: 0.875rem; }
+</style>

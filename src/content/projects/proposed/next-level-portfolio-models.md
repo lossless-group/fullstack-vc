@@ -24,13 +24,15 @@ date_modified: 2026-04-28
 
 ## Pitch
 
-The portfolio model is usually, in 2026, mostly a stale Excel file with some charts that one analyst updates on Friday afternoons (deep into the evening) from an inbox full of update emails. Every part of that sentence is a problem. Realtime data exists. Agents can read update emails. Spreadsheet-shaped data has better homes than spreadsheets. Data can be visualized and interactive. Forecasts can be actionable. KPIs can be live. Foreign exchange rates can be tracked automatically, not stale.
+The portfolio model is usually, in 2026, a stale, semi-updated, Excel file with some charts, incomplete data, that one analyst updates on a Friday afternoon (deep into the evening) scouring an inbox full of update emails. <-- Every part of that sentence is legacy. 
 
-The question this working group asks: *what would a fund-level portfolio model look like if we built it the way we'd build a product?*
+Realtime data exists. Agents can read update emails. Spreadsheet-shaped data has better homes than spreadsheets. Information with no shape can become structured data. Meaning, even wow, can be visualized and interactive. Forecasts can not only be generated but be actionable. KPIs can be live. Even foreign exchange rates can be tracked automatically, for all those international LPs you surely have. 
 
-> [!IDEA] Some inspiration from our fearless leader Fernando Fabre
+The question this working group asks: *what would a fund-level portfolio model look like if we built it the way we'd build a product in 2026?*
+
+> [!IDEA] Some inspiration from our fearless leader, Fernando Fabre
 > 
-> [A unified portfolio visualization](https://ik.imagekit.io/xvpgfijuw/FullStackVC-Embeds/chart__Portfolio-Model-Omega-Visualization_from-Fernando-Fabre.jpeg)
+> ![A unified portfolio visualization](https://ik.imagekit.io/xvpgfijuw/FullStackVC-Embeds/chart__Portfolio-Model-Omega-Visualization_from-Fernando-Fabre.jpeg)
 ## What we'd build together
 
 - **Realtime data ingestion** — a pipeline that pulls cap-table, revenue, and operating signals from the sources of truth (Carta, banks, billing, etc.) instead of from a quarterly screenshot.
@@ -45,9 +47,9 @@ The question this working group asks: *what would a fund-level portfolio model l
 
 ## Looking for
 
-- A few committed members who've actually maintained a portfolio model and have opinions about where the drudge work hides.
+- A few committed members who've actually maintained a portfolio model and have opinions about where the drudge work hits hardest, and some good ideas about how to not only make it better but make it nearly disappear. And how to communicate it in a way that isn't a dataroom artifact, unopened, but a living, breathing, interactive, amazing experience.
 - One participant that can Hack & Ship
 
 ## How to join
 
-Reach out via the FullStack VC Dojo via Kauffman AI SIG Whatsapp. 
+Reach out to the FullStack VC Dojo via Kauffman AI SIG Whatsapp. 

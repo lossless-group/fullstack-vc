@@ -182,6 +182,42 @@ const User = defineTable({
   },
 });
 
+// ─── Proposal ────────────────────────────────────────────────────────────────
+// Member-submitted draft for a new Project or Working Group. Captured via the
+// /projects/propose and /working-groups/propose forms. These rows are NOT
+// what renders the public proposed-list grids (those still come from the
+// markdown collections); they're the backlog the site lead reviews and
+// promotes by writing a markdown file. Keeping them in DB rather than
+// committing markdown straight from the form avoids commit-history pollution
+// and lets us surface "submitted" entries before a maintainer has groomed
+// them into the canonical content collection.
+const Proposal = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    // 'project' | 'working-group'
+    kind: column.text(),
+    title: column.text(),
+    body: column.text(),
+    // Submitter identity. user_id is the canonical identity (lowercased
+    // roster email when available, otherwise <provider>:<subject>) so it
+    // joins to User.id and Vote.user_id. The display fields are snapshotted
+    // at submission time so the proposals list renders without extra joins.
+    user_id: column.text(),
+    user_name: column.text({ optional: true }),
+    user_handle: column.text({ optional: true }),
+    user_provider: column.text({ optional: true }),
+    // 'submitted' | 'reviewing' | 'accepted' | 'rejected' | 'archived'.
+    // Default 'submitted' on insert; maintainer flips to 'accepted' after
+    // promoting to a markdown file under src/content/{projects,working-groups}.
+    status: column.text(),
+    created_at: column.date(),
+    updated_at: column.date(),
+  },
+  indexes: {
+    proposals_kind_status: { on: ['kind', 'status'] },
+  },
+});
+
 export default defineDb({
-  tables: { Session, Poll, Vote, PollResult, PollEvent, User },
+  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal },
 });

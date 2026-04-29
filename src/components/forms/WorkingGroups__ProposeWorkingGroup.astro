@@ -1,0 +1,25 @@
+---
+/* WorkingGroups__ProposeWorkingGroup.astro
+   Thin wrapper over _ProposeEntityForm.astro. Sibling to
+   Projects__ProposeProject.astro — same shape, different `kind`. */
+
+import ProposeEntityForm from './_ProposeEntityForm.astro';
+
+export interface Props {
+  loggedIn: boolean;
+  providers: { github: boolean; linkedin: boolean };
+  userName?: string | null;
+  userAvatar?: string | null;
+}
+
+const { loggedIn, providers, userName, userAvatar } = Astro.props;
+---
+
+<ProposeEntityForm
+  kind="working-group"
+  kindLabel="Working Group"
+  loggedIn={loggedIn}
+  providers={providers}
+  userName={userName}
+  userAvatar={userAvatar}
+/>
