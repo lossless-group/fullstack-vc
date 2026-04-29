@@ -7,7 +7,7 @@ github: https://github.com/mpstaton
 github_avatar: https://avatars.githubusercontent.com/u/4084538
 headshot: /images/participant-headshots/headshot__Michael-Staton.jpeg
 linkedin: https://www.linkedin.com/in/michaelstaton/
-public_profile: true
+publish: true
 joined_dojo: 2026-04-29
 current_stack:
   - tool: claude-code

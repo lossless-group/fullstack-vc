@@ -12,7 +12,7 @@ const allParticipants = await getCollection('participants');
 // inclusion: the page is "see all," so every tool entry renders.
 const toolCounts = new Map<string, number>();
 for (const p of allParticipants) {
-  if (!p.data.public_profile) continue;
+  if (!p.data.publish) continue;
   for (const item of p.data.current_stack ?? []) {
     toolCounts.set(item.tool, (toolCounts.get(item.tool) ?? 0) + 1);
   }

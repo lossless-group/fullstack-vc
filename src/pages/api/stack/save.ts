@@ -48,7 +48,7 @@ const SavePayload = z.object({
   name: z.string().min(1).max(120),
   firm: z.string().max(120).optional(),
   role: z.string().max(120).optional(),
-  public_profile: z.boolean().default(false),
+  publish: z.boolean().default(false),
   current_stack: z.array(StackItem).max(50).default([]),
   aspirational_stack: z.array(AspirationalItem).max(50).default([]),
   abandoned_stack: z.array(AbandonedItem).max(50).default([]),
@@ -123,7 +123,7 @@ function serializeParticipant(save: Save, preserved: PreservedFields): string {
   push(lines, emitFlatField('linkedin', preserved.linkedin));
 
   // Visibility
-  push(lines, `public_profile: ${save.public_profile ? 'true' : 'false'}`);
+  push(lines, `publish: ${save.publish ? 'true' : 'false'}`);
   push(lines, emitFlatField('joined_dojo', preserved.joined_dojo));
 
   // Stacks

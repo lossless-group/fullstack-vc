@@ -3,7 +3,7 @@
     StackBuilder — interactive stack editor.
 
     v0.5 scope:
-      - profile: name, firm, public_profile toggle
+      - profile: name, firm, publish toggle
       - current_stack only (aspirational/abandoned defer to v2)
       - tool typeahead from window.__STACK_TOOLS__ (passed in by the host page)
       - per-tool: notes textarea, remove button
@@ -61,7 +61,7 @@
 
   function snapshot(): string {
     return JSON.stringify({
-      handle, name, firm, public_profile: isPublic,
+      handle, name, firm, publish: isPublic,
       current_stack: currentStack,
     });
   }
@@ -84,7 +84,7 @@
       if (parsed.handle !== handle) return;
       if (typeof parsed.name === 'string') name = parsed.name;
       if (typeof parsed.firm === 'string') firm = parsed.firm;
-      if (typeof parsed.public_profile === 'boolean') isPublic = parsed.public_profile;
+      if (typeof parsed.publish === 'boolean') isPublic = parsed.publish;
       if (Array.isArray(parsed.current_stack)) currentStack = parsed.current_stack;
     } catch { /* ignore */ }
   }
@@ -181,7 +181,7 @@
           handle,
           name,
           firm: firm || undefined,
-          public_profile: isPublic,
+          publish: isPublic,
           current_stack: currentStack,
           aspirational_stack: [],
           abandoned_stack: [],

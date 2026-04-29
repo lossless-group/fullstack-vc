@@ -14,7 +14,7 @@
 //   pnpm astro db execute scripts/sync-people-from-db.ts --remote                # dry run
 //   WRITE=true pnpm astro db execute scripts/sync-people-from-db.ts --remote    # write files
 //   WRITE=true PUBLIC=true pnpm astro db execute scripts/sync-people-from-db.ts --remote
-//                                                                                # write + default public_profile: true
+//                                                                                # write + default publish: true
 //
 // After writing, review the files under src/content/participants/, then
 // `git add` and commit. The /people page picks them up on next build.
@@ -73,7 +73,7 @@ function buildStub(row: typeof User.$inferSelect, handle: string): string {
   // so linkedin_sub is intentionally not surfaced as a `linkedin:` URL.
   // Add it manually if you know the user's vanity URL.
 
-  push(`public_profile: ${DEFAULT_PUBLIC ? 'true' : 'false'}`);
+  push(`publish: ${DEFAULT_PUBLIC ? 'true' : 'false'}`);
   push(emit('joined_dojo', row.first_login_at ?? row.created_at));
 
   // Empty stack arrays — the user fills these in via /people/{handle}/stack/edit.
@@ -107,7 +107,7 @@ rows.sort((a, b) => {
 
 console.log('');
 console.log(`Mode: ${WRITE ? 'WRITE' : 'DRY-RUN (set WRITE=true to create files)'}`);
-console.log(`Default public_profile: ${DEFAULT_PUBLIC}`);
+console.log(`Default publish: ${DEFAULT_PUBLIC}`);
 console.log(`Participants dir: ${path.relative(process.cwd(), PARTICIPANTS_DIR)}`);
 console.log(`User rows in Turso: ${rows.length}`);
 console.log('');
@@ -148,7 +148,7 @@ if (WRITE && created > 0) {
   console.log('');
   console.log('Next steps:');
   console.log(`  1. Review files under src/content/participants/ — adjust names, add LinkedIn URLs, etc.`);
-  console.log(`  2. To make a profile appear on /people, set public_profile: true in its frontmatter.`);
+  console.log(`  2. To make a profile appear on /people, set publish: true in its frontmatter.`);
   console.log(`  3. git add src/content/participants && git commit && push.`);
   console.log(`  4. Each user can later edit their own stack at /people/{handle}/stack/edit.`);
 }

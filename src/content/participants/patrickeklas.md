@@ -1,7 +1,7 @@
 ---
 handle: patrickeklas
 name: "Patrick Klas"
-public_profile: false
+publish: false
 joined_dojo: 2026-04-29
 current_stack: []
 aspirational_stack: []

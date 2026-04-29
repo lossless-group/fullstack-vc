@@ -5,7 +5,7 @@ import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ParticipantCard from '../../components/stack/ParticipantCard.astro';
 
 const all = await getCollection('participants');
-const visible = all.filter(p => p.data.public_profile);
+const visible = all.filter(p => p.data.publish);
 const hiddenCount = all.length - visible.length;
 
 const cards = visible.map(p => {
@@ -42,7 +42,7 @@ const cards = visible.map(p => {
 
   {cards.length === 0 ? (
     <p class="stack-index-empty">
-      No public profiles yet. Members can publish theirs by setting <code>public_profile: true</code> in their participant entry.
+      No public profiles yet. Members can publish theirs by setting <code>publish: true</code> in their participant entry.
     </p>
   ) : (
     <ul class="stack-index-grid" role="list">

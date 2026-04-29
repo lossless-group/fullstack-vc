@@ -36,7 +36,7 @@ const existing = allParticipants.find(p => p.data.handle === handle);
 
 const initialName        = existing?.data.name ?? rosterEntry.name ?? session.name ?? '';
 const initialFirm        = existing?.data.firm ?? rosterEntry.firm ?? '';
-const initialPublic      = existing?.data.public_profile ?? false;
+const initialPublic      = existing?.data.publish ?? false;
 const initialCurrent     = (existing?.data.current_stack ?? []).map(s => ({
   tool: s.tool,
   added: s.added ? new Date(s.added).toISOString().slice(0, 10) : undefined,

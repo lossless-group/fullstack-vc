@@ -80,7 +80,7 @@ const participants = defineCollection({
     // Lives under /public/images/participant-headshots/.
     headshot: z.string().optional(),
     linkedin: z.string().url().optional(),
-    public_profile: z.boolean().default(false),
+    publish: z.boolean().default(false),
     joined_dojo: z.coerce.date().optional(),
 
     current_stack: z.array(z.object({

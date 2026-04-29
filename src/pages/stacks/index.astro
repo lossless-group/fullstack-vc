@@ -6,7 +6,7 @@ import ToolCard from '../../components/stack/ToolCard.astro';
 import ParticipantCard from '../../components/stack/ParticipantCard.astro';
 
 const allParticipants = await getCollection('participants');
-const visiblePeople = allParticipants.filter(p => p.data.public_profile);
+const visiblePeople = allParticipants.filter(p => p.data.publish);
 
 // Aggregate tool adoption across visible people. Counts only the *current*
 // stack — aspirational/abandoned add noise to "what the room is using now."

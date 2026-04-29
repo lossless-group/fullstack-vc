@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const p = entry.data;
 
-const isPrivate = !p.public_profile;
+const isPrivate = !p.publish;
 ---
 
 <BaseThemeLayout
@@ -53,7 +53,7 @@ const isPrivate = !p.public_profile;
       <h2>This profile is private</h2>
       <p>
         {p.name} hasn't opted in to a public stack page yet. Members can flip
-        <code>public_profile: true</code> in their participant entry to share their stack with the community.
+        <code>publish: true</code> in their participant entry to share their stack with the community.
       </p>
     </section>
   ) : (
