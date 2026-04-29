@@ -40,39 +40,93 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
       <JumboPopdown__More triggerLabelTxt="More" />
       <a href="/sessions" class="site-header__link">Sessions</a>
       <a href="/changelog" class="site-header__link">Changelog</a>
-      {/* Auth indicator: a single element that toggles between "Log in" and
-          the signed-in avatar. data-auth-indicator is the hook the inline
-          hydration script uses to flip state on prerendered pages. */}
-      <a
-        href="/login"
-        class="site-header__login"
-        data-auth-indicator
-        data-state="out"
-        data-has-avatar="false"
-        aria-label="Log in"
-      >
-        <span class="site-header__login-dot" aria-hidden="true"></span>
-        <span class="site-header__login-text" data-auth-text>Log in</span>
-        <img
-          class="site-header__avatar"
-          src=""
-          alt=""
-          data-auth-avatar
-          aria-hidden="true"
-        />
-        <svg
-          class="site-header__avatar-fallback"
-          data-auth-avatar-fallback
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-          focusable="false"
+      {/* Auth indicator: tri-state.
+            data-state="out"     → red dot + "Log in" pill, link to /login
+            data-state="partial" → yellow dot + avatar, click opens tooltip
+            data-state="in"      → green dot + avatar, link is a no-op-ish
+
+          The wrapping span anchors the absolutely-positioned tooltip and
+          gives the click-outside-to-close logic a single ancestor to test. */}
+      <span class="site-header__auth" data-auth-wrap>
+        <a
+          href="/login"
+          class="site-header__login"
+          data-auth-indicator
+          data-state="out"
+          data-has-avatar="false"
+          aria-label="Log in"
+          aria-haspopup="dialog"
+          aria-expanded="false"
         >
-          <path
-            fill="currentColor"
-            d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"
+          <span class="site-header__login-dot" aria-hidden="true"></span>
+          <span class="site-header__login-text" data-auth-text>Log in</span>
+          <img
+            class="site-header__avatar"
+            src=""
+            alt=""
+            data-auth-avatar
+            aria-hidden="true"
           />
-        </svg>
-      </a>
+          <svg
+            class="site-header__avatar-fallback"
+            data-auth-avatar-fallback
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              fill="currentColor"
+              d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"
+            />
+          </svg>
+        </a>
+
+        {/* Tooltip: only visible (and only meaningful) in partial state. */}
+        <div
+          class="site-header__login-tooltip"
+          data-auth-tooltip
+          role="dialog"
+          aria-label="Connected accounts"
+          hidden
+        >
+          <p class="site-header__login-tooltip-msg">
+            If you connect both, we love you more!
+          </p>
+          <div class="site-header__login-tooltip-providers">
+            <a
+              class="site-header__login-tooltip-provider"
+              href="/api/auth/github/login"
+              data-auth-provider="github"
+              data-connected="false"
+            >
+              <svg class="site-header__login-tooltip-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+              <span class="site-header__login-tooltip-label">GitHub</span>
+              <span class="site-header__login-tooltip-state">Connect</span>
+            </a>
+
+            <a
+              class="site-header__login-tooltip-provider"
+              href="/api/auth/linkedin/login"
+              data-auth-provider="linkedin"
+              data-connected="false"
+            >
+              <svg class="site-header__login-tooltip-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"
+                />
+              </svg>
+              <span class="site-header__login-tooltip-label">LinkedIn</span>
+              <span class="site-header__login-tooltip-state">Connect</span>
+            </a>
+          </div>
+        </div>
+      </span>
     </nav>
 
     <div class="site-header__actions">
@@ -185,11 +239,17 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5), 0 0 8px 2px rgba(239, 68, 68, 0.45);
     animation: site-header-pulse-out 1.6s ease-in-out infinite;
   }
-  /* Logged-in: green status dot */
+  /* Logged-in (both providers): green status dot */
   .site-header__login[data-state="in"] .site-header__login-dot {
     background: #22c55e;
     box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5), 0 0 6px 1px rgba(34, 197, 94, 0.45);
     animation: site-header-pulse-in 2.2s ease-in-out infinite;
+  }
+  /* Partial (one provider only): amber/yellow nudge dot */
+  .site-header__login[data-state="partial"] .site-header__login-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5), 0 0 7px 1.5px rgba(245, 158, 11, 0.5);
+    animation: site-header-pulse-partial 1.8s ease-in-out infinite;
   }
   @keyframes site-header-pulse-out {
     0%, 100% { opacity: 1; transform: scale(1); }
@@ -198,6 +258,10 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
   @keyframes site-header-pulse-in {
     0%, 100% { opacity: 1; }
     50%      { opacity: 0.7; }
+  }
+  @keyframes site-header-pulse-partial {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.7; transform: scale(0.92); }
   }
   @media (prefers-reduced-motion: reduce) {
     .site-header__login-dot { animation: none; }
@@ -230,13 +294,120 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     border: 1px solid var(--color-border);
     padding: 1px;
   }
-  /* Logged in + has avatar src → show img, hide fallback. */
-  .site-header__login[data-state="in"][data-has-avatar="true"] .site-header__avatar {
+  /* Logged in (full or partial) + has avatar src → show img, hide fallback. */
+  .site-header__login[data-state="in"][data-has-avatar="true"] .site-header__avatar,
+  .site-header__login[data-state="partial"][data-has-avatar="true"] .site-header__avatar {
     display: block;
   }
-  /* Logged in + no avatar src → show fallback. */
-  .site-header__login[data-state="in"]:not([data-has-avatar="true"]) .site-header__avatar-fallback {
+  /* Logged in (full or partial) + no avatar src → show fallback. */
+  .site-header__login[data-state="in"]:not([data-has-avatar="true"]) .site-header__avatar-fallback,
+  .site-header__login[data-state="partial"]:not([data-has-avatar="true"]) .site-header__avatar-fallback {
     display: block;
+  }
+
+  /* ── Tooltip / mini-popover ──────────────────────────────────────────────
+     The wrapping span anchors absolutely-positioned tooltip to the right
+     edge of the indicator. JS toggles the `hidden` attribute on click of a
+     partial-state indicator. Both the trigger and the tooltip live inside
+     the same wrapper so click-outside-to-close has a clean ancestor test. */
+  .site-header__auth {
+    position: relative;
+    display: inline-block;
+  }
+  .site-header__login-tooltip {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 60;
+    width: 16rem;
+    padding: 0.875rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg, var(--color-surface));
+    border: 1px solid var(--fx-card-border, var(--color-border));
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .site-header__login-tooltip[hidden] { display: none; }
+  /* Little caret pointing up at the indicator */
+  .site-header__login-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: 1.25rem;
+    width: 10px;
+    height: 10px;
+    transform: rotate(45deg);
+    background: inherit;
+    border-top: 1px solid var(--fx-card-border, var(--color-border));
+    border-left: 1px solid var(--fx-card-border, var(--color-border));
+  }
+  .site-header__login-tooltip-msg {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+  .site-header__login-tooltip-providers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .site-header__login-tooltip-provider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.625rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 150ms ease, transform 120ms ease;
+  }
+  .site-header__login-tooltip-provider:hover {
+    transform: translateY(-1px);
+  }
+  /* Connected provider — green ring, non-actionable feel */
+  .site-header__login-tooltip-provider[data-connected="true"] {
+    border-color: rgba(34, 197, 94, 0.7);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35), 0 0 8px 1px rgba(34, 197, 94, 0.25);
+    pointer-events: none;
+    opacity: 0.92;
+  }
+  /* Unconnected provider — yellow ring, "Connect" link */
+  .site-header__login-tooltip-provider[data-connected="false"] {
+    border-color: rgba(245, 158, 11, 0.7);
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35), 0 0 8px 1px rgba(245, 158, 11, 0.25);
+  }
+  .site-header__login-tooltip-provider[data-connected="false"]:hover {
+    border-color: var(--color-primary);
+  }
+  .site-header__login-tooltip-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-text);
+  }
+  .site-header__login-tooltip-label {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .site-header__login-tooltip-state {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .site-header__login-tooltip-provider[data-connected="true"] .site-header__login-tooltip-state {
+    color: rgb(34, 197, 94);
+  }
+  .site-header__login-tooltip-provider[data-connected="false"] .site-header__login-tooltip-state {
+    color: rgb(245, 158, 11);
   }
   .site-header__actions {
     display: flex;
@@ -255,45 +426,167 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
 </style>
 
 <script>
-  // Auth-indicator hydration. SSR pages already render the right state from
-  // the cookie; this script catches up prerendered (SSG) pages by hitting
-  // /api/me and flipping the indicator to "logged in" if the user has a
-  // valid session cookie.
+  // Auth-indicator hydration.
   //
-  // Idempotent: if the SSR-rendered state already matches, this is a no-op.
+  // 1. Hits /api/me and flips every [data-auth-indicator] on the page from
+  //    the default "out" state to "in" (both providers linked) or
+  //    "partial" (one provider linked) based on the response.
+  // 2. Populates the tooltip's provider rows with green/yellow rings
+  //    according to which providers are linked.
+  // 3. Wires click on a partial-state indicator to toggle the tooltip
+  //    instead of navigating; clicks outside close it.
+
   (async () => {
     try {
       const res = await fetch('/api/me', { credentials: 'same-origin' });
       if (!res.ok) return;
       const data = await res.json();
-      // Update every auth indicator on the page (Header + MobileNav).
+
       const indicators = document.querySelectorAll<HTMLElement>('[data-auth-indicator]');
       for (const el of indicators) {
-        if (data.loggedIn) {
-          el.setAttribute('data-state', 'in');
-          const hasAvatar = !!data.avatar;
-          el.setAttribute('data-has-avatar', hasAvatar ? 'true' : 'false');
-          if (hasAvatar) {
-            const img = el.querySelector<HTMLImageElement>('[data-auth-avatar]');
-            if (img && img.getAttribute('src') !== data.avatar) {
-              img.src = data.avatar;
-            }
-          }
-          if (data.name) {
-            el.setAttribute('aria-label', `Signed in as ${data.name}`);
-          } else {
-            el.setAttribute('aria-label', 'Signed in');
-          }
-        } else {
+        if (!data.loggedIn) {
           el.setAttribute('data-state', 'out');
           el.setAttribute('data-has-avatar', 'false');
           el.setAttribute('aria-label', 'Log in');
+          continue;
+        }
+
+        const allLinked = !!data.allLinked;
+        el.setAttribute('data-state', allLinked ? 'in' : 'partial');
+
+        const hasAvatar = !!data.avatar;
+        el.setAttribute('data-has-avatar', hasAvatar ? 'true' : 'false');
+        if (hasAvatar) {
+          const img = el.querySelector<HTMLImageElement>('[data-auth-avatar]');
+          if (img && img.getAttribute('src') !== data.avatar) {
+            img.src = data.avatar;
+          }
+        }
+
+        const labelBase = data.name ? `Signed in as ${data.name}` : 'Signed in';
+        el.setAttribute(
+          'aria-label',
+          allLinked ? labelBase : `${labelBase} — one provider linked, click to add the other`
+        );
+
+        // Populate tooltip provider rows (only relevant for partial state,
+        // but harmless to set on all states — only shown when state=partial).
+        const wrap = el.parentElement;
+        if (!wrap) continue;
+        for (const provider of ['github', 'linkedin'] as const) {
+          const row = wrap.querySelector<HTMLElement>(`[data-auth-provider="${provider}"]`);
+          if (!row) continue;
+          const connected = !!(data.providers && data.providers[provider]);
+          row.setAttribute('data-connected', connected ? 'true' : 'false');
+          const stateLabel = row.querySelector<HTMLElement>('.site-header__login-tooltip-state, .mnav__login-tooltip-state');
+          if (stateLabel) stateLabel.textContent = connected ? 'Connected' : 'Connect';
+          // Connected rows are non-actionable; remove the href so it doesn't
+          // accidentally re-launch the OAuth flow on click.
+          if (connected && row.tagName === 'A') {
+            row.removeAttribute('href');
+          }
         }
       }
     } catch {
-      // Network error or /api/me unavailable. Leave the SSR-rendered state
-      // alone — worst case is "Log in" stays visible on a prerendered page
-      // for a logged-in user, which is annoying but not broken.
+      // Network error or /api/me unavailable. Leave SSR markup alone —
+      // worst case is "Log in" persists for a logged-in user. Not broken.
     }
+  })();
+
+  // Tooltip behavior: hover-to-peek + click-to-pin.
+  //
+  //   closed        + mouseenter on indicator   → open in "hover" mode
+  //   hover-open    + mouseleave on the WRAP    → close
+  //   hover-open    + click on indicator        → switch to "click" mode (stays open)
+  //   closed        + click on indicator        → open in "click" mode
+  //   click-open    + click on indicator        → close
+  //   click-open    + click outside the wrap    → close
+  //   any open      + Escape                    → close
+  //
+  // Mouseleave is on the wrap (not the indicator) so the cursor can travel
+  // from the indicator down into the tooltip without it snapping shut.
+  // Only fires when the indicator is in "partial" state — for "out" and "in"
+  // the link's default navigation is preserved.
+  (() => {
+    function open(wrap: HTMLElement, mode: 'hover' | 'click'): void {
+      const tooltip = wrap.querySelector<HTMLElement>('[data-auth-tooltip]');
+      const trigger = wrap.querySelector<HTMLElement>('[data-auth-indicator]');
+      if (!tooltip || !trigger) return;
+      tooltip.removeAttribute('hidden');
+      tooltip.setAttribute('data-open-mode', mode);
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+    function close(wrap: HTMLElement): void {
+      const tooltip = wrap.querySelector<HTMLElement>('[data-auth-tooltip]');
+      const trigger = wrap.querySelector<HTMLElement>('[data-auth-indicator]');
+      if (!tooltip || !trigger) return;
+      tooltip.setAttribute('hidden', '');
+      tooltip.removeAttribute('data-open-mode');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+    function isOpen(tooltip: HTMLElement | null): boolean {
+      return !!tooltip && !tooltip.hasAttribute('hidden');
+    }
+
+    const wraps = document.querySelectorAll<HTMLElement>('[data-auth-wrap]');
+    for (const wrap of wraps) {
+      const trigger = wrap.querySelector<HTMLElement>('[data-auth-indicator]');
+      const tooltip = wrap.querySelector<HTMLElement>('[data-auth-tooltip]');
+      if (!trigger || !tooltip) continue;
+
+      // Hover with a 120ms grace period so the cursor can travel from the
+      // indicator across the visual gap into the tooltip without snapping
+      // shut. Click-mode tooltips ignore the timer entirely — only a click
+      // can close them.
+      let closeTimer: ReturnType<typeof setTimeout> | null = null;
+      function cancelClose(): void {
+        if (closeTimer !== null) { clearTimeout(closeTimer); closeTimer = null; }
+      }
+      function scheduleHoverClose(): void {
+        if (tooltip!.getAttribute('data-open-mode') !== 'hover') return;
+        cancelClose();
+        closeTimer = setTimeout(() => { close(wrap); closeTimer = null; }, 120);
+      }
+
+      trigger.addEventListener('mouseenter', () => {
+        cancelClose();
+        if (trigger!.getAttribute('data-state') !== 'partial') return;
+        if (isOpen(tooltip)) return;
+        open(wrap, 'hover');
+      });
+      trigger.addEventListener('mouseleave', scheduleHoverClose);
+      tooltip.addEventListener('mouseenter', cancelClose);
+      tooltip.addEventListener('mouseleave', scheduleHoverClose);
+
+      trigger.addEventListener('click', (e) => {
+        if (trigger!.getAttribute('data-state') !== 'partial') return;
+        e.preventDefault();
+        cancelClose();
+        if (!isOpen(tooltip)) {
+          open(wrap, 'click');
+          return;
+        }
+        // Promote a hover-opened tooltip to click-open (so it survives mouseleave).
+        if (tooltip!.getAttribute('data-open-mode') === 'hover') {
+          tooltip!.setAttribute('data-open-mode', 'click');
+          return;
+        }
+        close(wrap);
+      });
+    }
+
+    // Click outside any wrap closes everything.
+    document.addEventListener('click', (e) => {
+      for (const wrap of wraps) {
+        const tooltip = wrap.querySelector<HTMLElement>('[data-auth-tooltip]');
+        if (!isOpen(tooltip)) continue;
+        if (!wrap.contains(e.target as Node)) close(wrap);
+      }
+    });
+    // Escape closes any open tooltip regardless of mode.
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      for (const wrap of wraps) close(wrap);
+    });
   })();
 </script>

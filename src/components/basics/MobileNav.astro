@@ -164,6 +164,7 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
             />
           </svg>
           <span class="mnav__login-signed-in" data-auth-signed-in-text>Signed in</span>
+          <span class="mnav__login-partial-text" data-auth-partial-text>Connect more &rarr;</span>
         </a>
       </li>
     </ul>
@@ -372,6 +373,14 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
     box-shadow: 0 0 6px 1px rgba(34, 197, 94, 0.45);
     animation: mnav-pulse-in 2.2s ease-in-out infinite;
   }
+  /* Partial: one provider connected — yellow nudge. Tap the row to /login
+     and connect the missing provider. (Mobile drawer skips the tooltip
+     popover that the desktop indicator uses.) */
+  .mnav__login[data-state="partial"] .mnav__login-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 7px 1.5px rgba(245, 158, 11, 0.5);
+    animation: mnav-pulse-partial 1.8s ease-in-out infinite;
+  }
   @keyframes mnav-pulse-out {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%      { opacity: 0.55; transform: scale(0.85); }
@@ -380,12 +389,17 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
     0%, 100% { opacity: 1; }
     50%      { opacity: 0.7; }
   }
+  @keyframes mnav-pulse-partial {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.7; transform: scale(0.92); }
+  }
   @media (prefers-reduced-motion: reduce) {
     .mnav__login-dot { animation: none; }
   }
 
   .mnav__login-text,
-  .mnav__login-signed-in {
+  .mnav__login-signed-in,
+  .mnav__login-partial-text {
     display: none;
   }
   .mnav__login[data-state="out"] .mnav__login-text {
@@ -394,6 +408,11 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
   .mnav__login[data-state="in"] .mnav__login-signed-in {
     display: inline;
     color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .mnav__login[data-state="partial"] .mnav__login-partial-text {
+    display: inline;
+    color: rgb(245, 158, 11);
     font-size: 0.875rem;
   }
 
