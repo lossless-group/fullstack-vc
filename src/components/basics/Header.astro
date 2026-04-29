@@ -7,11 +7,21 @@ import JumboPopdown__More from '../ui/menus/JumboPopdown__More.astro';
 import MobileNav from './MobileNav.astro';
 import { loadProjectsForPopdown } from '../../lib/load-projects';
 import { loadWorkingGroupsForPopdown } from '../../lib/load-working-groups';
+import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
 const [popdownProjects, popdownWorkingGroups] = await Promise.all([
   loadProjectsForPopdown({ showProposed: true, maxItems: 6 }),
   loadWorkingGroupsForPopdown({ showProposed: true, maxItems: 6 }),
 ]);
+
+// Read the session for the auth indicator. On SSR pages this returns the
+// real session; on prerendered (SSG) pages there's no request context so it
+// returns null — the inline <script> below corrects the indicator on SSG
+// pages by hitting /api/me after hydration.
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+const isLoggedIn = !!session;
+const initialAvatar = session?.avatar ?? null;
+const initialName = session?.name ?? null;
 ---
 
 <header class="site-header">
@@ -33,7 +43,39 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
       <JumboPopdown__More triggerLabelTxt="More" />
       <a href="/sessions" class="site-header__link">Sessions</a>
       <a href="/changelog" class="site-header__link">Changelog</a>
-      <a href="/login" class="site-header__link site-header__link--cta">Log in</a>
+      {/* Auth indicator: a single element that toggles between "Log in" and
+          the signed-in avatar. data-auth-indicator is the hook the inline
+          hydration script uses to flip state on prerendered pages. */}
+      <a
+        href="/login"
+        class="site-header__login"
+        data-auth-indicator
+        data-state={isLoggedIn ? 'in' : 'out'}
+        data-has-avatar={isLoggedIn && initialAvatar ? 'true' : 'false'}
+        aria-label={isLoggedIn ? `Signed in${initialName ? ` as ${initialName}` : ''}` : 'Log in'}
+      >
+        <span class="site-header__login-dot" aria-hidden="true"></span>
+        <span class="site-header__login-text" data-auth-text>Log in</span>
+        <img
+          class="site-header__avatar"
+          src={initialAvatar ?? ''}
+          alt=""
+          data-auth-avatar
+          aria-hidden={!initialAvatar}
+        />
+        <svg
+          class="site-header__avatar-fallback"
+          data-auth-avatar-fallback
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            fill="currentColor"
+            d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"
+          />
+        </svg>
+      </a>
     </nav>
 
     <div class="site-header__actions">
@@ -131,6 +173,97 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     color: var(--color-primary);
     border-color: var(--color-primary);
   }
+
+  /* ── Auth indicator ───────────────────────────────────────────────────────
+     One element renders both states; data-state="in"|"out" toggles which
+     children show. The dot's color + glow swap with state. */
+  .site-header__login {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--color-border);
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+  .site-header__login:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .site-header__login-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    transition: background-color 200ms ease, box-shadow 200ms ease;
+  }
+  /* Logged-out: red attention dot */
+  .site-header__login[data-state="out"] .site-header__login-dot {
+    background: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5), 0 0 8px 2px rgba(239, 68, 68, 0.45);
+    animation: site-header-pulse-out 1.6s ease-in-out infinite;
+  }
+  /* Logged-in: green status dot */
+  .site-header__login[data-state="in"] .site-header__login-dot {
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5), 0 0 6px 1px rgba(34, 197, 94, 0.45);
+    animation: site-header-pulse-in 2.2s ease-in-out infinite;
+  }
+  @keyframes site-header-pulse-out {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.55; transform: scale(0.85); }
+  }
+  @keyframes site-header-pulse-in {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.7; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header__login-dot { animation: none; }
+  }
+
+  /* Children visibility per state. */
+  .site-header__login-text {
+    display: none;
+  }
+  .site-header__login[data-state="out"] .site-header__login-text {
+    display: inline;
+  }
+
+  .site-header__avatar,
+  .site-header__avatar-fallback {
+    display: none;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .site-header__avatar {
+    object-fit: cover;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .site-header__avatar-fallback {
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 1px;
+  }
+  /* Logged in + has avatar src → show img, hide fallback. */
+  .site-header__login[data-state="in"][data-has-avatar="true"] .site-header__avatar {
+    display: block;
+  }
+  /* Logged in + no avatar src → show fallback. */
+  .site-header__login[data-state="in"]:not([data-has-avatar="true"]) .site-header__avatar-fallback {
+    display: block;
+  }
   .site-header__actions {
     display: flex;
     align-items: center;
@@ -149,3 +282,47 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     }
   }
 </style>
+
+<script>
+  // Auth-indicator hydration. SSR pages already render the right state from
+  // the cookie; this script catches up prerendered (SSG) pages by hitting
+  // /api/me and flipping the indicator to "logged in" if the user has a
+  // valid session cookie.
+  //
+  // Idempotent: if the SSR-rendered state already matches, this is a no-op.
+  (async () => {
+    try {
+      const res = await fetch('/api/me', { credentials: 'same-origin' });
+      if (!res.ok) return;
+      const data = await res.json();
+      // Update every auth indicator on the page (Header + MobileNav).
+      const indicators = document.querySelectorAll<HTMLElement>('[data-auth-indicator]');
+      for (const el of indicators) {
+        if (data.loggedIn) {
+          el.setAttribute('data-state', 'in');
+          const hasAvatar = !!data.avatar;
+          el.setAttribute('data-has-avatar', hasAvatar ? 'true' : 'false');
+          if (hasAvatar) {
+            const img = el.querySelector<HTMLImageElement>('[data-auth-avatar]');
+            if (img && img.getAttribute('src') !== data.avatar) {
+              img.src = data.avatar;
+            }
+          }
+          if (data.name) {
+            el.setAttribute('aria-label', `Signed in as ${data.name}`);
+          } else {
+            el.setAttribute('aria-label', 'Signed in');
+          }
+        } else {
+          el.setAttribute('data-state', 'out');
+          el.setAttribute('data-has-avatar', 'false');
+          el.setAttribute('aria-label', 'Log in');
+        }
+      }
+    } catch {
+      // Network error or /api/me unavailable. Leave the SSR-rendered state
+      // alone — worst case is "Log in" stays visible on a prerendered page
+      // for a logged-in user, which is annoying but not broken.
+    }
+  })();
+</script>

@@ -17,6 +17,7 @@ import type { ProjectEntry } from '../../lib/load-projects';
 import type { WorkingGroupEntry } from '../../lib/load-working-groups';
 import { projectHref } from '../../lib/load-projects';
 import { workingGroupHref } from '../../lib/load-working-groups';
+import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
 export interface Props {
   popdownProjects: ProjectEntry[];
@@ -24,6 +25,14 @@ export interface Props {
 }
 
 const { popdownProjects, popdownWorkingGroups } = Astro.props;
+
+// Mirror the Header's auth indicator. The shared inline <script> in
+// Header.astro updates ALL [data-auth-indicator] elements, so this stays
+// in sync with the desktop indicator without its own hydration logic.
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+const isLoggedIn = !!session;
+const initialAvatar = session?.avatar ?? null;
+const initialName = session?.name ?? null;
 
 const activeWGs = popdownWorkingGroups.filter(wg => wg.data.status === 'active');
 const proposedWGs = popdownWorkingGroups.filter(wg => wg.data.status === 'proposed');
@@ -127,7 +136,40 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
       <li><a class="mnav__link" href="/sessions" role="menuitem">Sessions</a></li>
       <li><a class="mnav__link" href="/changelog" role="menuitem">Changelog</a></li>
       <li><a class="mnav__link" href="/about" role="menuitem">About</a></li>
-      <li><a class="mnav__link mnav__link--cta" href="/login" role="menuitem">Log in</a></li>
+      <li>
+        <a
+          class="mnav__link mnav__login"
+          href="/login"
+          role="menuitem"
+          data-auth-indicator
+          data-state={isLoggedIn ? 'in' : 'out'}
+          data-has-avatar={isLoggedIn && initialAvatar ? 'true' : 'false'}
+          aria-label={isLoggedIn ? `Signed in${initialName ? ` as ${initialName}` : ''}` : 'Log in'}
+        >
+          <span class="mnav__login-dot" aria-hidden="true"></span>
+          <span class="mnav__login-text" data-auth-text>Log in</span>
+          <img
+            class="mnav__avatar"
+            src={initialAvatar ?? ''}
+            alt=""
+            data-auth-avatar
+            aria-hidden={!initialAvatar}
+          />
+          <svg
+            class="mnav__avatar-fallback"
+            data-auth-avatar-fallback
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              fill="currentColor"
+              d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"
+            />
+          </svg>
+          <span class="mnav__login-signed-in" data-auth-signed-in-text>Signed in</span>
+        </a>
+      </li>
     </ul>
   </div>
 </div>
@@ -308,6 +350,81 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
   }
   .mnav__link--cta {
     color: var(--color-primary);
+  }
+
+  /* ── Mobile auth indicator (mirrors Header's pattern) ─────────────── */
+  .mnav__login {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .mnav__login-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    transition: background-color 200ms ease, box-shadow 200ms ease;
+  }
+  .mnav__login[data-state="out"] .mnav__login-dot {
+    background: #ef4444;
+    box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.45);
+    animation: mnav-pulse-out 1.6s ease-in-out infinite;
+  }
+  .mnav__login[data-state="in"] .mnav__login-dot {
+    background: #22c55e;
+    box-shadow: 0 0 6px 1px rgba(34, 197, 94, 0.45);
+    animation: mnav-pulse-in 2.2s ease-in-out infinite;
+  }
+  @keyframes mnav-pulse-out {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.55; transform: scale(0.85); }
+  }
+  @keyframes mnav-pulse-in {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.7; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mnav__login-dot { animation: none; }
+  }
+
+  .mnav__login-text,
+  .mnav__login-signed-in {
+    display: none;
+  }
+  .mnav__login[data-state="out"] .mnav__login-text {
+    display: inline;
+  }
+  .mnav__login[data-state="in"] .mnav__login-signed-in {
+    display: inline;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .mnav__avatar,
+  .mnav__avatar-fallback {
+    display: none;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .mnav__avatar {
+    object-fit: cover;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .mnav__avatar-fallback {
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 1px;
+  }
+  .mnav__login[data-state="in"][data-has-avatar="true"] .mnav__avatar {
+    display: block;
+  }
+  .mnav__login[data-state="in"]:not([data-has-avatar="true"]) .mnav__avatar-fallback {
+    display: block;
   }
   .mnav__group-summary {
     list-style: none;          /* removes the default disclosure triangle */
