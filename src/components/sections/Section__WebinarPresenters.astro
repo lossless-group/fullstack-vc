@@ -1,9 +1,12 @@
 ---
 /* Section__WebinarPresenters
-   Presenter showcase used inside the webinar detail card. Each presenter
-   gets a row: avatar + name/firm/role on the left, "presenting on" topic on
-   the right. Mobile collapses topic below. Optional `hosts` line under the
-   cards (rendered when the page passes a non-empty array). */
+   Presenter showcase used inside the webinar detail card. Wraps a list of
+   PersonCard--Bare entries (the canonical person row) with a section
+   header and a hosts line below. Visual chrome lives here; the row card
+   lives in src/components/people/PersonCard--Bare.astro. */
+
+import PersonCardBare from '../people/PersonCard--Bare.astro';
+import { resolvePeople } from '../../lib/resolve-people';
 
 interface Presenter {
   name: string;
@@ -20,9 +23,19 @@ interface Props {
 
 const { presenters, hosts = [] } = Astro.props;
 
-function initials(name: string): string {
-  return name.split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
-}
+// Pipe presenter blocks through the resolver so anyone in the participants
+// collection (e.g. mpstaton with a github_avatar) auto-fills name → avatar
+// without having to paste a URL into session frontmatter.
+const resolved = await resolvePeople(
+  presenters.map(p => ({
+    name: p.name,
+    firm: p.firm,
+    role: p.role,
+    avatar: p.headshot,
+    profile: p.linkedin,
+  }))
+);
+const withTopics = resolved.map((r, i) => ({ ...r, topic: presenters[i].topic }));
 ---
 
 <section class="wpres" aria-labelledby="wpres-heading">
@@ -32,30 +45,17 @@ function initials(name: string): string {
   </header>
 
   <ul class="wpres__list" role="list">
-    {presenters.map(p => (
-      <li class="wpres__row">
-        <div class="wpres__person">
-          {p.headshot ? (
-            <img class="wpres__avatar" src={p.headshot} alt="" loading="lazy" decoding="async" />
-          ) : (
-            <span class="wpres__avatar wpres__avatar--initials" aria-hidden="true">{initials(p.name)}</span>
-          )}
-          <div class="wpres__id">
-            <p class="wpres__name">
-              {p.linkedin
-                ? <a href={p.linkedin} target="_blank" rel="noopener noreferrer">{p.name}</a>
-                : p.name}
-            </p>
-            {p.firm && <p class="wpres__firm">{p.firm}</p>}
-            {p.role && <p class="wpres__role">{p.role}</p>}
-          </div>
-        </div>
-        {p.topic && (
-          <div class="wpres__topic">
-            <span class="wpres__topic-eyebrow">Presenting on</span>
-            <p class="wpres__topic-body">{p.topic}</p>
-          </div>
-        )}
+    {withTopics.map(p => (
+      <li>
+        <PersonCardBare
+          name={p.name}
+          firm={p.firm}
+          role={p.role}
+          avatar={p.avatar}
+          profile={p.profile}
+          topic={p.topic}
+          tbd={p.isTbd}
+        />
       </li>
     ))}
   </ul>
@@ -110,105 +110,6 @@ function initials(name: string): string {
     gap: 0.625rem;
   }
 
-  .wpres__row {
-    display: grid;
-    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
-    gap: 1rem;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: 0.625rem;
-    background: var(--fx-card-bg);
-    border: 1px solid var(--fx-card-border);
-    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
-  }
-  .wpres__row:hover {
-    border-color: var(--fx-card-border-hover);
-    transform: translateX(2px);
-    box-shadow: var(--fx-card-shadow);
-  }
-
-  .wpres__person {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-width: 0;
-  }
-  .wpres__avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    object-fit: cover;
-    background: var(--color-surface);
-    border: 1.5px solid var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
-    flex: 0 0 auto;
-  }
-  .wpres__avatar--initials {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    letter-spacing: 0.02em;
-  }
-  .wpres__id { min-width: 0; display: flex; flex-direction: column; gap: 0.0625rem; }
-  .wpres__name {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--color-text);
-    line-height: 1.2;
-  }
-  .wpres__name a {
-    color: inherit;
-    text-decoration: none;
-    background-image: linear-gradient(var(--color-primary), var(--color-primary));
-    background-size: 0 1px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    transition: background-size 200ms ease, color 150ms ease;
-  }
-  .wpres__name a:hover {
-    color: var(--color-primary);
-    background-size: 100% 1px;
-  }
-  .wpres__firm {
-    margin: 0;
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    color: var(--color-primary);
-    letter-spacing: 0.02em;
-  }
-  .wpres__role {
-    margin: 0;
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-  }
-
-  .wpres__topic {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1875rem;
-    padding-left: 1rem;
-    border-left: 2px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
-  }
-  .wpres__topic-eyebrow {
-    font-family: var(--font-code);
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-muted);
-  }
-  .wpres__topic-body {
-    margin: 0;
-    font-size: 0.875rem;
-    line-height: 1.45;
-    color: var(--color-text);
-  }
-
   .wpres__hosts {
     margin: 0.25rem 0 0;
     padding-top: 0.625rem;
@@ -228,16 +129,5 @@ function initials(name: string): string {
   }
   .wpres__hosts-names {
     color: var(--color-text);
-  }
-
-  /* Mobile: stack topic below the person row */
-  @media (max-width: 600px) {
-    .wpres__row { grid-template-columns: 1fr; gap: 0.625rem; }
-    .wpres__topic {
-      padding-left: 0;
-      padding-top: 0.625rem;
-      border-left: 0;
-      border-top: 1px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
-    }
   }
 </style>

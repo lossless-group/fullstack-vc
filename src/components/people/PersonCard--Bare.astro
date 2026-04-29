@@ -1,0 +1,257 @@
+---
+/* PersonCard--Bare
+   Single canonical "person row" used wherever the site introduces a human:
+   webinar presenters, working-group leads, project leads, etc. Kept bare —
+   no domain coupling, no embedded section chrome. Consumers wrap it.
+
+   Visual:
+     · Round avatar with --color-primary halo (or initials fallback)
+     · Name in display font (linked when `profile` is set)
+     · Firm in code font, primary color
+     · Role muted underneath
+     · Optional `topic` block on the right with a vertical dashed divider
+       (used by webinar presenters; absent in metadata-strip contexts)
+     · `tbd: true` renders a placeholder variant — dashed avatar, "TBD"
+       label, lower opacity. Useful for proposed groups without a lead yet.
+
+   Avatar resolution priority is the caller's job (lib/resolve-people.ts
+   handles it for project/WG/session pages). This component only renders. */
+
+export interface Props {
+  name: string;
+  firm?: string;
+  role?: string;
+  avatar?: string;
+  /** Profile URL. Wraps the name in a hover-underline anchor when set. */
+  profile?: string;
+  /** Optional topic body shown on the right side (e.g. "Presenting on …"). */
+  topic?: string;
+  /** Eyebrow above the topic body. Default: "Presenting on". */
+  topicLabel?: string;
+  /** Render the "TBD / waiting on someone" placeholder variant. */
+  tbd?: boolean;
+}
+
+const {
+  name,
+  firm,
+  role,
+  avatar,
+  profile,
+  topic,
+  topicLabel = 'Presenting on',
+  tbd = false,
+} = Astro.props;
+
+const placeholder = tbd || /^tbd$/i.test(name?.trim() ?? '');
+
+function initials(n: string): string {
+  return n
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(p => p[0]?.toUpperCase() ?? '')
+    .join('');
+}
+---
+
+<article class:list={['pcard-bare', placeholder && 'pcard-bare--tbd']}>
+  <div class="pcard-bare__person">
+    {placeholder ? (
+      <span class="pcard-bare__avatar pcard-bare__avatar--tbd" aria-hidden="true">?</span>
+    ) : avatar ? (
+      <img class="pcard-bare__avatar" src={avatar} alt="" loading="lazy" decoding="async" />
+    ) : (
+      <span class="pcard-bare__avatar pcard-bare__avatar--initials" aria-hidden="true">{initials(name)}</span>
+    )}
+
+    <div class="pcard-bare__id">
+      <p class="pcard-bare__name">
+        {placeholder ? (
+          'TBD'
+        ) : profile ? (
+          <a href={profile} target="_blank" rel="noopener noreferrer">{name}</a>
+        ) : (
+          name
+        )}
+      </p>
+      {placeholder ? (
+        <p class="pcard-bare__hint">Lead opening · introduce yourself in the working group</p>
+      ) : (
+        <>
+          {firm && <p class="pcard-bare__firm">{firm}</p>}
+          {role && <p class="pcard-bare__role">{role}</p>}
+        </>
+      )}
+    </div>
+  </div>
+
+  {topic && !placeholder && (
+    <div class="pcard-bare__topic">
+      <span class="pcard-bare__topic-eyebrow">{topicLabel}</span>
+      <p class="pcard-bare__topic-body">{topic}</p>
+    </div>
+  )}
+</article>
+
+<style>
+  .pcard-bare {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .pcard-bare:hover {
+    border-color: var(--fx-card-border-hover);
+    transform: translateX(2px);
+    box-shadow: var(--fx-card-shadow);
+  }
+  /* Two-up grid only when a topic is present */
+  .pcard-bare:has(.pcard-bare__topic) {
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  }
+
+  /* TBD placeholder — dashed border, muted, no hover lift */
+  .pcard-bare--tbd {
+    background: transparent;
+    border-style: dashed;
+    border-color: var(--color-border);
+    opacity: 0.85;
+  }
+  .pcard-bare--tbd:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--color-border);
+  }
+
+  .pcard-bare__person {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .pcard-bare__avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+    flex: 0 0 auto;
+  }
+  .pcard-bare__avatar--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+  .pcard-bare__avatar--tbd {
+    border-style: dashed;
+    border-color: var(--color-border);
+    box-shadow: none;
+    color: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .pcard-bare__id {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.0625rem;
+  }
+  .pcard-bare__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+  .pcard-bare--tbd .pcard-bare__name {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .pcard-bare__name a {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--color-primary), var(--color-primary));
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 200ms ease, color 150ms ease;
+  }
+  .pcard-bare__name a:hover {
+    color: var(--color-primary);
+    background-size: 100% 1px;
+  }
+  .pcard-bare__firm {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+  }
+  .pcard-bare__role {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .pcard-bare__hint {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .pcard-bare__topic {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1875rem;
+    padding-left: 1rem;
+    border-left: 2px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  }
+  .pcard-bare__topic-eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .pcard-bare__topic-body {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+
+  /* Mobile: stack topic below the person row */
+  @media (max-width: 600px) {
+    .pcard-bare:has(.pcard-bare__topic) {
+      grid-template-columns: 1fr;
+      gap: 0.625rem;
+    }
+    .pcard-bare__topic {
+      padding-left: 0;
+      padding-top: 0.625rem;
+      border-left: 0;
+      border-top: 1px dashed color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+    }
+  }
+</style>

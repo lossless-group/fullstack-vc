@@ -6,6 +6,8 @@
 
 import type { ProjectEntry } from '../../lib/load-projects';
 import { statusLabel } from '../../lib/load-projects';
+import { resolvePeople } from '../../lib/resolve-people';
+import PersonCardBare from '../people/PersonCard--Bare.astro';
 
 export interface Props {
   project: ProjectEntry;
@@ -13,6 +15,18 @@ export interface Props {
 
 const { project } = Astro.props;
 const d = project.data;
+
+// Resolve leads against the participants collection so registered members
+// (mpstaton, etc.) auto-pick up their avatar/firm/profile without each
+// project file restating those values. TBD entries stay TBD.
+const resolvedLeads = await resolvePeople(d.working_group_leads);
+// Show a placeholder lead card on proposed projects with no roster yet.
+const leadsToRender =
+  resolvedLeads.length > 0
+    ? resolvedLeads
+    : d.status === 'proposed'
+      ? [{ name: 'TBD', isTbd: true }]
+      : [];
 
 const fmtDate = (date?: Date) =>
   date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null;
@@ -51,25 +65,22 @@ const initials = (name: string) =>
     )}
   </div>
 
-  {(d.working_group_leads?.length || d.working_group_members?.length) && (
+  {(leadsToRender.length || d.working_group_members?.length) && (
     <div class="pmeta__row pmeta__row--people">
-      {d.working_group_leads?.length && (
+      {leadsToRender.length > 0 && (
         <div class="pmeta__people">
           <p class="pmeta__people-label">Leads</p>
-          <ul class="pmeta__avatars">
-            {d.working_group_leads.map(l => (
-              <li class="pmeta__person">
-                {l.avatar
-                  ? <img class="pmeta__avatar" src={l.avatar} alt="" />
-                  : <span class="pmeta__avatar pmeta__avatar--initials">{initials(l.name)}</span>
-                }
-                <span class="pmeta__person-text">
-                  {l.profile
-                    ? <a href={l.profile} class="pmeta__person-name">{l.name}</a>
-                    : <span class="pmeta__person-name">{l.name}</span>
-                  }
-                  {l.role && <span class="pmeta__person-role">{l.role}</span>}
-                </span>
+          <ul class="pmeta__leads" role="list">
+            {leadsToRender.map(l => (
+              <li>
+                <PersonCardBare
+                  name={l.name}
+                  firm={l.firm}
+                  role={l.role}
+                  avatar={l.avatar}
+                  profile={l.profile}
+                  tbd={l.isTbd}
+                />
               </li>
             ))}
           </ul>
@@ -211,6 +222,16 @@ const initials = (name: string) =>
     display: flex;
     flex-wrap: wrap;
     gap: 0.875rem;
+  }
+  /* Leads use the full PersonCard--Bare; stack vertically with a small gap
+     since each card carries its own border + halo. */
+  .pmeta__leads {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   .pmeta__person {
     display: flex;

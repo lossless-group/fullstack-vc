@@ -28,9 +28,13 @@ date_modified: 2026-04-27
 
 ## Why this exists
 
-Most VC content is either polished-but-late (a quarterly memo), or fast-but-shallow (a tweet thread). Yet we all know that we _should_ be doing more thought leadership, should be generating marketing impacting reports, should have a consistent voice and perspective... should be writing memos to be proud of to have in our dataroom no one reads. We bet there's a third option: substantive content shipped at the cadence of a working analyst desk — citation-rich, research-rigorous, written to a standard that survives scrutiny from the people whose work you cite.
+Most VC content is either polished-but-late (a quarterly memo), or fast-but-shallow (a tweet thread). Yet we all know that we _should_ be doing more thought leadership, _should_ be generating market impacting reports to raise visibility, _should_ have a consistent voice and perspective... _should_ be writing memos to be proud of to have in our dataroom no one reads. Coulda, shoulda, **Prada**.
 
-Agentic tooling collapses the parts that are tedious (transcript wrangling, citation formatting, draft scaffolding). The hard parts — the point of view, the judgment about what's worth saying — stay human. This working group is the place we figure out where that line falls.
+> We bet there's a third option: substantive content shipped at the cadence of a working analyst desk — citation-rich, research-rigorous, written to a standard that survives scrutiny from the people whose work you cite.
+
+Agentic tooling collapses the parts that are tedious (transcript wrangling, scouring web search for quality sources (and downloading PDF reports), citation formatting, draft scaffolding, editing for typos and grammar). The hard parts — the point of view, the judgment about what's worth saying — stay human. 
+
+_This working group is the place we figure out where that line falls._
 
 ## What we share
 

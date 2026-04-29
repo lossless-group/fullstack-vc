@@ -8,6 +8,8 @@
 
 import type { WorkingGroupEntry } from '../../lib/load-working-groups';
 import { statusLabel } from '../../lib/load-working-groups';
+import { resolvePeople } from '../../lib/resolve-people';
+import PersonCardBare from '../people/PersonCard--Bare.astro';
 
 export interface Props {
   workingGroup: WorkingGroupEntry;
@@ -15,6 +17,14 @@ export interface Props {
 
 const { workingGroup } = Astro.props;
 const d = workingGroup.data;
+
+const resolvedLeads = await resolvePeople(d.working_group_leads);
+const leadsToRender =
+  resolvedLeads.length > 0
+    ? resolvedLeads
+    : d.status === 'proposed'
+      ? [{ name: 'TBD', isTbd: true }]
+      : [];
 
 const fmtDate = (date?: Date) =>
   date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null;
@@ -53,25 +63,22 @@ const initials = (name: string) =>
     )}
   </div>
 
-  {(d.working_group_leads?.length || d.working_group_members?.length) && (
+  {(leadsToRender.length || d.working_group_members?.length) && (
     <div class="pmeta__row pmeta__row--people">
-      {d.working_group_leads?.length && (
+      {leadsToRender.length > 0 && (
         <div class="pmeta__people">
           <p class="pmeta__people-label">Leads</p>
-          <ul class="pmeta__avatars">
-            {d.working_group_leads.map(l => (
-              <li class="pmeta__person">
-                {l.avatar
-                  ? <img class="pmeta__avatar" src={l.avatar} alt="" />
-                  : <span class="pmeta__avatar pmeta__avatar--initials">{initials(l.name)}</span>
-                }
-                <span class="pmeta__person-text">
-                  {l.profile
-                    ? <a href={l.profile} class="pmeta__person-name">{l.name}</a>
-                    : <span class="pmeta__person-name">{l.name}</span>
-                  }
-                  {l.role && <span class="pmeta__person-role">{l.role}</span>}
-                </span>
+          <ul class="pmeta__leads" role="list">
+            {leadsToRender.map(l => (
+              <li>
+                <PersonCardBare
+                  name={l.name}
+                  firm={l.firm}
+                  role={l.role}
+                  avatar={l.avatar}
+                  profile={l.profile}
+                  tbd={l.isTbd}
+                />
               </li>
             ))}
           </ul>
@@ -213,6 +220,14 @@ const initials = (name: string) =>
     display: flex;
     flex-wrap: wrap;
     gap: 0.875rem;
+  }
+  .pmeta__leads {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   .pmeta__person {
     display: flex;

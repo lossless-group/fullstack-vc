@@ -224,6 +224,12 @@ const components = [
     cssContract: '--color-text-muted, --color-primary, --color-text, --fx-card-bg, --fx-card-border, --fx-card-shadow, --font-body; internal: --tt-width (overridable via prop)',
     props: 'text? (string fallback), position?: "top"|"bottom" (default "top"), width? (default "18rem"), label? (default "More information"), size? (default 16)',
   },
+  {
+    name: 'PersonCard--Bare',
+    purpose: 'Canonical "person row" used wherever the site introduces a human — webinar presenters, project leads, working-group leads. Avatar with --color-primary halo + name (linked when profile is set) + firm in code-font primary + muted role. Optional `topic` block on the right (vertical dashed divider, "Presenting on …"). `tbd` prop renders a dashed-border placeholder for proposed groups still recruiting a lead. Used by Section__WebinarPresenters, ProjectMetadataDisplay, WorkingGroupMetadataDisplay. Auto-fills avatar/firm/profile from the participants collection via lib/resolve-people.ts (case-insensitive name match).',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-display, --font-code',
+    props: 'name (required), firm?, role?, avatar?, profile?, topic?, topicLabel? (default "Presenting on"), tbd? (default false; auto-detected when name === "TBD")',
+  },
 ];
 ---
 
