@@ -1,0 +1,54 @@
+---
+/**
+ * Markdown deck route — resolves `/slides/<slug>` to a markdown file in
+ * `src/content/slides/<slug>.md` and feeds it to MarkdownSlideDeck.
+ *
+ * Astro decks (file-based: `src/pages/slides/<slug>.astro`) take precedence
+ * because they have a more specific route — Astro's router prefers the
+ * concrete file over the catch-all. So this only fires when there's no
+ * matching `.astro` file.
+ */
+import type { GetStaticPaths } from 'astro';
+import MarkdownSlideDeck from '../../layouts/MarkdownSlideDeck.astro';
+
+export const prerender = true;
+
+const mdGlobs = import.meta.glob<string>('../../content/slides/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+interface DeckProps {
+  title: string;
+  description: string;
+  content: string;
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const globs = import.meta.glob<string>('../../content/slides/*.md', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+  });
+  return Object.entries(globs).map(([path, raw]) => {
+    const slug = path.split('/').pop()!.replace(/\.md$/, '');
+    const fmMatch = (raw as string).match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    let title = slug;
+    let description = '';
+    if (fmMatch) {
+      const fm = fmMatch[1];
+      title = fm.match(/^title:\s*"?([^"\n]+)"?/m)?.[1]?.trim() ?? slug;
+      description = fm.match(/^description:\s*"?([^"\n]+)"?/m)?.[1]?.trim() ?? '';
+    }
+    return {
+      params: { slug },
+      props: { title, description, content: raw } satisfies DeckProps,
+    };
+  });
+};
+
+const { title, description, content } = Astro.props as DeckProps;
+---
+
+<MarkdownSlideDeck title={title} description={description} content={content} />
