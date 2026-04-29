@@ -1,0 +1,99 @@
+---
+/**
+ * Section__SessionAgenda — agenda/format card for session pages and slide decks.
+ *
+ * Sized for the Reveal slide canvas (1600x900). Reads the same Tier-2 semantic
+ * tokens the rest of the site uses, so it inherits theme + mode without extra
+ * wiring. Drop into a slide section or a normal page.
+ */
+
+interface AgendaItem {
+  time: string;
+  name: string;
+  what: string;
+}
+
+interface Props {
+  eyebrowTxt?: string;
+  headingTxt: string;
+  items: AgendaItem[];
+}
+
+const { eyebrowTxt, headingTxt, items } = Astro.props;
+---
+
+<div class="sess-agenda">
+  {eyebrowTxt && <p class="sess-agenda__eyebrow">{eyebrowTxt}</p>}
+  <h2 class="sess-agenda__heading">{headingTxt}</h2>
+  <ul class="sess-agenda__list">
+    {items.map((item) => (
+      <li class="sess-agenda__row">
+        <span class="sess-agenda__time">{item.time}</span>
+        <span class="sess-agenda__name">{item.name}</span>
+        <span class="sess-agenda__what">{item.what}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .sess-agenda {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 64rem;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .sess-agenda__eyebrow {
+    font-family: var(--font-code);
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin: 0 0 0.25rem;
+  }
+  .sess-agenda__heading {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+  .sess-agenda__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .sess-agenda__row {
+    display: grid;
+    grid-template-columns: 5rem 14rem 1fr;
+    gap: 1.5rem;
+    align-items: baseline;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .sess-agenda__time {
+    font-family: var(--font-code);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .sess-agenda__name {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .sess-agenda__what {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+</style>

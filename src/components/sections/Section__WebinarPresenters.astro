@@ -73,7 +73,11 @@ const withTopics = resolved.map((r, i) => ({ ...r, topic: presenters[i].topic })
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin: 0 0 1.75rem;
+    /* max-width clamps the section on wide canvases (slide decks @ 1600px)
+       without affecting narrower contexts (session page article is already
+       capped at max-w-3xl, so this is a no-op there). */
+    max-width: 56rem;
+    margin: 0 auto 1.75rem;
     padding: 1.25rem;
     border-radius: 0.75rem;
     background: var(--color-surface);

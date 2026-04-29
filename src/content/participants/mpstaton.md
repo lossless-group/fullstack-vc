@@ -37,6 +37,9 @@ current_stack:
   - tool: jina-ai
     added: 2026-04-28
     notes: "Web scraping and content extraction API."
+  - tool: affinity-design-suite
+    added: 2025-03-30
+    notes: "The best MacOS Native Creative Software Suite, love Affinity Designer for Vector Art -- best-in-class."
 aspirational_stack:
   - tool: hermes-agent
     intent: "Self-learning agentic framework for high-context, better memory, and persistence."

@@ -110,9 +110,13 @@ function initials(n: string): string {
     transform: translateX(2px);
     box-shadow: var(--fx-card-shadow);
   }
-  /* Two-up grid only when a topic is present */
+  /* Two-up grid only when a topic is present. The topic column is clamped
+     to an ideal reading width — on a narrow page (e.g. session detail) the
+     parent is already smaller so the column simply takes what's available;
+     on a wide canvas (e.g. slide deck) the clamp prevents the topic side
+     from stretching into a sea of whitespace. */
   .pcard-bare:has(.pcard-bare__topic) {
-    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 14rem) minmax(0, 30rem);
   }
 
   /* TBD placeholder — dashed border, muted, no hover lift */

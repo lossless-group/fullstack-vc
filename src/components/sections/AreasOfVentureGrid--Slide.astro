@@ -1,0 +1,163 @@
+---
+/* AreasOfVentureGrid--Slide
+   Slide-canvas variant of AreasOfVentureGrid. Same Area shape, sized for the
+   Reveal 1600x900 stage: tighter cards, fixed 5-column grid (no responsive
+   collapse — slides aren't responsive), heading + eyebrow scaled up.
+*/
+
+export interface Area {
+  number: number;
+  title: string;
+  lede: string;
+  tags?: string[];
+}
+
+export interface Props {
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  areas: Area[];
+  /** How many tags to render per card (slides need to stay tight). Default 3. */
+  maxTagsPerCard?: number;
+}
+
+const {
+  eyebrow = 'Venture Workflows',
+  heading = 'Areas of Venture',
+  intro,
+  areas,
+  maxTagsPerCard = 3,
+} = Astro.props;
+---
+
+<section class="areas-slide">
+  <header class="areas-slide__header">
+    {eyebrow && <p class="areas-slide__eyebrow">{eyebrow}</p>}
+    <h2 class="areas-slide__heading">{heading}</h2>
+    {intro && <p class="areas-slide__intro">{intro}</p>}
+  </header>
+
+  <ol class="areas-slide__grid">
+    {areas.map((area) => (
+      <li class="areas-slide__card">
+        <div class="areas-slide__num" aria-hidden="true">
+          {String(area.number).padStart(2, '0')}
+        </div>
+        <h3 class="areas-slide__title">{area.title}</h3>
+        <p class="areas-slide__lede">{area.lede}</p>
+        {area.tags && area.tags.length > 0 && (
+          <ul class="areas-slide__tags" aria-label={`${area.title} topics`}>
+            {area.tags.slice(0, maxTagsPerCard).map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .areas-slide {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+  .areas-slide__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+  }
+  .areas-slide__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 1.125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .areas-slide__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 3.5rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .areas-slide__intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    max-width: 70rem;
+  }
+
+  .areas-slide__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .areas-slide__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4375rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    min-height: 0;
+  }
+  .areas-slide__num {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  .areas-slide__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+  .areas-slide__lede {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  .areas-slide__tags {
+    list-style: none;
+    margin: 0.25rem 0 0;
+    padding: 0.5rem 0 0;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3125rem;
+  }
+  .areas-slide__tags li {
+    font-family: var(--font-code);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    padding: 0.125rem 0.4375rem;
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+  }
+</style>

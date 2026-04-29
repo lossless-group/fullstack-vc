@@ -1,0 +1,149 @@
+---
+/**
+ * Section__TryThisNow — call-to-action checklist for live sessions. A page
+ * heading frames the ask, an actionable list invites the room to try things,
+ * and an optional note at the bottom carries a meta-message (bug-handling,
+ * deferred actions, etc.). Sized for the Reveal slide canvas.
+ */
+
+interface Item {
+  question: string;
+  hint?: string;
+}
+
+interface Props {
+  pageEyebrowTxt?: string;
+  pageHeadingTxt: string;
+  items: Item[];
+  /** Trailing note rendered as a callout below the list. */
+  noteTxt?: string;
+}
+
+const {
+  pageEyebrowTxt,
+  pageHeadingTxt,
+  items,
+  noteTxt,
+} = Astro.props;
+---
+
+<section class="ttn">
+  <header class="ttn__header">
+    {pageEyebrowTxt && <p class="ttn__eyebrow">{pageEyebrowTxt}</p>}
+    <h2 class="ttn__heading">{pageHeadingTxt}</h2>
+  </header>
+
+  <ul class="ttn__list">
+    {items.map((it) => (
+      <li class="ttn__item">
+        <span class="ttn__check" aria-hidden="true">☐</span>
+        <div class="ttn__body">
+          <p class="ttn__question">{it.question}</p>
+          {it.hint && <p class="ttn__hint">{it.hint}</p>}
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  {noteTxt && (
+    <p class="ttn__note">{noteTxt}</p>
+  )}
+</section>
+
+<style>
+  .ttn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  .ttn__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .ttn__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 1.125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .ttn__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 2.75rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  .ttn__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .ttn__item {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1rem;
+    align-items: start;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+  }
+  .ttn__check {
+    font-family: var(--font-code);
+    font-size: 1.875rem;
+    line-height: 1;
+    color: var(--color-primary);
+    text-align: center;
+    padding-top: 0.125rem;
+  }
+  .ttn__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+  .ttn__question {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .ttn__hint {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .ttn__note {
+    margin: 0.5rem 0 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+    border: 1px solid var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--color-text);
+    text-align: center;
+  }
+</style>

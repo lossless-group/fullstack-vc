@@ -11,6 +11,11 @@ import Section__WebinarFirmsRepresented from '../../components/sections/Section_
 import Section__WebinarSurveyVoices from '../../components/sections/Section__WebinarSurveyVoices.astro';
 import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
 import Section__BuiltInThreeDays from '../../components/sections/Section__BuiltInThreeDays.astro';
+import Section__SessionAgenda from '../../components/sections/Section__SessionAgenda.astro';
+import AreasOfVentureGridSlide, { type Area } from '../../components/sections/AreasOfVentureGrid--Slide.astro';
+import Section__OfferOrAsk from '../../components/sections/Section__OfferOrAsk.astro';
+import Section__TwoColumnList from '../../components/sections/Section__TwoColumnList.astro';
+import Section__TryThisNow from '../../components/sections/Section__TryThisNow.astro';
 import { getEntry } from 'astro:content';
 import surveyJson from '../../data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json';
 
@@ -27,6 +32,21 @@ const survey = surveyJson as any;
 const session = await getEntry('sessions', '2026-04-29_agentic-vc-dojo-launch');
 const presenterDetails = session?.data.presenterDetails ?? [];
 const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
+
+// Mirrors the dataset on /dojo. Inlined here so the slide is self-contained;
+// extract to a shared module if a third surface ever needs it.
+const ventureAreas: Area[] = [
+  { number: 1,  title: 'Strategy Development & Raising a Fund',         lede: 'Hundreds of LP meetings, anchor LPs, GP commit, first close.',                  tags: ['Emerging managers', 'Anchor LPs', 'First close'] },
+  { number: 2,  title: 'Proprietary Dealflow & Dealflow Management',    lede: 'Earn the inbound, route it, say "no" fast, get into oversubscribed rounds.',    tags: ['Sourcing engines', 'Inbound triage', 'Oversubscribed rounds'] },
+  { number: 3,  title: 'Thesis, Diligence & Pushing Deals Through',     lede: 'Build a POV, run diligence sprints, get through committee.',                    tags: ['Investment thesis', 'Diligence sprints', 'IC dynamics'] },
+  { number: 4,  title: 'Winning Deals',                                  lede: 'Personal brand, fast trust, valuation gymnastics — why founders pick you.',     tags: ['Personal brand', 'Term sheet timing', 'Valuation gymnastics'] },
+  { number: 5,  title: 'Board Participation & Governance',               lede: 'Showing up, value-add vs. busywork, knowing when to be impermanent.',           tags: ['Board seats', 'Founder coaching', 'Crisis governance'] },
+  { number: 6,  title: 'Portfolio Services & Community',                 lede: 'Service offers, community programs, growth, "one-battle" frameworks.',          tags: ['Platform teams', 'Customer intros', 'Founder community'] },
+  { number: 7,  title: 'Portfolio Tracking, Modeling & Follow-On',       lede: 'Dashboards, portfolio reviews, follow-on decision frameworks.',                 tags: ['Reserves modeling', 'Follow-on math', 'Markup signals'] },
+  { number: 8,  title: 'Fund Management & Administration',               lede: 'Fund admin, IC design, the often-invisible non-investing roles.',               tags: ['Fund admin', 'IC design', 'GP/LP economics'] },
+  { number: 9,  title: 'Investor Relations, Community & Reporting',      lede: 'Quarterly letters, LP days, building community around your fund.',              tags: ['Quarterly letters', 'AGM playbook', 'DPI storytelling'] },
+  { number: 10, title: 'Exits, Auctions, Secondary, Liquidity',          lede: 'Selling early, secondaries, distributions — end of the J-curve.',                tags: ['Secondary sales', 'M&A timing', 'DPI vs TVPI'] },
+];
 ---
 
 <OneSlideDeck title={presentation.title} description={presentation.description}>
@@ -38,21 +58,137 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
     <p class="byline">Hosted by Michael Staton &amp; Emily McMath · Powered by Fullstack VC</p>
   </section>
 
-  <!-- 2. Speed-demo presenters -->
+  <!-- 2. Format / Agenda — same component, scoped styles, no Reveal global fights. -->
+  <section data-gsap="agenda">
+    <Section__SessionAgenda
+      eyebrowTxt="The next 60 minutes"
+      headingTxt="Format"
+      items={[
+        { time: '5m',  name: 'Framing',               what: 'The Dojo concept, goals, structure.' },
+        { time: '20m', name: 'Inspiration set',       what: 'Four 5-min speed demos.' },
+        { time: '5m',  name: 'Polling & backchannel', what: 'Live polls, discussion.' },
+        { time: '20m', name: 'Town hall',             what: "Bring a workflow you're trying to operationalize." },
+        { time: '10m', name: 'Q&A + next steps',      what: 'Follow-ups for the Dojo community.' },
+      ]}
+    />
+  </section>
+
+  <!-- Speed-demo presenters — same component the /sessions page renders. -->
   <section data-gsap="presenters">
-    {presenterDetails.length > 0 ? (
-      <Section__WebinarPresenters presenters={presenterDetails} hosts={hosts} />
-    ) : (
-      <>
-        <p class="eyebrow">With</p>
-        <h2>Speed-demo presenters</h2>
-        <p>Presenter details loading from the session content.</p>
-      </>
-    )}
+    <Section__WebinarPresenters presenters={presenterDetails} hosts={hosts} />
+  </section>
+
+  <!-- I had AI all wrong — mental-model reset / setup for the Dojo.
+       Inline styles on text + img to beat Reveal's global selectors;
+       Tailwind utilities used only for layout (grid, flex, padding, radius). -->
+  <section data-gsap="wrong-about-ai">
+    <p data-anim="title"
+       class="font-mono uppercase"
+       style="color: #a1a1aa; font-size: 22px; letter-spacing: 0.18em; margin: 0 0 18px 0;">
+      A brief moment about how this came to be.
+    </p>
+    <h1 data-anim="title"
+        style="font-family: inherit; font-size: 104px; line-height: 1; font-weight: 800; margin: 0 0 18px 0; color: #ffffff; letter-spacing: -0.02em;">
+      I had AI all <span style="color: #a78bfa;">wrong.</span>
+    </h1>
+    <p data-anim="title"
+       class="italic"
+       style="color: #d4d4d8; font-size: 34px; line-height: 1.35; margin: 0 0 44px 0;">
+      It took me months of frustration to realize…
+    </p>
+
+    <div class="grid grid-cols-2 gap-8 mx-auto" style="max-width: 1400px; width: 100%;">
+      <div data-flip="left"
+           class="flex flex-col gap-4 p-6 rounded-2xl"
+           style="background: rgba(24, 24, 27, 0.85); border: 1px solid #3f3f46;">
+        <h3 style="color: #a78bfa; font-size: 32px; font-weight: 700; line-height: 1.2; margin: 0; letter-spacing: -0.01em;">
+          AI is <span style="text-transform: uppercase;">not</span> like the Jetson's robot Rosey.
+        </h3>
+        <img
+          src="/images/slide-embeds/imageRep_AI-is-not-like-the-Jetsons-Robot.jpg"
+          alt="The Jetsons robot Rosey — the wrong mental model for AI."
+          style="width: 100%; height: auto; max-height: 380px; object-fit: contain; border-radius: 12px; display: block; margin: 0; border: none; background: transparent; box-shadow: none;"
+        />
+      </div>
+
+      <div data-flip="right"
+           class="flex flex-col gap-4 p-6 rounded-2xl"
+           style="background: rgba(24, 24, 27, 0.85); border: 1px solid #7c5cff;">
+        <h3 style="color: #a78bfa; font-size: 32px; font-weight: 700; line-height: 1.2; margin: 0; letter-spacing: -0.01em;">
+          AI is more like trying to tame a <span style="text-transform: uppercase;">wild</span> animal.
+        </h3>
+        <img
+          src="/images/slide-embeds/imageRep__AI-is-more-like-taming-an-Animal.jpg"
+          alt="A wild animal — the better mental model for AI."
+          style="width: 100%; height: auto; max-height: 380px; object-fit: contain; border-radius: 12px; display: block; margin: 0; border: none; background: transparent; box-shadow: none;"
+        />
+      </div>
+    </div>
+  </section>
+
+   <!-- I had AI all wrong — mental-model reset / setup for the Dojo.
+       Inline styles on text + img to beat Reveal's global selectors;
+       Tailwind utilities used only for layout (grid, flex, padding, radius). -->
+  <section data-gsap="wrong-about-ai">
+    <p data-anim="title"
+       class="font-mono uppercase"
+       style="color: #a1a1aa; font-size: 22px; letter-spacing: 0.18em; margin: 0 0 18px 0;">
+      A brief moment about how this came to be.
+    </p>
+    <h1 data-anim="title"
+        style="font-family: inherit; font-size: 64px; line-height: 1; font-weight: 800; margin: 0 0 18px 0; color: #ffffff; letter-spacing: -0.02em;">
+      My Kauffman experience was awash in <span style="color: #a78bfa;">irony.</span>
+    </h1>
+
+    <div class="grid grid-cols-2 gap-6 mx-auto" style="max-width: 1480px; width: 100%;">
+      <div data-flip="left"
+           class="flex flex-col gap-4 p-6 rounded-2xl"
+           style="background: rgba(24, 24, 27, 0.85); border: 1px solid #3f3f46;">
+        <h3 style="color: #a78bfa; font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0; letter-spacing: -0.01em;">
+          I was like, the guy, of Education Innovation. Like, globally.
+        </h3>
+        <img
+          src="/images/slide-embeds/imageOf__Michael-Staton-as-Education-Thought-Leader.jpg"
+          alt="The Jetsons robot Rosey — the wrong mental model for AI."
+          style="width: 100%; height: auto; max-height: 540px; object-fit: contain; border-radius: 12px; display: block; margin: 0; border: none; background: transparent; box-shadow: none;"
+        />
+      </div>
+
+      <div data-flip="right"
+           class="flex flex-col gap-4 p-6 rounded-2xl"
+           style="background: rgba(24, 24, 27, 0.85); border: 1px solid #7c5cff;">
+        <h3 style="color: #a78bfa; font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0; letter-spacing: -0.01em;">
+          And Class 20, we were the best. But we had a lot of whiners who thought they weren't "learning" much.
+        </h3>
+        <img
+          src="/appIcon__Kauffman-Fellows--KF20--Vibrant.svg"
+          alt="A wild animal — the better mental model for AI."
+          style="width: 100%; height: auto; max-height: 540px; object-fit: contain; border-radius: 12px; display: block; margin: 0; border: none; background: transparent; box-shadow: none;"
+        />
+      </div>
+    </div>
+        <p data-anim="title"
+       class="italic pt-8"
+       style="color: #d4d4d8; font-size: 34px; line-height: 1.35; margin: 0 0 44px 0;">
+       After a year of hearing whines, I figured: we all know a bunch. 
+    </p>
+  </section>  
+
+  <section class="m-4">
+    <p class="eyebrow">Why we're here</p>
+    <h2>What if we just <span class="primary">self-organized</span>our own sessions?</h2>
+    <h1> Peer Learning was born.</h1>
+    <ul class="big-list">
+      <li>Self-organizing, and matching <em>who could teach what</em> and <em>who wanted to learn what</em>.</li>
+      <li>And, sticking around an extra half-day to make time for ourselves, focusing on whatever was most important to us.</li>
+      <li>Weirdly, most everyone, especially the whiners, all agreed.</li> 
+      <li>And, so we did. And so did classes 21 through 23, I know, and through 25, I hear.</li>
+    </ul>
   </section>
 
   <!-- 3. What this is -->
-  <section data-gsap="frame">
+  <section>
+    <h1>Enough about me...</h1>
     <p class="eyebrow">Why we're here</p>
     <h2>A peer-learning Dojo for VCs <span class="primary">building with AI.</span></h2>
     <ul class="big-list">
@@ -60,6 +196,44 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
       <li>From "I use ChatGPT for emails" to "I'm shipping agents into our deal flow."</li>
       <li>Elbow grease encouraged. Casual observers welcome — but no promises.</li>
     </ul>
+  </section>
+
+  <!-- Areas of Venture — slide-tuned variant of /dojo's grid. -->
+  <section data-gsap="venture-areas">
+    <AreasOfVentureGridSlide
+      eyebrow="What we work on"
+      heading="Ten areas of venture."
+      intro="Every working group plants its flag in one of these. Adapted from the Kauffman Fellows Class 20 living draft."
+      areas={ventureAreas}
+    />
+  </section>
+
+  <!-- Offer or Ask — we facilitate, you participate. Conduit, not lecture. -->
+  <section data-gsap="offer-or-ask">
+    <Section__OfferOrAsk
+      pageEyebrowTxt="How you participate"
+      pageHeadingTxt="Bring an offer. Bring an ask."
+      offer={{
+        eyebrowTxt: 'If you can contribute',
+        headingTxt: 'What can you offer?',
+        questions: [
+          'What have you figured out?',
+          'What kind of legwork would you be willing to do?',
+          'What rabbit holes are you willing to go down?',
+        ],
+      }}
+      ask={{
+        eyebrowTxt: 'If you need a lift',
+        headingTxt: 'What challenges do you have?',
+        questions: [
+          'Where are you stuck?',
+          'What would amplify you in the near and long term?',
+          'What bottleneck at your firm do you wish you could resolve?',
+        ],
+      }}
+      conduitTxt="↔ peer learning"
+      conduitSubTxt="We just facilitate the exchange."
+    />
   </section>
 
   <!-- 4. Who's in the room -->
@@ -105,25 +279,91 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
     </section>
   )}
 
-  <!-- 8. Format / Agenda -->
-  <section data-gsap="agenda">
-    <p class="eyebrow">The next 60 minutes</p>
-    <h2>Format</h2>
-    <ul class="agenda">
-      <li><span class="agenda__time">5m</span><span class="agenda__name">Framing</span><span class="agenda__what">The Dojo concept, goals, structure.</span></li>
-      <li><span class="agenda__time">20m</span><span class="agenda__name">Inspiration set</span><span class="agenda__what">Four 5-min speed demos.</span></li>
-      <li><span class="agenda__time">5m</span><span class="agenda__name">Polling &amp; backchannel</span><span class="agenda__what">Live polls, discussion.</span></li>
-      <li><span class="agenda__time">20m</span><span class="agenda__name">Town hall</span><span class="agenda__what">Bring a workflow you're trying to operationalize.</span></li>
-      <li><span class="agenda__time">10m</span><span class="agenda__name">Q&amp;A + next steps</span><span class="agenda__what">Follow-ups for the Dojo community.</span></li>
-    </ul>
-  </section>
-
   <!-- 9. Receipts — built-in-three-days flex -->
   <section data-gsap="receipts">
     <Section__BuiltInThreeDays />
   </section>
 
-  <!-- 10. Closer -->
+  <!-- AI-friendly formats — the philosophy that lets us improvise fast. -->
+  <section data-gsap="everything-as">
+    <Section__TwoColumnList
+      pageEyebrowTxt="What works with AI"
+      pageHeadingTxt="Two disciplines, one rule."
+      left={{
+        headingTxt: 'Everything as Code',
+        items: ['Mermaid', 'PlantUML / UML', 'Graphviz / DOT', 'D2', 'LaTeX / KaTeX', 'BPMN'],
+        monoItems: true,
+      }}
+      right={{
+        headingTxt: 'Everything as Primitive Data & Content',
+        items: ['Markdown', 'JSON', 'YAML', 'CSV / TSV', 'XML / HTML'],
+        monoItems: true,
+      }}
+      footerTxt="Anything else is going to cause friction."
+    />
+  </section>
+
+  <!-- 10. Astro Knots — the pseudomonorepo behind the build -->
+  <section data-gsap="astro-knots">
+    <p class="eyebrow">How we ship this fast</p>
+    <h2 class="ak-heading">
+      Astro Knots — a
+      <span class="gradient-headline">pseudomonorepo</span>
+      for the age of AI-assisted development.
+    </h2>
+    <p class="ak-lede">
+      Co-located projects. Shared patterns. AI-friendly docs that travel with the workspace. Eight sites. The engine behind today's three-day build.
+    </p>
+
+    <div class="ak-grid">
+      <article class="ak-card">
+        <h3>Shared patterns</h3>
+        <p>Markdown pipelines, CSS tokens, OG/SEO, theme systems. Abstract what works — without forcing premature abstraction.</p>
+      </article>
+      <article class="ak-card">
+        <h3>Context vigilance</h3>
+        <p>Specs, blueprints, prompts, reminders. Structured docs that AI assistants and humans both read. The context travels with the workspace.</p>
+      </article>
+      <article class="ak-card">
+        <h3>Build in public, ship in private</h3>
+        <p>Each site is its own git repo, independently deployable. The pseudomonorepo is a dev convenience — never a deployment requirement.</p>
+      </article>
+      <article class="ak-card">
+        <h3>Packages from authentic need</h3>
+        <p>Publish only when proven across multiple sites. First: <code>@lossless-group/lfm</code> — shared markdown pipeline born from building the same render logic six times.</p>
+      </article>
+    </div>
+
+    <ul class="ak-sites" role="list" aria-label="Sites in the workspace">
+      <li>mpstaton-site</li>
+      <li>hypernova-site</li>
+      <li>cilantro-site</li>
+      <li>twf_site</li>
+      <li>dark-matter</li>
+      <li>banner-site</li>
+      <li>cogs-site</li>
+      <li>coglet-shuffle</li>
+      <li class="ak-sites__here"><strong>fullstack-vc</strong><span> ← you are here</span></li>
+    </ul>
+  </section>
+
+  <!-- Try this now — drive participation through the live app. -->
+  <section data-gsap="try-this-now">
+    <Section__TryThisNow
+      pageEyebrowTxt="Five things to try, right now"
+      pageHeadingTxt="Use FullStackVC to drive real community + knowledge exchange."
+      items={[
+        { question: 'Can you create an account?',                                      hint: "If you don't have a GitHub account, please do that now." },
+        { question: "Can you add to your stack — or suggest something we don't have?", hint: "If suggestions aren't working, drop it in chat." },
+        { question: 'Can you propose a Working Group or Project?' },
+        { question: 'Can you express interest in a Working Group or Project?' },
+        { question: 'Do you see your data listed?' },
+      ]}
+      noteTxt="No need for everyone to report the same bug. If something isn't working, we'll get to it ASAP — this should be a meaningful tool, and we're moving fast."
+    />
+  </section>
+
+  <!-- 11. Closer -->
   <section class="title-slide" data-gsap="closer">
     <p class="eyebrow">Let's get to work</p>
     <h1 class="gradient-headline">A few new superpowers,<br/>before we log off.</h1>
@@ -165,10 +405,11 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
   }
 
   .reveal .agenda {
+    transform: scale(2) !important;
     list-style: none;
     padding: 0;
     margin: 1.5rem auto 0;
-    max-width: 56rem;
+    max-width: 50rem;
     text-align: left;
     display: grid;
     gap: 0.5rem;
@@ -198,6 +439,125 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
   .reveal .agenda__what {
     font-size: 0.9375rem;
     color: var(--color-text-muted);
+  }
+
+  /* Slide 8 — Presenters: force the slide section itself to be a flex
+     container that fills the canvas and centers its single child both
+     horizontally and vertically. This overrides Reveal's auto-height
+     positioning (which was leaving the card stuck at the top). Combined
+     with the component-level max-width on .wpres, the card sits dead
+     center on the canvas. Also center the head + hosts text so the inner
+     content reads coherently with a now-centered card. */
+  .reveal .slides > section[data-gsap="presenters"] {
+    transform: scale(2) !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100% !important;
+    top: 0 !important;
+  }
+  .reveal [data-gsap="presenters"] .wpres__head {
+    transform: scale(2) !important;
+    text-align: center;
+    align-items: center;
+  }
+  .reveal [data-gsap="presenters"] .wpres__list {
+    width: 100%;
+  }
+  .reveal [data-gsap="presenters"] .wpres__hosts {
+    justify-content: center;
+  }
+
+  /* Slide 10 — Astro Knots methodology slide */
+  .reveal .ak-heading {
+    margin: 0 0 0.5rem;
+    max-width: 60rem;
+    line-height: 1.15;
+  }
+  .reveal .ak-lede {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 60rem;
+  }
+  .reveal .ak-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem;
+    text-align: left;
+    max-width: 70rem;
+    margin: 0 auto;
+  }
+  .reveal .ak-card {
+    padding: 1rem 1.125rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .reveal .ak-card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: -0.01em;
+  }
+  .reveal .ak-card p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+  .reveal .ak-card code {
+    font-family: var(--font-code);
+    font-size: 0.85em;
+    padding: 0.0625em 0.3125em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+  }
+  .reveal .ak-sites {
+    list-style: none;
+    margin: 1rem auto 0;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4375rem;
+    justify-content: center;
+    max-width: 70rem;
+  }
+  .reveal .ak-sites li {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text);
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--fx-card-bg);
+    margin: 0;
+  }
+  .reveal .ak-sites__here {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 1px var(--color-primary), 0 0 12px color-mix(in srgb, var(--color-primary) 35%, transparent);
+    color: var(--color-primary) !important;
+  }
+  .reveal .ak-sites__here strong {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+  .reveal .ak-sites__here span {
+    color: var(--color-text-muted);
+    margin-left: 0.375rem;
   }
 </style>
 
@@ -328,7 +688,26 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
       { opacity: 0, x: -16, duration: 0.5, stagger: 0.18, ease: 'power3.out', delay: 1.6 });
   };
 
-  window.__slideAnimations.closer = function (slide) {
+  window.__slideAnimations['astro-knots'] = function (slide) {
+    if (!window.gsap) return;
+    var tl = window.gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from(slide.querySelectorAll('.eyebrow, .ak-heading, .ak-lede'),
+            { opacity: 0, y: 14, duration: 0.5, stagger: 0.08 })
+      .from(slide.querySelectorAll('.ak-card'),
+            { opacity: 0, y: 20, duration: 0.55, stagger: 0.1 }, '-=0.2');
+    window.gsap.from(slide.querySelectorAll('.ak-sites li'),
+      { opacity: 0, scale: 0.85, duration: 0.4, stagger: 0.04, ease: 'back.out(1.4)', delay: 1.0 });
+    // Pulse the "you are here" pin one beat after the strip lands.
+    var here = slide.querySelector('.ak-sites__here');
+    if (here) {
+      window.gsap.fromTo(here,
+        { boxShadow: '0 0 0 1px var(--color-primary), 0 0 0px transparent' },
+        { boxShadow: '0 0 0 1px var(--color-primary), 0 0 22px color-mix(in srgb, var(--color-primary) 60%, transparent)',
+          duration: 0.7, delay: 1.65, yoyo: true, repeat: 1, ease: 'sine.inOut' });
+    }
+  };
+
+window.__slideAnimations.closer = function (slide) {
     if (!window.gsap) return;
     var tl = window.gsap.timeline({ defaults: { ease: 'power3.out' } });
     tl.from(slide.querySelector('.eyebrow'),          { opacity: 0, y: 10, duration: 0.4 })
