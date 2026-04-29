@@ -7,21 +7,23 @@ import JumboPopdown__More from '../ui/menus/JumboPopdown__More.astro';
 import MobileNav from './MobileNav.astro';
 import { loadProjectsForPopdown } from '../../lib/load-projects';
 import { loadWorkingGroupsForPopdown } from '../../lib/load-working-groups';
-import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
 const [popdownProjects, popdownWorkingGroups] = await Promise.all([
   loadProjectsForPopdown({ showProposed: true, maxItems: 6 }),
   loadWorkingGroupsForPopdown({ showProposed: true, maxItems: 6 }),
 ]);
 
-// Read the session for the auth indicator. On SSR pages this returns the
-// real session; on prerendered (SSG) pages there's no request context so it
-// returns null — the inline <script> below corrects the indicator on SSG
-// pages by hitting /api/me after hydration.
-const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
-const isLoggedIn = !!session;
-const initialAvatar = session?.avatar ?? null;
-const initialName = session?.name ?? null;
+// The auth indicator initially renders the logged-out state for every page,
+// SSR and SSG alike. The inline <script> at the bottom of this file then
+// hits /api/me and flips ALL [data-auth-indicator] elements on the page
+// once hydrated.
+//
+// Why this approach: reading Astro.cookies in this component would warn on
+// every prerendered page build (Astro.request.headers isn't available
+// there) and produce inconsistent behavior between SSR and SSG pages.
+// Letting the client correct the indicator gives one consistent flow with
+// no build-time warnings, at the cost of a sub-100ms flash on SSR pages
+// where the user is already known to be logged in.
 ---
 
 <header class="site-header">
@@ -50,18 +52,18 @@ const initialName = session?.name ?? null;
         href="/login"
         class="site-header__login"
         data-auth-indicator
-        data-state={isLoggedIn ? 'in' : 'out'}
-        data-has-avatar={isLoggedIn && initialAvatar ? 'true' : 'false'}
-        aria-label={isLoggedIn ? `Signed in${initialName ? ` as ${initialName}` : ''}` : 'Log in'}
+        data-state="out"
+        data-has-avatar="false"
+        aria-label="Log in"
       >
         <span class="site-header__login-dot" aria-hidden="true"></span>
         <span class="site-header__login-text" data-auth-text>Log in</span>
         <img
           class="site-header__avatar"
-          src={initialAvatar ?? ''}
+          src=""
           alt=""
           data-auth-avatar
-          aria-hidden={!initialAvatar}
+          aria-hidden="true"
         />
         <svg
           class="site-header__avatar-fallback"

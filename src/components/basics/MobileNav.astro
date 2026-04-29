@@ -17,7 +17,6 @@ import type { ProjectEntry } from '../../lib/load-projects';
 import type { WorkingGroupEntry } from '../../lib/load-working-groups';
 import { projectHref } from '../../lib/load-projects';
 import { workingGroupHref } from '../../lib/load-working-groups';
-import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
 export interface Props {
   popdownProjects: ProjectEntry[];
@@ -26,13 +25,10 @@ export interface Props {
 
 const { popdownProjects, popdownWorkingGroups } = Astro.props;
 
-// Mirror the Header's auth indicator. The shared inline <script> in
-// Header.astro updates ALL [data-auth-indicator] elements, so this stays
-// in sync with the desktop indicator without its own hydration logic.
-const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
-const isLoggedIn = !!session;
-const initialAvatar = session?.avatar ?? null;
-const initialName = session?.name ?? null;
+// Auth indicator: rendered logged-out by default. The inline <script> in
+// Header.astro hits /api/me after hydration and flips ALL
+// [data-auth-indicator] elements on the page (including this one) to the
+// signed-in state if the user has a valid session cookie.
 
 const activeWGs = popdownWorkingGroups.filter(wg => wg.data.status === 'active');
 const proposedWGs = popdownWorkingGroups.filter(wg => wg.data.status === 'proposed');
@@ -142,18 +138,18 @@ const proposedProjects = popdownProjects.filter(p => p.data.status === 'proposed
           href="/login"
           role="menuitem"
           data-auth-indicator
-          data-state={isLoggedIn ? 'in' : 'out'}
-          data-has-avatar={isLoggedIn && initialAvatar ? 'true' : 'false'}
-          aria-label={isLoggedIn ? `Signed in${initialName ? ` as ${initialName}` : ''}` : 'Log in'}
+          data-state="out"
+          data-has-avatar="false"
+          aria-label="Log in"
         >
           <span class="mnav__login-dot" aria-hidden="true"></span>
           <span class="mnav__login-text" data-auth-text>Log in</span>
           <img
             class="mnav__avatar"
-            src={initialAvatar ?? ''}
+            src=""
             alt=""
             data-auth-avatar
-            aria-hidden={!initialAvatar}
+            aria-hidden="true"
           />
           <svg
             class="mnav__avatar-fallback"
