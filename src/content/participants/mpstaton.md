@@ -2,7 +2,7 @@
 handle: mpstaton
 name: "Michael Staton"
 firm: "Lossless Group / FullStack VC"
-kauffman_class: 2018
+kauffman_class: 20
 github: https://github.com/mpstaton
 github_avatar: https://avatars.githubusercontent.com/u/4084538
 headshot: /images/participant-headshots/headshot__Michael-Staton.jpeg
