@@ -32,19 +32,16 @@ function emailsForEntry(entry: RosterEntry): string[] {
 }
 
 /**
- * Resolve a session to its roster entry, or null if the user is not on the
- * allowlist. Use the returned entry to backfill participant profile fields
- * (kauffman_class, name, firm) on first login.
+ * Resolve a session to a roster entry. As of the 2026-04-29 launch this is
+ * NO LONGER A GATE — any authenticated GitHub or LinkedIn user gets through.
+ * If the session matches a real roster row, we return it (so kauffman_class
+ * and firm flow through to the User row). Otherwise we synthesize a minimal
+ * entry from the session itself so all the downstream `if (!rosterEntry)`
+ * checks still pass. Reconcile non-roster users to real roster rows post-hoc.
  *
- * Match precedence:
+ * Match precedence (when matching for real metadata):
  *   GitHub provider:   handle match → verified-email match (fallback).
  *   LinkedIn provider: email match (primary or alias).
- *
- * The GitHub email fallback exists because most webinar registrants are
- * roster'd by email; we don't always know their GitHub handle in advance.
- * The fallback only fires when we have a session.email — the GitHub OAuth
- * callback already fetches the user's primary verified email, so this is
- * always populated for real GitHub logins.
  */
 export function matchesRoster(session: SessionPayload): RosterEntry | null {
   if (session.provider === 'github') {
@@ -53,15 +50,20 @@ export function matchesRoster(session: SessionPayload): RosterEntry | null {
     if (byHandle) return byHandle;
     if (session.email) {
       const email = session.email.toLowerCase();
-      return ROSTER.find(r => emailsForEntry(r).includes(email)) ?? null;
+      const byEmail = ROSTER.find(r => emailsForEntry(r).includes(email));
+      if (byEmail) return byEmail;
     }
-    return null;
-  }
-  if (session.provider === 'linkedin' && session.email) {
+  } else if (session.provider === 'linkedin' && session.email) {
     const email = session.email.toLowerCase();
-    return ROSTER.find(r => emailsForEntry(r).includes(email)) ?? null;
+    const byEmail = ROSTER.find(r => emailsForEntry(r).includes(email));
+    if (byEmail) return byEmail;
   }
-  return null;
+
+  return {
+    github: session.provider === 'github' ? session.subject : undefined,
+    email: session.email,
+    name: session.name,
+  };
 }
 
 /** Total roster size — useful for diagnostic logging. */
