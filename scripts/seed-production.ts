@@ -23,6 +23,8 @@ const POLL_AI_USE_CASES_ID  = 'poll_dojo-launch-2026-04-29_ai-use-cases';
 const POLL_NERDY_SCALE_ID   = 'poll_dojo-launch-2026-04-29_nerdy-scale';
 const POLL_KEEPS_YOU_UP_ID  = 'poll_dojo-launch-2026-04-29_keeps-you-up';
 const POLL_INTEREST_AVAIL_ID = 'poll_dojo-launch-2026-04-29_interest-availability';
+const POLL_WINS_ID           = 'poll_dojo-launch-2026-04-29_wins';
+const POLL_CHALLENGES_ID     = 'poll_dojo-launch-2026-04-29_challenges';
 
 const now = new Date();
 
@@ -34,16 +36,22 @@ await db.delete(Vote).where(eq(Vote.poll_id, POLL_AI_USE_CASES_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_NERDY_SCALE_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_KEEPS_YOU_UP_ID));
 await db.delete(Vote).where(eq(Vote.poll_id, POLL_INTEREST_AVAIL_ID));
+await db.delete(Vote).where(eq(Vote.poll_id, POLL_WINS_ID));
+await db.delete(Vote).where(eq(Vote.poll_id, POLL_CHALLENGES_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_PARTICIPATION_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_AI_USE_CASES_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_NERDY_SCALE_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_KEEPS_YOU_UP_ID));
 await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_INTEREST_AVAIL_ID));
+await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_WINS_ID));
+await db.delete(PollResult).where(eq(PollResult.poll_id, POLL_CHALLENGES_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_PARTICIPATION_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_AI_USE_CASES_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_NERDY_SCALE_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_KEEPS_YOU_UP_ID));
 await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_INTEREST_AVAIL_ID));
+await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_WINS_ID));
+await db.delete(PollEvent).where(eq(PollEvent.poll_id, POLL_CHALLENGES_ID));
 await db.delete(Poll).where(eq(Poll.session_id, SESSION_ID));
 await db.delete(Session).where(eq(Session.id, SESSION_ID));
 
@@ -223,6 +231,58 @@ await db.insert(Poll).values([
   },
 ]);
 
+// ─── Poll 6: Hard-won wins (multi-string-input, on-close reveal) ──────────
+console.log(`Inserting Poll: ${POLL_WINS_ID}`);
+await db.insert(Poll).values([
+  {
+    id: POLL_WINS_ID,
+    session_id: SESSION_ID,
+    title: 'Hard-won wins',
+    prompt:
+      'What are some hard-won wins with technology tools or apps that you figured out, others might not know, and you\u2019d be willing to share?',
+    template: 'multi-string-input',
+    options: {
+      placeholder: 'A short phrase per win — press Enter to add another',
+      max_string_length: 200,
+    },
+    status: 'draft',
+    visibility: 'session-attendees',
+    results_visibility: 'on-close',
+    anonymous_display: true,
+    allow_revote: true,
+    last_vote_at: null,
+    created_by: HOST_USER_ID,
+    created_at: now,
+    updated_at: now,
+  },
+]);
+
+// ─── Poll 7: Recent challenges (multi-string-input, on-close reveal) ──────
+console.log(`Inserting Poll: ${POLL_CHALLENGES_ID}`);
+await db.insert(Poll).values([
+  {
+    id: POLL_CHALLENGES_ID,
+    session_id: SESSION_ID,
+    title: 'Recent challenges',
+    prompt:
+      'What are some challenges you\u2019ve been facing recently that made you think someone else has clearly figured this out already?',
+    template: 'multi-string-input',
+    options: {
+      placeholder: 'A short phrase per challenge — press Enter to add another',
+      max_string_length: 200,
+    },
+    status: 'draft',
+    visibility: 'session-attendees',
+    results_visibility: 'on-close',
+    anonymous_display: true,
+    allow_revote: true,
+    last_vote_at: null,
+    created_by: HOST_USER_ID,
+    created_at: now,
+    updated_at: now,
+  },
+]);
+
 console.log('');
 console.log(`✓ Seeded production session: ${SESSION_SLUG}`);
 console.log(`  /sessions/${SESSION_SLUG}`);
@@ -233,6 +293,8 @@ console.log(`  - ${POLL_AI_USE_CASES_ID}      (multi-select)`);
 console.log(`  - ${POLL_NERDY_SCALE_ID}        (sliding-scale, -3..+3 no-neutral)`);
 console.log(`  - ${POLL_KEEPS_YOU_UP_ID}       (multi-select)`);
 console.log(`  - ${POLL_INTEREST_AVAIL_ID}  (sliding-scale, -3..+3 no-neutral)`);
+console.log(`  - ${POLL_WINS_ID}              (multi-string-input, on-close reveal)`);
+console.log(`  - ${POLL_CHALLENGES_ID}        (multi-string-input, on-close reveal)`);
 console.log('');
 console.log('To open a poll during the meeting:');
 console.log(`  POLL_ID=${POLL_PARTICIPATION_ID} STATUS=open pnpm set-poll-status`);

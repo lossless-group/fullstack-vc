@@ -32,7 +32,10 @@
   const options = $derived(Array.isArray(rawOptions) ? rawOptions as PollOption[] : []);
 
   const minSelections = 1;
-  const maxSelections = options.length;
+  // `options` is a $derived value; reading .length once at instantiation would
+  // capture only the initial length and miss updates. Wrap in $derived so the
+  // bound stays reactive if options ever change.
+  const maxSelections = $derived(options.length);
 
   let selected = $state<Set<string>>(new Set());
 

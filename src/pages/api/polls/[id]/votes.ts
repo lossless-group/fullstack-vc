@@ -63,6 +63,11 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
   // Extract the per-template fields onto Vote columns.
   const optionIds = 'option_ids' in valid.payload ? (valid.payload.option_ids as string[]) : null;
   const value     = 'value'      in valid.payload ? (valid.payload.value as boolean | number) : null;
+  // `response` carries typed JSON for templates whose answer doesn't fit
+  // option_ids/value (multi-string-input, matrix templates, etc — §5.3).
+  const response  = valid.template === 'multi-string-input'
+    ? { values: valid.payload.values }
+    : null;
 
   const now = new Date();
 
@@ -77,7 +82,7 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
 
   if (existing) {
     await db.update(Vote)
-      .set({ option_ids: optionIds, value, updated_at: now })
+      .set({ option_ids: optionIds, value, response, updated_at: now })
       .where(and(eq(Vote.poll_id, id), eq(Vote.user_id, user_id)));
   } else {
     await db.insert(Vote).values({
@@ -85,7 +90,7 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
       user_id,
       option_ids: optionIds,
       value,
-      response: null,
+      response,
       created_at: now,
       updated_at: now,
       client_meta: null,
@@ -106,7 +111,12 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
   const agg = aggregateVotes({
     template: poll.template,
     options: poll.options,
-    votes: allVotes.map(v => ({ option_ids: v.option_ids, value: v.value })),
+    votes: allVotes.map(v => ({
+      option_ids: v.option_ids,
+      value: v.value,
+      response: v.response,
+      user_id: v.user_id,
+    })),
   });
 
   const existingResult = await db.select().from(PollResult)

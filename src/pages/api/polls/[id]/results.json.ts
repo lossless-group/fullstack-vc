@@ -39,12 +39,33 @@ export const GET: APIRoute = async ({ params }) => {
     tallies: result?.tallies ?? null,
   };
 
-  // Honor results_visibility: hide tallies if 'on-close' and not yet closed,
-  // or if 'host-only' (host-only is enforced by a separate /api/host route, not here).
-  if (poll.results_visibility === 'on-close' && poll.status !== 'closed') {
+  if (poll.template === 'multi-string-input') {
+    // Special visibility model (blueprint v2 §16.2):
+    //   - Counts (total_strings, total_contributors) are ALWAYS public.
+    //   - Entry content is gated by results_visibility:
+    //       'live'      → entries visible while open (high social-pressure surface)
+    //       'on-close'  → entries hidden until status='closed' (recommended default)
+    //       'host-only' → entries hidden from this public route entirely
+    const t = (result?.tallies as {
+      total_strings?: number;
+      total_contributors?: number;
+      entries?: unknown;
+    } | null) ?? {};
+    const contentVisible =
+      poll.results_visibility === 'live' ||
+      (poll.results_visibility === 'on-close' && poll.status === 'closed');
+    body.tallies = {
+      total_strings: t.total_strings ?? 0,
+      total_contributors: t.total_contributors ?? 0,
+      entries: contentVisible ? (t.entries ?? []) : null,
+    };
+    body.total_votes_visible = true;
+  } else if (poll.results_visibility === 'on-close' && poll.status !== 'closed') {
+    // Hide tallies if 'on-close' and not yet closed.
     body.tallies = null;
     body.total_votes_visible = false;
   } else if (poll.results_visibility === 'host-only') {
+    // Host-only is enforced by a separate /api/host route, not here.
     body.tallies = null;
     body.total_votes_visible = false;
   } else {

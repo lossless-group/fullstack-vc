@@ -52,9 +52,36 @@ if (dbSession) {
   );
   pollSnapshots = polls.map((poll, i) => {
     const result = results[i] ?? null;
-    const resultsHidden =
+    const isMultiStringInput = poll.template === 'multi-string-input';
+    const resultsHidden = !isMultiStringInput && (
       poll.results_visibility === 'host-only' ||
-      (poll.results_visibility === 'on-close' && poll.status !== 'closed');
+      (poll.results_visibility === 'on-close' && poll.status !== 'closed')
+    );
+
+    let tallies: unknown | null = resultsHidden ? null : (result?.tallies ?? null);
+    let totalVotesVisible = !resultsHidden;
+
+    // multi-string-input has a split visibility model (blueprint v2 §16.2):
+    // counts are always public; entry CONTENT is gated by results_visibility.
+    // Mirror the /api/polls/[id]/results.json endpoint so the SSR snapshot
+    // matches what the next interval-poll fetch will return.
+    if (isMultiStringInput) {
+      const t = (result?.tallies as {
+        total_strings?: number;
+        total_contributors?: number;
+        entries?: unknown;
+      } | null) ?? {};
+      const contentVisible =
+        poll.results_visibility === 'live' ||
+        (poll.results_visibility === 'on-close' && poll.status === 'closed');
+      tallies = {
+        total_strings: t.total_strings ?? 0,
+        total_contributors: t.total_contributors ?? 0,
+        entries: contentVisible ? (t.entries ?? []) : null,
+      };
+      totalVotesVisible = true;
+    }
+
     return {
       poll_id: poll.id,
       title: poll.title,
@@ -66,8 +93,8 @@ if (dbSession) {
       anonymous_display: !!poll.anonymous_display,
       status: poll.status as 'draft' | 'scheduled' | 'open' | 'closed',
       total_votes: result?.total_votes ?? 0,
-      total_votes_visible: !resultsHidden,
-      tallies: resultsHidden ? null : (result?.tallies ?? null),
+      total_votes_visible: totalVotesVisible,
+      tallies,
       last_aggregated_at: result?.last_aggregated_at
         ? new Date(result.last_aggregated_at).toISOString()
         : null,

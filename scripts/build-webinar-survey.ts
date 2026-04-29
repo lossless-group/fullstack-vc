@@ -24,7 +24,7 @@ const SOURCE_CSV = new URL(
 ).pathname;
 
 const OUT_JSON = new URL(
-  '../src/data/webinar-survey/2026-05_agentic-vc-dojo-launch.json',
+  '../src/data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json',
   import.meta.url
 ).pathname;
 

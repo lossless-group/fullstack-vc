@@ -15,11 +15,13 @@
   // so there's no first-paint flash and "loading" only appears between
   // optimistic vote and server confirmation.
 
+  import { untrack } from 'svelte';
   import type { PollSnapshot, VoteSubmissionPayload } from '../../lib/poll-templates';
   import Boolean from './PollQuestionTemplate__Boolean.svelte';
   import SingleSelect from './PollQuestionTemplate__SingleSelect.svelte';
   import MultiSelect from './PollQuestionTemplate__MultiSelect.svelte';
   import SlidingScale from './PollQuestionTemplate__SlidingScale.svelte';
+  import MultiStringInput from './PollQuestionTemplate__MultiStringInput.svelte';
 
   interface Props {
     pollId: string;
@@ -40,7 +42,10 @@
   }: Props = $props();
 
   // ─── Reactive state ────────────────────────────────────────────────────────
-  let snapshot = $state<PollSnapshot>(initialState);
+  // Seed once from the SSR snapshot; we own this value after mount and merge
+  // server refreshes via `refresh()`. untrack silences Svelte 5's
+  // state_referenced_locally warning.
+  let snapshot = $state<PollSnapshot>(untrack(() => initialState));
   let hasVoted = $state(false);
   let myVote = $state<VoteSubmissionPayload | null>(null);
   let isSubmitting = $state(false);
@@ -233,6 +238,17 @@
       />
     {:else if snapshot.template === 'sliding-scale'}
       <SlidingScale
+        {snapshot}
+        {hasVoted}
+        {myVote}
+        {isAuthenticated}
+        {variant}
+        {isSubmitting}
+        {error}
+        onVote={submitVote}
+      />
+    {:else if snapshot.template === 'multi-string-input'}
+      <MultiStringInput
         {snapshot}
         {hasVoted}
         {myVote}
