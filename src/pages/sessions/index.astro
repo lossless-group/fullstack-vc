@@ -5,7 +5,9 @@ import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import WebinarCard from '../../components/webinars/WebinarCard.astro';
 import { inferWebinarStatus } from '../../lib/webinar-status';
 
-const all = await getCollection('sessions');
+// Hide entries marked `unlisted: true` (QA / test sessions stay reachable
+// only via direct URL). See content.config.ts session schema.
+const all = (await getCollection('sessions')).filter(e => e.data.unlisted !== true);
 
 const enriched = all.map(entry => ({
   entry,

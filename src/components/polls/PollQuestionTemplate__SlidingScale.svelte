@@ -28,8 +28,23 @@
   const max = $derived(cfg.max ?? 10);
   const step = $derived(cfg.step ?? 1);
   const labels = $derived(cfg.labels ?? {});
+  const excluded = $derived(new Set<number>(Array.isArray(cfg.exclude) ? cfg.exclude : []));
 
-  let value = $state<number>(cfg.default_value ?? Math.round((min + max) / 2));
+  // Pick a sensible default that respects `exclude`. If the configured
+  // default_value (or the midpoint) is excluded, snap to the nearest
+  // valid value below it (then above) so the slider doesn't start invalid.
+  function pickInitialValue(): number {
+    const proposed = cfg.default_value ?? Math.round((min + max) / 2);
+    if (!excluded.has(proposed)) return proposed;
+    for (let d = step; d <= (max - min); d += step) {
+      if (proposed - d >= min && !excluded.has(proposed - d)) return proposed - d;
+      if (proposed + d <= max && !excluded.has(proposed + d)) return proposed + d;
+    }
+    return min;
+  }
+  let value = $state<number>(pickInitialValue());
+
+  const isExcluded = $derived(excluded.has(value));
 
   const tallies = $derived((snapshot.tallies ?? null) as {
     histogram?: Record<string, number>;
@@ -69,6 +84,7 @@
 
   function castVote() {
     if (isSubmitting) return;
+    if (isExcluded) return;
     if (hasVoted && !snapshot.allow_revote) return;
     onVote({ value });
   }
@@ -107,10 +123,14 @@
       <button
         type="button"
         class="pq-sl__submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isExcluded}
         onclick={castVote}
       >
-        {isSubmitting ? 'Submitting…' : (hasVoted ? `Update to ${value}` : `Submit ${value}`)}
+        {isSubmitting
+          ? 'Submitting…'
+          : isExcluded
+            ? `${value} isn't a valid choice — pick a side`
+            : (hasVoted ? `Update to ${value}` : `Submit ${value}`)}
       </button>
     </div>
   {/if}
@@ -125,16 +145,21 @@
     <div class="pq-sl__tally" aria-live="polite">
       <div class="pq-sl__histogram">
         {#each buckets as b}
-          {@const heightPct = maxCount === 0 ? 0 : Math.round((b.count / maxCount) * 100)}
+          {@const isExc = excluded.has(b.value)}
+          {@const heightPct = !isExc && maxCount > 0 ? Math.round((b.count / maxCount) * 100) : 0}
           <div
             class="pq-sl__bucket"
-            class:pq-sl__bucket--mine={myValue !== null && Math.abs(myValue - b.value) < step / 2}
+            class:pq-sl__bucket--mine={!isExc && myValue !== null && Math.abs(myValue - b.value) < step / 2}
+            class:pq-sl__bucket--excluded={isExc}
+            aria-hidden={isExc}
           >
             <div class="pq-sl__bar-wrap">
-              <span class="pq-sl__bucket-count" class:pq-sl__bucket-count--show={b.count > 0}>
-                {b.count}
-              </span>
-              <div class="pq-sl__bar" style="height: {heightPct}%"></div>
+              {#if !isExc}
+                <span class="pq-sl__bucket-count" class:pq-sl__bucket-count--show={b.count > 0}>
+                  {b.count}
+                </span>
+                <div class="pq-sl__bar" style="height: {heightPct}%"></div>
+              {/if}
             </div>
             <span class="pq-sl__bucket-value">{b.value}</span>
           </div>
@@ -305,6 +330,21 @@
   }
   .pq-sl__bucket--mine .pq-sl__bar {
     background: linear-gradient(0deg, var(--color-accent, var(--color-primary)), var(--color-primary));
+  }
+  .pq-sl__bucket--excluded .pq-sl__bucket-value {
+    text-decoration: line-through;
+    opacity: 0.45;
+  }
+  .pq-sl__bucket--excluded .pq-sl__bar-wrap::before {
+    /* Subtle visual marker that this slot is intentionally empty. */
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 35%;
+    right: 35%;
+    height: 1px;
+    background: var(--color-text-muted);
+    opacity: 0.3;
   }
   .pq-sl__bucket-count {
     position: absolute;

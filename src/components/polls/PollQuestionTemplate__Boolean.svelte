@@ -23,11 +23,17 @@
 
   let { snapshot, hasVoted, myVote, isAuthenticated, isSubmitting, error, onVote }: Props = $props();
 
-  // Labels (default Yes/No) — pulled from poll's options if author overrode them.
-  // Note: for boolean, options is null; labels come from a separate `labels` field
-  // on the poll definition. v0.0.1 just uses Yes/No defaults.
-  const trueLabel = 'Yes';
-  const falseLabel = 'No';
+  // Labels (default Yes/No). Authors can override by setting Poll.options to
+  // { true: '<label>', false: '<label>' } per blueprint v2 §7.1.
+  const labels = $derived.by(() => {
+    const o = snapshot.options;
+    if (o && typeof o === 'object' && !Array.isArray(o) && 'true' in o && 'false' in o) {
+      return o as { true: string; false: string };
+    }
+    return null;
+  });
+  const trueLabel = $derived(labels?.true ?? 'Yes');
+  const falseLabel = $derived(labels?.false ?? 'No');
 
   const tallies = $derived(snapshot.tallies as { true?: number; false?: number } | null);
   const tallyTrue = $derived(tallies?.true ?? 0);

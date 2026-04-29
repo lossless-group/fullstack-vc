@@ -12,20 +12,21 @@ import { db, Session, Poll } from 'astro:db';
 export default async function seed() {
   const now = new Date();
 
-  // ─── Tomorrow's live session ───────────────────────────────────────────────
-  // Models the meeting we're shipping for: one `kind: 'live'` Session with
-  // three Polls. Status starts as 'draft' so it's not visible to participants
-  // until the host flips it to 'active' (in v0.0.1 this is direct DB action).
-  const SESSION_ID = 'sess_2026-04-29-fullstack-vc-q2-roundtable';
-  const SESSION_SLUG = '2026-04-29-fullstack-vc-q2-roundtable';
+  // ─── Tomorrow's live session: Agentic VC Dojo Launch ────────────────────────
+  // Slug matches src/content/sessions/2026-04-29_agentic-vc-dojo-launch.md
+  // so the page at /sessions/2026-04-29_agentic-vc-dojo-launch finds both
+  // the markdown chrome and the DB polls.
+  // Status starts as 'draft' — flip to 'active' when the meeting opens.
+  const SESSION_ID = 'sess_2026-04-29-agentic-vc-dojo-launch';
+  const SESSION_SLUG = '2026-04-29_agentic-vc-dojo-launch';
 
   await db.insert(Session).values([
     {
       id: SESSION_ID,
       slug: SESSION_SLUG,
-      title: 'FullStack VC — Q2 2026 Operator Roundtable',
+      title: 'Agentic VC Dojo Launch Session',
       description:
-        'Practitioner working session on agentic AI for venture professionals. Live polls land alongside the discussion.',
+        'Our kick-off launch session is an All-Hands of all Kauffman Fellows that are interested in developing skills and mastery over AI & Agentic Workflows. We want to catalyze self-organizing Working Groups that take on Projects. We aim to help all participants gain AI superpowers that benefit their personal productivity, professional trajectory, and firm-wide objectives. Elbow grease encouraged... participation and possibly some leadership necessary for true value. Casual observers welcome, but no promises.',
       kind: 'live',
       status: 'draft',
       starts_at: null,
@@ -37,10 +38,13 @@ export default async function seed() {
     },
   ]);
 
-  // ─── Three v0.0.1 polls ────────────────────────────────────────────────────
-  // One of each shipping template (excluding multi-select; kept the seed at
-  // three per the blueprint's "typical 2–3 polls per session" guidance).
-  // All start as 'draft' — host opens them mid-meeting.
+  // ─── PLACEHOLDER polls ────────────────────────────────────────────────
+  // The three polls below are placeholders so local dev has something to
+  // render. The REAL launch-session questions get authored in
+  // scripts/seed-production.ts and pushed to Turso via
+  //   astro db execute scripts/seed-production.ts --remote
+  // (created in Chunk 5 once the host hands off the question text).
+  // All start as 'draft' — host opens them mid-meeting via set-poll-status.
 
   await db.insert(Poll).values([
     // Boolean — quick gut-check at the top of the meeting.

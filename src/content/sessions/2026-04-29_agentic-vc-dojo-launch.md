@@ -1,6 +1,6 @@
 ---
-title: "Agentic VC Dojo · Launch Session"
-lede: "Why we're building this, what we'll cover, and who it's for. Bring your real-world AI experiments, or your nascent ideas — we'll workshop them together."
+title: "Agentic VC Dojo Launch Session"
+lede: "Our kick-off launch session is an All-Hands of all Kauffman Fellows that are interested in developing skills and mastery over AI & Agentic Workflows. We want to catalyze self-organizing Working Groups that take on Projects. We aim to help all participants gain AI superpowers that benefit their personal productivity, professional trajectory, and firm-wide objectives. Elbow grease encouraged... participation and possibly some leadership necessary for true value. Casual observers welcome, but no promises."
 date_scheduled: 2026-04-29T11:00:00-05:00
 date_posted: 2026-04-25
 durationMinutes: 60

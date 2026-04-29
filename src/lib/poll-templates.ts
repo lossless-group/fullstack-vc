@@ -24,6 +24,13 @@ export interface SlidingScaleConfig {
   default_value?: number;
   labels?: { min?: string; mid?: string; max?: string };
   show_distribution?: boolean;
+  /**
+   * Values disallowed within [min..max]. Use to force a polarized choice
+   * (e.g., exclude: [0] for a -3..+3 scale where neutral isn't allowed).
+   * Voters can drag the slider through these values, but submit is gated
+   * client-side and rejected server-side. Histogram skips these buckets.
+   */
+  exclude?: number[];
 }
 
 // ─── Vote payload shapes (per template) ────────────────────────────────────
@@ -137,6 +144,9 @@ export function validateVotePayload(
       if (r.value < cfg.min || r.value > cfg.max) {
         return { ok: false, error: `sliding-scale: value out of range [${cfg.min}, ${cfg.max}]` };
       }
+      if (Array.isArray(cfg.exclude) && cfg.exclude.includes(r.value)) {
+        return { ok: false, error: `sliding-scale: value ${r.value} is not allowed; pick a side` };
+      }
       return { ok: true, value: { template: 'sliding-scale', payload: { value: r.value } } };
     }
 
@@ -203,13 +213,22 @@ export function aggregateVotes({ template, options, votes }: AggregateInput): Ag
       const min = cfg?.min ?? 0;
       const max = cfg?.max ?? 10;
       const step = cfg?.step ?? 1;
+      const excluded = new Set<number>(Array.isArray(cfg?.exclude) ? cfg!.exclude : []);
 
       const histogram: Record<string, number> = {};
-      for (let i = min; i <= max; i += step) histogram[String(i)] = 0;
+      for (let i = min; i <= max; i += step) {
+        if (excluded.has(i)) continue;
+        histogram[String(i)] = 0;
+      }
 
       const numericValues: number[] = [];
       for (const v of votes) {
-        if (typeof v.value === 'number' && Number.isFinite(v.value) && v.value >= min && v.value <= max) {
+        if (
+          typeof v.value === 'number' &&
+          Number.isFinite(v.value) &&
+          v.value >= min && v.value <= max &&
+          !excluded.has(v.value)
+        ) {
           numericValues.push(v.value);
           const bucket = Math.round((v.value - min) / step) * step + min;
           const key = String(bucket);

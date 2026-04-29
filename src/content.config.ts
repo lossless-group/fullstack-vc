@@ -134,6 +134,9 @@ const sessions = defineCollection({
       vibrant: z.string(),
       url: z.string().url().optional(),
     }).optional(),
+    // When true, the session is excluded from /sessions/ listing pages but
+    // remains accessible at its direct URL. Use for QA / dry-run sessions.
+    unlisted: z.boolean().optional(),
     // status is NOT in frontmatter — derived at render time from date_scheduled.
     // See: src/lib/webinar-status.ts
   }),
