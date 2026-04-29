@@ -3,6 +3,7 @@
 // submissions out of the live Proposal table.
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ProjectsProposeProject from '../../components/forms/Projects__ProposeProject.astro';
+import GetInvolvedScale from '../../components/forms/Span__GetInvolvedOptionScale--IconRow.astro';
 import { db, Proposal, User, desc, eq, and } from 'astro:db';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 import { matchesRoster } from '../../lib/oauth-roster';
@@ -94,6 +95,14 @@ function relTime(d: Date): string {
               <time datetime={new Date(p.created_at).toISOString()}>{relTime(p.created_at)}</time>
             </p>
             <p class="propose-recent__item-body">{p.body}</p>
+            <div class="propose-recent__item-actions">
+              <GetInvolvedScale
+                entityKind="project-proposal"
+                entitySlug={p.id}
+                entityTitleTxt={p.title}
+                size="sm"
+              />
+            </div>
           </li>
         ))}
       </ul>
@@ -235,5 +244,10 @@ function relTime(d: Date): string {
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  .propose-recent__item-actions {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: flex-start;
   }
 </style>

@@ -1,0 +1,397 @@
+---
+/* Section__BuiltInThreeDays
+   "Receipts" infographic — what fullstack-vc itself was built from, and
+   in what window. Three blocks: a stats tile row, a tech-stack pill row,
+   a two-column "achieved" grid, and a then-vs-now history strip. Pure
+   semantic tokens, mode-aware. Designed to read clean both as a slide
+   (1600×900 canvas) and as an in-page section. */
+
+interface Tile {
+  num: string;
+  unit?: string;
+  label: string;
+  hint?: string;
+}
+interface AchievedItem {
+  label: string;
+  hint?: string;
+}
+interface AchievedColumn {
+  heading: string;
+  items: AchievedItem[];
+}
+interface HistoryRow {
+  when: string;
+  what: string;
+}
+interface Props {
+  contextSetterTxt?: string;
+  headingPrefix?: string;
+  headingAccentTxt?: string;
+  ledeTxt?: string;
+  tiles?: Tile[];
+  stack?: string[];
+  achieved?: AchievedColumn[];
+  history?: HistoryRow[];
+}
+
+const {
+  contextSetterTxt = 'Receipts',
+  headingPrefix = 'Three days.',
+  headingAccentTxt = 'Twenty-seven thousand lines.',
+  ledeTxt = 'Sunday morning → Wednesday 7am EST. Context vigilance, a pseudo-monorepo, Claude Code.',
+  tiles = [
+    { num: '27', unit: 'k', label: 'Lines of code',     hint: 'Astro · Svelte · TS · CSS · Markdown' },
+    { num: '3',             label: 'Days end-to-end',   hint: 'Sun morning → Wed 7am EST' },
+    { num: '9',             label: 'Stack technologies', hint: 'See below — every layer earns its place' },
+    { num: '5',             label: 'Changelog entries today', hint: 'Each one a self-contained shipped feature' },
+  ],
+  stack = [
+    'Astro 6',
+    'Svelte 5',
+    'TypeScript',
+    'Tailwind v4',
+    'Astro DB',
+    'Turso',
+    'Reveal.js',
+    'GSAP',
+    'LFM (markdown)',
+  ],
+  achieved = [
+    {
+      heading: 'Best-in-class modern website',
+      items: [
+        { label: 'SSG + SSR per route',                 hint: 'Per-page prerender flag' },
+        { label: 'Persistent data on Turso',            hint: 'Five tables, one auth model' },
+        { label: 'Jumbo popdown menus',                 hint: 'Projects · Working groups · Sessions' },
+        { label: 'Three modes',                         hint: 'Light · Dark · Vibrant — all token-driven' },
+        { label: 'Disciplined design system',           hint: 'Two-tier tokens, brand-kit + design-system pages' },
+        { label: 'Per-commit changelog discipline',     hint: 'Five entries today alone' },
+      ],
+    },
+    {
+      heading: 'Interactive app capabilities',
+      items: [
+        { label: 'Stacks',                              hint: 'Current · aspirational · abandoned' },
+        { label: 'User accounts via OAuth',             hint: 'GitHub + LinkedIn, roster-gated' },
+        { label: 'Involvement-interest forms',          hint: 'Propose a project or working group' },
+        { label: 'Live polling',                        hint: '5 templates · audit log · 4s interval' },
+        { label: 'Embeddable slides',                   hint: 'Reveal.js + Astro components + GSAP' },
+        { label: 'Markdown materialization',            hint: 'DB → frontmatter on session close' },
+      ],
+    },
+  ],
+  history = [
+    { when: '3 years ago', what: 'A whole team. A month, minimum. Probably more.' },
+    { when: '1 year ago',  what: '3 weeks. Infantile arguments with an AI chat. Stale context every other turn.' },
+    { when: 'Now',         what: '3 days. Context vigilance, a pseudo-monorepo, Claude Code.' },
+  ],
+} = Astro.props;
+---
+
+<section class="bld" aria-labelledby="bld-heading">
+  <p class="bld__eyebrow">{contextSetterTxt}</p>
+  <h2 id="bld-heading" class="bld__heading">
+    {headingPrefix} <span class="bld__heading-accent">{headingAccentTxt}</span>
+  </h2>
+  {ledeTxt && <p class="bld__lede">{ledeTxt}</p>}
+
+  <ul class="bld__tiles" role="list">
+    {tiles.map(t => (
+      <li class="bld__tile">
+        <span class="bld__num">
+          {t.num}{t.unit && <span class="bld__unit">{t.unit}</span>}
+        </span>
+        <span class="bld__label">{t.label}</span>
+        {t.hint && <span class="bld__hint">{t.hint}</span>}
+      </li>
+    ))}
+  </ul>
+
+  <div class="bld__stack-row" aria-label="Stack technologies">
+    <span class="bld__stack-label">Stack</span>
+    <ul class="bld__stack" role="list">
+      {stack.map(s => <li class="bld__chip">{s}</li>)}
+    </ul>
+  </div>
+
+  <div class="bld__achieved" role="list">
+    {achieved.map(col => (
+      <article class="bld__col" role="listitem">
+        <h3 class="bld__col-head">{col.heading}</h3>
+        <ul class="bld__col-list" role="list">
+          {col.items.map(item => (
+            <li class="bld__col-item">
+              <span class="bld__col-bullet" aria-hidden="true">▸</span>
+              <span class="bld__col-text">
+                <span class="bld__col-label">{item.label}</span>
+                {item.hint && <span class="bld__col-hint">{item.hint}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    ))}
+  </div>
+
+  <ol class="bld__history" role="list">
+    {history.map((h, i) => (
+      <li class={`bld__history-row bld__history-row--${i === history.length - 1 ? 'now' : 'past'}`}>
+        <span class="bld__history-when">{h.when}</span>
+        <span class="bld__history-arrow" aria-hidden="true">→</span>
+        <span class="bld__history-what">{h.what}</span>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .bld {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+
+  /* ── Eyebrow / heading / lede ──────────────────────────────── */
+  .bld__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .bld__heading {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-text);
+  }
+  .bld__heading-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bld__lede {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  /* ── Stats tile row (4 across, falls back to 2×2) ──────────── */
+  .bld__tiles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  @media (min-width: 720px) {
+    .bld__tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .bld__tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 0.875rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+  }
+  .bld__num {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-primary);
+    letter-spacing: -0.03em;
+  }
+  .bld__unit {
+    font-size: 0.6em;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-left: 0.05em;
+  }
+  .bld__label {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 0.125rem;
+  }
+  .bld__hint {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Stack chip row ─────────────────────────────────────────── */
+  .bld__stack-row {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .bld__stack-label {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    padding-right: 0.875rem;
+    border-right: 1px solid var(--color-border);
+    flex: 0 0 auto;
+  }
+  .bld__stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4375rem;
+  }
+  .bld__chip {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text);
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+  }
+
+  /* ── Achieved two-column grid ──────────────────────────────── */
+  .bld__achieved {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+  @media (min-width: 720px) {
+    .bld__achieved { grid-template-columns: 1fr 1fr; }
+  }
+  .bld__col {
+    padding: 1rem 1.125rem;
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .bld__col-head {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+  .bld__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4375rem;
+  }
+  .bld__col-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  .bld__col-bullet {
+    font-family: var(--font-code);
+    color: var(--color-primary);
+    flex: 0 0 auto;
+    line-height: 1;
+  }
+  .bld__col-text {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4375rem;
+    align-items: baseline;
+  }
+  .bld__col-label {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+  .bld__col-hint {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Then-vs-now history strip ─────────────────────────────── */
+  .bld__history {
+    list-style: none;
+    margin: 0;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4375rem;
+  }
+  .bld__history-row {
+    display: grid;
+    grid-template-columns: 7.5rem 0.875rem 1fr;
+    gap: 0.625rem;
+    align-items: baseline;
+    padding: 0.3125rem 0;
+    font-size: 0.875rem;
+  }
+  .bld__history-row + .bld__history-row {
+    border-top: 1px dashed var(--color-border);
+    padding-top: 0.5rem;
+  }
+  .bld__history-when {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .bld__history-arrow {
+    font-family: var(--font-code);
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+  .bld__history-what {
+    color: var(--color-text);
+    line-height: 1.45;
+  }
+  .bld__history-row--now .bld__history-when {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+  .bld__history-row--now .bld__history-arrow {
+    color: var(--color-primary);
+  }
+  .bld__history-row--now .bld__history-what {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+</style>

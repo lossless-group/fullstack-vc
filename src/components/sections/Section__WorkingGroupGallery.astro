@@ -15,7 +15,8 @@
    Reads only Tier-2 semantic tokens. Empty list + emptyHide → renders nothing. */
 
 import type { WorkingGroupWithProjects } from '../../lib/load-working-groups';
-import { workingGroupHref, statusLabel } from '../../lib/load-working-groups';
+import { workingGroupHref, workingGroupSlug, statusLabel } from '../../lib/load-working-groups';
+import GetInvolvedScale from '../forms/Span__GetInvolvedOptionScale--IconRow.astro';
 
 export type GalleryVariant = 'portfolio' | 'mission-brief' | 'lite' | 'shelf';
 
@@ -92,6 +93,14 @@ const fmtDate = (d?: Date) =>
                 )}
               </div>
             </a>
+            <div class="pcard__actions">
+              <GetInvolvedScale
+                entityKind="working-group"
+                entitySlug={workingGroupSlug(wg)}
+                entityTitleTxt={wg.data.title}
+                size="md"
+              />
+            </div>
           </li>
         ))}
       </ol>
@@ -119,6 +128,14 @@ const fmtDate = (d?: Date) =>
                 </span>
               </div>
             </a>
+            <div class="pcard__actions">
+              <GetInvolvedScale
+                entityKind="working-group"
+                entitySlug={workingGroupSlug(wg)}
+                entityTitleTxt={wg.data.title}
+                size="md"
+              />
+            </div>
           </li>
         ))}
       </ol>
@@ -136,6 +153,14 @@ const fmtDate = (d?: Date) =>
               <p class="pcard__lede">{wg.data.lede}</p>
               <span class="pcard__cta">Join the working group →</span>
             </a>
+            <div class="pcard__actions pcard__actions--lite">
+              <GetInvolvedScale
+                entityKind="working-group"
+                entitySlug={workingGroupSlug(wg)}
+                entityTitleTxt={wg.data.title}
+                size="sm"
+              />
+            </div>
           </li>
         ))}
       </ol>
@@ -250,12 +275,17 @@ const fmtDate = (d?: Date) =>
   }
 
   /* ---------- Card base ---------- */
-  .pcard { margin: 0; }
+  .pcard {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
   .pcard__hit {
     display: block;
     color: inherit;
     text-decoration: none;
-    height: 100%;
+    flex: 1 1 auto;
     border-radius: 0.875rem;
     background: var(--fx-card-bg);
     border: 1px solid var(--fx-card-border);
@@ -263,6 +293,12 @@ const fmtDate = (d?: Date) =>
     transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
     overflow: hidden;
   }
+  .pcard__actions {
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+  }
+  .pcard__actions--lite { justify-content: flex-start; }
   .pcard__hit:hover,
   .pcard__hit:focus-visible {
     border-color: var(--fx-card-border-hover);

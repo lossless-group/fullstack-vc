@@ -218,6 +218,39 @@ const Proposal = defineTable({
   },
 });
 
+// ─── ParticipationInterest ───────────────────────────────────────────────────
+// One row per (user, entity, level) signal. Users tap one of three icons on a
+// project / working-group / proposal card to register their level of intended
+// involvement. Toggling: tap the same icon again → row deleted. Tap a different
+// icon → row's `level` is updated (one row per user+entity, enforced by the
+// composite unique index below).
+//
+// `entity_kind` values:
+//   'project'                — a published project (slug from content collection)
+//   'working-group'          — a published working group (slug from content collection)
+//   'project-proposal'       — a member-submitted Proposal (id = Proposal.id)
+//   'working-group-proposal' — a member-submitted Proposal (id = Proposal.id)
+//
+// `level` enum:
+//   'lead-potential'      — eager and able; could lead if needed
+//   'active-participant'  — count me reliably in
+//   'keep-informed'       — interested but unreliable; just keep me in the loop
+const ParticipationInterest = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    user_id: column.text(),
+    entity_kind: column.text(),
+    entity_slug: column.text(),
+    level: column.text(),
+    created_at: column.date(),
+    updated_at: column.date(),
+  },
+  indexes: {
+    pi_user_entity_unique: { on: ['user_id', 'entity_kind', 'entity_slug'], unique: true },
+    pi_entity_lookup: { on: ['entity_kind', 'entity_slug'] },
+  },
+});
+
 export default defineDb({
-  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal },
+  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal, ParticipationInterest },
 });

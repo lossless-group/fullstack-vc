@@ -10,6 +10,7 @@ import Section__WebinarSurveyPolls from '../../components/sections/Section__Webi
 import Section__WebinarFirmsRepresented from '../../components/sections/Section__WebinarFirmsRepresented.astro';
 import Section__WebinarSurveyVoices from '../../components/sections/Section__WebinarSurveyVoices.astro';
 import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
+import Section__BuiltInThreeDays from '../../components/sections/Section__BuiltInThreeDays.astro';
 import { getEntry } from 'astro:content';
 import surveyJson from '../../data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json';
 
@@ -37,74 +38,7 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
     <p class="byline">Hosted by Michael Staton &amp; Emily McMath · Powered by Fullstack VC</p>
   </section>
 
-  <!-- 2. What this is -->
-  <section data-gsap="frame">
-    <p class="eyebrow">Why we're here</p>
-    <h2>A peer-learning Dojo for VCs <span class="primary">building with AI.</span></h2>
-    <ul class="big-list">
-      <li>Self-organizing <strong>working groups</strong> taking on real <strong>projects</strong>.</li>
-      <li>From "I use ChatGPT for emails" to "I'm shipping agents into our deal flow."</li>
-      <li>Elbow grease encouraged. Casual observers welcome — but no promises.</li>
-    </ul>
-  </section>
-
-  <!-- 3. Who's in the room -->
-  <section data-gsap="stats">
-    <Section__WebinarSurveyStats totals={survey.totals} contextSetterTxt="Who's in the room today" />
-  </section>
-
-  <!-- 4. What this room is working on (experience + tool stack) -->
-  <section data-gsap="polls">
-    <Section__WebinarSurveyPolls
-      experience={survey.experience}
-      toolStack={survey.toolStack}
-      surveyed={survey.totals.surveyed}
-    />
-  </section>
-
-  <!-- 5. Firms represented -->
-  <section data-gsap="firms">
-    <Section__WebinarFirmsRepresented firms={survey.firms} />
-  </section>
-
-  <!-- 6. Voices -->
-  <section data-gsap="voices">
-    <Section__WebinarSurveyVoices
-      id="wsvoices-building"
-      quotes={survey.quotes}
-      headingTxt="What this room"
-      headingAccentTxt="is actually working on"
-      ledeTxt="Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday."
-    />
-  </section>
-
-  <!-- 6b. Asks -->
-  {survey.quotesWanted && survey.quotesWanted.length > 0 && (
-    <section data-gsap="asks">
-      <Section__WebinarSurveyVoices
-        id="wsvoices-asks"
-        quotes={survey.quotesWanted}
-        headingTxt="What this room is"
-        headingAccentTxt="hoping to take home"
-        ledeTxt="Free-response answers to 'what do you most want to get out of this session?' — lightly edited."
-      />
-    </section>
-  )}
-
-  <!-- 7. Format / Agenda -->
-  <section data-gsap="agenda">
-    <p class="eyebrow">The next 60 minutes</p>
-    <h2>Format</h2>
-    <ul class="agenda">
-      <li><span class="agenda__time">5m</span><span class="agenda__name">Framing</span><span class="agenda__what">The Dojo concept, goals, structure.</span></li>
-      <li><span class="agenda__time">20m</span><span class="agenda__name">Inspiration set</span><span class="agenda__what">Four 5-min speed demos.</span></li>
-      <li><span class="agenda__time">5m</span><span class="agenda__name">Polling &amp; backchannel</span><span class="agenda__what">Live polls, discussion.</span></li>
-      <li><span class="agenda__time">20m</span><span class="agenda__name">Town hall</span><span class="agenda__what">Bring a workflow you're trying to operationalize.</span></li>
-      <li><span class="agenda__time">10m</span><span class="agenda__name">Q&amp;A + next steps</span><span class="agenda__what">Follow-ups for the Dojo community.</span></li>
-    </ul>
-  </section>
-
-  <!-- 8. Speed-demo presenters -->
+  <!-- 2. Speed-demo presenters -->
   <section data-gsap="presenters">
     {presenterDetails.length > 0 ? (
       <Section__WebinarPresenters presenters={presenterDetails} hosts={hosts} />
@@ -117,7 +51,79 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
     )}
   </section>
 
-  <!-- 9. Closer -->
+  <!-- 3. What this is -->
+  <section data-gsap="frame">
+    <p class="eyebrow">Why we're here</p>
+    <h2>A peer-learning Dojo for VCs <span class="primary">building with AI.</span></h2>
+    <ul class="big-list">
+      <li>Self-organizing <strong>working groups</strong> taking on real <strong>projects</strong>.</li>
+      <li>From "I use ChatGPT for emails" to "I'm shipping agents into our deal flow."</li>
+      <li>Elbow grease encouraged. Casual observers welcome — but no promises.</li>
+    </ul>
+  </section>
+
+  <!-- 4. Who's in the room -->
+  <section data-gsap="stats">
+    <Section__WebinarSurveyStats totals={survey.totals} contextSetterTxt="Who's in the room today" />
+  </section>
+
+  <!-- 5. What this room is working on (experience + tool stack) -->
+  <section data-gsap="polls">
+    <Section__WebinarSurveyPolls
+      experience={survey.experience}
+      toolStack={survey.toolStack}
+      surveyed={survey.totals.surveyed}
+    />
+  </section>
+
+  <!-- 6. Firms represented -->
+  <section data-gsap="firms">
+    <Section__WebinarFirmsRepresented firms={survey.firms} />
+  </section>
+
+  <!-- 7. Voices -->
+  <section data-gsap="voices">
+    <Section__WebinarSurveyVoices
+      id="wsvoices-building"
+      quotes={survey.quotes}
+      headingTxt="What this room"
+      headingAccentTxt="is actually working on"
+      ledeTxt="Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday."
+    />
+  </section>
+
+  <!-- 7b. Asks -->
+  {survey.quotesWanted && survey.quotesWanted.length > 0 && (
+    <section data-gsap="asks">
+      <Section__WebinarSurveyVoices
+        id="wsvoices-asks"
+        quotes={survey.quotesWanted}
+        headingTxt="What this room is"
+        headingAccentTxt="hoping to take home"
+        ledeTxt="Free-response answers to 'what do you most want to get out of this session?' — lightly edited."
+      />
+    </section>
+  )}
+
+  <!-- 8. Format / Agenda -->
+  <section data-gsap="agenda">
+    <p class="eyebrow">The next 60 minutes</p>
+    <h2>Format</h2>
+    <ul class="agenda">
+      <li><span class="agenda__time">5m</span><span class="agenda__name">Framing</span><span class="agenda__what">The Dojo concept, goals, structure.</span></li>
+      <li><span class="agenda__time">20m</span><span class="agenda__name">Inspiration set</span><span class="agenda__what">Four 5-min speed demos.</span></li>
+      <li><span class="agenda__time">5m</span><span class="agenda__name">Polling &amp; backchannel</span><span class="agenda__what">Live polls, discussion.</span></li>
+      <li><span class="agenda__time">20m</span><span class="agenda__name">Town hall</span><span class="agenda__what">Bring a workflow you're trying to operationalize.</span></li>
+      <li><span class="agenda__time">10m</span><span class="agenda__name">Q&amp;A + next steps</span><span class="agenda__what">Follow-ups for the Dojo community.</span></li>
+    </ul>
+  </section>
+
+  <!-- 9. Receipts — built-in-three-days flex -->
+  <section data-gsap="receipts">
+    <Section__BuiltInThreeDays />
+  </section>
+
+  <!-- 10. Closer -->
   <section class="title-slide" data-gsap="closer">
     <p class="eyebrow">Let's get to work</p>
     <h1 class="gradient-headline">A few new superpowers,<br/>before we log off.</h1>
@@ -277,6 +283,49 @@ const hosts = session?.data.hosts ?? ['Michael Staton', 'Emily McMath'];
     var rows = slide.querySelectorAll('.wpres__list li');
     window.gsap.from(rows,
       { opacity: 0, y: 18, duration: 0.55, stagger: 0.1, ease: 'power3.out' });
+  };
+
+  window.__slideAnimations.receipts = function (slide) {
+    if (!window.gsap) return;
+    var tl = window.gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from(slide.querySelectorAll('.bld__eyebrow, .bld__heading, .bld__lede'),
+            { opacity: 0, y: 14, duration: 0.5, stagger: 0.08 })
+      .from(slide.querySelectorAll('.bld__tile'),
+            { opacity: 0, y: 18, duration: 0.45, stagger: 0.08 }, '-=0.2');
+
+    // Number-counter on the four tiles (skip the unit suffix; preserve int).
+    var nums = slide.querySelectorAll('.bld__num');
+    nums.forEach(function (el) {
+      var raw = el.firstChild && el.firstChild.nodeValue ? el.firstChild.nodeValue.trim() : '';
+      var match = raw.match(/^(\d+)/);
+      if (!match) return;
+      var target = parseInt(match[1], 10);
+      var counter = { v: 0 };
+      window.gsap.to(counter, {
+        v: target,
+        duration: 1.0,
+        delay: 0.45,
+        ease: 'power2.out',
+        onUpdate: function () {
+          if (el.firstChild) el.firstChild.nodeValue = String(Math.round(counter.v));
+        },
+        onComplete: function () {
+          if (el.firstChild) el.firstChild.nodeValue = String(target);
+        }
+      });
+    });
+
+    // Stack chips burst in like the firms slide (smaller stagger).
+    window.gsap.from(slide.querySelectorAll('.bld__chip'),
+      { opacity: 0, scale: 0.8, duration: 0.35, stagger: 0.025, ease: 'back.out(1.4)', delay: 0.7 });
+
+    // Achieved columns + their items, then the history rows last.
+    window.gsap.from(slide.querySelectorAll('.bld__col'),
+      { opacity: 0, y: 18, duration: 0.5, stagger: 0.12, ease: 'power3.out', delay: 1.0 });
+    window.gsap.from(slide.querySelectorAll('.bld__col-item'),
+      { opacity: 0, x: -10, duration: 0.4, stagger: 0.04, ease: 'power3.out', delay: 1.15 });
+    window.gsap.from(slide.querySelectorAll('.bld__history-row'),
+      { opacity: 0, x: -16, duration: 0.5, stagger: 0.18, ease: 'power3.out', delay: 1.6 });
   };
 
   window.__slideAnimations.closer = function (slide) {

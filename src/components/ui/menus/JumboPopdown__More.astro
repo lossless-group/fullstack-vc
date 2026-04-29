@@ -79,6 +79,12 @@ const items = [
           </li>
         ))}
       </ul>
+
+      <a class="jpop__topline jpop__topline--bottom" role="menuitem" href="/slides">
+        <span class="jpop__topline-label">Slides</span>
+        <span class="jpop__topline-desc">Slide decks for realtime presentations &amp; content exploration.</span>
+        <span class="jpop__topline-arrow" aria-hidden="true">→</span>
+      </a>
     </div>
   </div>
 </div>
@@ -274,6 +280,12 @@ const items = [
   .jpop__topline:focus-visible {
     color: var(--color-text);
     outline: none;
+  }
+  /* Bottom-placed sibling — mirrors the topline tightening so the link
+     hugs the grid above it the same way the top one hugs the grid below. */
+  .jpop__topline--bottom {
+    margin-top: -0.25rem;
+    margin-bottom: 0;
   }
   .jpop__topline-label {
     font-family: var(--font-code);
