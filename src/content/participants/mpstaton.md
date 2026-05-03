@@ -64,6 +64,9 @@ abandoned_stack:
   - tool: recraft-ai
     abandoned: 2026-04-22
     reason: "Found better alternatives (Ideogram) for image generation and editing."
+  - tool: craft-docs
+    abandoned: 2026-04-28
+    reason: "Found Obsidian better over time, as it gave me access to all the content at the filesystem level and had a Plugin ecosystem."
 ---
 
 Founder of Lossless Group and FullStack VC. Building the Agentic VC Dojo as a place for venture capitalists to practice using AI in their actual workflows.
