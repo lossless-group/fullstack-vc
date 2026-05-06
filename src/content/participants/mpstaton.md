@@ -67,6 +67,9 @@ abandoned_stack:
   - tool: craft-docs
     abandoned: 2026-04-28
     reason: "Found Obsidian better over time, as it gave me access to all the content at the filesystem level and had a Plugin ecosystem."
+ - tool: trae-ide
+    abandoned: 2025-10-28
+    reason: "Found Claude Code better over time."
 ---
 
 Founder of Lossless Group and FullStack VC. Building the Agentic VC Dojo as a place for venture capitalists to practice using AI in their actual workflows.
