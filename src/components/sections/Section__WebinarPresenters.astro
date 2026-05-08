@@ -19,9 +19,21 @@ interface Presenter {
 interface Props {
   presenters: Presenter[];
   hosts?: string[];
+  /** Section heading. Default "Speed-demo presenters" fits the all-hands /
+   *  launch sessions. Setupathons override to "Setupathon host" because the
+   *  presenter row IS the host, not a parallel speed-demo lineup. */
+  headingTxt?: string;
+  /** Eyebrow above the heading. Default "With" reads as "[the session is] with
+   *  [these people]". Setupathons override to "Hosted by". */
+  eyebrowTxt?: string;
 }
 
-const { presenters, hosts = [] } = Astro.props;
+const {
+  presenters,
+  hosts = [],
+  headingTxt = 'Speed-demo presenters',
+  eyebrowTxt = 'With',
+} = Astro.props;
 
 // Pipe presenter blocks through the resolver so anyone in the participants
 // collection (e.g. mpstaton with a github_avatar) auto-fills name → avatar
@@ -40,8 +52,8 @@ const withTopics = resolved.map((r, i) => ({ ...r, topic: presenters[i].topic })
 
 <section class="wpres" aria-labelledby="wpres-heading">
   <header class="wpres__head">
-    <p class="wpres__eyebrow">With</p>
-    <h2 id="wpres-heading" class="wpres__heading">Speed-demo presenters</h2>
+    <p class="wpres__eyebrow">{eyebrowTxt}</p>
+    <h2 id="wpres-heading" class="wpres__heading">{headingTxt}</h2>
   </header>
 
   <ul class="wpres__list" role="list">

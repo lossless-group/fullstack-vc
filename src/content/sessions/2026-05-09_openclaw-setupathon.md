@@ -10,7 +10,8 @@ presenters:
   - Jehan Chu
 presenterDetails:
   - name: Jehan Chu
-    firm: TBD
+    firm: "Kenetic"
+    role: "Founder, Managing Partner"
     headshot: /images/participant-headshots/headshot__Jehan-Chu.jpeg
     linkedin: https://www.linkedin.com/in/jehanchu/
     topic: Co-suffering through a first-time OpenClaw setup, in solidarity.

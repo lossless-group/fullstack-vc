@@ -128,6 +128,16 @@ const time = date.toLocaleString('en-US', {
 const presentersStr = (data.presenters ?? []).join(' · ');
 const presenterDetails = data.presenterDetails ?? [];
 const hasPresenterCards = presenterDetails.length > 0;
+
+// Classifier-driven labels for the presenters section. Setupathons render
+// their host as the only "presenter", so the section header becomes
+// "Setupathon host" rather than the all-hands default "Speed-demo presenters".
+const classifierSet = new Set(data.classifiers ?? []);
+const isSetupathon = classifierSet.has('Setupathons');
+const presentersHeadingTxt = isSetupathon
+  ? (presenterDetails.length === 1 ? 'Your setupathon host' : 'Your setupathon hosts')
+  : 'Speed-demo presenters';
+const presentersEyebrowTxt = isSetupathon ? 'Hosted by' : 'With';
 const partner = data.partnerMark ?? null;
 const ctaHref = status === 'Recorded' ? data.recordingUrl : data.rsvpUrl;
 const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ? 'Join now' : 'RSVP';
@@ -224,6 +234,8 @@ const survey = surveyModules[surveyKey]?.default ?? null;
       <Section__WebinarPresenters
         presenters={presenterDetails}
         hosts={data.hosts ?? []}
+        headingTxt={presentersHeadingTxt}
+        eyebrowTxt={presentersEyebrowTxt}
       />
     )}
 
