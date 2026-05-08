@@ -1,7 +1,7 @@
 {
   "name": "fullstack-vc",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "packageManager": "pnpm@10.15.0",
   "scripts": {
@@ -20,13 +20,13 @@
     "set-poll-status": "astro db execute scripts/set-poll-status.ts"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.8",
-    "@astrojs/db": "^0.21.0",
-    "@astrojs/svelte": "^8.0.5",
-    "@astrojs/vercel": "^10.0.5",
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/db": "^0.21.1",
+    "@astrojs/svelte": "^8.1.0",
+    "@astrojs/vercel": "^10.0.6",
     "@lossless-group/lfm": "npm:@jsr/lossless-group__lfm@^0.2.2",
     "@tailwindcss/vite": "^4.2.2",
-    "astro": "^6.1.7",
+    "astro": "^6.3.1",
     "jose": "^6.2.2",
     "mdast-util-to-string": "^4.0.0",
     "svelte": "^5.55.4",

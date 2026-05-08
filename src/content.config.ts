@@ -80,6 +80,10 @@ const participants = defineCollection({
     // Lives under /public/images/participant-headshots/.
     headshot: z.string().optional(),
     linkedin: z.string().url().optional(),
+    // Directory profile URLs follow the `directory_profile_{slug}` convention
+    // so we can add new directories (e.g., directory_profile_endeavor,
+    // directory_profile_techstars) without inventing one-off field names.
+    directory_profile_kauffman: z.string().url().optional(),
     publish: z.boolean().default(false),
     joined_dojo: z.coerce.date().optional(),
 
@@ -122,6 +126,11 @@ const sessions = defineCollection({
       topic: z.string().optional(),
     })).optional(),
     tags: z.array(z.string()).optional(),
+    // High-level session-type classifiers (e.g., "All-Hands", "Setupathons",
+    // "Workshop"). Distinct from `tags` (free-form topical) — classifiers are
+    // a small, intentional vocabulary the site can render as section headers
+    // or filter facets. Train-Case values, same convention as tags.
+    classifiers: z.array(z.string()).optional(),
     rsvpUrl: z.string().url().optional(),
     recordingUrl: z.string().url().optional(),
     og_image: z.string().optional(),

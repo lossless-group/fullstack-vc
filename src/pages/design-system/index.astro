@@ -171,6 +171,36 @@ const components = [
     props: 'tree: MDAST root, citations?: Citation[], editUrl?, backHref? (default "/projects/"), backLabelTxt? (default "All projects")  → demo: /design-system/markdown/markdown-reader',
   },
   {
+    name: 'AstroMarkdown',
+    purpose: 'The recursive MDAST → Astro/JSX renderer that powers every long-form page. Dispatches each node type (paragraph, heading, list, link, table, footnoteReference, containerDirective, etc.) to inline JSX or a specialized component (Callout, CodeBlock, MarkdownImage). Canonical source: packages/lfm-astro/components/AstroMarkdown.astro.',
+    cssContract: '(structural — no direct CSS; defers to the page-level body class and the specialized child components)',
+    props: 'node: MDAST node, data?: tree.data  → demo index: /design-system/markdown',
+  },
+  {
+    name: 'Callout',
+    purpose: 'Renders LFM/remark-callouts blocks (`> [!type] Title`). Three-file split (Callout.astro + callout-types.ts + callout.css) — structure, type registry, and mode-aware stylesheet. Ten built-in types plus a 7-entry alias map. Every type obeys the light/dark/vibrant mode contract; the `info` hero variant scales its glow with --fx-glow-opacity. Canonical source: packages/lfm-astro/components/.',
+    cssContract: '--callout-accent (per-type, mode-overridden), --color-text, --color__cyan-vapor / lime-terminal / amber-flare / magenta-fuse / violet-electric / graphite-* (named tokens), --fx-glow-opacity, --fx-glow-spread (info hero variant)',
+    props: 'node: containerDirective with name="callout", data?  → demo: /design-system/markdown/callouts',
+  },
+  {
+    name: 'CodeBlock',
+    purpose: 'Fenced-code renderer. Receives a `code` MDAST node (lang + value) and produces a styled <pre><code> block. Used for inline code samples in long-form content.',
+    cssContract: '--color-surface, --color-border, --font-code',
+    props: 'node: code MDAST node  → demo index: /design-system/markdown',
+  },
+  {
+    name: 'MarkdownImage',
+    purpose: 'Renders `:::image{src=… alt=…}` directive blocks with caption support. Distinct from inline `![alt](src)` images, which go through AstroMarkdown directly.',
+    cssContract: '--color-text-muted, --color-border',
+    props: 'node: containerDirective with name="image", data?  → demo index: /design-system/markdown',
+  },
+  {
+    name: 'Sources',
+    purpose: 'Citation list at the bottom of a long-form page. Receives `tree.data.citations.ordered` from `parseMarkdown()`. Renders sequentially-numbered footnote anchors paired with `footnoteReference` superscripts inside the body.',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-border',
+    props: 'citations: Citation[]  → demo index: /design-system/markdown',
+  },
+  {
     name: 'Section__WorkingGroupGallery',
     purpose: 'Sibling to Section__ProjectGallery — same four variants and CSS, but the data shape is enriched: each entry carries the WorkingGroupEntry plus its currently-active projects (pre-joined by the loader). The portfolio and mission-brief variant cards add a small chip row showing 1–3 of the WG\'s active projects, which is the headline differentiator vs. project cards.',
     cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-secondary, --color-surface, --color-border, --color-background, --color-status-active, --color-status-proposed, --color-status-archived, --font-display, --font-body, --font-code',
@@ -201,10 +231,10 @@ const components = [
     props: 'slug: string, data: ToolEntryData (partial), small?: boolean, notes?: string, intent?: string, reason?: string, abandoned?: string',
   },
   {
-    name: 'ParticipantCard (stack)',
-    purpose: 'Profile chip for /stack/people index. Avatar with primary halo + name + firm + role + tool-count + Kauffman class. Visual vocabulary copied from Section__WebinarPresenters avatar pattern. Whole card is a link to /stack/people/[handle].',
+    name: 'PersonCard--Thumb',
+    purpose: 'Compact profile chip for /people, /stacks, and any roster grid. Avatar with primary halo + name + firm + role + tool-count + Kauffman class + joined-on date. Visual vocabulary copied from Section__WebinarPresenters avatar pattern. Whole card is a link to /people/[handle]. Naming: PersonCard--{variant}.astro — Thumb is the small horizontal card; future variants (Full, Hero, Mini) live as siblings.',
     cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
-    props: 'handle: string, name: string, firm?: string, role?: string, avatar?: string, toolCount?: number, kauffmanClass?: number',
+    props: 'handle: string, name: string, firm?: string, role?: string, avatar?: string, toolCount?: number, kauffmanClass?: number, joinedOn?: string | Date',
   },
   {
     name: 'ParticipantStackView (stack)',
@@ -554,6 +584,16 @@ class?:           extra class name(s)
         <p class="ds-subpage-eyebrow">Markdown</p>
         <p class="ds-subpage-title">MarkdownReader</p>
         <p class="ds-subpage-note">Renamed from ProjectReader · generic.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/markdown">
+        <p class="ds-subpage-eyebrow">Markdown</p>
+        <p class="ds-subpage-title">Markdown components index</p>
+        <p class="ds-subpage-note">AstroMarkdown · Callout · CodeBlock · MarkdownImage · Sources.</p>
+      </a>
+      <a class="ds-subpage" href="/design-system/markdown/callouts">
+        <p class="ds-subpage-eyebrow">Markdown</p>
+        <p class="ds-subpage-title">Callouts</p>
+        <p class="ds-subpage-note">10 types · aliases · info hero · 3 modes.</p>
       </a>
     </div>
   </section>

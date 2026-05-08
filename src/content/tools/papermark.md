@@ -2,7 +2,7 @@
 url: https://www.papermark.com/
 date_created: 2025-12-02
 date_modified: 2025-12-07
-title: "Secure document sharing and tracking by #1 DocSend Alternative"
+og_title: "Secure document sharing and tracking by #1 DocSend Alternative"
 description: Papermark is an open-source document and data rooms sharing platform. Free alternative to DocSend with custom branding and document tracking.
 og_image: https://www.papermark.com/_static/meta-image.png
 og_favicon: https://www.papermark.com/favicon.ico

@@ -2,7 +2,7 @@
 export const prerender = true;
 import { getCollection } from 'astro:content';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
-import ParticipantCard from '../../components/stack/ParticipantCard.astro';
+import PersonCardThumb from '../../components/stack/PersonCard--Thumb.astro';
 
 const all = await getCollection('participants');
 const visible = all.filter(p => p.data.publish);
@@ -21,6 +21,7 @@ const cards = visible.map(p => {
     avatar: p.data.headshot ?? p.data.github_avatar,
     toolCount: stackTotal,
     kauffmanClass: p.data.kauffman_class,
+    joinedOn: p.data.joined_dojo,
   };
 });
 ---
@@ -48,7 +49,7 @@ const cards = visible.map(p => {
     <ul class="stack-index-grid" role="list">
       {cards.map(c => (
         <li>
-          <ParticipantCard {...c} />
+          <PersonCardThumb {...c} />
         </li>
       ))}
     </ul>

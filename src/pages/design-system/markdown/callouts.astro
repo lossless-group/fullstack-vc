@@ -1,0 +1,204 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import AstroMarkdown from '../../../components/markdown/AstroMarkdown.astro';
+import { parseMarkdown } from '@lossless-group/lfm';
+
+// One markdown document, every callout type. Parsed and rendered exactly the
+// way production pages render them — through `parseMarkdown()` + AstroMarkdown.
+// If anything looks wrong here, it's also wrong in production.
+const sampleMd = `## All ten callout types
+
+> [!note] Note
+> Default-weight neutral callout. Used for asides, soft references, and "good to know" content that doesn't need an accent color.
+
+> [!info] Why this design system page exists
+> This is the brand's *hero* callout — bigger, brighter, glowy edges in vibrant mode and dialed-back in light mode. Use it sparingly: one per page, at the top, for the "why this matters" beat.
+>
+> - It supports lists.
+> - It supports multiple paragraphs.
+> - It supports inline \`code samples\` with accent-tinted backgrounds.
+>
+> Mode-awareness rides on the existing \`--fx-glow-opacity\` and \`--fx-glow-spread\` tokens, so the glow scales automatically per mode.
+
+> [!tip] Tip
+> Lime accent. Good for "if you're stuck, try this" hints — adjacent to but distinct from \`success\`.
+
+> [!success] Success
+> Lime accent (same family as tip). Use for confirmations and "this worked" outcomes.
+
+> [!warning] Warning
+> Amber accent. Use for non-fatal hazards: \`> [!warn]\` and \`> [!caution]\` are aliases that route here.
+
+> [!danger] Danger
+> Magenta accent. Use for destructive actions, breaking changes, and errors. Aliases: \`fail\`, \`failure\`, \`error\`, \`bug\`.
+
+> [!quote] On showing your work
+> Show your work-in-progress. The act of showing is the work.
+>
+> — adapted from Austin Kleon
+
+> [!example] Example
+> Violet accent. Use to set off a worked example from surrounding prose.
+
+> [!question] FAQ
+> Cyan accent. Aliases: \`faq\`, \`help\`. Pair with \`answer\` body text below the header.
+
+> [!important] Important
+> Magenta accent. Visually similar to danger but semantically distinct — use when the reader *must* read this, not when something is broken.
+
+## Header-less variants
+
+Some authors want the colored container without a label. Use \`[!info]-\` (Obsidian's foldable-empty syntax) or supply an explicit empty title:
+
+> [!tip]
+> Without a custom title, the type's default label appears. ("Tip" here.)
+
+## Lists, paragraphs, and code inside callouts
+
+Tailwind v4 preflight zeros out \`<p>\` margins and list bullets globally. The callout stylesheet restores prose flow scoped to the callout body so multi-paragraph + bulleted content renders correctly:
+
+> [!info] Multi-paragraph + lists
+> First paragraph establishes the point.
+>
+> Second paragraph adds the detail. \`Inline code\` reads at 0.9em with a tinted background.
+>
+> 1. Numbered lists work
+> 2. Bullets work
+>    - Including nested ones
+> 3. And consecutive list items have proper spacing
+
+## Aliases
+
+Authors don't have to remember canonical names. The callout-types registry maps:
+
+- \`warn\`, \`caution\`, \`attention\` → warning
+- \`fail\`, \`failure\`, \`error\`, \`bug\` → danger
+- \`hint\` → tip
+- \`check\`, \`done\` → success
+- \`todo\` → note
+- \`abstract\`, \`summary\`, \`tldr\` → info
+- \`faq\`, \`help\` → question
+
+Anything unrecognized falls back to \`note\`.
+`;
+
+const tree = await parseMarkdown(sampleMd);
+---
+
+<BaseThemeLayout
+  title="Design System · Callouts"
+  description="All ten callout types rendered by the LFM Callout component, with mode-awareness, aliases, and the info hero variant."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-4xl mx-auto"
+>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Design System · Markdown · Callouts
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3" style="font-family: var(--font-display); color: var(--color-text);">
+      Callouts
+    </h1>
+    <p class="text-lg max-w-3xl mb-2" style="color: var(--color-text-muted); line-height: 1.55;">
+      Every type below is rendered through the production LFM pipeline — <code style="font-family: var(--font-code); color: var(--color-primary);">parseMarkdown()</code> → <code style="font-family: var(--font-code); color: var(--color-primary);">AstroMarkdown</code> → <code style="font-family: var(--font-code); color: var(--color-primary);">Callout.astro</code>. Toggle the mode to see light / dark / vibrant adaptations.
+    </p>
+    <p style="color: var(--color-text-muted); font-family: var(--font-code); font-size: 0.8125rem;">
+      Canonical: <code style="color: var(--color-primary);">packages/lfm-astro/components/Callout.astro</code> · See also <a href="/design-system/markdown" style="color: var(--color-primary); text-decoration: underline;">Markdown components index</a>.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <article class="callout-stage prose-stage">
+    <AstroMarkdown node={tree} />
+  </article>
+
+  <section class="mt-12">
+    <h2 class="text-2xl font-semibold mb-3" style="font-family: var(--font-display); color: var(--color-text);">Authoring syntax</h2>
+    <pre class="syntax-pre">{`> [!info] Optional title
+> Body content. Supports **markdown**, lists, code, multiple paragraphs.
+>
+> - bullet
+> - bullet
+>
+> Trailing paragraph works too.`}</pre>
+  </section>
+
+  <section class="mt-8">
+    <h2 class="text-2xl font-semibold mb-3" style="font-family: var(--font-display); color: var(--color-text);">Adding a new type</h2>
+    <ol class="ds-numbered">
+      <li>Add an entry to <code>CALLOUT_TYPES</code> in <code>callout-types.ts</code> (label + iconPaths).</li>
+      <li>Add a <code>.ak-callout--&#123;type&#125;</code> rule in <code>callout.css</code> setting <code>--callout-accent</code> to a Tier-1 named color from <code>theme.css</code>.</li>
+      <li>Add light-mode and (if a loud color) dark-mode overrides in the same file.</li>
+      <li>Optionally add aliases in the <code>ALIASES</code> map.</li>
+    </ol>
+  </section>
+</BaseThemeLayout>
+
+<style is:global>
+  .callout-stage {
+    padding: 2rem;
+    border-radius: 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .callout-stage h2 {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 2rem 0 1rem;
+  }
+  .callout-stage h2:first-child { margin-top: 0; }
+  .callout-stage p {
+    color: var(--color-text);
+    line-height: 1.6;
+    margin: 0.75rem 0;
+  }
+  .callout-stage ul,
+  .callout-stage ol {
+    padding-left: 1.5rem;
+    margin: 0.75rem 0;
+    color: var(--color-text);
+  }
+  .callout-stage ul { list-style: disc; }
+  .callout-stage ol { list-style: decimal; }
+  .callout-stage li { margin: 0.25rem 0; }
+  .callout-stage code {
+    font-family: var(--font-code);
+    font-size: 0.9em;
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+  }
+</style>
+
+<style>
+  .syntax-pre {
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  .ds-numbered {
+    color: var(--color-text);
+    list-style: decimal;
+    padding-left: 1.5rem;
+    line-height: 1.6;
+  }
+  .ds-numbered li {
+    margin: 0.5rem 0;
+  }
+  .ds-numbered code {
+    font-family: var(--font-code);
+    color: var(--color-primary);
+    font-size: 0.875em;
+  }
+</style>

@@ -3,7 +3,7 @@ export const prerender = true;
 import { getCollection } from 'astro:content';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ToolCard from '../../components/stack/ToolCard.astro';
-import ParticipantCard from '../../components/stack/ParticipantCard.astro';
+import PersonCardThumb from '../../components/stack/PersonCard--Thumb.astro';
 
 const allParticipants = await getCollection('participants');
 const visiblePeople = allParticipants.filter(p => p.data.publish);
@@ -49,6 +49,7 @@ const peopleCards = visiblePeople
       avatar: p.data.headshot ?? p.data.github_avatar,
       toolCount: total,
       kauffmanClass: p.data.kauffman_class,
+      joinedOn: p.data.joined_dojo,
     };
   });
 
@@ -139,7 +140,7 @@ const totalToolsTracked = toolCounts.size;
       <ul class="stacks-people-grid" role="list">
         {peopleCards.map(c => (
           <li>
-            <ParticipantCard {...c} />
+            <PersonCardThumb {...c} />
           </li>
         ))}
       </ul>

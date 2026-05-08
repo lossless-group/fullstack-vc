@@ -1,0 +1,183 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+
+const components = [
+  {
+    name: 'AstroMarkdown',
+    purpose: 'Recursive MDAST → Astro/JSX renderer. The dispatcher: every node type (paragraph, heading, list, link, code, table, footnoteReference, containerDirective, etc.) routes here first, then defers to a specialized component for callouts, code blocks, images, and citations.',
+    cssContract: '(structural — no direct CSS; defers all styling to the page-level body class and to the specialized components below)',
+    href: '/design-system/markdown/astro-markdown',
+    note: 'Kitchen-sink demo · 20+ node types.',
+    canonical: 'packages/lfm-astro/components/AstroMarkdown.astro',
+  },
+  {
+    name: 'Callout',
+    purpose: 'Renders LFM/remark-callouts blocks (`> [!type] Title`). Three-file split: structural component + types registry + mode-aware stylesheet. Every type obeys the light/dark/vibrant mode contract.',
+    cssContract: '--callout-accent (set per-type, mode-overridden), --color-text, --fx-glow-opacity, --fx-glow-spread (used by `info` hero variant)',
+    href: '/design-system/markdown/callouts',
+    note: '10 types · aliases · info hero · 3 modes.',
+    canonical: 'packages/lfm-astro/components/Callout.astro',
+  },
+  {
+    name: 'CodeBlock',
+    purpose: 'Fenced-code renderer with Shiki syntax highlighting. Receives a `code` MDAST node (lang + value). Used for inline code samples in long-form content.',
+    cssContract: '--color-surface, --color-border, --font-code',
+    href: null,
+    note: 'Demo TBD.',
+    canonical: 'packages/lfm-astro/components/CodeBlock.astro',
+  },
+  {
+    name: 'MarkdownImage',
+    purpose: 'Renders `:::image{src=… alt=…}` directive blocks with caption support. Distinct from inline `![alt](src)` images, which go through AstroMarkdown directly.',
+    cssContract: '--color-text-muted, --color-border',
+    href: null,
+    note: 'Demo TBD.',
+    canonical: 'packages/lfm-astro/components/MarkdownImage.astro',
+  },
+  {
+    name: 'Sources',
+    purpose: 'Citation list at the bottom of a long-form page. Receives `tree.data.citations.ordered` from `parseMarkdown()`. Renders sequentially-numbered footnote anchors that pair with `footnoteReference` superscripts inside the body.',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-border',
+    href: null,
+    note: 'Renders inside MarkdownReader.',
+    canonical: 'packages/lfm-astro/components/Sources.astro',
+  },
+  {
+    name: 'MarkdownReader',
+    purpose: 'Generic LFM-rendered reading column. Wraps an MDAST tree in a 70ch column with prose styling. Used by `/projects/[slug]/` and `/working-groups/[slug]/`.',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-body, --font-code',
+    href: '/design-system/markdown/markdown-reader',
+    note: 'Renamed from ProjectReader · generic.',
+    canonical: 'sites/{site}/src/components/markdown/MarkdownReader.astro',
+  },
+];
+---
+
+<BaseThemeLayout
+  title="Design System · Markdown Components"
+  description="Catalog of LFM-rendering components — AstroMarkdown, Callout, CodeBlock, MarkdownImage, Sources, MarkdownReader."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="mb-10">
+    <p class="text-sm uppercase tracking-[0.18em] mb-3" style="color: var(--color-text-muted); font-family: var(--font-code);">
+      Design System · Markdown
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4" style="font-family: var(--font-display); color: var(--color-text);">
+      Markdown Rendering Components
+    </h1>
+    <p class="text-lg max-w-3xl" style="color: var(--color-text-muted); line-height: 1.55;">
+      The pipeline that turns <code style="font-family: var(--font-code); color: var(--color-primary);">parseMarkdown()</code> output (an MDAST tree from <code style="font-family: var(--font-code); color: var(--color-primary);">@lossless-group/lfm</code>) into rendered HTML. Canonical sources live in <code style="font-family: var(--font-code); color: var(--color-primary);">packages/lfm-astro/components/</code>; sites copy them in and adapt as needed.
+    </p>
+  </header>
+
+  <ModeThemeToggle />
+
+  <section class="ds-md-grid">
+    {components.map(c => (
+      c.href ? (
+        <a class="ds-card-link" href={c.href}>
+          <article class="ds-md-card">
+            <p class="ds-md-eyebrow">{c.note}</p>
+            <h2 class="ds-md-title">{c.name}</h2>
+            <p class="ds-md-purpose">{c.purpose}</p>
+            <p class="ds-md-canonical">{c.canonical}</p>
+            <p class="ds-md-tokens"><span>CSS contract:</span> {c.cssContract}</p>
+            <span class="ds-md-cta">View demo →</span>
+          </article>
+        </a>
+      ) : (
+        <article class="ds-md-card ds-md-card--inert">
+          <p class="ds-md-eyebrow">{c.note}</p>
+          <h2 class="ds-md-title">{c.name}</h2>
+          <p class="ds-md-purpose">{c.purpose}</p>
+          <p class="ds-md-canonical">{c.canonical}</p>
+          <p class="ds-md-tokens"><span>CSS contract:</span> {c.cssContract}</p>
+        </article>
+      )
+    ))}
+  </section>
+</BaseThemeLayout>
+
+<style>
+  .ds-md-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 768px) {
+    .ds-md-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .ds-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .ds-md-card {
+    height: 100%;
+    padding: 1.5rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .ds-card-link:hover .ds-md-card,
+  .ds-card-link:focus-visible .ds-md-card {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+  .ds-md-card--inert {
+    opacity: 0.7;
+  }
+  .ds-md-eyebrow {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .ds-md-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .ds-md-purpose {
+    margin: 0 0 0.75rem;
+    color: var(--color-text);
+    line-height: 1.55;
+    font-size: 0.9375rem;
+  }
+  .ds-md-canonical {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+  }
+  .ds-md-tokens {
+    margin: 0 0 1rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+  .ds-md-tokens span {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .ds-md-cta {
+    display: inline-block;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    border-bottom: 1px dashed currentColor;
+    padding-bottom: 1px;
+  }
+</style>

@@ -2,11 +2,13 @@
 handle: mpstaton
 name: "Michael Staton"
 firm: "Lossless Group / FullStack VC"
+role: "Agent Conductor"
 kauffman_class: 20
 github: https://github.com/mpstaton
 github_avatar: https://avatars.githubusercontent.com/u/4084538
 headshot: /images/participant-headshots/headshot__Michael-Staton.jpeg
 linkedin: https://www.linkedin.com/in/michaelstaton/
+directory_profile_kauffman: https://www.kauffmanfellows.org/fellows/michael-staton
 publish: true
 joined_dojo: 2026-04-29
 current_stack:
@@ -67,7 +69,7 @@ abandoned_stack:
   - tool: craft-docs
     abandoned: 2026-04-28
     reason: "Found Obsidian better over time, as it gave me access to all the content at the filesystem level and had a Plugin ecosystem."
- - tool: trae-ide
+  - tool: trae-ide
     abandoned: 2025-10-28
     reason: "Found Claude Code better over time."
 ---
