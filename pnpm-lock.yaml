@@ -21,8 +21,8 @@ importers:
         specifier: ^10.0.6
         version: 10.0.6(astro@6.3.1(@types/node@25.6.0)(@vercel/functions@3.4.4)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.2)(yaml@2.8.3))(rollup@4.60.2)(svelte@5.55.5)
       '@lossless-group/lfm':
-        specifier: npm:@jsr/lossless-group__lfm@^0.2.2
-        version: '@jsr/lossless-group__lfm@0.2.2'
+        specifier: npm:@jsr/lossless-group__lfm@^0.3.0
+        version: '@jsr/lossless-group__lfm@0.3.0'
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.2.4(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
@@ -472,8 +472,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jsr/lossless-group__lfm@0.2.2':
-    resolution: {integrity: sha512-1BfpEIV4wAVnEaQfjasTX5idAYE6JBcXPqu97t44JRPPAB/UJ6EIhqZwmC53Pv4/V6ryeYTGzX4i34R0yoNZnw==, tarball: https://npm.jsr.io/~/11/@jsr/lossless-group__lfm/0.2.2.tgz}
+  '@jsr/lossless-group__lfm@0.3.0':
+    resolution: {integrity: sha512-YSikZtVnJ+qWjH+1CZsYh94ujgh3Jj1SQW801D6GP5oZwi3ty8Aa+fyBy0UFU5iZLpZOCpCSMLxSP3x/Lv7qdA==, tarball: https://npm.jsr.io/~/11/@jsr/lossless-group__lfm/0.3.0.tgz}
 
   '@libsql/client@0.17.3':
     resolution: {integrity: sha512-HXk9wiAoJbKFbyBH4O+aEhN6ir5ERXuXvwE5OD2eR4/5RUa3Pw/8L9zrnVdU+iNJitRvisPWaIwmhkO3bH7giA==}
@@ -2857,7 +2857,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsr/lossless-group__lfm@0.2.2':
+  '@jsr/lossless-group__lfm@0.3.0':
     dependencies:
       '@types/mdast': 4.0.4
       remark-directive: 3.0.1
