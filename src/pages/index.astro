@@ -1,15 +1,16 @@
 ---
 export const prerender = true;
+import { getEntry } from 'astro:content';
 import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
 import TextLinkSpan from '../components/buttons/TextLinkSpan.astro';
 import Section__HowItWorks from '../components/sections/Section__HowItWorks.astro';
 import AlertDisplay from '../components/ui/AlertDisplay.astro';
+
+const page = await getEntry('pages', 'home');
+const { title, description, eyebrow, heading } = page!.data;
 ---
 
-<BaseThemeLayout
-  title="FullStack VC — Agentic VC Dojo"
-  description="A learning community where venture capitalists practice using AI to give their firms superpowers."
->
+<BaseThemeLayout title={title} description={description}>
   <div class="px-6 pt-4 max-w-4xl mx-auto text-right">
     <TextLinkSpan>
       <a href="/brand-kit">Brand Kit</a>
@@ -30,14 +31,14 @@ import AlertDisplay from '../components/ui/AlertDisplay.astro';
       class="text-sm uppercase tracking-[0.18em] mb-6"
       style="color: var(--color-text-muted); font-family: var(--font-code);"
     >
-      Agentic VC Dojo · Monthly Web Meetings · Kauffman Fellows or Invite only
+      {eyebrow}
     </p>
 
     <h1
       class="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-8"
       style="font-family: var(--font-display); background: var(--fx-headline-gradient, none); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--color-text);"
     >
-      Learn AI superpowers for your venture firm.
+      {heading}
     </h1>
 
     <p
