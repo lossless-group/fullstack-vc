@@ -1,5 +1,5 @@
 ---
-handle: laura-gaviria-halaby
+handle: lauragaviriahalaby
 name: "Laura Gaviria Halaby"
 firm: "Faktory"
 role: "Cofounder"
