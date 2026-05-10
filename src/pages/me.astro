@@ -1,0 +1,244 @@
+---
+// Provider-aware post-login landing.
+//
+// Looks up the User row by *whichever* provider the session was minted with,
+// then routes (or renders) based on what's *linked on the row*, not on the
+// current cookie's provider. This is what lets a dual-provider user (e.g.
+// Marcos, who linked GitHub + LinkedIn against the same email) land on their
+// edit surface even when they're currently signed in via LinkedIn — the
+// previous /stack/me only inspected `session.provider` and dumped LinkedIn
+// sessions on the public /people index.
+//
+// LinkedIn-only users (no GitHub handle on their row) get a real settings
+// surface here with a clear "Link GitHub to set up your tool stack" affordance,
+// rather than the dead-end on /people.
+//
+// Background: context-v/issue-resolutions/Auth-Identity-System-Worked-but-UX-Failed-Silent-Bounces.md
+import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
+import { db, User, eq } from 'astro:db';
+import { verifySession, SESSION_COOKIE_NAME } from '../lib/session';
+
+export const prerender = false;
+
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+if (!session) return Astro.redirect('/login', 302);
+
+// Look up the User row by the active provider's identifier. Best-effort —
+// if the row isn't there yet (DB hiccup, table not pushed) we fall back to
+// the cookie's view of the world.
+let row: { github_handle: string | null; linkedin_sub: string | null; name: string | null; avatar: string | null; email: string | null } | null = null;
+try {
+  if (session.provider === 'github') {
+    row = (await db.select().from(User).where(eq(User.github_handle, session.subject)).get()) ?? null;
+  } else {
+    row = (await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get()) ?? null;
+  }
+} catch {
+  row = null;
+}
+
+const githubHandle = row?.github_handle ?? (session.provider === 'github' ? session.subject : null);
+const linkedinLinked = !!row?.linkedin_sub || session.provider === 'linkedin';
+const githubLinked = !!githubHandle;
+
+// If this user has a github_handle on file, the canonical edit surface lives
+// at /people/{handle}/stack/edit. Send them straight there.
+if (githubHandle) {
+  return Astro.redirect(`/people/${githubHandle}/stack/edit`, 302);
+}
+
+// LinkedIn-only path: render a minimal landing. The site uses GitHub handles
+// as URL slugs for /people/{handle}, so a LinkedIn-only user has no stack
+// edit surface today. Surface that fact and offer a way forward.
+const displayName = row?.name ?? session.name ?? 'there';
+const avatar = row?.avatar ?? session.avatar ?? null;
+const email = row?.email ?? session.email ?? null;
+---
+
+<BaseThemeLayout
+  title="Your account · FullStack VC"
+  description="Your linked providers and account status."
+  noindex={true}
+  containerClass="px-6 py-12 max-w-xl mx-auto"
+>
+  <header class="me-head">
+    {avatar ? (
+      <img class="me-head__avatar" src={avatar} alt="" loading="eager" decoding="async" />
+    ) : (
+      <span class="me-head__avatar me-head__avatar--placeholder" aria-hidden="true">
+        {displayName.split(/\s+/).slice(0, 2).map(n => n[0]?.toUpperCase()).join('')}
+      </span>
+    )}
+    <div>
+      <p class="me-head__eyebrow">Signed in as</p>
+      <h1 class="me-head__name">{displayName}</h1>
+      {email && <p class="me-head__email">{email}</p>}
+    </div>
+  </header>
+
+  <section class="me-section">
+    <h2 class="me-section__title">Linked providers</h2>
+    <ul class="me-providers">
+      <li class={`me-provider ${githubLinked ? 'is-linked' : ''}`}>
+        <span class="me-provider__name">GitHub</span>
+        <span class="me-provider__status">{githubLinked ? 'Linked' : 'Not linked'}</span>
+      </li>
+      <li class={`me-provider ${linkedinLinked ? 'is-linked' : ''}`}>
+        <span class="me-provider__name">LinkedIn</span>
+        <span class="me-provider__status">{linkedinLinked ? 'Linked' : 'Not linked'}</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="me-section me-cta">
+    <h2 class="me-section__title">Set up your tool stack</h2>
+    <p class="me-cta__body">
+      Stack profiles use your GitHub handle as their URL (so others can find
+      you at <code>/people/&lt;handle&gt;</code>). Link your GitHub account to
+      enable the editor.
+    </p>
+    <a class="me-btn me-btn--primary" href="/api/auth/github/login">
+      Continue with GitHub
+    </a>
+  </section>
+
+  <p class="me-logout">
+    <a class="me-logout__link" href="/api/auth/logout">Log out</a>
+  </p>
+</BaseThemeLayout>
+
+<style>
+  .me-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .me-head__avatar {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primary);
+    flex: 0 0 auto;
+  }
+  .me-head__avatar--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+  .me-head__eyebrow {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-text-muted);
+  }
+  .me-head__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  .me-head__email {
+    margin: 0.25rem 0 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+  }
+  .me-section {
+    margin-bottom: 2rem;
+  }
+  .me-section__title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .me-providers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .me-provider {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+  }
+  .me-provider.is-linked {
+    border-color: color-mix(in srgb, var(--color-primary) 50%, transparent);
+    background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  }
+  .me-provider__status {
+    color: var(--color-text-muted);
+  }
+  .me-provider.is-linked .me-provider__status {
+    color: var(--color-primary);
+  }
+  .me-cta {
+    padding: 1.25rem;
+    border-radius: 0.625rem;
+    border: 1px dashed var(--color-border);
+    background: var(--fx-card-bg);
+  }
+  .me-cta__body {
+    margin: 0 0 1rem;
+    color: var(--color-text);
+    line-height: 1.55;
+  }
+  .me-cta__body code {
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+  .me-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+  .me-btn--primary {
+    background: var(--color-primary);
+    color: var(--color__bone);
+    border-color: var(--color-primary);
+  }
+  .me-btn--primary:hover { color: var(--color__bone); border-color: var(--color-primary); }
+  .me-logout {
+    margin-top: 2rem;
+  }
+  .me-logout__link {
+    color: var(--color-text-muted);
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .me-logout__link:hover { color: var(--color-primary); }
+</style>

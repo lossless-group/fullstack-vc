@@ -9,8 +9,13 @@
  * the markdown — not here.
  *
  * This site is `output: 'server'` (Vercel). `prerender = true` makes Astro
- * emit a static dist/llms.txt at build time so we never assemble multi-KB
- * markdown on a request hot path.
+ * emit a static dist/llms.txt at build time so LLM crawlers always see a
+ * stable, build-deterministic file with no cold-start tax — that's the
+ * whole point of the llms.txt standard. The build emits a benign
+ * `Astro.request.headers was used` warning here because the
+ * `@astrojs/vercel` adapter middleware reads `x-real-ip` on every render
+ * including prerender passes; the warning is the adapter, not this route.
+ * Live with it.
  */
 
 import type { APIRoute } from 'astro';

@@ -2,14 +2,30 @@
 import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
 import { verifySession, SESSION_COOKIE_NAME } from '../lib/session';
 
-// If already logged in, bounce straight to the user's edit surface.
+// If already logged in, bounce straight to the provider-aware landing.
 const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
 if (session) {
   if (session.provider === 'github') {
     return Astro.redirect(`/people/${session.subject}/stack/edit`, 302);
   }
-  return Astro.redirect('/people', 302);
+  return Astro.redirect('/me', 302);
 }
+
+// `error` query param is set by the OAuth callback when something went wrong
+// — most commonly `stale_link` from a back-button replay. Surface a friendly
+// notice instead of a raw 400.
+const errorCode = Astro.url.searchParams.get('error');
+const errorMessages: Record<string, string> = {
+  stale_link:
+    "Looks like you used an old link — most likely from the browser's back button. Pick a provider below to log in fresh.",
+  token_exchange:
+    "We couldn't complete the handshake with that provider. Please try again — if it persists, ping us at hello@lossless.group.",
+  user_fetch:
+    "We connected to the provider but couldn't read your profile. Please try again or use the other provider.",
+  server_misconfigured:
+    "Server-side OAuth credentials look misconfigured. We've been notified — please try again shortly.",
+};
+const errorMessage = errorCode ? errorMessages[errorCode] : null;
 ---
 
 <BaseThemeLayout
@@ -26,6 +42,12 @@ if (session) {
   <p class="mb-8" style="color: var(--color-text);">
     Sign in with GitHub or LinkedIn — whichever you prefer.
   </p>
+
+  {errorMessage && (
+    <div class="login-notice" role="alert">
+      <p>{errorMessage}</p>
+    </div>
+  )}
 
   <div class="login-buttons">
     <a class="login-btn login-btn--github" href="/api/auth/github/login">
@@ -50,6 +72,17 @@ if (session) {
 </BaseThemeLayout>
 
 <style>
+  .login-notice {
+    margin-bottom: 1.25rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .login-notice p { margin: 0; }
   .login-buttons {
     display: flex;
     flex-direction: column;

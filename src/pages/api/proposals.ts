@@ -13,6 +13,7 @@ import type { APIRoute } from 'astro';
 import { db, Proposal, desc, eq, and } from 'astro:db';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 import { matchesRoster } from '../../lib/oauth-roster';
+import { resolveCanonicalUserId } from '../../lib/user-record';
 
 export const prerender = false;
 
@@ -54,7 +55,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return json({ error: `body must be ${BODY_MIN}-${BODY_MAX} characters` }, 400);
   }
 
-  const user_id = (rosterEntry.email ?? session.subject).toLowerCase();
+  // Canonical id from the User row when it exists — keeps proposals
+  // attributed to the same user_id even if the user alternates providers
+  // with mismatched emails.
+  const user_id = await resolveCanonicalUserId(session, rosterEntry);
   const user_name = rosterEntry.name ?? session.name ?? null;
   const user_handle = rosterEntry.github ?? (session.provider === 'github' ? session.subject : null);
   const now = new Date();

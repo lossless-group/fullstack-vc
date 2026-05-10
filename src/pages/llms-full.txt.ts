@@ -18,6 +18,11 @@ import { loadAllProjects, projectHref } from '../lib/load-projects';
 import { loadAllWorkingGroups, workingGroupHref } from '../lib/load-working-groups';
 import template from '../llms/llms-full.md?raw';
 
+// Prerendered for the same reason as /llms.txt — LLM crawlers expect a
+// stable, build-deterministic, statically-served file. The
+// `Astro.request.headers was used` warning that fires here is from the
+// @astrojs/vercel adapter middleware (reads x-real-ip on every render,
+// prerender included), not from this route. Benign.
 export const prerender = true;
 
 type AnyData = Record<string, any>;

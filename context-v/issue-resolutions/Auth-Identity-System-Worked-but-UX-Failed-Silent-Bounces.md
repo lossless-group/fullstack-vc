@@ -142,7 +142,7 @@ For a brand-new user, the GitHub flow renders an edit form (good) whose only way
 
 ### Issue 4 — Duplicate rows when a user's GitHub email and LinkedIn email differ
 
-**Where:** `src/lib/user-record.ts:71` (the existence check uses only `id`)
+**Where:** `src/lib/user-record.ts:71` (the existence check uses only `id`).
 
 `recordUserLogin` looks up `User` by `id` (the canonical email-or-fallback). If the second-provider login resolves to a *different* canonical id than the first, we insert a new row instead of finding and merging the existing one.
 
@@ -151,9 +151,35 @@ Concrete in production:
 - **Ariel Muslera** — 2 rows: `arielmuslera@gmail.com` (GitHub: `amuslera`) and `amuslera05@gsb.columbia.edu` (LinkedIn: `Vd_bBNeFzf`).
 - **Rodrigo Borges** — 3 rows: `rodrigo@domo.vc` (GitHub: `borgesdomo`), `rodrigo@domoinvest.com.br` (LinkedIn: `lFDqlpBtCN`), `rvborges@gmail.com` (GitHub: `rvborges`).
 
-The merge-by-email design is fine when both providers expose the same email; it has no fallback when they don't. We need a "before insert, also check `WHERE github_handle = ? OR linkedin_sub = ?`" pre-flight.
+#### Why the canonical-id-only lookup misses
 
-Existing duplicates need a one-time reconciliation pass.
+`canonicalUserId(session, rosterEntry)` returns `rosterEntry.email.toLowerCase()` (or `<provider>:<subject>` if no roster email). The roster currently has **one entry** (Michael Staton). For everyone else, `matchesRoster()` returns a *synthetic* roster entry built from the session itself — so `canonicalUserId` reduces to `session.email.toLowerCase()`. GitHub returns the user's primary GitHub email; LinkedIn returns the user's primary LinkedIn email. When those differ, the canonical id differs, and `WHERE id = ?` finds nothing.
+
+#### What my merge-by-handle fallback fixes — and what it doesn't
+
+I added a fallback: if the id lookup misses, also look up by `github_handle` (when logging in via GitHub) or `linkedin_sub` (when logging in via LinkedIn). That **only catches repeat logins**:
+
+| Scenario | Caught by fallback? |
+|---|---|
+| User logs in second time with same provider, but their roster email changed | ✅ yes — `github_handle` / `linkedin_sub` is already on the row from the previous login |
+| User logs in for the **first time** with the **second** provider, different email from the first | ❌ no — the second provider's identifier hasn't been written to any row yet, so the fallback also misses → INSERT → dup row |
+
+Ariel and Rodrigo are the second case. Both alternated providers within minutes — the second provider had nothing to fall back to yet, so we created fresh rows. The merge-by-handle fix is necessary but not sufficient.
+
+#### The structural fix: a populated roster
+
+When a roster entry has both `github` and `email` (and `email_aliases` for known secondary emails), `matchesRoster()` resolves *both* providers' sessions to the **same** `RosterEntry`, which means `canonicalUserId` returns the **same** primary email for both providers. The id lookup hits on the first try, no fallback needed, no dup possible.
+
+Today's roster has one entry. To prevent the next batch of dups we need to populate the roster for known users — at minimum the github handle plus all emails the user is likely to authenticate with. The 14 reconciled users from the audit are the obvious starting set; we have their verified emails and (for the 6 who logged in with GitHub) their handles.
+
+#### Cleanup for existing dups
+
+Two artifacts in `private/` (gitignored):
+
+- `private/reconcile-users.sql` — atomic SQL transaction that performs the 4 merges (2 deletes for Ariel + 2 deletes + 2 updates for Rodrigo). Paste into Turso's web SQL console.
+- `private/User-reconciled.csv` — same end-state as a CSV, for reference / re-import.
+
+Neither table needs `ParticipationInterest` / `Vote` / `Proposal` repointing — none of those rows reference any of the dup-row ids in the current dataset.
 
 ### Issue 5 — No auth-event log; OAuth + DB failures are invisible
 
@@ -175,7 +201,9 @@ Vercel function logs exist but are not retained long enough to support "we got a
 | 1 | Replace raw 400 on state-mismatch with a redirect to `/login?error=stale_link`, and have `/login.astro` show a friendly notice. | `src/pages/api/auth/{github,linkedin}/callback.ts`, `src/pages/login.astro` | XS |
 | 2 | `/stack/me` should look up the `User` row by `github_handle` or `linkedin_sub` and route based on what's *linked*, not the current cookie's provider. LinkedIn-only users get a real settings surface. | `src/pages/stack/me.astro`, possibly a new `src/pages/me.astro` | S |
 | 3 | Stop 404ing `/people/{handle}` for logged-in users. Either (a) convert the route to SSR with a fallback rendering for users who have a `User` row but no participants markdown file, or (b) make `/people/[handle]/stack/edit` not link to a profile that doesn't exist. | `src/pages/people/[handle].astro`, `src/pages/people/[handle]/stack/edit.astro` | M |
-| 4 | In `recordUserLogin`, before falling back to insert, also `SELECT WHERE github_handle = ? OR linkedin_sub = ?` and merge into that row. Add a one-time reconciliation script for existing dups. | `src/lib/user-record.ts`, `scripts/reconcile-user-rows.ts` (new) | S |
+| 4a | (DONE) In `recordUserLogin`, before falling back to insert, also `SELECT WHERE github_handle = ? OR linkedin_sub = ?`. Catches repeat logins. | `src/lib/user-record.ts` | S |
+| 4b | Populate `kauffman_roster.json` with `github` + `email` + `email_aliases` for known users so first-time alternating logins resolve to the same canonical id structurally (the only fix that prevents new dups). | `src/content/kauffman_roster.json` | S |
+| 4c | (DONE) Reconcile existing dups for Ariel + Rodrigo — see `private/reconcile-users.sql`. | (one-off) | XS |
 | 5 | Add an `AuthEvent` table + write to it from every callback branch (success, state-mismatch, token-exchange-fail, user-fetch-fail, recordUserLogin-error). | `db/config.ts`, `src/lib/auth-events.ts` (new), both callbacks, `user-record.ts` | S |
 
 **Suggested first PR:** items 1 + 2 + 5 — the minimum to stop bleeding and get visibility into the next regression. Item 3 follows once the routing model is decided. Item 4 needs a reconciliation script so we don't break links to existing duplicate rows.

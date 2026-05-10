@@ -157,7 +157,12 @@ const PollEvent = defineTable({
 const User = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),       // canonical = lowercased roster email
-    email: column.text({ optional: true }),
+    email: column.text({ optional: true }),       // primary email — matches User.id when canonical
+    // All emails we've ever seen for this person — populated from each provider's
+    // session.email on login (deduped, lowercased). Lets us recognize a returning
+    // user whose two providers expose different emails, and gives a forward path
+    // for a "claim other provider" UX without committing to the roster.
+    emails: column.json({ optional: true }),      // string[]
     name: column.text({ optional: true }),
     avatar: column.text({ optional: true }),
     // Provider connections — either or both populated. Indexed unique below
@@ -251,6 +256,46 @@ const ParticipationInterest = defineTable({
   },
 });
 
+// ─── AuthEvent ───────────────────────────────────────────────────────────────
+// Append-only audit log of every OAuth callback outcome — success or failure.
+// Driven by the Auth-Identity-System-Worked-but-UX-Failed-Silent-Bounces issue
+// resolution: 17 users completed OAuth, 15 produced no in-app activity, and we
+// had nothing to look at when the first complaint came in.
+//
+// Every branch of /api/auth/{github,linkedin}/callback writes one row. Writes
+// are best-effort — a logging failure must never break the login itself.
+//
+// outcomes (open enum, expand as needed):
+//   'success'              — cookie set, redirect to app
+//   'state_mismatch'       — back-button or replayed callback
+//   'token_exchange_fail'  — provider returned non-200 on token endpoint
+//   'no_access_token'      — token endpoint returned 200 with no token
+//   'user_fetch_fail'      — provider /user(info) endpoint returned non-200
+//   'record_user_error'    — recordUserLogin's swallowed DB error path
+//   'missing_credentials'  — server env var not configured
+const AuthEvent = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    at: column.date(),
+    provider: column.text(),         // 'github' | 'linkedin'
+    outcome: column.text(),
+    // Provider subject (GitHub login, LinkedIn sub) when known. Null for
+    // pre-token-exchange failures.
+    subject: column.text({ optional: true }),
+    // Email if surfaced by the provider — useful for "did this user ever
+    // make it through?" lookups when the user only knows their email.
+    email: column.text({ optional: true }),
+    // canonical User.id when the success branch reached recordUserLogin.
+    user_id: column.text({ optional: true }),
+    // Free-text detail. Keep short — exception messages, status codes, etc.
+    note: column.text({ optional: true }),
+  },
+  indexes: {
+    auth_event_at: { on: ['at'] },
+    auth_event_outcome: { on: ['outcome'] },
+  },
+});
+
 export default defineDb({
-  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal, ParticipationInterest },
+  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal, ParticipationInterest, AuthEvent },
 });

@@ -1,18 +1,13 @@
 ---
-// Backward-compat redirector. The edit surface lives at /people/{handle}/edit.
-// /stack/me is kept so old bookmarks + the prior OAuth callback target still work.
+// Backward-compat redirector. Old OAuth callback target — kept so existing
+// bookmarks still work. Routing logic now lives in /me, which inspects the
+// User row (not just the current cookie's provider) and routes accordingly.
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
 const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
 if (!session) return Astro.redirect('/login', 302);
-if (session.provider === 'github') {
-  return Astro.redirect(`/people/${session.subject}/stack/edit`, 302);
-}
-// LinkedIn-provider users use an opaque `sub` for subject; for v0.5 we don't
-// have a stable handle for them. Send them to the public people index.
-return Astro.redirect('/people', 302);
+return Astro.redirect('/me', 302);
 ---
 
-<!-- Unreachable: Astro.redirect() above always returns. This stub exists only
-     to satisfy Astro's "every page has a template" check. -->
+<!-- Unreachable: Astro.redirect() above always returns. -->
 <p>Redirecting…</p>

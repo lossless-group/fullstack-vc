@@ -18,6 +18,7 @@ import type { APIRoute } from 'astro';
 import { db, ParticipationInterest, and, eq } from 'astro:db';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 import { matchesRoster } from '../../lib/oauth-roster';
+import { resolveCanonicalUserId } from '../../lib/user-record';
 
 export const prerender = false;
 
@@ -36,7 +37,10 @@ async function resolveUserId(cookies: any): Promise<{ user_id: string } | null> 
   if (!session) return null;
   const rosterEntry = matchesRoster(session);
   if (!rosterEntry) return null;
-  const user_id = (rosterEntry.email ?? session.subject).toLowerCase();
+  // Look up the User row by the active provider's identifier so users with
+  // mismatched GitHub/LinkedIn emails (e.g. Ariel, Rodrigo) get a stable
+  // user_id regardless of which provider they're logged in with right now.
+  const user_id = await resolveCanonicalUserId(session, rosterEntry);
   return { user_id };
 }
 

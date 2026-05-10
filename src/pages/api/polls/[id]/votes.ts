@@ -16,6 +16,7 @@ import type { APIRoute } from 'astro';
 import { db, Poll, Session, Vote, PollResult, eq, and } from 'astro:db';
 import { verifySession, SESSION_COOKIE_NAME } from '../../../../lib/session';
 import { matchesRoster } from '../../../../lib/oauth-roster';
+import { resolveCanonicalUserId } from '../../../../lib/user-record';
 import { validateVotePayload, aggregateVotes } from '../../../../lib/poll-templates';
 
 export const prerender = false;
@@ -38,17 +39,11 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
   const rosterEntry = matchesRoster(session);
   if (!rosterEntry) return json({ error: 'not on roster' }, 403);
 
-  // Canonical voter identity: the roster entry is the source of truth for
-  // "who this person is," regardless of which OAuth provider they signed in
-  // with. Using the roster email (lowercased) as Vote.user_id means a
-  // GitHub login and a LinkedIn login by the same Fellow share one Vote row,
-  // and the (poll_id, user_id) unique index correctly enforces one vote per
-  // person — not one vote per provider.
-  //
-  // Fallback to session.subject only when the roster entry has no email
-  // (GitHub-handle-only entries; rare). Those users can't dual-provider
-  // anyway, so the fallback is safe.
-  const user_id = (rosterEntry.email ?? session.subject).toLowerCase();
+  // Canonical voter identity: prefer the User row's id (consistent across
+  // providers, even when the user's GitHub email and LinkedIn email differ).
+  // Falls back to roster-email / session-subject derivation only when no
+  // User row exists yet.
+  const user_id = await resolveCanonicalUserId(session, rosterEntry);
 
   // ── Load poll + verify it's open ────────────────────────────────────────
   const poll = await db.select().from(Poll).where(eq(Poll.id, id)).get();
