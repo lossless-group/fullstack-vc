@@ -13,6 +13,7 @@ current_stack: []
 aspirational_stack:
   - tool: openclaw
     intent: "Get it running for the first time — on something, anything, anywhere."
+  - tool: agent37
 abandoned_stack: []
 ---
 

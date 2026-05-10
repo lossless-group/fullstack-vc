@@ -1,7 +1,7 @@
 ---
 handle: rodrigo
 name: "Rodrigo Borges"
-publish: false
+publish: true
 joined_dojo: 2026-04-29
 current_stack: []
 aspirational_stack: []
