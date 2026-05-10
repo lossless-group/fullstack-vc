@@ -44,6 +44,13 @@ const canonicalUrl = new URL(Astro.url.pathname, siteOrigin + '/').toString();
   {noindex && <meta name="robots" content="noindex, nofollow" />}
   <link rel="icon" href={favicon} type="image/svg+xml" />
   <link rel="canonical" href={canonicalUrl} />
+  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+  <link
+    rel="alternate"
+    type="text/markdown"
+    href="/llms.txt"
+    title="llms.txt for this site"
+  />
 
   <!-- Astro Fonts API — emits @font-face + the --font__* CSS variables
        that theme.css's semantic tokens reference. Above-the-fold fonts

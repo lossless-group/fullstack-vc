@@ -21,6 +21,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/db": "^0.21.1",
+    "@astrojs/sitemap": "^3.7.2",
     "@astrojs/svelte": "^8.1.0",
     "@astrojs/vercel": "^10.0.6",
     "@lossless-group/lfm": "npm:@jsr/lossless-group__lfm@^0.3.0",

@@ -3,6 +3,7 @@ import { loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
 import svelte from '@astrojs/svelte';
+import sitemap from '@astrojs/sitemap';
 import db from '@astrojs/db';
 import path from 'path';
 
@@ -29,7 +30,21 @@ export default defineConfig({
   // Maintain-an-Interactive-Polling-System--v2.md §8). Local dev uses a
   // libSQL file in .astro/content.db; production wires to Turso via
   // ASTRO_DB_REMOTE_URL + ASTRO_DB_APP_TOKEN env vars.
-  integrations: [db(), svelte()],
+  //
+  // @astrojs/sitemap auto-generates sitemap-index.xml + sitemap-0.xml from
+  // every prerendered page Astro emits. Filter excludes the llms.txt
+  // endpoints (those serve LLMs, not search engines) and the 404 page.
+  integrations: [
+    db(),
+    svelte(),
+    sitemap({
+      filter: (page) =>
+        !page.includes('/llms.txt') &&
+        !page.includes('/llms-full.txt') &&
+        !page.endsWith('/404/') &&
+        !page.endsWith('/404'),
+    }),
+  ],
 
   // Astro 6 stable Fonts API. Emits @font-face + the named CSS variables that
   // theme.css's Tier 2 semantic tokens (--font-display/-body/-code) reference.
