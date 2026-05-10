@@ -16,6 +16,7 @@ import Section__WebinarSurveyPolls from '../../components/sections/Section__Webi
 import Section__WebinarFirmsRepresented from '../../components/sections/Section__WebinarFirmsRepresented.astro';
 import Section__WebinarSurveyVoices from '../../components/sections/Section__WebinarSurveyVoices.astro';
 import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
+import Section__WebinarReflection from '../../components/sections/Section__WebinarReflection.astro';
 import PollEmbed from '../../components/polls/PollEmbed.svelte';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 import { matchesRoster } from '../../lib/oauth-roster';
@@ -292,6 +293,9 @@ const survey = surveyModules[surveyKey]?.default ?? null;
           headingAccentTxt="hoping to take home"
           ledeTxt="Free-response answers to 'what do you most want to get out of this session?' — lightly edited."
         />
+      )}
+      {survey.reflection && (
+        <Section__WebinarReflection reflection={survey.reflection} />
       )}
     </div>
   )}

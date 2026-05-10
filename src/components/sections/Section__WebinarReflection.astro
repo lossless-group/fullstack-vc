@@ -1,0 +1,314 @@
+---
+/* Section__WebinarReflection
+   Post-session reflection: numeric scorecard + anonymous highlights +
+   a "Getting Better" panel that pairs verbatim critical feedback with the
+   concrete change we're making in response. The pattern is intentional —
+   surface the criticism in the host's voice rather than burying it. The
+   reading is: this room takes feedback, shows its work, ships changes.
+
+   Schema (from src/data/webinar-survey/<id>.json → reflection block):
+     respondents, validRespondents
+     scores.insightful  { label, scale, n, mean, median, min, max }
+     scores.recommend   { ...same..., nps, promoters, passives, detractors }
+     highlights[]       { quote, attribution? }
+     gettingBetter[]    { feedback, response }
+*/
+
+interface ScoreStat {
+  label: string;
+  scale: string;
+  n: number;
+  mean: number;
+  median: number;
+  min: number;
+  max: number;
+  nps?: number;
+  promoters?: number;
+  passives?: number;
+  detractors?: number;
+}
+interface Reflection {
+  respondents?: number;
+  validRespondents?: number;
+  scores?: { insightful?: ScoreStat; recommend?: ScoreStat };
+  highlights?: { quote: string; attribution?: string }[];
+  gettingBetter?: { feedback: string; response: string }[];
+}
+
+interface Props {
+  reflection: Reflection;
+  contextSetterTxt?: string;
+}
+
+const { reflection, contextSetterTxt = "After the session" } = Astro.props;
+const { scores, highlights = [], gettingBetter = [], validRespondents } = reflection;
+const hasScores = !!(scores?.insightful || scores?.recommend);
+---
+
+<section class="wsrefl" aria-labelledby="wsrefl-heading">
+  <p class="wsrefl__eyebrow">{contextSetterTxt}</p>
+  <h2 id="wsrefl-heading" class="wsrefl__heading">
+    What this room said <span class="wsrefl__heading-accent">when the camera was off</span>
+  </h2>
+  {validRespondents && (
+    <p class="wsrefl__lede">
+      {validRespondents} attendees answered the post-session survey. Below: the numbers, the highlights, and the one piece of feedback we're acting on.
+    </p>
+  )}
+
+  {hasScores && (
+    <ul class="wsrefl__scores" role="list">
+      {scores?.insightful && (
+        <li class="wsrefl__score">
+          <span class="wsrefl__score-num">{scores.insightful.mean.toFixed(1)}</span>
+          <span class="wsrefl__score-scale">/ 10</span>
+          <span class="wsrefl__score-label">Insightful</span>
+          <span class="wsrefl__score-hint">
+            Median {scores.insightful.median} · range {scores.insightful.min}-{scores.insightful.max} · n={scores.insightful.n}
+          </span>
+        </li>
+      )}
+      {scores?.recommend && (
+        <li class="wsrefl__score">
+          <span class="wsrefl__score-num">{scores.recommend.mean.toFixed(1)}</span>
+          <span class="wsrefl__score-scale">/ 10</span>
+          <span class="wsrefl__score-label">Would recommend to other Fellows</span>
+          <span class="wsrefl__score-hint">
+            Median {scores.recommend.median} · range {scores.recommend.min}-{scores.recommend.max} · n={scores.recommend.n}
+          </span>
+        </li>
+      )}
+      {scores?.recommend?.nps !== undefined && (
+        <li class="wsrefl__score wsrefl__score--nps">
+          <span class="wsrefl__score-num">+{scores.recommend.nps}</span>
+          <span class="wsrefl__score-label">NPS</span>
+          <span class="wsrefl__score-hint">
+            {scores.recommend.promoters} promoters · {scores.recommend.passives} passives · {scores.recommend.detractors} detractors
+          </span>
+        </li>
+      )}
+    </ul>
+  )}
+
+  {highlights.length > 0 && (
+    <div class="wsrefl__highlights">
+      <h3 class="wsrefl__subheading">Highlights</h3>
+      <ul class="wsrefl__highlight-list" role="list">
+        {highlights.map(h => (
+          <li class="wsrefl__highlight">
+            <blockquote class="wsrefl__quote">
+              <p>"{h.quote}"</p>
+              {h.attribution && <footer class="wsrefl__attribution">— {h.attribution}</footer>}
+            </blockquote>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {gettingBetter.length > 0 && (
+    <div class="wsrefl__better">
+      <h3 class="wsrefl__subheading wsrefl__subheading--better">Getting better</h3>
+      <p class="wsrefl__better-lede">
+        We surface every piece of pointed feedback alongside the change it triggers. No defensive footnotes.
+      </p>
+      <ul class="wsrefl__better-list" role="list">
+        {gettingBetter.map(item => (
+          <li class="wsrefl__better-item">
+            <p class="wsrefl__better-feedback">"{item.feedback}"</p>
+            <p class="wsrefl__better-response">
+              <span class="wsrefl__better-response-label">Our response:</span>
+              {item.response}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</section>
+
+<style>
+  .wsrefl {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+  .wsrefl__eyebrow {
+    margin: 0;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+  .wsrefl__heading {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .wsrefl__heading-accent {
+    color: var(--color-primary);
+    background: var(--fx-headline-gradient, none);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .wsrefl__lede {
+    margin: 0 0 0.5rem;
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 38rem;
+  }
+
+  .wsrefl__scores {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.875rem;
+  }
+  @media (min-width: 720px) {
+    .wsrefl__scores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .wsrefl__score {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.25rem 1rem;
+    border-radius: 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--fx-card-border);
+    box-shadow: var(--fx-card-shadow);
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  }
+  .wsrefl__score:hover {
+    border-color: var(--fx-card-border-hover);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+  .wsrefl__score--nps {
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--fx-card-bg));
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--fx-card-border));
+  }
+  .wsrefl__score-num {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-primary);
+    letter-spacing: -0.03em;
+  }
+  .wsrefl__score-scale {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-left: 0.25rem;
+  }
+  .wsrefl__score-label {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 0.125rem;
+  }
+  .wsrefl__score-hint {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .wsrefl__highlights,
+  .wsrefl__better {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .wsrefl__subheading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+  .wsrefl__subheading--better { color: var(--color-primary); }
+
+  .wsrefl__highlight-list,
+  .wsrefl__better-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .wsrefl__quote {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--color-primary);
+    border-radius: 0 0.5rem 0.5rem 0;
+    background: color-mix(in srgb, var(--color-primary) 5%, var(--color-surface));
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+  .wsrefl__quote p { margin: 0; }
+  .wsrefl__attribution {
+    margin-top: 0.5rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+
+  .wsrefl__better-lede {
+    margin: 0 0 0.25rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .wsrefl__better-item {
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+    border: 1px dashed color-mix(in srgb, var(--color-primary) 40%, var(--fx-card-border));
+  }
+  .wsrefl__better-feedback {
+    margin: 0 0 0.625rem;
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    font-style: italic;
+  }
+  .wsrefl__better-response {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .wsrefl__better-response-label {
+    display: inline-block;
+    margin-right: 0.5rem;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+</style>

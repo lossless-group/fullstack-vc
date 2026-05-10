@@ -557,5 +557,45 @@
       "body": "architecture and best practices",
       "source": "wanted"
     }
-  ]
+  ],
+  "reflection": {
+    "_sourceFile": "context-v/extra/2026-04-29_AI SKills-Dojo-Survery-Report-Session.xlsx",
+    "respondents": 9,
+    "validRespondents": 8,
+    "scores": {
+      "insightful": {
+        "label": "How insightful was this event?",
+        "scale": "1-10",
+        "n": 8,
+        "mean": 9.1,
+        "median": 10,
+        "min": 7,
+        "max": 10
+      },
+      "recommend": {
+        "label": "How likely to recommend other KF join these talks?",
+        "scale": "1-10",
+        "n": 8,
+        "mean": 9.0,
+        "median": 9.5,
+        "min": 7,
+        "max": 10,
+        "nps": 75,
+        "promoters": 6,
+        "passives": 2,
+        "detractors": 0
+      }
+    },
+    "highlights": [
+      { "quote": "Sharing best practices is the best way for us all to improve and leverage each other as a network." },
+      { "quote": "This session was absolutely amazing. I'm completely overwhelmed and have no idea how to do any of this, and I'm willing to learn." },
+      { "quote": "So amazing." }
+    ],
+    "gettingBetter": [
+      {
+        "feedback": "One quarter of the hour was used by Michael ranting. I appreciate that he has unusual delivery style that has its own charm, but he should keep himself to some sort of timeline in order to focus on content.",
+        "response": "Fair. Shut up and focus on the reason we're there. Next session will run on a hard timer for the host segment, with a co-host nudge cue if it goes long."
+      }
+    ]
+  }
 }
