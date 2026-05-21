@@ -97,11 +97,27 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
   const save: Save = parsed.data;
 
-  // Handle must match the session's identity for the github provider. The
-  // edit page's auth gate already enforces this, but the API enforces it too
-  // (defense in depth — no one should be able to POST stack edits for another
-  // user's handle even if the page were ever misconfigured).
-  if (session.provider !== 'github' || save.handle.toLowerCase() !== session.subject.toLowerCase()) {
+  // Handle must match the session's identity. The URL handle is a GitHub
+  // username (participant slug convention), so the gate is: "the User row
+  // reachable from this session has a github_handle matching the payload
+  // handle." Any provider sign-in works as long as that's true — Google or
+  // LinkedIn sessions can save edits if they've linked their GitHub via the
+  // link-while-logged-in flow. Mirrors the same shape as the edit page gate.
+  let ownerRow;
+  try {
+    if (session.provider === 'github') {
+      ownerRow = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+    } else if (session.provider === 'linkedin') {
+      ownerRow = await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    } else if (session.provider === 'google') {
+      ownerRow = await db.select().from(User).where(eq(User.google_sub, session.subject)).get();
+    }
+  } catch (err) {
+    return json({ error: 'user lookup failed', detail: String((err as Error).message ?? err) }, 502);
+  }
+  const ownerGithubHandle = ownerRow?.github_handle
+    ?? (session.provider === 'github' ? session.subject : null);
+  if (!ownerGithubHandle || ownerGithubHandle.toLowerCase() !== save.handle.toLowerCase()) {
     return json({ error: 'handle does not match session subject' }, 403);
   }
 
