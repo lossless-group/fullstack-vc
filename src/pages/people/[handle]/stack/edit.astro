@@ -6,6 +6,7 @@
 // content collection entry (if any).
 
 import { getCollection } from 'astro:content';
+import { db, User, eq } from 'astro:db';
 import BaseThemeLayout from '../../../../layouts/BaseThemeLayout.astro';
 import StackBuilder from '../../../../components/stack/StackBuilder.svelte';
 import { verifySession, SESSION_COOKIE_NAME } from '../../../../lib/session';
@@ -43,6 +44,22 @@ const initialCurrent     = (existing?.data.current_stack ?? []).map(s => ({
   notes: s.notes,
 }));
 const avatar = existing?.data.headshot ?? existing?.data.github_avatar ?? session.avatar;
+
+// Linked-provider lookup — mirrors /api/me.ts. The auth gate above already
+// requires session.provider === 'github', so we look up by github_handle.
+let providers = { github: true, linkedin: false, google: false };
+try {
+  const row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+  if (row) {
+    providers = {
+      github: !!row.github_handle,
+      linkedin: !!row.linkedin_sub,
+      google: !!row.google_sub,
+    };
+  }
+} catch {
+  // DB hiccup — leave defaults (github true since the session is github).
+}
 ---
 
 <BaseThemeLayout
@@ -63,6 +80,40 @@ const avatar = existing?.data.headshot ?? existing?.data.github_avatar ?? sessio
     avatar={avatar}
   />
 
+  <section class="auth-connections">
+    <h2 class="auth-connections__title">Linked accounts</h2>
+    <p class="auth-connections__lede">
+      We get different signal from each — GitHub for what you build, LinkedIn for how the LP world sees you, Google for your firm domain.
+      Connect more for richer Dojo discovery.
+    </p>
+    <ul class="auth-connections__list">
+      <li class={`auth-connection ${providers.github ? 'is-linked' : ''}`}>
+        <span class="auth-connection__name">GitHub</span>
+        {providers.github ? (
+          <span class="auth-connection__status">Connected</span>
+        ) : (
+          <a class="auth-connection__cta" href="/api/auth/github/login">Connect</a>
+        )}
+      </li>
+      <li class={`auth-connection ${providers.linkedin ? 'is-linked' : ''}`}>
+        <span class="auth-connection__name">LinkedIn</span>
+        {providers.linkedin ? (
+          <span class="auth-connection__status">Connected</span>
+        ) : (
+          <a class="auth-connection__cta" href="/api/auth/linkedin/login">Connect</a>
+        )}
+      </li>
+      <li class={`auth-connection ${providers.google ? 'is-linked' : ''}`}>
+        <span class="auth-connection__name">Google</span>
+        {providers.google ? (
+          <span class="auth-connection__status">Connected</span>
+        ) : (
+          <a class="auth-connection__cta" href="/api/auth/google/login">Connect</a>
+        )}
+      </li>
+    </ul>
+  </section>
+
   <p class="logout-row">
     <a class="logout-link" href="/api/auth/logout">Log out</a>
   </p>
@@ -79,6 +130,76 @@ const avatar = existing?.data.headshot ?? existing?.data.github_avatar ?? sessio
     transition: color 150ms ease;
   }
   .back-link:hover { color: var(--color-primary); }
+
+  .auth-connections {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    background: var(--fx-card-bg, transparent);
+  }
+  .auth-connections__title {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .auth-connections__lede {
+    margin: 0 0 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .auth-connections__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .auth-connection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    transition: border-color 150ms ease;
+  }
+  .auth-connection.is-linked {
+    border-color: color-mix(in srgb, rgb(34, 197, 94) 40%, var(--color-border));
+  }
+  .auth-connection__name {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-text);
+  }
+  .auth-connection__status {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgb(34, 197, 94);
+  }
+  .auth-connection__cta {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgb(245, 158, 11);
+    text-decoration: none;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid rgb(245, 158, 11);
+    border-radius: 0.375rem;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .auth-connection__cta:hover {
+    background: rgb(245, 158, 11);
+    color: var(--color-background);
+  }
+
   .logout-row {
     margin-top: 2rem;
   }
