@@ -15,11 +15,11 @@ presenterDetails:
     firm: Cortado Ventures
     headshot: /images/participant-headshots/headshot__Mike-Moradi.jpeg
     linkedin: https://www.linkedin.com/in/mikemoradi/
-    topic: Claude Teams for administrative & audit-prep superpowers.
+    topic: Starting with Claude Team, better housekeeping for agents, and speeding up LP DDQs.
   - name: Raeed Zainuddin
     firm: Cortado Ventures
     headshot: /images/presenter-headshots/headshot__Raeed-Zainuddin.jpeg
-    topic: Claude Teams for administrative & audit-prep superpowers.
+    topic: Claude Teams for fundraising, admin, and audit superpowers.
   - name: Toby Rush
     firm: Ideem
     role: Founder, CEO
