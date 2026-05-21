@@ -41,6 +41,9 @@ importers:
       svelte:
         specifier: ^5.55.4
         version: 5.55.5
+      svelte-dnd-action:
+        specifier: ^0.9.50
+        version: 0.9.69(svelte@5.55.5)
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.4
@@ -2047,6 +2050,11 @@ packages:
   strip-ansi@6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
     engines: {node: '>=8'}
+
+  svelte-dnd-action@0.9.69:
+    resolution: {integrity: sha512-NAmSOH7htJoYraTQvr+q5whlIuVoq88vEuHr4NcFgscDRUxfWPPxgie2OoxepBCQCikrXZV4pqV86aun60wVyw==}
+    peerDependencies:
+      svelte: '>=3.23.0 || ^5.0.0-next.0'
 
   svelte2tsx@0.7.53:
     resolution: {integrity: sha512-ljVSwmnYRDHRm8+7ICP6QoAN7U7vgOFfPBLN6T745YWNYqRRSzHxlrzUVqMjYls2Un8MzJissfziy/38e6Deeg==}
@@ -4686,6 +4694,10 @@ snapshots:
   strip-ansi@6.0.1:
     dependencies:
       ansi-regex: 5.0.1
+
+  svelte-dnd-action@0.9.69(svelte@5.55.5):
+    dependencies:
+      svelte: 5.55.5
 
   svelte2tsx@0.7.53(svelte@5.55.5)(typescript@6.0.3):
     dependencies:

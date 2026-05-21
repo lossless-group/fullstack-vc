@@ -240,7 +240,13 @@ const components = [
     name: 'ParticipantStackView (stack)',
     purpose: 'Three-tier stack panel: Current / Aspirational / Moved on from. Resolves tool slugs to entries from the `tools` content collection at render time. Missing references render as ghost cards so registry gaps surface visually. Used on /stack/people/[handle].',
     cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
-    props: 'currentStack?, aspirationalStack?, abandonedStack? (each: { tool: slug, ...tier-specific fields }[])',
+    props: 'currentStack?, aspirationalStack?, abandonedStack? (each: { tool: slug, ...tier-specific fields }[]), handle? (when set, owner-only Edit chips render in each tier header)',
+  },
+  {
+    name: 'StackBuilder + StackBucket (stack editor)',
+    purpose: 'Owner-only multi-column stack editor used at /people/[handle]/stack/edit. Three buckets (Current / Aspirational / Archived) with pill toggles for which are visible (at-least-one invariant; localStorage-persisted per handle). Single-pill = single column max-w 36rem; two-pill = side-by-side max-w 60rem; three-pill snaps to two-up of the most-recently-toggled pair + a "more →" peek. svelte-dnd-action wires drag within and across columns. Cross-column drops trigger an inline reshape form (notes ↔ intent ↔ reason) that auto-dismisses after 5s. Optimistic UI + dirty banner + Cmd/Ctrl+Z undo (LIFO depth 10). Mobile (<=768px) hides drag handles and replaces them with Move (modal-driven) + ↑/↓ buttons. Saves the full snapshot of all three buckets to Turso via /api/stack/save; the public /people/[handle] page renders from materialized markdown, refreshed by `pnpm sync:stacks`. Not catalogued with a live preview here because the editor requires an owner session and would attempt real DB writes — visit /people/<your-handle>/stack/edit to see it.',
+    cssContract: '--color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-background, --fx-card-bg, --font-display, --font-code, --font-body',
+    props: 'handle: string, initialName?, initialFirm?, initialPublic?, initialCurrent?, initialAspirational?, initialAbandoned?, avatar?',
   },
   {
     name: 'CtaBtnWithAuthIcons',

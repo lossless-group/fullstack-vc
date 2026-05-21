@@ -1,7 +1,7 @@
 {
   "name": "fullstack-vc",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.8",
   "private": true,
   "scripts": {
     "dev": "astro dev",
@@ -35,6 +35,7 @@
     "jose": "^6.2.2",
     "mdast-util-to-string": "^4.0.0",
     "svelte": "^5.55.4",
+    "svelte-dnd-action": "^0.9.50",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2"
   },
