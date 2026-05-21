@@ -142,6 +142,19 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
             </a>
           </div>
 
+          {/* Stack CTA — hidden by default, populated by /api/me at hydrate
+              when the user has a github_handle with a participants/*.md profile. */}
+          <a
+            class="site-header__login-tooltip-stack"
+            href="#"
+            data-auth-stack-link
+            hidden
+          >
+            <span class="site-header__login-tooltip-stack-label">Your stack</span>
+            <span class="site-header__login-tooltip-stack-counts" data-auth-stack-counts>—</span>
+            <span class="site-header__login-tooltip-stack-cta">Edit →</span>
+          </a>
+
           <a class="site-header__login-tooltip-logout" href="/api/auth/logout">
             Log out
           </a>
@@ -429,6 +442,44 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
   .site-header__login-tooltip-provider[data-connected="false"] .site-header__login-tooltip-state {
     color: rgb(245, 158, 11);
   }
+  .site-header__login-tooltip-stack {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    transition: border-color 150ms ease, background-color 150ms ease;
+  }
+  .site-header__login-tooltip-stack:hover {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
+  .site-header__login-tooltip-stack-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+  }
+  .site-header__login-tooltip-stack-counts {
+    color: var(--color-text);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .site-header__login-tooltip-stack-cta {
+    color: var(--color-primary);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
   .site-header__login-tooltip-logout {
     display: block;
     margin-top: 0.625rem;
@@ -507,10 +558,25 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
           allLinked ? labelBase : `${labelBase} — ${linkedCount} of 3 providers connected, click to add more`
         );
 
-        // Populate tooltip provider rows (only relevant for partial state,
-        // but harmless to set on all states — only shown when state=partial).
+        // Populate stack CTA — only when /api/me returned a handle AND counts
+        // (i.e. the user has a participants/<handle>.md profile to edit).
         const wrap = el.parentElement;
         if (!wrap) continue;
+        const stackLink = wrap.querySelector<HTMLAnchorElement>('[data-auth-stack-link]');
+        if (stackLink && data.handle && data.stackCounts) {
+          stackLink.setAttribute('href', `/people/${data.handle}/stack/edit`);
+          const countsEl = wrap.querySelector<HTMLElement>('[data-auth-stack-counts]');
+          if (countsEl) {
+            const c = data.stackCounts.current ?? 0;
+            const a = data.stackCounts.aspirational ?? 0;
+            const ab = data.stackCounts.abandoned ?? 0;
+            countsEl.textContent = `${c} active · ${a} aspiring · ${ab} moved on`;
+          }
+          stackLink.removeAttribute('hidden');
+        }
+
+        // Populate tooltip provider rows (only relevant for partial state,
+        // but harmless to set on all states — only shown when state=partial).
         for (const provider of ['github', 'linkedin', 'google'] as const) {
           const row = wrap.querySelector<HTMLElement>(`[data-auth-provider="${provider}"]`);
           if (!row) continue;

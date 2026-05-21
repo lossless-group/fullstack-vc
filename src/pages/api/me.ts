@@ -13,6 +13,7 @@
 
 import type { APIRoute } from 'astro';
 import { db, User, eq } from 'astro:db';
+import { getCollection } from 'astro:content';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
 export const prerender = false;
@@ -30,8 +31,8 @@ export const GET: APIRoute = async ({ cookies }) => {
   // if the row doesn't exist (first login on freshly-deployed Turso) or the
   // table isn't pushed, fall back to "only the active provider is linked."
   let providers = { github: false, linkedin: false, google: false };
+  let row: typeof User.$inferSelect | undefined;
   try {
-    let row;
     if (session.provider === 'github') {
       row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
     } else if (session.provider === 'linkedin') {
@@ -60,6 +61,29 @@ export const GET: APIRoute = async ({ cookies }) => {
   const linkedCount = Number(providers.github) + Number(providers.linkedin) + Number(providers.google);
   const allLinked = linkedCount === 3;
 
+  // Stack counts — only when the user has a github_handle (the participant
+  // slug today). Lets the header CTA surface "21 active · 10 aspiring · 6 moved on"
+  // with a direct link to the editor.
+  let handle: string | null = null;
+  let stackCounts: { current: number; aspirational: number; abandoned: number } | null = null;
+  const githubHandle = row?.github_handle ?? (session.provider === 'github' ? session.subject : null);
+  if (githubHandle) {
+    try {
+      const participants = await getCollection('participants');
+      const participant = participants.find(p => p.data.handle === githubHandle);
+      if (participant) {
+        handle = githubHandle;
+        stackCounts = {
+          current: participant.data.current_stack?.length ?? 0,
+          aspirational: participant.data.aspirational_stack?.length ?? 0,
+          abandoned: participant.data.abandoned_stack?.length ?? 0,
+        };
+      }
+    } catch {
+      // Best effort — collection unavailable shouldn't break /api/me.
+    }
+  }
+
   return new Response(JSON.stringify({
     loggedIn: true,
     name: session.name ?? null,
@@ -68,6 +92,8 @@ export const GET: APIRoute = async ({ cookies }) => {
     providers,
     linkedCount,
     allLinked,
+    handle,
+    stackCounts,
   }), {
     status: 200,
     headers: {
