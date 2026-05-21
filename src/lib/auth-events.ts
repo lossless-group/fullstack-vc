@@ -13,10 +13,11 @@ export type AuthOutcome =
   | 'no_access_token'
   | 'user_fetch_fail'
   | 'record_user_error'
-  | 'missing_credentials';
+  | 'missing_credentials'
+  | 'email_unverified';
 
 export interface AuthEventInput {
-  provider: 'github' | 'linkedin';
+  provider: 'github' | 'linkedin' | 'google';
   outcome: AuthOutcome;
   subject?: string;
   email?: string;

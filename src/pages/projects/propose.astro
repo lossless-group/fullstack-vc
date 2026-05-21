@@ -13,14 +13,19 @@ const rosterEntry = session ? matchesRoster(session) : null;
 const loggedIn = !!session && !!rosterEntry;
 
 // Resolve which providers are linked on the User row, mirroring /api/me.
-let providers = { github: false, linkedin: false };
+let providers = { github: false, linkedin: false, google: false };
 if (session) {
   try {
-    const row = session.provider === 'github'
-      ? await db.select().from(User).where(eq(User.github_handle, session.subject)).get()
-      : await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    let row;
+    if (session.provider === 'github') {
+      row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+    } else if (session.provider === 'linkedin') {
+      row = await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    } else if (session.provider === 'google') {
+      row = await db.select().from(User).where(eq(User.google_sub, session.subject)).get();
+    }
     if (row) {
-      providers = { github: !!row.github_handle, linkedin: !!row.linkedin_sub };
+      providers = { github: !!row.github_handle, linkedin: !!row.linkedin_sub, google: !!row.google_sub };
     } else {
       providers[session.provider] = true;
     }

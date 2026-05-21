@@ -26,12 +26,14 @@ if (!session) return Astro.redirect('/login', 302);
 // Look up the User row by the active provider's identifier. Best-effort —
 // if the row isn't there yet (DB hiccup, table not pushed) we fall back to
 // the cookie's view of the world.
-let row: { github_handle: string | null; linkedin_sub: string | null; name: string | null; avatar: string | null; email: string | null } | null = null;
+let row: { github_handle: string | null; linkedin_sub: string | null; google_sub: string | null; name: string | null; avatar: string | null; email: string | null } | null = null;
 try {
   if (session.provider === 'github') {
     row = (await db.select().from(User).where(eq(User.github_handle, session.subject)).get()) ?? null;
-  } else {
+  } else if (session.provider === 'linkedin') {
     row = (await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get()) ?? null;
+  } else if (session.provider === 'google') {
+    row = (await db.select().from(User).where(eq(User.google_sub, session.subject)).get()) ?? null;
   }
 } catch {
   row = null;
@@ -39,6 +41,7 @@ try {
 
 const githubHandle = row?.github_handle ?? (session.provider === 'github' ? session.subject : null);
 const linkedinLinked = !!row?.linkedin_sub || session.provider === 'linkedin';
+const googleLinked = !!row?.google_sub || session.provider === 'google';
 const githubLinked = !!githubHandle;
 
 // If this user has a github_handle on file, the canonical edit surface lives
@@ -86,6 +89,10 @@ const email = row?.email ?? session.email ?? null;
       <li class={`me-provider ${linkedinLinked ? 'is-linked' : ''}`}>
         <span class="me-provider__name">LinkedIn</span>
         <span class="me-provider__status">{linkedinLinked ? 'Linked' : 'Not linked'}</span>
+      </li>
+      <li class={`me-provider ${googleLinked ? 'is-linked' : ''}`}>
+        <span class="me-provider__name">Google</span>
+        <span class="me-provider__status">{googleLinked ? 'Linked' : 'Not linked'}</span>
       </li>
     </ul>
   </section>

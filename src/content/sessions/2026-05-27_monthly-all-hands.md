@@ -33,6 +33,7 @@ tags:
   - Community
   - Agentic-AI
 og_image: /og-default.png
+rsvpUrl: https://kf.events/48iz0oB
 ---
 
 Monthly all-hands for the Agentic VC Dojo. 

@@ -42,6 +42,7 @@ function emailsForEntry(entry: RosterEntry): string[] {
  * Match precedence (when matching for real metadata):
  *   GitHub provider:   handle match → verified-email match (fallback).
  *   LinkedIn provider: email match (primary or alias).
+ *   Google provider:   email match (primary or alias) — Google verifies emails.
  */
 export function matchesRoster(session: SessionPayload): RosterEntry | null {
   if (session.provider === 'github') {
@@ -53,7 +54,7 @@ export function matchesRoster(session: SessionPayload): RosterEntry | null {
       const byEmail = ROSTER.find(r => emailsForEntry(r).includes(email));
       if (byEmail) return byEmail;
     }
-  } else if (session.provider === 'linkedin' && session.email) {
+  } else if ((session.provider === 'linkedin' || session.provider === 'google') && session.email) {
     const email = session.email.toLowerCase();
     const byEmail = ROSTER.find(r => emailsForEntry(r).includes(email));
     if (byEmail) return byEmail;

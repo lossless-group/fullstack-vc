@@ -90,9 +90,25 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
           hidden
         >
           <p class="site-header__login-tooltip-msg">
-            If you connect both, we love you more!
+            We get different signal from each — connect more for richer Dojo discovery.
           </p>
           <div class="site-header__login-tooltip-providers">
+            <a
+              class="site-header__login-tooltip-provider"
+              href="/api/auth/google/login"
+              data-auth-provider="google"
+              data-connected="false"
+            >
+              <svg class="site-header__login-tooltip-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#4285F4" d="M21.6 12.227c0-.709-.064-1.39-.182-2.045H12v3.868h5.382a4.6 4.6 0 0 1-1.995 3.018v2.51h3.227c1.89-1.74 2.986-4.305 2.986-7.351z"/>
+                <path fill="#34A853" d="M12 22c2.7 0 4.964-.895 6.618-2.422l-3.227-2.51c-.895.6-2.04.954-3.39.954-2.605 0-4.81-1.76-5.595-4.122H3.072v2.59A9.996 9.996 0 0 0 12 22z"/>
+                <path fill="#FBBC05" d="M6.405 13.9a6.01 6.01 0 0 1 0-3.8V7.51H3.072a9.996 9.996 0 0 0 0 8.98l3.333-2.59z"/>
+                <path fill="#EA4335" d="M12 5.977c1.468 0 2.786.504 3.823 1.495l2.867-2.867C16.96 3.026 14.695 2 12 2A9.996 9.996 0 0 0 3.072 7.51l3.333 2.59C7.19 7.736 9.395 5.977 12 5.977z"/>
+              </svg>
+              <span class="site-header__login-tooltip-label">Google</span>
+              <span class="site-header__login-tooltip-state">Connect</span>
+            </a>
+
             <a
               class="site-header__login-tooltip-provider"
               href="/api/auth/github/login"
@@ -464,16 +480,17 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
         }
 
         const labelBase = data.name ? `Signed in as ${data.name}` : 'Signed in';
+        const linkedCount = typeof data.linkedCount === 'number' ? data.linkedCount : (allLinked ? 3 : 1);
         el.setAttribute(
           'aria-label',
-          allLinked ? labelBase : `${labelBase} — one provider linked, click to add the other`
+          allLinked ? labelBase : `${labelBase} — ${linkedCount} of 3 providers connected, click to add more`
         );
 
         // Populate tooltip provider rows (only relevant for partial state,
         // but harmless to set on all states — only shown when state=partial).
         const wrap = el.parentElement;
         if (!wrap) continue;
-        for (const provider of ['github', 'linkedin'] as const) {
+        for (const provider of ['github', 'linkedin', 'google'] as const) {
           const row = wrap.querySelector<HTMLElement>(`[data-auth-provider="${provider}"]`);
           if (!row) continue;
           const connected = !!(data.providers && data.providers[provider]);

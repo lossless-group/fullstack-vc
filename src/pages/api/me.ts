@@ -29,15 +29,21 @@ export const GET: APIRoute = async ({ cookies }) => {
   // Look up the User row to discover which providers are linked. Best-effort:
   // if the row doesn't exist (first login on freshly-deployed Turso) or the
   // table isn't pushed, fall back to "only the active provider is linked."
-  let providers = { github: false, linkedin: false };
+  let providers = { github: false, linkedin: false, google: false };
   try {
-    const row = session.provider === 'github'
-      ? await db.select().from(User).where(eq(User.github_handle, session.subject)).get()
-      : await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    let row;
+    if (session.provider === 'github') {
+      row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+    } else if (session.provider === 'linkedin') {
+      row = await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    } else if (session.provider === 'google') {
+      row = await db.select().from(User).where(eq(User.google_sub, session.subject)).get();
+    }
     if (row) {
       providers = {
         github: !!row.github_handle,
         linkedin: !!row.linkedin_sub,
+        google: !!row.google_sub,
       };
     } else {
       providers[session.provider] = true;
@@ -46,8 +52,13 @@ export const GET: APIRoute = async ({ cookies }) => {
     providers[session.provider] = true;
   }
 
-  const linkedCount = Number(providers.github) + Number(providers.linkedin);
-  const allLinked = linkedCount === 2;
+  // With three providers, the tri-state header indicator now means:
+  //   in      = 3/3 connected (fully triangulated, green dot)
+  //   partial = 1/3 or 2/3 connected (yellow dot, count surfaced in tooltip)
+  //   out     = 0/3 (red dot, "Log in")
+  // See context-v/tasks/Wire-Google-Workspace-OAuth-Provider.md §7.
+  const linkedCount = Number(providers.github) + Number(providers.linkedin) + Number(providers.google);
+  const allLinked = linkedCount === 3;
 
   return new Response(JSON.stringify({
     loggedIn: true,
@@ -55,6 +66,7 @@ export const GET: APIRoute = async ({ cookies }) => {
     avatar: session.avatar ?? null,
     provider: session.provider,
     providers,
+    linkedCount,
     allLinked,
   }), {
     status: 200,

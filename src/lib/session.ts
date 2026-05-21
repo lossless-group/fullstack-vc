@@ -15,8 +15,8 @@ const AUDIENCE = 'fullstack-vc-stack';
 
 export interface SessionPayload {
   /** Which OAuth provider issued this identity. */
-  provider: 'github' | 'linkedin';
-  /** Provider-specific stable subject — GitHub username, or LinkedIn `sub` claim. */
+  provider: 'github' | 'linkedin' | 'google';
+  /** Provider-specific stable subject — GitHub username, LinkedIn `sub`, or Google `sub`. */
   subject: string;
   /** Email if the provider returned one. */
   email?: string;
@@ -59,8 +59,12 @@ export async function verifySession(token: string | undefined | null): Promise<S
     if (typeof payload.provider !== 'string' || typeof payload.subject !== 'string') {
       return null;
     }
+    const provider = payload.provider as SessionPayload['provider'];
+    if (provider !== 'github' && provider !== 'linkedin' && provider !== 'google') {
+      return null;
+    }
     return {
-      provider: payload.provider as SessionPayload['provider'],
+      provider,
       subject: payload.subject,
       email: typeof payload.email === 'string' ? payload.email : undefined,
       name: typeof payload.name === 'string' ? payload.name : undefined,

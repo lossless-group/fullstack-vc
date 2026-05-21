@@ -108,9 +108,14 @@ export async function resolveCanonicalUserId(
   rosterEntry: RosterEntry | null,
 ): Promise<string> {
   try {
-    const row = session.provider === 'github'
-      ? await db.select().from(User).where(eq(User.github_handle, session.subject)).get()
-      : await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    let row;
+    if (session.provider === 'github') {
+      row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+    } else if (session.provider === 'linkedin') {
+      row = await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+    } else if (session.provider === 'google') {
+      row = await db.select().from(User).where(eq(User.google_sub, session.subject)).get();
+    }
     if (row) return row.id;
   } catch {
     // DB unavailable — fall through to synthetic derivation.
@@ -150,10 +155,11 @@ export async function recordUserLogin(
     const now = new Date();
 
     // Provider-specific fields. Set the column for whichever provider the
-    // user logged in with this time; leave the other column alone (so we
-    // preserve a previously-linked identifier from an earlier login).
+    // user logged in with this time; leave the other columns alone (so we
+    // preserve previously-linked identifiers from earlier logins).
     const githubHandle = session.provider === 'github' ? session.subject : undefined;
     const linkedinSub  = session.provider === 'linkedin' ? session.subject : undefined;
+    const googleSub    = session.provider === 'google' ? session.subject : undefined;
 
     // Primary lookup: by canonical id (lowercased roster email).
     let existing = await db.select().from(User).where(eq(User.id, id)).get();
@@ -169,6 +175,8 @@ export async function recordUserLogin(
         existing = await db.select().from(User).where(eq(User.github_handle, githubHandle)).get();
       } else if (linkedinSub) {
         existing = await db.select().from(User).where(eq(User.linkedin_sub, linkedinSub)).get();
+      } else if (googleSub) {
+        existing = await db.select().from(User).where(eq(User.google_sub, googleSub)).get();
       }
     }
 
@@ -176,7 +184,7 @@ export async function recordUserLogin(
     // (via roster sync, manual claim, or a previous matching-email login)
     // even if neither the canonical id nor the provider identifier lines up.
     if (!existing && session.email) {
-      existing = await findUserByAnyEmail(session.email);
+      existing = (await findUserByAnyEmail(session.email)) ?? undefined;
     }
 
     if (existing) {
@@ -200,9 +208,10 @@ export async function recordUserLogin(
           name: session.name ?? existing.name,
           avatar: session.avatar ?? existing.avatar,
           // Only overwrite the provider column for the provider the user
-          // is currently signing in with. The other column stays as-is.
+          // is currently signing in with. The other columns stay as-is.
           github_handle: githubHandle ?? existing.github_handle,
           linkedin_sub: linkedinSub ?? existing.linkedin_sub,
+          google_sub: googleSub ?? existing.google_sub,
           // Roster fields: prefer fresh roster data; fall back to existing
           // (a temporary roster lookup miss shouldn't blank a real value).
           kauffman_class: rosterEntry?.kauffman_class ?? existing.kauffman_class,
@@ -228,6 +237,7 @@ export async function recordUserLogin(
         avatar: session.avatar ?? null,
         github_handle: githubHandle ?? null,
         linkedin_sub: linkedinSub ?? null,
+        google_sub: googleSub ?? null,
         kauffman_class: rosterEntry?.kauffman_class ?? null,
         firm: rosterEntry?.firm ?? null,
         last_provider: session.provider,

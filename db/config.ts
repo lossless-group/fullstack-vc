@@ -165,17 +165,18 @@ const User = defineTable({
     emails: column.json({ optional: true }),      // string[]
     name: column.text({ optional: true }),
     avatar: column.text({ optional: true }),
-    // Provider connections — either or both populated. Indexed unique below
-    // so we can look a user up by either provider identifier in O(1).
+    // Provider connections — any or all populated. Indexed unique below
+    // so we can look a user up by any provider identifier in O(1).
     github_handle: column.text({ optional: true }),
     linkedin_sub: column.text({ optional: true }),
+    google_sub: column.text({ optional: true }),
     // Roster enrichment, snapshotted at login so /people pages don't have to
     // re-read kauffman_roster.json on every render.
     kauffman_class: column.number({ optional: true }),
     firm: column.text({ optional: true }),
     // Most recent provider used to log in — drives the "you signed in with X
     // last time" hint in the login UI.
-    last_provider: column.text(),                // 'github' | 'linkedin'
+    last_provider: column.text(),                // 'github' | 'linkedin' | 'google'
     first_login_at: column.date(),
     last_login_at: column.date(),
     created_at: column.date(),
@@ -184,6 +185,7 @@ const User = defineTable({
   indexes: {
     github_handle_unique: { on: ['github_handle'], unique: true },
     linkedin_sub_unique: { on: ['linkedin_sub'], unique: true },
+    google_sub_unique: { on: ['google_sub'], unique: true },
   },
 });
 
@@ -277,10 +279,10 @@ const AuthEvent = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
     at: column.date(),
-    provider: column.text(),         // 'github' | 'linkedin'
+    provider: column.text(),         // 'github' | 'linkedin' | 'google'
     outcome: column.text(),
-    // Provider subject (GitHub login, LinkedIn sub) when known. Null for
-    // pre-token-exchange failures.
+    // Provider subject (GitHub login, LinkedIn sub, Google sub) when known.
+    // Null for pre-token-exchange failures.
     subject: column.text({ optional: true }),
     // Email if surfaced by the provider — useful for "did this user ever
     // make it through?" lookups when the user only knows their email.
