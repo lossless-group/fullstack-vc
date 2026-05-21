@@ -151,8 +151,19 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
             hidden
           >
             <span class="site-header__login-tooltip-stack-label">Your stack</span>
-            <span class="site-header__login-tooltip-stack-counts" data-auth-stack-counts>—</span>
-            <span class="site-header__login-tooltip-stack-cta">Edit →</span>
+            <span class="site-header__login-tooltip-stack-row">
+              <span class="site-header__login-tooltip-stack-key">Active</span>
+              <span class="site-header__login-tooltip-stack-value" data-auth-stack-current>0</span>
+            </span>
+            <span class="site-header__login-tooltip-stack-row">
+              <span class="site-header__login-tooltip-stack-key">Aspiring</span>
+              <span class="site-header__login-tooltip-stack-value" data-auth-stack-aspirational>0</span>
+            </span>
+            <span class="site-header__login-tooltip-stack-row">
+              <span class="site-header__login-tooltip-stack-key">Moved on</span>
+              <span class="site-header__login-tooltip-stack-value" data-auth-stack-abandoned>0</span>
+            </span>
+            <span class="site-header__login-tooltip-stack-cta">Edit your stack →</span>
           </a>
 
           <a class="site-header__login-tooltip-logout" href="/api/auth/logout">
@@ -443,12 +454,11 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     color: rgb(245, 158, 11);
   }
   .site-header__login-tooltip-stack {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
     margin-top: 0.625rem;
-    padding: 0.625rem 0.75rem;
+    padding: 0.75rem 0.875rem;
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     color: var(--color-text);
@@ -466,19 +476,35 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     letter-spacing: 0.08em;
     color: var(--color-text-muted);
     font-size: 0.6875rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0.125rem;
   }
-  .site-header__login-tooltip-stack-counts {
-    color: var(--color-text);
+  .site-header__login-tooltip-stack-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .site-header__login-tooltip-stack-key {
+    color: var(--color-text-muted);
     font-size: 0.75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  }
+  .site-header__login-tooltip-stack-value {
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
   .site-header__login-tooltip-stack-cta {
+    margin-top: 0.375rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
     color: var(--color-primary);
     font-size: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    text-align: right;
   }
   .site-header__login-tooltip-logout {
     display: block;
@@ -565,13 +591,13 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
         const stackLink = wrap.querySelector<HTMLAnchorElement>('[data-auth-stack-link]');
         if (stackLink && data.handle && data.stackCounts) {
           stackLink.setAttribute('href', `/people/${data.handle}/stack/edit`);
-          const countsEl = wrap.querySelector<HTMLElement>('[data-auth-stack-counts]');
-          if (countsEl) {
-            const c = data.stackCounts.current ?? 0;
-            const a = data.stackCounts.aspirational ?? 0;
-            const ab = data.stackCounts.abandoned ?? 0;
-            countsEl.textContent = `${c} active · ${a} aspiring · ${ab} moved on`;
-          }
+          const setCount = (selector: string, n: number) => {
+            const cell = wrap.querySelector<HTMLElement>(selector);
+            if (cell) cell.textContent = String(n);
+          };
+          setCount('[data-auth-stack-current]',      data.stackCounts.current ?? 0);
+          setCount('[data-auth-stack-aspirational]', data.stackCounts.aspirational ?? 0);
+          setCount('[data-auth-stack-abandoned]',    data.stackCounts.abandoned ?? 0);
           stackLink.removeAttribute('hidden');
         }
 
