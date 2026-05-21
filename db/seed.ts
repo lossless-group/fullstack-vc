@@ -420,4 +420,119 @@ export default async function seed() {
       updated_at: now,
     },
   ]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MAY 27 MONTHLY ALL-HANDS  (mirrors scripts/seed-production-may27.ts)
+  // Session 'active' + poll 'open' so the live experience renders in local dev
+  // without needing to flip statuses by hand each dev-server restart.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const MAY27_ID = 'sess_2026-05-27_monthly-all-hands';
+  const MAY27_SLUG = '2026-05-27_monthly-all-hands';
+
+  await db.insert(Session).values([
+    {
+      id: MAY27_ID,
+      slug: MAY27_SLUG,
+      title: 'Monthly All-Hands — May 27',
+      description:
+        'Monthly all-hands for the Agentic VC Dojo. Three presenters share short demos of what they’ve been building, breaking, and learning. Polls open in the week leading up to the meeting and remain open through the session.',
+      kind: 'live',
+      status: 'active',
+      starts_at: new Date('2026-05-27T16:00:00Z'),
+      ends_at: null,
+      last_activity_at: null,
+      host_user_id: HOST,
+      created_at: now,
+      updated_at: now,
+    },
+  ]);
+
+  await db.insert(Poll).values([
+    {
+      id: 'poll_2026-05-27_lp-syndication-frequency',
+      session_id: MAY27_ID,
+      title: 'LP syndication frequency',
+      prompt:
+        'How often do you syndicate live deals (during a company’s fundraise) ' +
+        'as direct or SPV opportunities to your Limited Partners?\n\n' +
+        '1 = We don’t do it · 2 = Sometimes · 3 = Often · 4 = Built into our practice',
+      template: 'sliding-scale',
+      options: {
+        min: 1,
+        max: 4,
+        step: 1,
+        default_value: 1,
+        labels: {
+          min: 'We don’t do it.',
+          max: 'It’s built in to our practice.',
+        },
+        show_distribution: true,
+      },
+      status: 'open',
+      visibility: 'session-attendees',
+      results_visibility: 'live',
+      anonymous_display: true,
+      allow_revote: true,
+      last_vote_at: null,
+      created_by: HOST,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: 'poll_2026-05-27_ai-use-cases',
+      session_id: MAY27_ID,
+      title: 'AI use cases right now',
+      prompt: "What's your primary AI use case right now?",
+      template: 'multi-select',
+      options: [
+        { id: 'personal-productivity', label: 'Personal Productivity' },
+        { id: 'avoiding-overwhelm',    label: 'Avoiding Overwhelm' },
+        { id: 'streamlining-firm',     label: 'Streamlining Firm Chaos' },
+        { id: 'dealflow-origination',  label: 'Better Dealflow Origination' },
+        { id: 'dealflow-triage',       label: 'Triaging Current Dealflow' },
+        { id: 'portfolio-awareness',   label: 'Actionable Portfolio Awareness' },
+        { id: 'fomo',                  label: 'FOMO' },
+        { id: 'yolo',                  label: 'YOLO' },
+      ],
+      status: 'open',
+      visibility: 'session-attendees',
+      results_visibility: 'on-close',
+      anonymous_display: true,
+      allow_revote: true,
+      last_vote_at: null,
+      created_by: HOST,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: 'poll_2026-05-27_keeps-you-up',
+      session_id: MAY27_ID,
+      title: 'What keeps you up at night',
+      prompt: 'What keeps you up at night?',
+      template: 'multi-select',
+      options: [
+        { id: 'email-overload',             label: 'Email overload' },
+        { id: 'brand-recognition',          label: 'Brand recognition' },
+        { id: 'winning-next-deal',          label: 'Winning the Next Deal' },
+        { id: 'preparing-fundraise',        label: 'Preparing the Next Fundraise' },
+        { id: 'closing-lp-commitments',     label: 'Closing LP Commitments from Current Pipeline' },
+        { id: 'portfolio-mayhem',           label: 'Portfolio Mayhem' },
+        { id: 'not-getting-back',           label: 'Not getting back to people' },
+        { id: 'finding-next-decacorn',      label: 'Finding the next Decacorn' },
+        { id: 'knowing-what-to-prioritize', label: 'Knowing what to prioritize' },
+        { id: 'current-team',               label: 'Getting the most out of your Current Team' },
+        { id: 'auditors',                   label: 'Feeding some auditors asking for things.' },
+      ],
+      status: 'open',
+      visibility: 'session-attendees',
+      results_visibility: 'on-close',
+      anonymous_display: true,
+      allow_revote: true,
+      last_vote_at: null,
+      created_by: HOST,
+      created_at: now,
+      updated_at: now,
+    },
+  ]);
 }

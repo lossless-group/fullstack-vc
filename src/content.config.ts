@@ -24,30 +24,30 @@ const tools = defineCollection({
     site_name: z.string().optional(),
     title: z.string().optional(),
     zinger: z.string().optional(),
-    url: z.string().url().optional(),
-    url_aliases: z.array(z.string().url()).optional(),
+    url: z.string().optional(),
+    url_aliases: z.array(z.string()).optional(),
 
     tags: z.array(z.string()).optional(),
     category: z.string().optional(),
 
-    og_screenshot_url: z.string().url().optional(),
-    og_favicon: z.string().url().optional(),
-    og_image: z.string().url().optional(),
-    logo_light: z.string().url().optional(),
-    logo_dark: z.string().url().optional(),
+    og_screenshot_url: z.string().optional(),
+    og_favicon: z.string().optional(),
+    og_image: z.string().optional(),
+    logo_light: z.string().optional(),
+    logo_dark: z.string().optional(),
 
     // Bare-name aliases — the Lossless Obsidian Tooling frontmatter uses
     // these instead of the `og_*` forms. Both are accepted so paste-import
     // works without renaming; renderers fall back from og_* → bare name.
-    image: z.string().url().optional(),
-    favicon: z.string().url().optional(),
+    image: z.string().optional(),
+    favicon: z.string().optional(),
     aliases: z.array(z.string()).optional(),
-    hero_image_url: z.string().url().optional(),
+    hero_image_url: z.string().optional(),
 
     description_site_cp: z.string().optional(),
     description: z.string().optional(),
     og_title: z.string().optional(),
-    og_url: z.string().url().optional(),
+    og_url: z.string().optional(),
 
     jina_last_request: z.coerce.date().optional(),
     jina_error: z.string().optional(),
@@ -59,10 +59,10 @@ const tools = defineCollection({
     pricing: z.string().optional(),
     publish: z.boolean().optional(),
     product_of: z.string().optional(),
-    docs_url: z.string().url().optional(),
-    github_profile_url: z.string().url().optional(),
-    github_repo_url: z.string().url().optional(),
-    youtube_channel_url: z.string().url().optional(),
+    docs_url: z.string().optional(),
+    github_profile_url: z.string().optional(),
+    github_repo_url: z.string().optional(),
+    youtube_channel_url: z.string().optional(),
   }).passthrough(),
 });
 
@@ -76,17 +76,17 @@ const participants = defineCollection({
     name: z.string(),
     firm: z.string().optional(),
     role: z.string().optional(),
-    kauffman_class: z.number().optional(),
-    github: z.string().url().optional(),
-    github_avatar: z.string().url().optional(),
+    kauffman_class: z.number().nullable().optional(),
+    github: z.string().optional(),
+    github_avatar: z.string().optional(),
     // Local headshot path — takes priority over github_avatar when set.
     // Lives under /public/images/participant-headshots/.
     headshot: z.string().optional(),
-    linkedin: z.string().url().optional(),
+    linkedin: z.string().optional(),
     // Directory profile URLs follow the `directory_profile_{slug}` convention
     // so we can add new directories (e.g., directory_profile_endeavor,
     // directory_profile_techstars) without inventing one-off field names.
-    directory_profile_kauffman: z.string().url().optional(),
+    directory_profile_kauffman: z.string().optional(),
     publish: z.boolean().default(false),
     joined_dojo: z.coerce.date().optional(),
 
@@ -125,7 +125,7 @@ const sessions = defineCollection({
       firm: z.string().optional(),
       role: z.string().optional(),
       headshot: z.string().optional(),
-      linkedin: z.string().url().optional(),
+      linkedin: z.string().optional(),
       topic: z.string().optional(),
     })).optional(),
     tags: z.array(z.string()).optional(),
@@ -134,8 +134,8 @@ const sessions = defineCollection({
     // a small, intentional vocabulary the site can render as section headers
     // or filter facets. Train-Case values, same convention as tags.
     classifiers: z.array(z.string()).optional(),
-    rsvpUrl: z.string().url().optional(),
-    recordingUrl: z.string().url().optional(),
+    rsvpUrl: z.string().optional(),
+    recordingUrl: z.string().optional(),
     og_image: z.string().optional(),
     // Partner co-branding mark (e.g., Kauffman Fellows). When set, the page
     // renders a mode-aware logo block at the top of the article.
@@ -144,7 +144,7 @@ const sessions = defineCollection({
       light: z.string(),
       dark: z.string(),
       vibrant: z.string(),
-      url: z.string().url().optional(),
+      url: z.string().optional(),
     }).optional(),
     // When true, the session is excluded from /sessions/ listing pages but
     // remains accessible at its direct URL. Use for QA / dry-run sessions.
@@ -219,19 +219,19 @@ const projects = defineCollection({
       uuid:    z.string().optional(),
       name:    z.string(),
       role:    z.string().optional(),
-      profile: z.string().url().optional(),
+      profile: z.string().optional(),
       avatar:  z.string().optional(),
     })).optional(),
     working_group_members: z.array(z.object({
       uuid:    z.string().optional(),
       name:    z.string(),
       role:    z.string().optional(),
-      profile: z.string().url().optional(),
+      profile: z.string().optional(),
       avatar:  z.string().optional(),
     })).optional(),
     members_count:         z.number().optional(),
     cadence:               z.string().optional(),
-    rsvp_url:              z.string().url().optional(),
+    rsvp_url:              z.string().optional(),
 
     // Cross-collection back-reference — slug(s) into the working-groups
     // collection. Many-to-many: a project can be of interest to multiple WGs.
@@ -240,13 +240,13 @@ const projects = defineCollection({
 
     // External surfaces
     links: z.object({
-      repo:   z.string().url().optional(),
-      site:   z.string().url().optional(),
-      demo:   z.string().url().optional(),
-      figma:  z.string().url().optional(),
-      spec:   z.string().url().optional(),
-      notes:  z.string().url().optional(),
-      videos: z.array(z.string().url()).optional(),
+      repo:   z.string().optional(),
+      site:   z.string().optional(),
+      demo:   z.string().optional(),
+      figma:  z.string().optional(),
+      spec:   z.string().optional(),
+      notes:  z.string().optional(),
+      videos: z.array(z.string()).optional(),
     }).optional(),
 
     // Discovery
@@ -314,29 +314,29 @@ const workingGroups = defineCollection({
       uuid:    z.string().optional(),
       name:    z.string(),
       role:    z.string().optional(),
-      profile: z.string().url().optional(),
+      profile: z.string().optional(),
       avatar:  z.string().optional(),
     })).optional(),
     working_group_members: z.array(z.object({
       uuid:    z.string().optional(),
       name:    z.string(),
       role:    z.string().optional(),
-      profile: z.string().url().optional(),
+      profile: z.string().optional(),
       avatar:  z.string().optional(),
     })).optional(),
     members_count:         z.number().optional(),
     cadence:               z.string().optional(),
-    rsvp_url:              z.string().url().optional(),
+    rsvp_url:              z.string().optional(),
 
     // External surfaces
     links: z.object({
-      repo:   z.string().url().optional(),
-      site:   z.string().url().optional(),
-      demo:   z.string().url().optional(),
-      figma:  z.string().url().optional(),
-      spec:   z.string().url().optional(),
-      notes:  z.string().url().optional(),
-      videos: z.array(z.string().url()).optional(),
+      repo:   z.string().optional(),
+      site:   z.string().optional(),
+      demo:   z.string().optional(),
+      figma:  z.string().optional(),
+      spec:   z.string().optional(),
+      notes:  z.string().optional(),
+      videos: z.array(z.string()).optional(),
     }).optional(),
 
     // Discovery

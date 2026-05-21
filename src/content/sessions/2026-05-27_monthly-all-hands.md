@@ -6,8 +6,26 @@ date_posted: 2026-05-08
 durationMinutes: 60
 hosts:
   - Michael Staton
-presenters: []
-presenterDetails: []
+presenters:
+  - Mike Moradi, Cortado Ventures
+  - Raeed Zainuddin, Cortado Ventures
+  - Toby Rush, Ideem
+presenterDetails:
+  - name: Mike Moradi
+    firm: Cortado Ventures
+    headshot: /images/participant-headshots/headshot__Mike-Moradi.jpeg
+    linkedin: https://www.linkedin.com/in/mikemoradi/
+    topic: Claude Teams for administrative & audit-prep superpowers.
+  - name: Raeed Zainuddin
+    firm: Cortado Ventures
+    headshot: /images/presenter-headshots/headshot__Raeed-Zainuddin.jpeg
+    topic: Claude Teams for administrative & audit-prep superpowers.
+  - name: Toby Rush
+    firm: Ideem
+    role: Founder, CEO
+    headshot: /images/participant-headshots/headshot__Toby-Rush.jpeg
+    linkedin: https://www.linkedin.com/in/tobiasrush/
+    topic: Wiring up an Obsidian 2nd Brain to dealflow with OpenClaw.
 classifiers:
   - All-Hands
 tags:

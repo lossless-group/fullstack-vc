@@ -15,6 +15,7 @@
     "gen:webinar-survey": "node --experimental-strip-types scripts/build-webinar-survey.ts",
     "sync:session": "astro db execute scripts/sync-session.ts",
     "seed:production": "astro db execute scripts/seed-production.ts --remote",
+    "seed:production:may27": "astro db execute scripts/seed-production-may27.ts --remote",
     "seed:test": "astro db execute scripts/seed-test-session.ts --remote",
     "set-poll-status": "astro db execute scripts/set-poll-status.ts"
   },
