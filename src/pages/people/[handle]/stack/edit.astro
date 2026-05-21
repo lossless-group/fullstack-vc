@@ -118,20 +118,19 @@ try {
   }));
 }
 
-// Linked-provider lookup — mirrors /api/me.ts. The auth gate above already
-// requires session.provider === 'github', so we look up by github_handle.
-let providers = { github: true, linkedin: false, google: false };
-try {
-  const row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
-  if (row) {
-    providers = {
-      github: !!row.github_handle,
-      linkedin: !!row.linkedin_sub,
-      google: !!row.google_sub,
-    };
-  }
-} catch {
-  // DB hiccup — leave defaults (github true since the session is github).
+// Linked-provider lookup — reuse the ownerRow already loaded by the gate
+// (it's looked up by whichever provider sub the active session has, so it's
+// correct regardless of which provider you're currently signed in via).
+const providers = {
+  github: !!ownerRow?.github_handle,
+  linkedin: !!ownerRow?.linkedin_sub,
+  google: !!ownerRow?.google_sub,
+};
+// Fallback: if ownerRow is missing (gate took the legacy strict path on DB
+// hiccup), at least flag the active provider as connected so the panel
+// doesn't show everything as disconnected.
+if (!ownerRow) {
+  providers[session.provider] = true;
 }
 ---
 
