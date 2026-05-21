@@ -155,7 +155,10 @@ const sessions = defineCollection({
 });
 
 const changelog = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './changelog' }),
+  // Per-ship notes. Excludes releases/** — those have richer semantics
+  // (versions, prior-release cross-refs, multi-date lifecycle) and live in
+  // their own `releases` collection below.
+  loader: glob({ pattern: ['**/*.md', '!releases/**'], base: './changelog' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -168,7 +171,50 @@ const changelog = defineCollection({
     image: z.string().optional(),         // populated by scripts/generate-changelog-banners.ts
     image_prompt: z.string().optional(),  // input to the banner generator
     image_text: z.string().optional(),    // composited as HTML overlay by BannerWithOverlay
-  }),
+  }).passthrough(),
+});
+
+// Tagged-release narratives. Shape differs from changelog: identified by
+// semantic version (not date), cross-referenced to a prior release + the
+// GitHub release URL, with a four-date authoring lifecycle (initial draft →
+// current draft → first published → last updated). Bodies are long narratives
+// with diff tables and key-feature sections, written once per tagged release.
+//
+// Soft validation throughout per the no-hard-validation principle — title is
+// the only required field. Everything else is optional + .passthrough() so
+// authors can add new metadata without schema churn. Date fields use coerce
+// + nullable + optional so missing / null / typo'd dates warn but don't break
+// the build.
+const releases = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './changelog/releases' }),
+  schema: z.object({
+    title: z.string(),
+    lede: z.string().optional(),
+    // Authoring lifecycle — cite-wide convention. All optional + nullable
+    // so a draft with only an initial-draft date validates the same as a
+    // published release with all four set.
+    date_authored_initial_draft: z.coerce.date().nullable().optional(),
+    date_authored_current_draft: z.coerce.date().nullable().optional(),
+    date_first_published: z.coerce.date().nullable().optional(),
+    date_last_updated: z.coerce.date().nullable().optional(),
+    // Identity / cross-references — strings so a release_tag like "v0.0.8"
+    // and a semver-shaped "0.0.8" both validate, no .url() on release_url
+    // (we stripped those earlier per the no-hard-validation sweep).
+    at_semantic_version: z.string().optional(),
+    release_tag: z.string().optional(),
+    release_url: z.string().optional(),
+    prior_release_tag: z.string().optional(),
+    // Display + filtering
+    status: z.string().optional(),
+    category: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    authors: z.array(z.string()).optional(),
+    augmented_with: z.string().optional(),
+    // Display imagery — optional, follows the same shape as changelog/.
+    image: z.string().optional(),
+    image_prompt: z.string().optional(),
+    image_text: z.string().optional(),
+  }).passthrough(),
 });
 
 const ventureWorkflows = defineCollection({
@@ -373,6 +419,7 @@ export const collections = {
   pages,
   sessions,
   changelog,
+  releases,
   ventureWorkflows,
   projects,
   workingGroups,
