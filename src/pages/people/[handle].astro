@@ -46,6 +46,12 @@ const isPrivate = !p.publish;
         {p.linkedin && <a href={p.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
       </p>
     </div>
+
+    {/* Owner-only Edit CTA — hidden by default, revealed when /api/me
+        reports the viewer's handle matches this profile. */}
+    <a class="participant-head__edit" href={`/people/${p.handle}/stack/edit`} data-owner-edit hidden>
+      Edit profile →
+    </a>
   </header>
 
   {isPrivate ? (
@@ -61,6 +67,7 @@ const isPrivate = !p.publish;
       currentStack={p.current_stack}
       aspirationalStack={p.aspirational_stack}
       abandonedStack={p.abandoned_stack}
+      handle={p.handle}
     />
   )}
 </BaseThemeLayout>
@@ -175,8 +182,51 @@ const isPrivate = !p.publish;
     border: 1px solid var(--color-border);
   }
 
+  .participant-head__edit {
+    margin-left: auto;
+    align-self: flex-start;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+    text-decoration: none;
+    padding: 0.4375rem 0.875rem;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+    border-radius: 0.5rem;
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+  .participant-head__edit:hover {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-color: var(--color-primary);
+  }
+  .participant-head__edit[hidden] { display: none; }
+
   @media (max-width: 600px) {
     .participant-head { flex-direction: column; align-items: flex-start; }
     .participant-head__name { font-size: 1.625rem; }
+    .participant-head__edit { margin-left: 0; }
   }
 </style>
+
+<script is:inline define:vars={{ pageHandle: p.handle }}>
+  // Owner-only Edit affordances — page is prerendered, so we can't read the
+  // session cookie at build time. After hydrate, hit /api/me and reveal every
+  // [data-owner-edit] element on the page if the viewer's handle matches.
+  (async () => {
+    try {
+      const res = await fetch('/api/me', { credentials: 'same-origin' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data.loggedIn || !data.handle) return;
+      if (data.handle.toLowerCase() !== String(pageHandle).toLowerCase()) return;
+      for (const el of document.querySelectorAll('[data-owner-edit]')) {
+        el.removeAttribute('hidden');
+      }
+    } catch {
+      // /api/me unavailable — leave Edit hidden. Worst case: owner doesn't
+      // see the inline shortcut; the header tooltip's stack card still links
+      // them to the editor.
+    }
+  })();
+</script>
