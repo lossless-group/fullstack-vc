@@ -16,18 +16,18 @@
 // User.id and inventing identities would muddy the canonical-id resolver work.
 //
 // Usage:
-//   pnpm migrate:stacks            (writes to local .astro/content.db)
-//   pnpm migrate:stacks --remote   (writes to production Turso)
-//   pnpm migrate:stacks --dry-run  (reports what would happen; no writes)
+//   pnpm migrate:stacks                       (writes to local .astro/content.db)
+//   pnpm migrate:stacks:remote                (writes to production Turso)
+//   DRY_RUN=true pnpm migrate:stacks:remote   (reports what would happen; no writes)
 //
-// Run via:
-//   astro db execute scripts/migrate-stacks-to-turso.ts [--remote]
+// `astro db execute` doesn't forward CLI flags to the loaded script
+// (process.argv inside the script only sees Astro's own args). Use the
+// DRY_RUN env var instead — same convention as sync-session.ts / sync-stacks.ts.
 
 import { db, User, Stack, eq } from 'astro:db';
 import { getCollection } from 'astro:content';
 
-const args = process.argv.slice(2);
-const dryRun = args.includes('--dry-run');
+const dryRun = process.env.DRY_RUN === 'true';
 
 console.log(`migrate-stacks-to-turso ${dryRun ? '(DRY RUN)' : ''}`);
 console.log('');

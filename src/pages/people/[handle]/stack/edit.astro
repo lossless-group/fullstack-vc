@@ -23,8 +23,31 @@ if (!session) {
   return Astro.redirect(`/login?next=${encodeURIComponent(`/people/${handle}/stack/edit`)}`, 302);
 }
 
-// Only the owner can edit their own profile. Subject match is the gate.
-if (session.provider !== 'github' || session.subject.toLowerCase() !== handle.toLowerCase()) {
+// Only the owner can edit their own profile. The URL handle is a GitHub
+// username (participant slug convention), so the gate is: "the User row
+// reachable from this session has a github_handle matching the URL." Any
+// provider sign-in works as long as that's true — Google/LinkedIn-only
+// sessions can still edit if they've linked their GitHub via the
+// link-while-logged-in flow.
+let ownerRow;
+try {
+  if (session.provider === 'github') {
+    ownerRow = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+  } else if (session.provider === 'linkedin') {
+    ownerRow = await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+  } else if (session.provider === 'google') {
+    ownerRow = await db.select().from(User).where(eq(User.google_sub, session.subject)).get();
+  }
+} catch {
+  // DB unreachable — fall back to the legacy strict gate so a DB hiccup
+  // doesn't lock everyone out, but still keeps non-github sessions out.
+  if (session.provider !== 'github' || session.subject.toLowerCase() !== handle.toLowerCase()) {
+    return Astro.redirect(`/people/${handle}`, 302);
+  }
+}
+const ownerGithubHandle = ownerRow?.github_handle
+  ?? (session.provider === 'github' ? session.subject : null);
+if (!ownerGithubHandle || ownerGithubHandle.toLowerCase() !== handle.toLowerCase()) {
   return Astro.redirect(`/people/${handle}`, 302);
 }
 
