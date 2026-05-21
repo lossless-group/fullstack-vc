@@ -11,9 +11,9 @@
 // linking (see lib/user-record.ts: emails as the canonical merge key).
 
 import type { APIRoute } from 'astro';
-import { signSession, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, type SessionPayload } from '../../../../lib/session';
+import { signSession, verifySession, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, type SessionPayload } from '../../../../lib/session';
 import { matchesRoster } from '../../../../lib/oauth-roster';
-import { recordUserLogin } from '../../../../lib/user-record';
+import { recordUserLogin, linkProviderToExistingUser } from '../../../../lib/user-record';
 import { logAuthEvent } from '../../../../lib/auth-events';
 
 const STATE_COOKIE = 'fsvc_oauth_state_google';
@@ -133,10 +133,32 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     return redirect(`/login/not-on-roster?provider=google&email=${encodeURIComponent(session.email ?? '')}`, 302);
   }
 
-  // 6. Stamp the User row (best-effort). Will merge into an existing row if
-  // session.email matches User.email or User.emails[] (see lib/user-record.ts
-  // findUserByAnyEmail fallback), which is how pre-bind across providers works.
-  const recorded = await recordUserLogin(session, rosterEntry);
+  // 6. "Link while logged in" — if another provider already has a valid
+  // session, attach Google to that existing User row instead of creating a
+  // separate identity. Falls through to recordUserLogin's normal lookup chain
+  // (which has its own merge fallbacks) when there's no existing session or
+  // the link attempt couldn't find the row.
+  const existingSession = await verifySession(cookies.get(SESSION_COOKIE_NAME)?.value);
+  let recorded;
+  if (existingSession && existingSession.provider !== 'google') {
+    recorded = await linkProviderToExistingUser(existingSession, session);
+    if (recorded.ok) {
+      await logAuthEvent({
+        provider: 'google',
+        outcome: 'provider_linked',
+        subject: gUser.sub,
+        email: gUser.email,
+        user_id: recorded.writtenId ?? undefined,
+        note: `linked onto existing ${existingSession.provider} session`,
+      });
+    } else {
+      // Link attempt failed (no row, DB hiccup) — fall through to standard upsert.
+      recorded = await recordUserLogin(session, rosterEntry);
+    }
+  } else {
+    recorded = await recordUserLogin(session, rosterEntry);
+  }
+
   if (!recorded.ok) {
     await logAuthEvent({
       provider: 'google',

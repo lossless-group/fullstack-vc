@@ -141,6 +141,10 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
               <span class="site-header__login-tooltip-state">Connect</span>
             </a>
           </div>
+
+          <a class="site-header__login-tooltip-logout" href="/api/auth/logout">
+            Log out
+          </a>
         </div>
       </span>
     </nav>
@@ -425,6 +429,23 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
   .site-header__login-tooltip-provider[data-connected="false"] .site-header__login-tooltip-state {
     color: rgb(245, 158, 11);
   }
+  .site-header__login-tooltip-logout {
+    display: block;
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+    transition: color 150ms ease;
+  }
+  .site-header__login-tooltip-logout:hover {
+    color: rgb(239, 68, 68);
+  }
   .site-header__actions {
     display: flex;
     align-items: center;
@@ -567,7 +588,11 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
 
       trigger.addEventListener('mouseenter', () => {
         cancelClose();
-        if (trigger!.getAttribute('data-state') !== 'partial') return;
+        // Open on hover for any logged-in state ("partial" or "in") so the
+        // tooltip — which now also carries the Log out affordance — is
+        // reachable when fully linked too. "out" state keeps default nav.
+        const state = trigger!.getAttribute('data-state');
+        if (state !== 'partial' && state !== 'in') return;
         if (isOpen(tooltip)) return;
         open(wrap, 'hover');
       });
@@ -576,7 +601,8 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
       tooltip.addEventListener('mouseleave', scheduleHoverClose);
 
       trigger.addEventListener('click', (e) => {
-        if (trigger!.getAttribute('data-state') !== 'partial') return;
+        const state = trigger!.getAttribute('data-state');
+        if (state !== 'partial' && state !== 'in') return;
         e.preventDefault();
         cancelClose();
         if (!isOpen(tooltip)) {

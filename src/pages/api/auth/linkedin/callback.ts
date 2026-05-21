@@ -6,9 +6,9 @@
 // context-v/issue-resolutions/Auth-Identity-System-Worked-but-UX-Failed-Silent-Bounces.md.
 
 import type { APIRoute } from 'astro';
-import { signSession, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, type SessionPayload } from '../../../../lib/session';
+import { signSession, verifySession, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, type SessionPayload } from '../../../../lib/session';
 import { matchesRoster } from '../../../../lib/oauth-roster';
-import { recordUserLogin } from '../../../../lib/user-record';
+import { recordUserLogin, linkProviderToExistingUser } from '../../../../lib/user-record';
 import { logAuthEvent } from '../../../../lib/auth-events';
 
 const STATE_COOKIE = 'fsvc_oauth_state_linkedin';
@@ -108,8 +108,29 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     return redirect(`/login/not-on-roster?provider=linkedin&email=${encodeURIComponent(session.email ?? '')}`, 302);
   }
 
-  // 5. Stamp the User row (best-effort).
-  const recorded = await recordUserLogin(session, rosterEntry);
+  // 5. "Link while logged in" — if another provider already has a valid
+  // session, attach LinkedIn to that existing User row instead of creating a
+  // separate identity.
+  const existingSession = await verifySession(cookies.get(SESSION_COOKIE_NAME)?.value);
+  let recorded;
+  if (existingSession && existingSession.provider !== 'linkedin') {
+    recorded = await linkProviderToExistingUser(existingSession, session);
+    if (recorded.ok) {
+      await logAuthEvent({
+        provider: 'linkedin',
+        outcome: 'provider_linked',
+        subject: liUser.sub,
+        email: liUser.email,
+        user_id: recorded.writtenId ?? undefined,
+        note: `linked onto existing ${existingSession.provider} session`,
+      });
+    } else {
+      recorded = await recordUserLogin(session, rosterEntry);
+    }
+  } else {
+    recorded = await recordUserLogin(session, rosterEntry);
+  }
+
   if (!recorded.ok) {
     await logAuthEvent({
       provider: 'linkedin',

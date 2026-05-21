@@ -14,7 +14,8 @@ export type AuthOutcome =
   | 'user_fetch_fail'
   | 'record_user_error'
   | 'missing_credentials'
-  | 'email_unverified';
+  | 'email_unverified'
+  | 'provider_linked';
 
 export interface AuthEventInput {
   provider: 'github' | 'linkedin' | 'google';

@@ -146,6 +146,96 @@ export interface RecordUserLoginResult {
   error?: string;
 }
 
+/**
+ * Link a freshly-authenticated provider onto the User row identified by an
+ * already-active session cookie. The "I was signed in via X, now I clicked Y"
+ * flow — without this, the OAuth callback would mint a separate User row for
+ * the new provider because OAuth itself has no awareness of the prior cookie.
+ *
+ * Returns ok: false (not an error, a signal) when:
+ *   - existingSession and newSession share the same provider (just a re-login)
+ *   - no User row exists for the existingSession (cookie valid but row missing)
+ *   - DB hiccup
+ * In any of those cases the caller falls through to recordUserLogin's normal
+ * lookup chain, which has its own merge fallbacks.
+ *
+ * When successful: the existing User row gets the new provider's subject
+ * column populated, emails union'd, last_provider + last_login_at updated.
+ * Existing name/avatar are preserved (existing identity is canonical; the new
+ * provider is supplementary). The row's `id` does not change.
+ */
+export async function linkProviderToExistingUser(
+  existingSession: SessionPayload,
+  newSession: SessionPayload,
+): Promise<RecordUserLoginResult> {
+  if (existingSession.provider === newSession.provider) {
+    return {
+      canonicalId: '',
+      writtenId: null,
+      ok: false,
+      error: 'same provider — recordUserLogin handles re-login',
+    };
+  }
+
+  try {
+    let existing;
+    if (existingSession.provider === 'github') {
+      existing = await db.select().from(User).where(eq(User.github_handle, existingSession.subject)).get();
+    } else if (existingSession.provider === 'linkedin') {
+      existing = await db.select().from(User).where(eq(User.linkedin_sub, existingSession.subject)).get();
+    } else if (existingSession.provider === 'google') {
+      existing = await db.select().from(User).where(eq(User.google_sub, existingSession.subject)).get();
+    }
+
+    if (!existing) {
+      return {
+        canonicalId: '',
+        writtenId: null,
+        ok: false,
+        error: 'no User row matches existing session — falling through',
+      };
+    }
+
+    const now = new Date();
+    const mergedEmails = unionEmails(
+      existing.emails,
+      existing.email,
+      newSession.email,
+    );
+
+    // Pull whichever provider sub the new session carries.
+    const newGithub   = newSession.provider === 'github'   ? newSession.subject : existing.github_handle;
+    const newLinkedin = newSession.provider === 'linkedin' ? newSession.subject : existing.linkedin_sub;
+    const newGoogle   = newSession.provider === 'google'   ? newSession.subject : existing.google_sub;
+
+    await db.update(User)
+      .set({
+        github_handle: newGithub,
+        linkedin_sub: newLinkedin,
+        google_sub: newGoogle,
+        emails: mergedEmails,
+        // Preserve existing name/avatar — the user is operating under that
+        // identity already. Only backfill if the existing field is empty.
+        name: existing.name ?? newSession.name ?? null,
+        avatar: existing.avatar ?? newSession.avatar ?? null,
+        last_provider: newSession.provider,
+        last_login_at: now,
+        updated_at: now,
+      })
+      .where(eq(User.id, existing.id));
+
+    return { canonicalId: existing.id, writtenId: existing.id, ok: true };
+  } catch (err) {
+    console.error('[linkProviderToExistingUser] non-fatal DB error:', err);
+    return {
+      canonicalId: '',
+      writtenId: null,
+      ok: false,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
 export async function recordUserLogin(
   session: SessionPayload,
   rosterEntry: RosterEntry | null,
