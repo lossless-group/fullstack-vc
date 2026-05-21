@@ -6,11 +6,13 @@
 // content collection entry (if any).
 
 import { getCollection } from 'astro:content';
-import { db, User, eq } from 'astro:db';
+import { db, User, Stack, eq, asc } from 'astro:db';
 import BaseThemeLayout from '../../../../layouts/BaseThemeLayout.astro';
 import StackBuilder from '../../../../components/stack/StackBuilder.svelte';
 import { verifySession, SESSION_COOKIE_NAME } from '../../../../lib/session';
 import { matchesRoster } from '../../../../lib/oauth-roster';
+
+export const prerender = false;
 
 const { handle } = Astro.params;
 if (!handle) return Astro.redirect('/people', 302);
@@ -31,19 +33,67 @@ if (!rosterEntry) {
   return Astro.redirect(`/login/not-on-roster?provider=${session.provider}`, 302);
 }
 
-// Prefill from existing participant entry if present.
+// Profile fields still come from the participant markdown — that hasn't moved.
+// Stack data now comes from Turso (authoritative); the markdown gets refreshed
+// by scripts/sync-stacks.ts on the operator's cadence and is what public
+// /people/<handle> pages render.
 const allParticipants = await getCollection('participants');
 const existing = allParticipants.find(p => p.data.handle === handle);
 
 const initialName        = existing?.data.name ?? rosterEntry.name ?? session.name ?? '';
 const initialFirm        = existing?.data.firm ?? rosterEntry.firm ?? '';
 const initialPublic      = existing?.data.publish ?? false;
-const initialCurrent     = (existing?.data.current_stack ?? []).map(s => ({
-  tool: s.tool,
-  added: s.added ? new Date(s.added).toISOString().slice(0, 10) : undefined,
-  notes: s.notes,
-}));
 const avatar = existing?.data.headshot ?? existing?.data.github_avatar ?? session.avatar;
+
+// Hydrate stack buckets from Turso so the editor reflects in-progress edits
+// (the markdown may be stale until the next sync).
+let initialCurrent: Array<{ tool: string; added?: string; notes?: string }> = [];
+let initialAspirational: Array<{ tool: string; intent?: string }> = [];
+let initialAbandoned: Array<{ tool: string; abandoned?: string; reason?: string }> = [];
+try {
+  const stackRows = await db.select().from(Stack)
+    .where(eq(Stack.handle, handle))
+    .orderBy(asc(Stack.bucket), asc(Stack.position))
+    .all();
+  for (const r of stackRows) {
+    if (r.bucket === 'current') {
+      initialCurrent.push({
+        tool: r.tool,
+        added: r.added ? new Date(r.added).toISOString().slice(0, 10) : undefined,
+        notes: r.notes ?? undefined,
+      });
+    } else if (r.bucket === 'aspirational') {
+      initialAspirational.push({
+        tool: r.tool,
+        intent: r.intent ?? undefined,
+      });
+    } else if (r.bucket === 'abandoned') {
+      initialAbandoned.push({
+        tool: r.tool,
+        abandoned: r.abandoned ? new Date(r.abandoned).toISOString().slice(0, 10) : undefined,
+        reason: r.reason ?? undefined,
+      });
+    }
+  }
+} catch {
+  // Turso unreachable or table not pushed — fall back to markdown so the
+  // editor still works. Loses unsynced edits, which is the expected behavior
+  // when the DB is gone.
+  initialCurrent = (existing?.data.current_stack ?? []).map(s => ({
+    tool: s.tool,
+    added: s.added ? new Date(s.added).toISOString().slice(0, 10) : undefined,
+    notes: s.notes,
+  }));
+  initialAspirational = (existing?.data.aspirational_stack ?? []).map(s => ({
+    tool: s.tool,
+    intent: (s as any).intent,
+  }));
+  initialAbandoned = (existing?.data.abandoned_stack ?? []).map(s => ({
+    tool: s.tool,
+    abandoned: (s as any).abandoned ? new Date((s as any).abandoned).toISOString().slice(0, 10) : undefined,
+    reason: (s as any).reason,
+  }));
+}
 
 // Linked-provider lookup — mirrors /api/me.ts. The auth gate above already
 // requires session.provider === 'github', so we look up by github_handle.
@@ -77,6 +127,8 @@ try {
     initialFirm={initialFirm}
     initialPublic={initialPublic}
     initialCurrent={initialCurrent}
+    initialAspirational={initialAspirational}
+    initialAbandoned={initialAbandoned}
     avatar={avatar}
   />
 

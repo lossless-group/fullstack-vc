@@ -1,24 +1,29 @@
 // ============================================================================
 // /api/stack/save — write endpoint for the stack builder.
 //
+// Authoritative store is Turso (the Stack table). Public /people/<handle>
+// pages still render from materialized markdown; the operator runs
+// scripts/sync-stacks.ts to refresh that snapshot on a cadence they control.
+// See context-v/tasks/Migrate-Participant-Stacks-from-Markdown-to-Turso-with-Materialization.md
+//
 // Flow:
 //   1. Verify session cookie (JWT).
 //   2. Validate payload (Zod): handle === session.subject; tools exist in registry.
-//   3. Merge with existing participant file if present (preserve fields the
-//      UI doesn't edit: kauffman_class, joined_dojo, github_avatar, etc.).
-//   4. Serialize to YAML frontmatter + markdown body.
-//   5. Commit via github-commit.ts.
-//   6. Return { ok, profileUrl, commitSha }.
+//   3. Atomic replace: DELETE existing Stack rows for this user, INSERT fresh.
+//   4. Return { ok, profileUrl, total }.
 //
-// On error, returns 4xx with a JSON body { error: string }.
+// Idempotent. No commit. No deploy trigger. Sub-second response.
+//
+// On error, returns 4xx/5xx with a JSON body { error: string }.
 // ============================================================================
 
 import type { APIRoute } from 'astro';
 import { z } from 'astro/zod';
 import { getCollection } from 'astro:content';
+import { db, Stack, User, eq, and } from 'astro:db';
 import { verifySession, SESSION_COOKIE_NAME } from '../../../lib/session';
 import { matchesRoster } from '../../../lib/oauth-roster';
-import { commitFile, fetchExisting } from '../../../lib/github-commit';
+import { resolveCanonicalUserId } from '../../../lib/user-record';
 
 export const prerender = false;
 
@@ -26,7 +31,7 @@ export const prerender = false;
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
 
-const StackItem = z.object({
+const CurrentItem = z.object({
   tool: z.string().regex(SLUG_RE, 'tool slug must be lowercase-dasherized'),
   added: z.string().optional(),  // ISO date string from the form
   notes: z.string().max(500).optional(),
@@ -43,143 +48,29 @@ const AbandonedItem = z.object({
   reason: z.string().max(500).optional(),
 });
 
+// All three bucket arrays are optional in the payload. Behavior:
+//   - Field PRESENT (even as []) → that bucket is replaced with the payload.
+//   - Field ABSENT (undefined)  → that bucket is preserved as-is in Turso.
+// Lets the current single-bucket editor save without wiping
+// aspirational/abandoned (which it doesn't yet manage). The redesigned
+// multi-column editor (sibling task) will always send all three.
 const SavePayload = z.object({
   handle: z.string().min(1).max(64),
-  name: z.string().min(1).max(120),
-  firm: z.string().max(120).optional(),
-  role: z.string().max(120).optional(),
-  publish: z.boolean().default(false),
-  current_stack: z.array(StackItem).max(50).default([]),
-  aspirational_stack: z.array(AspirationalItem).max(50).default([]),
-  abandoned_stack: z.array(AbandonedItem).max(50).default([]),
-  /** Optional free-text body for the participant page. */
-  body: z.string().max(10_000).default(''),
+  current_stack: z.array(CurrentItem).max(50).optional(),
+  aspirational_stack: z.array(AspirationalItem).max(50).optional(),
+  abandoned_stack: z.array(AbandonedItem).max(50).optional(),
+  // Profile fields used to live here too; they're now edited via a separate
+  // surface (participant profile in markdown stays the source of truth for
+  // name/firm/role/avatar/etc — only the stack array data moves to Turso).
+  // Accept-and-ignore for backward compat with the existing editor.
+  name: z.string().optional(),
+  firm: z.string().optional(),
+  role: z.string().optional(),
+  publish: z.boolean().optional(),
+  body: z.string().optional(),
 });
 
 type Save = z.infer<typeof SavePayload>;
-
-// ---------- YAML serialization ----------
-// Hand-rolled — only handles the small subset of YAML our schema produces.
-// Strings get quoted with double quotes (escaping inner quotes); dates are
-// emitted unquoted; numbers and booleans likewise. Arrays of objects use the
-// `- key: val` block form.
-
-function yamlStr(v: string): string {
-  // Heuristic: quote if contains anything potentially-meaningful in YAML.
-  if (/^[\w./@:-]+$/.test(v) && !['true','false','null','yes','no','on','off'].includes(v.toLowerCase())) {
-    return v;
-  }
-  return `"${v.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-}
-
-function emitFlatField(key: string, value: unknown): string | null {
-  if (value === undefined || value === null) return null;
-  if (value === '') return null;
-  if (typeof value === 'string') return `${key}: ${yamlStr(value)}`;
-  if (typeof value === 'number' || typeof value === 'boolean') return `${key}: ${value}`;
-  return null;
-}
-
-function emitItemArray(key: string, arr: Record<string, unknown>[]): string {
-  if (arr.length === 0) return `${key}: []`;
-  const lines = [`${key}:`];
-  for (const item of arr) {
-    const fieldLines: string[] = [];
-    for (const [k, v] of Object.entries(item)) {
-      if (v === undefined || v === null || v === '') continue;
-      if (typeof v === 'string') fieldLines.push(`    ${k}: ${yamlStr(v)}`);
-      else if (typeof v === 'number' || typeof v === 'boolean') fieldLines.push(`    ${k}: ${v}`);
-    }
-    if (fieldLines.length === 0) continue;
-    fieldLines[0] = fieldLines[0].replace(/^ {4}/, '  - ');
-    lines.push(...fieldLines);
-  }
-  return lines.join('\n');
-}
-
-interface PreservedFields {
-  kauffman_class?: number;
-  github?: string;
-  github_avatar?: string;
-  headshot?: string;
-  linkedin?: string;
-  joined_dojo?: string;
-}
-
-function serializeParticipant(save: Save, preserved: PreservedFields): string {
-  const lines: string[] = ['---'];
-
-  // Identity
-  push(lines, emitFlatField('handle', save.handle));
-  push(lines, emitFlatField('name', save.name));
-  push(lines, emitFlatField('firm', save.firm));
-  push(lines, emitFlatField('role', save.role));
-  push(lines, emitFlatField('kauffman_class', preserved.kauffman_class));
-
-  // Identity links (preserved on update; on first save the endpoint fills these from session)
-  push(lines, emitFlatField('github', preserved.github));
-  push(lines, emitFlatField('github_avatar', preserved.github_avatar));
-  push(lines, emitFlatField('headshot', preserved.headshot));
-  push(lines, emitFlatField('linkedin', preserved.linkedin));
-
-  // Visibility
-  push(lines, `publish: ${save.publish ? 'true' : 'false'}`);
-  push(lines, emitFlatField('joined_dojo', preserved.joined_dojo));
-
-  // Stacks
-  lines.push(emitItemArray('current_stack', save.current_stack));
-  lines.push(emitItemArray('aspirational_stack', save.aspirational_stack));
-  lines.push(emitItemArray('abandoned_stack', save.abandoned_stack));
-
-  lines.push('---');
-  lines.push('');
-  if (save.body && save.body.trim().length > 0) {
-    lines.push(save.body.trim());
-    lines.push('');
-  }
-  return lines.join('\n');
-}
-
-function push(arr: string[], v: string | null) {
-  if (v) arr.push(v);
-}
-
-// ---------- Frontmatter parser (minimal — for round-tripping our own files) ----------
-// We only need to extract a few preserved fields from the existing file, so a
-// regex pass is plenty. We don't try to be a general YAML parser.
-
-function parsePreservedFields(content: string): PreservedFields {
-  const out: PreservedFields = {};
-  const fmMatch = /^---\n([\s\S]*?)\n---/.exec(content);
-  if (!fmMatch) return out;
-  const fm = fmMatch[1];
-
-  const flat = (key: keyof PreservedFields, isNumber = false) => {
-    const re = new RegExp(`^${key}:\\s*(.+)$`, 'm');
-    const m = re.exec(fm);
-    if (!m) return;
-    let v = m[1].trim();
-    if (v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-    if (isNumber) {
-      const n = Number(v);
-      if (!isNaN(n)) (out as any)[key] = n;
-    } else {
-      (out as any)[key] = v;
-    }
-  };
-  flat('github');
-  flat('github_avatar');
-  flat('headshot');
-  flat('linkedin');
-  flat('joined_dojo');
-  flat('kauffman_class', true);
-  return out;
-}
-
-function parseExistingBody(content: string): string {
-  const m = /^---\n[\s\S]*?\n---\s*\n([\s\S]*)$/.exec(content);
-  return m ? m[1].trim() : '';
-}
 
 // ---------- Endpoint ----------
 
@@ -204,86 +95,126 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   if (!parsed.success) {
     return json({ error: 'validation failed', details: parsed.error.flatten() }, 400);
   }
-  const save = parsed.data;
+  const save: Save = parsed.data;
 
-  // Handle must match session subject. Subject is the GitHub handle for github
-  // provider, or the LinkedIn `sub` for linkedin provider — for linkedin we use
-  // a derived handle (the email local-part with no dots), but for v0.5 we only
-  // accept matching subjects for github logins.
+  // Handle must match the session's identity for the github provider. The
+  // edit page's auth gate already enforces this, but the API enforces it too
+  // (defense in depth — no one should be able to POST stack edits for another
+  // user's handle even if the page were ever misconfigured).
   if (session.provider !== 'github' || save.handle.toLowerCase() !== session.subject.toLowerCase()) {
     return json({ error: 'handle does not match session subject' }, 403);
   }
 
-  // Validate every tool slug exists in the registry.
+  // Validate every tool slug exists in the registry (warn-but-allow per the
+  // no-hard-validation principle would also be fine; we currently reject
+  // to keep the data clean. Revisit if it bites editorial flow).
   const tools = await getCollection('tools');
   const knownSlugs = new Set(tools.map(t => t.id));
-  const allSlugs = [
-    ...save.current_stack.map(s => s.tool),
-    ...save.aspirational_stack.map(s => s.tool),
-    ...save.abandoned_stack.map(s => s.tool),
+  const allSlugs: string[] = [
+    ...(save.current_stack ?? []).map(s => s.tool),
+    ...(save.aspirational_stack ?? []).map(s => s.tool),
+    ...(save.abandoned_stack ?? []).map(s => s.tool),
   ];
   const unknown = allSlugs.filter(s => !knownSlugs.has(s));
   if (unknown.length > 0) {
     return json({ error: 'unknown tool slug(s)', unknown }, 400);
   }
 
-  // The fullstack-vc site is its own GitHub repo (lossless-group/fullstack-vc),
-  // so paths inside the API are relative to that repo's root — no monorepo prefix.
-  const path = `src/content/participants/${save.handle}.md`;
-
-  // Read the existing file from the repo so we preserve fields the UI doesn't
-  // edit (kauffman_class, joined_dojo, github_avatar, etc.).
-  let existingContent: string | null = null;
+  // Resolve the canonical User row's id (same primitive vote attribution uses).
+  // If no User row exists (DB hiccup, first login race), reject — we need a
+  // foreign key target for Stack.user_id.
+  const user_id = await resolveCanonicalUserId(session, rosterEntry);
+  let userRow;
   try {
-    existingContent = await fetchExisting(path);
-  } catch {
-    /* fall through with empty preserved fields */
+    userRow = await db.select().from(User).where(eq(User.id, user_id)).get();
+  } catch (err) {
+    return json({ error: 'user lookup failed', detail: String((err as Error).message ?? err) }, 502);
+  }
+  if (!userRow) {
+    return json({ error: 'no User row for this session — log out and back in to bootstrap' }, 412);
   }
 
-  const preserved: PreservedFields = existingContent
-    ? parsePreservedFields(existingContent)
-    : {};
+  const now = new Date();
+  let totalWritten = 0;
 
-  // Backfill from session/roster on first save
-  if (!preserved.github && session.provider === 'github') {
-    preserved.github = `https://github.com/${session.subject}`;
-  }
-  if (!preserved.github_avatar && session.avatar) {
-    preserved.github_avatar = session.avatar;
-  }
-  if (!preserved.kauffman_class && rosterEntry.kauffman_class) {
-    preserved.kauffman_class = rosterEntry.kauffman_class;
-  }
-  if (!preserved.joined_dojo) {
-    preserved.joined_dojo = new Date().toISOString().slice(0, 10);
-  }
-
-  // Preserve any prior body text the user had on their file.
-  if (existingContent) {
-    const priorBody = parseExistingBody(existingContent);
-    if (priorBody && !save.body) {
-      save.body = priorBody;
+  // Per-bucket replace: only touch buckets present in the payload. This is the
+  // key invariant that lets the single-bucket editor save without wiping
+  // aspirational/abandoned data that it never manages.
+  try {
+    if (save.current_stack !== undefined) {
+      await db.delete(Stack).where(and(eq(Stack.user_id, user_id), eq(Stack.bucket, 'current')));
+      if (save.current_stack.length > 0) {
+        const rows = save.current_stack.map((s, i) => ({
+          user_id,
+          handle: save.handle,
+          bucket: 'current',
+          tool: s.tool,
+          position: i,
+          notes: s.notes ?? null,
+          intent: null,
+          reason: null,
+          added: s.added ? new Date(s.added) : null,
+          abandoned: null,
+          created_at: now,
+          updated_at: now,
+        }));
+        await db.insert(Stack).values(rows);
+        totalWritten += rows.length;
+      }
     }
-  }
-
-  const fileContent = serializeParticipant(save, preserved);
-
-  let commitSha: string;
-  try {
-    const result = await commitFile({
-      path,
-      content: fileContent,
-      commitMessage: `data(stack): ${save.handle} updated their stack`,
-    });
-    commitSha = result.commitSha;
-  } catch (e: any) {
-    return json({ error: 'commit failed', detail: String(e?.message ?? e) }, 502);
+    if (save.aspirational_stack !== undefined) {
+      await db.delete(Stack).where(and(eq(Stack.user_id, user_id), eq(Stack.bucket, 'aspirational')));
+      if (save.aspirational_stack.length > 0) {
+        const rows = save.aspirational_stack.map((s, i) => ({
+          user_id,
+          handle: save.handle,
+          bucket: 'aspirational',
+          tool: s.tool,
+          position: i,
+          notes: null,
+          intent: s.intent ?? null,
+          reason: null,
+          added: null,
+          abandoned: null,
+          created_at: now,
+          updated_at: now,
+        }));
+        await db.insert(Stack).values(rows);
+        totalWritten += rows.length;
+      }
+    }
+    if (save.abandoned_stack !== undefined) {
+      await db.delete(Stack).where(and(eq(Stack.user_id, user_id), eq(Stack.bucket, 'abandoned')));
+      if (save.abandoned_stack.length > 0) {
+        const rows = save.abandoned_stack.map((s, i) => ({
+          user_id,
+          handle: save.handle,
+          bucket: 'abandoned',
+          tool: s.tool,
+          position: i,
+          notes: null,
+          intent: null,
+          reason: s.reason ?? null,
+          added: null,
+          abandoned: s.abandoned ? new Date(s.abandoned) : null,
+          created_at: now,
+          updated_at: now,
+        }));
+        await db.insert(Stack).values(rows);
+        totalWritten += rows.length;
+      }
+    }
+  } catch (err) {
+    return json({ error: 'stack write failed', detail: String((err as Error).message ?? err) }, 502);
   }
 
   return json({
     ok: true,
     profileUrl: `/people/${save.handle}`,
-    commitSha,
+    total: totalWritten,
+    // Surface the sync-deferred status so the editor can show
+    // "saved — sync to publish" rather than "published immediately".
+    materialized: false,
   });
 };
 

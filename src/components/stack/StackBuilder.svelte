@@ -24,12 +24,21 @@
   };
 
   type CurrentItem = { tool: string; added?: string; notes?: string };
+  type AspirationalItem = { tool: string; intent?: string };
+  type AbandonedItem = { tool: string; abandoned?: string; reason?: string };
 
   export let handle: string;
   export let initialName: string = '';
   export let initialFirm: string = '';
   export let initialPublic: boolean = false;
   export let initialCurrent: CurrentItem[] = [];
+  // Aspirational and abandoned aren't UI-editable yet (sibling task in
+  // context-v/tasks/Redesign-Stack-Builder-with-Multi-Column-Drag-Drop.md
+  // adds drag-drop across buckets). They're held in component state and
+  // round-tripped through save so the DELETE+INSERT replace pattern in
+  // /api/stack/save doesn't wipe them.
+  export let initialAspirational: AspirationalItem[] = [];
+  export let initialAbandoned: AbandonedItem[] = [];
   export let avatar: string | undefined = undefined;
 
   const DRAFT_KEY = `stack-draft:${handle}`;
@@ -39,6 +48,10 @@
   let firm = initialFirm;
   let isPublic = initialPublic;
   let currentStack: CurrentItem[] = initialCurrent.map(s => ({ ...s }));
+  // Held in state but not exposed in v1 of the editor; sent through on save
+  // so /api/stack/save's DELETE+INSERT replace doesn't lose them.
+  let aspirationalStack: AspirationalItem[] = initialAspirational.map(s => ({ ...s }));
+  let abandonedStack: AbandonedItem[] = initialAbandoned.map(s => ({ ...s }));
 
   let allTools: ToolEntry[] = [];
   let toolBySlug = new Map<string, ToolEntry>();
@@ -51,7 +64,7 @@
     | { kind: 'idle' }
     | { kind: 'dirty' }
     | { kind: 'saving' }
-    | { kind: 'saved'; profileUrl: string; commitSha: string; at: number }
+    | { kind: 'saved'; profileUrl: string; total: number; at: number }
     | { kind: 'error'; message: string };
   let status: SaveStatus = { kind: 'idle' };
 
@@ -183,8 +196,12 @@
           firm: firm || undefined,
           publish: isPublic,
           current_stack: currentStack,
-          aspirational_stack: [],
-          abandoned_stack: [],
+          // Round-trip aspirational/abandoned through save so they aren't
+          // wiped by /api/stack/save's per-bucket DELETE+INSERT. The UI
+          // doesn't edit these yet — they're loaded from Turso at hydrate
+          // time via edit.astro's initialAspirational/initialAbandoned props.
+          aspirational_stack: aspirationalStack,
+          abandoned_stack: abandonedStack,
         }),
       });
       if (!res.ok) {
@@ -200,7 +217,7 @@
       status = {
         kind: 'saved',
         profileUrl: body.profileUrl,
-        commitSha: body.commitSha,
+        total: typeof body.total === 'number' ? body.total : 0,
         at: Date.now(),
       };
     } catch (e: any) {
@@ -247,7 +264,7 @@
     if (s.kind === 'idle') return 'Up to date';
     if (s.kind === 'dirty') return 'Unsaved changes — auto-saves after 5 min';
     if (s.kind === 'saving') return 'Saving…';
-    if (s.kind === 'saved') return 'Published — rebuild in ~30s';
+    if (s.kind === 'saved') return 'Saved — your edits are live for you; the public page updates on the next sync.';
     if (s.kind === 'error') return `Error: ${s.message}`;
     return '';
   }

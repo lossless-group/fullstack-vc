@@ -12,7 +12,7 @@
 // the header script can use a single response shape.
 
 import type { APIRoute } from 'astro';
-import { db, User, eq } from 'astro:db';
+import { db, User, Stack, eq, and } from 'astro:db';
 import { getCollection } from 'astro:content';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
@@ -61,26 +61,42 @@ export const GET: APIRoute = async ({ cookies }) => {
   const linkedCount = Number(providers.github) + Number(providers.linkedin) + Number(providers.google);
   const allLinked = linkedCount === 3;
 
-  // Stack counts — only when the user has a github_handle (the participant
-  // slug today). Lets the header CTA surface "21 active · 10 aspiring · 6 moved on"
-  // with a direct link to the editor.
+  // Stack counts — pulled from Turso (authoritative) so the header tooltip
+  // reflects unsynced edits immediately. Falls back to markdown if Turso
+  // is unreachable (DB hiccup, table not pushed) so the count is never
+  // stale-vs-broken.
   let handle: string | null = null;
   let stackCounts: { current: number; aspirational: number; abandoned: number } | null = null;
   const githubHandle = row?.github_handle ?? (session.provider === 'github' ? session.subject : null);
   if (githubHandle) {
     try {
-      const participants = await getCollection('participants');
-      const participant = participants.find(p => p.data.handle === githubHandle);
-      if (participant) {
-        handle = githubHandle;
-        stackCounts = {
-          current: participant.data.current_stack?.length ?? 0,
-          aspirational: participant.data.aspirational_stack?.length ?? 0,
-          abandoned: participant.data.abandoned_stack?.length ?? 0,
-        };
-      }
+      const stackRows = await db.select().from(Stack).where(eq(Stack.handle, githubHandle)).all();
+      // Even if there are 0 rows we still set handle so the editor link
+      // surfaces — "Your stack: 0 active · 0 aspiring · 0 moved on · Edit →"
+      // is a useful first-time-user nudge, not a broken state.
+      handle = githubHandle;
+      stackCounts = {
+        current:      stackRows.filter(r => r.bucket === 'current').length,
+        aspirational: stackRows.filter(r => r.bucket === 'aspirational').length,
+        abandoned:    stackRows.filter(r => r.bucket === 'abandoned').length,
+      };
     } catch {
-      // Best effort — collection unavailable shouldn't break /api/me.
+      // Turso unavailable — fall back to markdown.
+      try {
+        const participants = await getCollection('participants');
+        const participant = participants.find(p => p.data.handle === githubHandle);
+        if (participant) {
+          handle = githubHandle;
+          stackCounts = {
+            current: participant.data.current_stack?.length ?? 0,
+            aspirational: participant.data.aspirational_stack?.length ?? 0,
+            abandoned: participant.data.abandoned_stack?.length ?? 0,
+          };
+        }
+      } catch {
+        // Both sources unavailable — leave handle/stackCounts null. The
+        // header CTA will stay hidden.
+      }
     }
   }
 

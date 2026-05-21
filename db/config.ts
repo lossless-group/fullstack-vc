@@ -189,6 +189,47 @@ const User = defineTable({
   },
 });
 
+// ─── Stack ───────────────────────────────────────────────────────────────────
+// One flat table covering all three stack buckets (current / aspirational /
+// abandoned) so cross-bucket moves are a single UPDATE rather than DELETE+INSERT.
+// Bucket-specific fields (notes / intent / reason) are nullable on rows that
+// don't need them — the data shape is permissive so cross-bucket moves don't
+// silently lose info that *could* still be meaningful (e.g. re-promoting an
+// archived tool keeps the previous-life context if we ever want to surface it).
+//
+// Authoritative store for stacks as of this commit. Public /people/<handle>
+// pages still read from markdown — the sync script (scripts/sync-stacks.ts)
+// materializes Turso → markdown on a cadence the operator controls. Same
+// pattern as polling sessions §9.
+//
+// Editor reads + writes through this table directly (SSR + API routes).
+// Header tooltip stack counts also come from here (Turso COUNT, not
+// getCollection) so unsynced edits appear in the count immediately.
+//
+// See context-v/tasks/Migrate-Participant-Stacks-from-Markdown-to-Turso-with-Materialization.md §3.1
+const Stack = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    user_id: column.text({ references: () => User.columns.id }),
+    handle: column.text(),                          // mirror of User.github_handle for fast joins to participants/*.md (the public-side handle)
+    bucket: column.text(),                          // 'current' | 'aspirational' | 'abandoned'
+    tool: column.text(),                            // tool slug — refs src/content/tools/<tool>.md
+    position: column.number(),                      // ordering within bucket; gaps OK
+    notes: column.text({ optional: true }),         // current-bucket field
+    intent: column.text({ optional: true }),        // aspirational-bucket field
+    reason: column.text({ optional: true }),        // abandoned-bucket field
+    added: column.date({ optional: true }),         // current-bucket field
+    abandoned: column.date({ optional: true }),     // abandoned-bucket field
+    created_at: column.date(),
+    updated_at: column.date(),
+  },
+  indexes: {
+    by_user: { on: ['user_id'] },
+    by_handle: { on: ['handle'] },
+    unique_per_bucket: { on: ['user_id', 'bucket', 'tool'], unique: true },
+  },
+});
+
 // ─── Proposal ────────────────────────────────────────────────────────────────
 // Member-submitted draft for a new Project or Working Group. Captured via the
 // /projects/propose and /working-groups/propose forms. These rows are NOT
@@ -299,5 +340,5 @@ const AuthEvent = defineTable({
 });
 
 export default defineDb({
-  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal, ParticipationInterest, AuthEvent },
+  tables: { Session, Poll, Vote, PollResult, PollEvent, User, Proposal, ParticipationInterest, AuthEvent, Stack },
 });
