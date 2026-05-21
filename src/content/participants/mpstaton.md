@@ -42,7 +42,15 @@ current_stack:
   - tool: affinity-design-suite
     added: 2025-03-30
     notes: "The best MacOS Native Creative Software Suite, love Affinity Designer for Vector Art -- best-in-class."
+  - tool: brandfetch
+    added: 2025-04-25
+    notes: "Makes filling out materials with portfolio/deal brands so much easier."
+  - tool: github
+    added: 2020-01-01
+    notes: "Source of truth for every repo — Lossless monorepo, all Astro-Knots sites, LFM package, the whole lot."
 aspirational_stack:
+  - tool: agents-view
+    intent: "Browse and search past AI coding sessions."
   - tool: hermes-agent
     intent: "Self-learning agentic framework for high-context, better memory, and persistence."
   - tool: fallow-tools

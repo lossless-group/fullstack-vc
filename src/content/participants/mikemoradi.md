@@ -13,6 +13,9 @@ current_stack:
   - tool: microsoft-copilot
     added: 2026-05-08
     notes: "Daily driver across the Microsoft 365 stack."
+  - tool: claude-team
+    added: 2026-05-21
+    notes: "Administrative & audit-prep workflows at Cortado — May 27 All-Hands demo (joint with Raeed)."
 aspirational_stack: []
 abandoned_stack: []
 ---

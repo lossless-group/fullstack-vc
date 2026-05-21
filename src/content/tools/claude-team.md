@@ -13,6 +13,7 @@ og_favicon: https://claude.com/favicon.ico
 description: "Claude Team is Anthropic's team-tier plan for the Claude consumer surface (claude.ai). One workspace with shared member seats, admin controls, higher usage limits, and central billing. Designed for small teams (5+ seats) that want shared access to Claude — Projects, conversations, file uploads — under one administered account rather than individual Pro subscriptions."
 pricing: "Per-seat monthly or annual billing (5-seat minimum). Higher usage limits than Pro. See https://claude.com/pricing/team for current rates."
 product_of: "Anthropic"
+og_image: "https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/68c469d4fa4e9cd737a10ec9_og-claude-team.jpg"
 publish: true
 tags:
   - AI-Assistants

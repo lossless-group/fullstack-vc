@@ -13,6 +13,9 @@ current_stack:
   - tool: openclaw
     added: 2026-05-08
     notes: "Actively running OpenClaw."
+  - tool: obsidian
+    added: 2026-05-21
+    notes: "Second Brain wired to dealflow via OpenClaw — May 27 All-Hands demo."
 aspirational_stack: []
 abandoned_stack: []
 ---

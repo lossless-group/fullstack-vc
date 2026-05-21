@@ -7,7 +7,9 @@ directory_profile_kauffman: https://www.kauffmanfellows.org/fellows/marcos-polan
 kauffman_class: 19
 publish: true
 joined_dojo: 2026-05-09
-current_stack: []
+current_stack:
+  - tool: github
+    added: 2026-05-21
 aspirational_stack:
   - tool: agent37
 abandoned_stack: []

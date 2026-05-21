@@ -8,7 +8,9 @@ directory_profile_kauffman: https://www.kauffmanfellows.org/fellows/lylan-master
 kauffman_class: 19
 publish: true
 joined_dojo: 2026-04-29
-current_stack: []
+current_stack:
+  - tool: github
+    added: 2026-05-21
 aspirational_stack: []
 abandoned_stack: []
 ---

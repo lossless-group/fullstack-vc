@@ -8,7 +8,10 @@ linkedin: "https://www.linkedin.com/in/raeedz/"
 headshot: /images/presenter-headshots/headshot__Raeed-Zainuddin.jpeg
 publish: false
 joined_dojo: 2026-05-21
-current_stack: []
+current_stack:
+  - tool: claude-team
+    added: 2026-05-21
+    notes: "Administrative & audit-prep workflows at Cortado — May 27 All-Hands demo (joint with Mike Moradi)."
 aspirational_stack: []
 abandoned_stack: []
 ---
