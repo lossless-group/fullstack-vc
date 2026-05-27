@@ -1,0 +1,21 @@
+---
+handle: meshekah
+name: "Mohammed Almeshekah"
+firm: ""
+role: ""
+kauffman_class: null
+directory_profile_kauffman: ""
+linkedin: ""
+headshot: "https://lh3.googleusercontent.com/a-/ALV-UjVDsdOpe6OHcFWWiHLuojQ5rOjmmQ4jz92ero-gsGY6jII0Wk715TEQGSetdni8vbBHUYjMU8YAFGdicSBo0leAS1HZgFczKnddazkeji4a2fQeGKxINnyJmrT3Y05Yg70Vf5F-j7ZHri1yVvG_AloUd2LNP-Ob2_Wwy2Qhtm_h3watGSkxLHsByvEsHGRnxLaUjvvsRfO14q7RCnKR1P9n7wYjVh0OZEsuHxkf8yUfkY1nIypWOONpfcf7ZoQcM7AJDPC_DVcKONQI1AVgAYkDHQHE4rC_HWa0Y5oAA3orHJJerJ_L3ocnfeCsTs6ptwkPj17o-jCdRZ8RcPYtu5sODZfG9WQK_DmhIHiVC5i3QI7ki7pINiQa8YNBCbwQiYd-WFR7_0suy7VcqyWYmauiNYWLU0bjCgSMi0-GUCuTe0_HZCPbcvhbo8voKzDj_08qdTfN0XypO5lXtug9Np3Lu7ILhOabHmc8mNRA8GaBOca8KrboIdKbgLTA4Ou-n9Cv6xDSq6tX3VNL2L92G7Tc4-ChCUe8PE5DZWi_UOPZXxK7AV6e1b26bdyGxS5fGqwSCYTrg2b3mamM9M-N2Dl2iivOrpQLFWo2VIj_4rb13Qdej0eXHoQSbcm4iHyyueV2bDhIGvbvgOcR9TxwmWJbZCUf84YmWmdO1zbcTAk7tu341NqZyv32Du9PdctrAhbCzMaPazElMZI8EHEuVy3CK3ofGeGb-iVv2NIZfmBRP1UDVvb5xSL-u_du994YlbQLffsSq3tFqvHUxv2_Q4zC7tOmkbpyCB6KMWm2DUSqQdm7ZMUcuK0W8hB8EQiRuG2pTMSHDpj5ZXAlcS326pxm5EqlVZNs0uWVUeRBIspiWcSbBijYx_dOwpnHNdtE1Nr-Kzs1e_Hz8RMcS_Avww_KUDHabeOsiuiFLL5kxUq9ckJfMzmvR6JeKBzHQWX37P_hZqDiMFleyESbetFIiG0FsEnk-yj-3nnbmw-FiOkShVqVFEai6X-GUSqL59L6sUplWardT4h-QigF2GWaedHcrC5Jsne1VimWVljdeiW0uvCehzTBFm1U=s96-c"
+publish: false
+joined_dojo: 2026-05-27
+# Auto-generated stub from generate-orphan-md-stubs.ts
+# User.id: m@outliers.vc
+# Last provider: github
+# github_handle: meshekah
+current_stack: []
+aspirational_stack: []
+abandoned_stack: []
+---
+
+Mohammed Almeshekah. _Stub auto-generated; flip `publish: true` after review._
