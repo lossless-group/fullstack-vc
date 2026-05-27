@@ -1,6 +1,6 @@
 ---
 title: "Monthly All-Hands"
-lede: "Monthly all-hands gathering for the Agentic VC Dojo. Three presenters share what they've been building, breaking, and learning."
+lede: "Monthly all-hands gathering for the Agentic VC Dojo. Two Kauffman Fellows share what they've been building, breaking, and learning."
 date_scheduled: 2026-05-27T09:00:00-07:00
 date_posted: 2026-05-08
 durationMinutes: 60
@@ -9,7 +9,6 @@ hosts:
 presenters:
   - Mike Moradi, Cortado Ventures
   - Raeed Zainuddin, Cortado Ventures
-  - Toby Rush, Ideem
 presenterDetails:
   - name: Mike Moradi
     firm: Cortado Ventures
@@ -20,12 +19,6 @@ presenterDetails:
     firm: Cortado Ventures
     headshot: /images/presenter-headshots/headshot__Raeed-Zainuddin.jpeg
     topic: Claude Teams for fundraising, admin, and audit superpowers.
-  - name: Toby Rush
-    firm: Ideem
-    role: Founder, CEO
-    headshot: /images/participant-headshots/headshot__Toby-Rush.jpeg
-    linkedin: https://www.linkedin.com/in/tobiasrush/
-    topic: Wiring up an Obsidian 2nd Brain to dealflow with OpenClaw.
 classifiers:
   - All-Hands
 tags:
@@ -42,7 +35,7 @@ Monthly all-hands for the Agentic VC Dojo.
 > - Copilot on steroids for _firm impact_. 
 > - OpenClaw does _heavy lifting_. 
 
-Three presenters, two Kauffman Fellows and one Founder, will share short demos of what they've been working on — wins, scars, and open questions.
+Two Kauffman Fellows will share short demos of what they've been working on — wins, scars, and open questions.
 
 
 ## When
