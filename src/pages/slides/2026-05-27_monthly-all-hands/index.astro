@@ -133,18 +133,16 @@ const PRESENTER_06B = {
   </section>
 
   {/* ─────────────────────────────────────────────────────────────── 02a (panel 4 — building) */}
-  <section class="slide slide--data">
-    <p class="slide-eyebrow" data-reveal>What this room is building</p>
-    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
-      Some are already shipping.
-    </h2>
-    <div class="slide-component" data-reveal style="--delay: 160ms;">
+  {/* Deck-level header killed — Section__WebinarSurveyVoices brings its own
+      ("What this room is actually working on"). Same pattern as slide 02a-2. */}
+  <section class="slide slide--data slide--data-tight">
+    <div class="slide-component" data-reveal>
       <Section__WebinarSurveyVoices
         id="deck-quotes-building"
         quotes={surveyData.quotes}
         headingTxt="What this room is"
         headingAccentTxt="actually working on"
-        ledeTxt=""
+        ledeTxt="Concrete workflows in flight. Anonymized."
       />
     </div>
   </section>
