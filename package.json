@@ -13,6 +13,7 @@
     "gen:og": "node --experimental-strip-types --env-file=.env scripts/generate-og-image.ts",
     "gen:content-banners": "node --experimental-strip-types --env-file=.env scripts/generate-content-banners-on-dir.ts",
     "gen:webinar-survey": "node --experimental-strip-types scripts/build-webinar-survey.ts",
+    "gen:combined-firms": "node --experimental-strip-types scripts/build-combined-firms.ts",
     "sync:session": "astro db execute scripts/sync-session.ts",
     "sync:stacks": "astro db execute scripts/sync-stacks.ts",
     "sync:stacks:remote": "astro db execute scripts/sync-stacks.ts --remote",

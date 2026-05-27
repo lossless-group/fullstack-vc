@@ -1,0 +1,373 @@
+---
+// Scroll-snap deck container with keyboard nav and reveal-on-intersect.
+// Each child <section> becomes a slide.
+//
+// Keyboard:
+//   ↓ / Space / PageDown → next section
+//   ↑ / Shift+Space / PageUp → previous section
+//   Home → first; End → last
+//   F → toggle fullscreen
+//   C → toggle chrome
+//   Esc → exit fullscreen / restore chrome
+//
+// Reveal: any descendant with [data-reveal] gains .is-visible when it enters
+// the viewport. Use --delay (ms) for stagger.
+//
+// Mode-safe: composes the site's two-tier token system + three-mode runtime
+// from theme.css. Toggling mode at the site level retints the deck live.
+
+import BoilerPlateHTML from "./BoilerPlateHTML.astro";
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  themeClass?: string;
+  /** Optional chrome (header) rendered above the scroll container. */
+  hideChrome?: boolean;
+}
+
+const {
+  title = "FullStack VC · Deck",
+  description = "Section-composed deck for the Agentic VC Dojo.",
+  noindex = true,
+  themeClass = "theme-default",
+  hideChrome = false,
+} = Astro.props;
+---
+
+<BoilerPlateHTML
+  title={title}
+  description={description}
+  noindex={noindex}
+  themeClass={themeClass}
+>
+  <div class="deck-root" data-deck-root>
+    {!hideChrome && (
+      <header class="deck-chrome" data-deck-chrome>
+        <slot name="chrome">
+          <a href="/sessions" class="deck-chrome__back">← All sessions</a>
+          <span class="deck-chrome__title">{title}</span>
+          <span class="deck-chrome__indicator">
+            <span data-deck-current>1</span><span class="deck-chrome__sep">/</span><span data-deck-total>?</span>
+          </span>
+        </slot>
+      </header>
+    )}
+
+    <main class="deck-scroll" data-deck-scroll tabindex="0">
+      <slot />
+    </main>
+
+    <nav class="deck-controls" aria-hidden="true">
+      <span class="deck-controls__hint">↑↓ navigate · F fullscreen · C chrome · Esc reset</span>
+    </nav>
+  </div>
+
+  <script>
+    import "../utils/theme-switcher.js";
+    import "../utils/mode-switcher.js";
+
+    // Wait for DOM ready
+    function init() {
+      const scroll = document.querySelector<HTMLElement>("[data-deck-scroll]");
+      const chrome = document.querySelector<HTMLElement>("[data-deck-chrome]");
+      const root = document.querySelector<HTMLElement>("[data-deck-root]");
+      const currentEl = document.querySelector<HTMLElement>("[data-deck-current]");
+      const totalEl = document.querySelector<HTMLElement>("[data-deck-total]");
+
+      if (!scroll) return;
+
+      const sections = Array.from(scroll.querySelectorAll<HTMLElement>(":scope > section"));
+      if (sections.length === 0) return;
+
+      if (totalEl) totalEl.textContent = String(sections.length);
+
+      let activeIndex = 0;
+
+      // Track which section is centered in viewport
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+              const idx = sections.indexOf(entry.target as HTMLElement);
+              if (idx !== -1) {
+                activeIndex = idx;
+                if (currentEl) currentEl.textContent = String(idx + 1);
+                entry.target.classList.add("is-active");
+              }
+            } else {
+              entry.target.classList.remove("is-active");
+            }
+          }
+        },
+        { root: scroll, threshold: [0.5, 0.75] }
+      );
+      sections.forEach((s) => io.observe(s));
+
+      // Reveal-on-intersect for [data-reveal]
+      const revealIo = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              revealIo.unobserve(entry.target);
+            }
+          }
+        },
+        { root: scroll, threshold: 0.2 }
+      );
+      scroll
+        .querySelectorAll<HTMLElement>("[data-reveal]")
+        .forEach((el) => revealIo.observe(el));
+
+      // Keyboard nav
+      function go(delta: number) {
+        const next = Math.max(0, Math.min(sections.length - 1, activeIndex + delta));
+        sections[next]?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      function goTo(idx: number) {
+        const target = Math.max(0, Math.min(sections.length - 1, idx));
+        sections[target]?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function isInputFocused(): boolean {
+        const el = document.activeElement;
+        if (!el) return false;
+        const tag = el.tagName;
+        return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (el as HTMLElement).isContentEditable;
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (isInputFocused()) return;
+        switch (e.key) {
+          case "ArrowDown":
+          case "PageDown":
+            e.preventDefault();
+            go(1);
+            break;
+          case " ":
+            e.preventDefault();
+            go(e.shiftKey ? -1 : 1);
+            break;
+          case "ArrowUp":
+          case "PageUp":
+            e.preventDefault();
+            go(-1);
+            break;
+          case "Home":
+            e.preventDefault();
+            goTo(0);
+            break;
+          case "End":
+            e.preventDefault();
+            goTo(sections.length - 1);
+            break;
+          case "f":
+          case "F":
+            e.preventDefault();
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            } else {
+              root?.requestFullscreen();
+            }
+            break;
+          case "c":
+          case "C":
+            e.preventDefault();
+            root?.classList.toggle("chrome-hidden");
+            break;
+          case "Escape":
+            if (document.fullscreenElement) document.exitFullscreen();
+            root?.classList.remove("chrome-hidden");
+            break;
+        }
+      });
+
+      // Double-click navigation: top half = prev, bottom half = next
+      scroll.addEventListener("dblclick", (e) => {
+        const rect = scroll.getBoundingClientRect();
+        if (e.clientY < rect.top + rect.height / 2) {
+          go(-1);
+        } else {
+          go(1);
+        }
+      });
+
+      // Focus scroll container so PageUp/PageDown work without prior click
+      scroll.focus({ preventScroll: true });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  </script>
+
+  <style is:global>
+    /* ── Root: full-viewport flex column ────────────────────────────────── */
+    .deck-root {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+
+    /* ── Chrome: thin top header ────────────────────────────────────────── */
+    .deck-chrome {
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.625rem 1.25rem;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg);
+      font-family: var(--font-code, system-ui);
+      font-size: 0.8125rem;
+      letter-spacing: 0.04em;
+      color: var(--color-text-muted);
+      z-index: 10;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .deck-root.chrome-hidden .deck-chrome {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .deck-chrome__back {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .deck-chrome__back:hover {
+      color: var(--color-primary);
+    }
+    .deck-chrome__title {
+      text-align: center;
+      color: var(--color-text);
+      font-family: var(--font-display, system-ui);
+      font-size: 0.875rem;
+    }
+    .deck-chrome__indicator {
+      font-variant-numeric: tabular-nums;
+      color: var(--color-text);
+    }
+    .deck-chrome__sep {
+      opacity: 0.5;
+      margin: 0 0.25rem;
+    }
+
+    /* ── Scroll container: snap each section ─────────────────────────────── */
+    .deck-scroll {
+      flex: 1 1 auto;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      outline: none;
+    }
+    .deck-scroll > section {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem clamp(1.5rem, 5vw, 5rem);
+      position: relative;
+    }
+
+    /* ── Controls hint: bottom-right ─────────────────────────────────────── */
+    .deck-controls {
+      position: fixed;
+      bottom: 0.75rem;
+      right: 1rem;
+      font-family: var(--font-code, system-ui);
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.2s ease;
+    }
+    .deck-controls:hover { opacity: 1; }
+    .deck-root.chrome-hidden .deck-controls { opacity: 0; }
+
+    /* ── Reveal-on-intersect ──────────────────────────────────────────────── */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      transition-delay: var(--delay, 0ms);
+    }
+    [data-reveal].is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      [data-reveal] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    /* ── Slide typography helpers (deck-scoped, compose theme.css tokens) ── */
+    .slide-eyebrow {
+      font-family: var(--font-code, system-ui);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin: 0 0 1.25rem;
+    }
+    .slide-headline {
+      font-family: var(--font-display, system-ui);
+      font-size: clamp(2rem, 5.5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--color-text);
+      margin: 0 0 1.5rem;
+      max-width: 30ch;
+    }
+    .slide-subhead {
+      font-family: var(--font-display, system-ui);
+      font-size: clamp(1.125rem, 2.2vw, 1.625rem);
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--color-text-muted);
+      margin: 0 0 2rem;
+      max-width: 60ch;
+    }
+    .slide-body {
+      font-size: clamp(1rem, 1.4vw, 1.125rem);
+      line-height: 1.6;
+      color: var(--color-text);
+      max-width: 65ch;
+    }
+    .slide-caption {
+      font-family: var(--font-code, system-ui);
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.02em;
+    }
+    .slide-footnote {
+      font-family: var(--font-code, system-ui);
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.05em;
+      position: absolute;
+      bottom: 1.5rem;
+      left: clamp(1.5rem, 5vw, 5rem);
+      right: clamp(1.5rem, 5vw, 5rem);
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  </style>
+</BoilerPlateHTML>

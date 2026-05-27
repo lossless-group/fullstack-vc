@@ -1,0 +1,532 @@
+{
+  "generated_at": "2026-05-27T06:33:40.792Z",
+  "sources": {
+    "april_29": "src/data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json",
+    "may_27": "context-v/extra/2026-05-27_ ATTENDEES.csv"
+  },
+  "excluded_domains": [
+    "gmail.com",
+    "intel.com",
+    "okta.com",
+    "yahoo.com",
+    "outlook.com",
+    "hotmail.com",
+    "proton.me",
+    "protonmail.com",
+    "icloud.com",
+    "me.com"
+  ],
+  "totals": {
+    "total": 56,
+    "april_only": 29,
+    "may_only": 19,
+    "both": 8
+  },
+  "firms": [
+    {
+      "name": "468 Capital",
+      "domains": [
+        "468cap.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "53 Stations",
+      "domains": [
+        "53stations.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Acasia Ventures",
+      "domains": [
+        "acasia.ventures"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Aire Labs",
+      "domains": [
+        "airelabs.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Alexia VC",
+      "domains": [
+        "alexia.vc"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Alpha JWC Ventures",
+      "domains": [
+        "alphajwc.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Amplifica Capital",
+      "domains": [
+        "amplifica.capital"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Atlantica Ventures",
+      "domains": [
+        "atlanticaventures.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Audaz Capital",
+      "domains": [
+        "audaz.capital"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Blueprint",
+      "domains": [
+        "blueprint.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Cherry Rock Capital",
+      "domains": [
+        "cherryrockcapital.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Cometa",
+      "domains": [
+        "cometa.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Corner Ventures",
+      "domains": [
+        "cornerventures.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Cortado Ventures",
+      "domains": [
+        "cortado.ventures"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Defined VC",
+      "domains": [
+        "definedvc.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Determined Capital",
+      "domains": [
+        "determined-capital.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Domo Invest",
+      "domains": [
+        "domoinvest.com.br"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Domo VC",
+      "domains": [
+        "domo.vc"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "DPI",
+      "domains": [
+        "dpi-llp.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Enza Capital",
+      "domains": [
+        "enza.capital"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Feature VC",
+      "domains": [
+        "featuresvc.co"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "FirstMark",
+      "domains": [
+        "firstmark.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "FJ Labs",
+      "domains": [
+        "fjlabs.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Garage Capital",
+      "domains": [
+        "garage.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Genoa Ventures",
+      "domains": [
+        "genoavc.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Glitch Capital",
+      "domains": [
+        "glitchcap.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Hi.VC",
+      "domains": [
+        "hi.vc"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "HQ Capital",
+      "domains": [
+        "hqcap.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "iMena",
+      "domains": [
+        "imena.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Invest2Innovate",
+      "domains": [
+        "invest2innovate.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Iolar Ventures",
+      "domains": [
+        "iolar.vc"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Josi Health",
+      "domains": [
+        "josihealth.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Kauffman Fellows",
+      "domains": [
+        "kfp.org"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "KB Partners",
+      "domains": [
+        "kbpartners.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Last Mile Ventures",
+      "domains": [
+        "lastmileventures.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "LoftyInc",
+      "domains": [
+        "loftyinc.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Lytical Ventures",
+      "domains": [
+        "lyticalventures.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "M25 Ventures",
+      "domains": [
+        "m25vc.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Medici Capital",
+      "domains": [
+        "medicicap.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Mercury Fund",
+      "domains": [
+        "mercuryfund.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "MGV",
+      "domains": [
+        "mgv.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Monashees",
+      "domains": [
+        "monashees.com",
+        "monashees.com.br"
+      ],
+      "count": 2,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Motley Fool Ventures",
+      "domains": [
+        "foolventures.com"
+      ],
+      "count": 2,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Nido VC",
+      "domains": [
+        "nidovc.com.br"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Notion Capital",
+      "domains": [
+        "notioncapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Novel Capital",
+      "domains": [
+        "novelcapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Novel GP",
+      "domains": [
+        "novelgp.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Prose Ventures",
+      "domains": [
+        "proseventures.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Prysm Capital",
+      "domains": [
+        "prysmcapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Seedstars",
+      "domains": [
+        "seedstars.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Soundboard Venture Fund",
+      "domains": [
+        "soundboardventurefund.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Tribe Capital",
+      "domains": [
+        "tribecap.co"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Voyager VC",
+      "domains": [
+        "voyagervc.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Walking VC",
+      "domains": [
+        "walking.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Wild Basin Investments",
+      "domains": [
+        "wildbasininv.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "WVV Capital",
+      "domains": [
+        "wvvcapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    }
+  ]
+}

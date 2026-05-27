@@ -1,0 +1,1030 @@
+---
+export const prerender = true;
+import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
+import surveyData from "../../../data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json";
+import combinedFirms from "../../../data/webinar-survey/2026-05-27_combined-firms.json";
+import { FROM_YES_TO_WIN } from "../../../data/breakouts/from-yes-to-win";
+
+// Existing Section__ components we compose into specific slides.
+import Section__WebinarSurveyStats from "../../../components/sections/Section__WebinarSurveyStats.astro";
+import Section__WebinarSurveyPolls from "../../../components/sections/Section__WebinarSurveyPolls.astro";
+import Section__WebinarFirmsRepresented from "../../../components/sections/Section__WebinarFirmsRepresented.astro";
+import Section__WebinarSurveyVoices from "../../../components/sections/Section__WebinarSurveyVoices.astro";
+import Section__BreakoutsTeaser from "../../../components/sections/Section__BreakoutsTeaser.astro";
+
+const TITLE = "Monthly All-Hands · May 27, 2026 · Agentic VC Dojo";
+const DESCRIPTION = "Two Kauffman Fellows and a founder share what they've been building, breaking, and learning.";
+
+// Use the combined firms list shape that Section__WebinarFirmsRepresented expects.
+const firmsForRender = (combinedFirms as any).firms ?? [];
+
+// LP-syndication pulse — static snapshot (the seeded baseline + the frequency
+// poll's pre-meeting median). For a deck, we don't query the live DB.
+const LP_PULSE = [
+  { label: "Engage LPs as co-investors?", yes: 3, no: 3, type: "boolean" },
+  { label: "LP syndication frequency", scale: "1→4 · We don't · Sometimes · Often · Built in", median: 2, type: "scale" },
+  { label: "Run SPV / campaign-style process?", yes: 1, no: 5, type: "boolean" },
+  { label: "LPs want more direct opportunities?", yes: 4, no: 1, type: "boolean" },
+];
+
+const PRESENTERS_06A = [
+  {
+    name: "Mike Moradi",
+    firm: "Cortado Ventures",
+    headshot: "/images/participant-headshots/headshot__Mike-Moradi.jpeg",
+    angle: "Starting with Claude Team, better housekeeping for agents, and speeding up LP DDQs.",
+  },
+  {
+    name: "Raeed Zainuddin",
+    firm: "Cortado Ventures",
+    headshot: "/images/presenter-headshots/headshot__Raeed-Zainuddin.jpeg",
+    angle: "Claude Teams for fundraising, admin, and audit superpowers.",
+  },
+];
+
+const PRESENTER_06B = {
+  name: "Toby Rush",
+  firm: "Ideem",
+  role: "Founder & CEO",
+  headshot: "/images/participant-headshots/headshot__Toby-Rush.jpeg",
+};
+---
+
+<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
+
+  {/* ─────────────────────────────────────────────────────────────── 01 */}
+  <section class="slide slide--cover">
+    <p class="slide-eyebrow" data-reveal>Agentic VC Dojo · Monthly All-Hands</p>
+    <h1 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Monthly All-Hands
+    </h1>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Wednesday · May 27, 2026 · 9:00 AM PT
+    </p>
+    <div class="cover-presenters" data-reveal style="--delay: 240ms;">
+      <span>Mike Moradi · Raeed Zainuddin · Toby Rush</span>
+      <span class="slide-caption">Cortado Ventures · Cortado Ventures · Ideem</span>
+    </div>
+    <div class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span>↓ to start</span>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02 */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>The Dojo</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      A working community for VCs putting agentic AI into daily practice.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Two Kauffman Fellows and a founder share what they've been building, breaking, and learning.
+    </p>
+    <div class="fomo-bullets" data-reveal style="--delay: 240ms;">
+      <span class="fomo-chip">Copilot on steroids for <em>firm impact</em></span>
+      <span class="fomo-chip">OpenClaw does the <em>heavy lifting</em></span>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02a */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>Pre-session signals · April 29 launch</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      60 registered. 40 surveyed. <span class="accent">56 firms</span> across two sessions.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarSurveyStats totals={surveyData.totals} />
+    </div>
+    <p class="slide-caption" data-reveal style="--delay: 320ms;">
+      April 29 was the launch. May 27 is today. The room is real.
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02a (panel 2 — experience + tool stack) */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>What the room looks like</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      In motion. Not at the destination.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarSurveyPolls
+        experience={surveyData.experience}
+        toolStack={surveyData.toolStack}
+        surveyed={surveyData.totals.surveyed}
+      />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02a (panel 3 — voices) */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>What this room wants</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      They named the pain themselves.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarSurveyVoices
+        id="deck-quotes-wanted"
+        quotes={surveyData.quotesWanted}
+        headingTxt="What this room"
+        headingAccentTxt="is hoping to take home"
+        ledeTxt=""
+      />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02a (panel 4 — building) */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>What this room is building</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      Some are already shipping.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarSurveyVoices
+        id="deck-quotes-building"
+        quotes={surveyData.quotes}
+        headingTxt="What this room is"
+        headingAccentTxt="actually working on"
+        ledeTxt=""
+      />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02a (panel 5 — combined firms) */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>The network</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      56 firms across April + May. 8 came back.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarFirmsRepresented firms={firmsForRender} />
+    </div>
+    <p class="slide-caption" data-reveal style="--delay: 320ms;">
+      Repeat-attender firms are the strongest signal we're building something worth coming back to.
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 04 Format */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>How the next 60 minutes work</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Six steps · ~60 minutes
+    </h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li><span class="agenda-n">01</span><span>Dojo Convening</span><span class="agenda-min">5m</span></li>
+      <li><span class="agenda-n">02</span><span>Account Setup & Polls Orientation</span><span class="agenda-min">5m</span></li>
+      <li><span class="agenda-n">03</span><span>Two lightning demos</span><span class="agenda-min">20m</span></li>
+      <li><span class="agenda-n">04</span><span>Live polls</span><span class="agenda-min">5m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">05</span><span>Three breakout tracks</span><span class="agenda-min">15m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">06</span><span>Report-backs, Q&A, willing-and-able for June</span><span class="agenda-min">10m</span></li>
+    </ol>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 05a Create your account */}
+  <section class="slide slide--account">
+    <p class="slide-eyebrow" data-reveal>Quick precursor · before the polls</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Please create your account and log in.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Two minutes. Unlocks Stacks, Polls, Working Groups & Projects — plus what we haven't cooked up yet.
+    </p>
+
+    <div class="account-grid" data-reveal style="--delay: 240ms;">
+      <div class="account-grid__value-props">
+        <article class="vp-card">
+          <h3>Stacks</h3>
+          <p>Want to explore a new tool? See who's actively using it. See who's archived it. Find someone else with the same interest.</p>
+          <a href="/stacks" class="vp-link">/stacks →</a>
+        </article>
+        <article class="vp-card">
+          <h3>Polls</h3>
+          <p>Agent / AI + web app = better info, unlocks possibilities. Plus, looks cool.</p>
+        </article>
+        <article class="vp-card vp-card--featured">
+          <h3>Working Groups & Projects</h3>
+          <p>Browse strawmen. Enlist in something that resonates. Propose your own. The dojo runs on emergent cooperation.</p>
+          <p class="vp-caption">
+            All current listings are strawmen. Green / Active = Michael will convene if no one else has time. The rest are ideas looking for a facilitator.
+          </p>
+          <a href="/working-groups" class="vp-link">/working-groups →</a>
+          <a href="/projects" class="vp-link">/projects →</a>
+        </article>
+      </div>
+
+      <div class="account-grid__providers">
+        <h3 class="providers-heading">Sign in with</h3>
+        <ul class="provider-list">
+          <li><span class="provider-name">Google Workspace</span><span class="provider-note">most VCs have one</span></li>
+          <li><span class="provider-name">LinkedIn</span><span class="provider-note">same as everywhere else</span></li>
+          <li><span class="provider-name">GitHub</span><span class="provider-note">if no account → get one anyway</span></li>
+        </ul>
+        <p class="cta-short">Top-right → Log in → pick a provider → done.</p>
+      </div>
+    </div>
+
+    <p class="privacy-line" data-reveal style="--delay: 400ms;">
+      Data will never be used for any reason other than better curating experiences for the Dojo.
+    </p>
+    <p class="slide-footnote">
+      <span>Not a company — just an initiative for the Dojo. <a href="/people/mpstaton">see Michael's Stack →</a></span>
+      <span class="disclaimer">Vibe-coded with Claude Code + Pi.dev. Glitches are par for the course; we fix them once Claude explains them to us.</span>
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 05b LP Conundrum */}
+  <section class="slide slide--pulse">
+    <p class="slide-eyebrow" data-reveal>Pulse · before the breakouts</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      The LPs as Co-Investors Conundrum
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      LPs want it. Most firms aren't running the process. Where do you actually land?
+    </p>
+
+    <div class="pulse-grid" data-reveal style="--delay: 240ms;">
+      {LP_PULSE.map((p) => (
+        <article class="pulse-card">
+          <h4 class="pulse-prompt">{p.label}</h4>
+          {p.type === "boolean" ? (
+            <div class="pulse-bars">
+              <div class="pulse-bar pulse-bar--yes">
+                <span class="pulse-bar__label">Yes</span>
+                <span class="pulse-bar__count">{p.yes}</span>
+              </div>
+              <div class="pulse-bar pulse-bar--no">
+                <span class="pulse-bar__label">No</span>
+                <span class="pulse-bar__count">{p.no}</span>
+              </div>
+            </div>
+          ) : (
+            <div class="pulse-scale">
+              <span class="pulse-scale__median">Median {p.median} / 4</span>
+              <span class="pulse-scale__legend">{p.scale}</span>
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+    <p class="slide-caption" data-reveal style="--delay: 400ms;">
+      Live on the session page. Vote there if you haven't.
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 05c From Yes to Win */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>Three breakout tracks</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Full body yes on a deal. <span class="accent">What's between you and the wire transfer?</span>
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Three obstacles, three breakouts. Pick the one closest to your operating reality.
+    </p>
+    <div class="slide-component" data-reveal style="--delay: 240ms;">
+      <Section__BreakoutsTeaser data={FROM_YES_TO_WIN} />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 06a Cortado demo */}
+  <section class="slide slide--demo">
+    <p class="slide-eyebrow" data-reveal>Lightning demo · 1 of 2</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Claude Teams for <span class="accent">firm impact</span>
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Cortado Ventures — two angles on one stack.
+    </p>
+
+    <div class="demo-presenters" data-reveal style="--delay: 240ms;">
+      {PRESENTERS_06A.map((p) => (
+        <article class="demo-card">
+          <div class="demo-card__head">
+            {p.headshot && <img src={p.headshot} alt={p.name} class="demo-card__avatar" />}
+            <div>
+              <h3 class="demo-card__name">{p.name}</h3>
+              <p class="demo-card__firm">{p.firm}</p>
+            </div>
+          </div>
+          <p class="demo-card__angle">{p.angle}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 06b Toby demo */}
+  <section class="slide slide--demo">
+    <p class="slide-eyebrow" data-reveal>Lightning demo · 2 of 2</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      OpenClaw <span class="accent">+</span> Obsidian for deal triage and vigilant pipeline management.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      A founder's deal-flow brain, wired to live company signals.
+    </p>
+
+    <div class="demo-presenters demo-presenters--single" data-reveal style="--delay: 240ms;">
+      <article class="demo-card">
+        <div class="demo-card__head">
+          <img src={PRESENTER_06B.headshot} alt={PRESENTER_06B.name} class="demo-card__avatar" />
+          <div>
+            <h3 class="demo-card__name">{PRESENTER_06B.name}</h3>
+            <p class="demo-card__firm">{PRESENTER_06B.firm} · {PRESENTER_06B.role}</p>
+          </div>
+        </div>
+        <p class="demo-card__angle">
+          Companies arrive (intake, news, intros). OpenClaw ingests + classifies + routes. Obsidian holds the durable memory — notes, links, the watch list.
+        </p>
+      </article>
+      <aside class="demo-tools">
+        <div class="demo-tool">
+          <h4>OpenClaw</h4>
+          <p>Agent workflow engine — the active part.</p>
+        </div>
+        <div class="demo-tool">
+          <h4>Obsidian</h4>
+          <p>The 2nd-brain graph — durable memory.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 07 Track 1 */}
+  <section class="slide slide--track">
+    <p class="slide-eyebrow" data-reveal>Breakout track · 1 of 3</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Internal Conviction → IC
+    </h2>
+    <blockquote class="track-hook" data-reveal style="--delay: 160ms;">
+      "I have to get others on my team on board."
+    </blockquote>
+    <p class="slide-body" data-reveal style="--delay: 240ms;">
+      You have to prepare, socialize, get on the IC agenda, present your take, and prove this is "our" kind of deal. The work between your yes and the firm's yes.
+    </p>
+    <ul class="track-hints" data-reveal style="--delay: 320ms;">
+      <li>IC memo first-draft from call notes + materials</li>
+      <li>Counter-objection pre-mortem against partner pattern history</li>
+      <li>Reference-call summarizer + theme extractor</li>
+    </ul>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 08 Track 2 */}
+  <section class="slide slide--track">
+    <p class="slide-eyebrow" data-reveal>Breakout track · 2 of 3</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Syndicate to VCs
+    </h2>
+    <blockquote class="track-hook" data-reveal style="--delay: 160ms;">
+      "I'm a smaller check that needs to come in alongside a powerful syndicate."
+    </blockquote>
+    <p class="slide-body" data-reveal style="--delay: 240ms;">
+      The founder has the round half-circled. You need to make sure the company will have value-add investors alongside you — without burning your relationships or your time.
+    </p>
+    <ul class="track-hints" data-reveal style="--delay: 320ms;">
+      <li>Co-investor fit-scoring (stage / sector / geography)</li>
+      <li>Warm-intro draft generator per target fund + partner</li>
+      <li>Round-build status tracker (in / looking / passed)</li>
+    </ul>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 09 Track 3 */}
+  <section class="slide slide--track">
+    <p class="slide-eyebrow" data-reveal>Breakout track · 3 of 3</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Offer to LPs
+    </h2>
+    <blockquote class="track-hook" data-reveal style="--delay: 160ms;">
+      "Good size check, syndicate solves itself. But my LPs want co-invest opportunities."
+    </blockquote>
+    <p class="slide-body" data-reveal style="--delay: 240ms;">
+      Get the opportunity to LPs in a way they can digest. Keep them primed for opportunities that move faster than their normal deciding-clock. SPV mechanics, comms cadence, soft pre-circling.
+    </p>
+    <ul class="track-hints" data-reveal style="--delay: 320ms;">
+      <li>Per-LP one-pager generator (segmented by check size / sector)</li>
+      <li>Pre-circling tracker — leaned-in / silent / soft-yes</li>
+      <li>SPV doc-set assembly + status comms</li>
+    </ul>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 10 Breakout mechanics */}
+  <section class="slide slide--mechanics">
+    <p class="slide-eyebrow" data-reveal>The discussion rail</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      Five questions per track · one shared artifact
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      12 minutes per group. Treat the questions as a rail, not a march.
+    </p>
+
+    <div class="mechanics-grid" data-reveal style="--delay: 240ms;">
+      <div class="mechanics-col">
+        <h3>Questions</h3>
+        <ol class="mechanics-questions">
+          <li><span>Q1</span><span>What you'd do with all the time/help — vs. what you do today?</span></li>
+          <li><span>Q2</span><span>What's the agent's job description? Musts vs. wants?</span></li>
+          <li><span>Q3</span><span>Has anyone you know had a real breakthrough? Tools?</span></li>
+          <li><span>Q4</span><span>Where's the gap between effective and your current toolkit?</span></li>
+          <li class="mechanics-questions__closer"><span>Q5</span><span>Willing AND able to dig in by June 24 — or hear back?</span></li>
+        </ol>
+      </div>
+      <div class="mechanics-col">
+        <h3>One-pager (90 sec)</h3>
+        <ul class="mechanics-artifact">
+          <li><strong>Workflow:</strong> When X happens, agent does Y, human does Z.</li>
+          <li><strong>First tool:</strong> What you'd reach for first + why.</li>
+          <li><strong>Metric:</strong> What says it's working.</li>
+          <li><strong>Dojo ask:</strong> What you'd need from us to actually build it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 11 Willing and able */}
+  <section class="slide slide--q5">
+    <p class="slide-eyebrow" data-reveal>Q5 · the closing question</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Willing <span class="accent">AND</span> able?
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Between now and the last Wednesday in June (June 24) — dig in, or hear back?
+    </p>
+    <p class="slide-body slide-body--center" data-reveal style="--delay: 240ms;">
+      Both answers are real answers. "Hear back" is not opting out; it's opting into the audience and watching what the doer cohort builds.
+    </p>
+
+    <div class="q5-grid" data-reveal style="--delay: 320ms;">
+      <article class="q5-card q5-card--doer">
+        <h3>Yes — count me in</h3>
+        <p>Doer cohort. Presents what you built on June 24.</p>
+        <ul>
+          <li>One named 30-min check-in (June 10 or 17)</li>
+          <li>One shared async surface (Slack or doc — pick one)</li>
+          <li>A convener per active track</li>
+        </ul>
+      </article>
+      <article class="q5-card q5-card--audience">
+        <h3>Hear back</h3>
+        <p>Audience cohort. Sees the results on June 24.</p>
+        <ul>
+          <li>No standing commitments</li>
+          <li>Receives the artifacts the doers ship</li>
+          <li>Opt into a deeper slot when the timing's right</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 12 Close */}
+  <section class="slide slide--close">
+    <p class="slide-eyebrow" data-reveal>See you on June 24</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Thank you for being in the room.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      This is how the dojo gets sharper.
+    </p>
+    <p class="slide-body slide-body--center" data-reveal style="--delay: 240ms;">
+      <strong>Next session — Wednesday · June 24, 2026 · Monthly All-Hands</strong>
+    </p>
+    <div class="close-links" data-reveal style="--delay: 320ms;">
+      <a href="/sessions/2026-05-27_monthly-all-hands">Session page (breakouts + polls + host script)</a>
+      <a href="/breakouts/from-yes-to-win">From Yes to Win — full breakouts detail</a>
+    </div>
+    <p class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span class="disclaimer">Built section by section with Claude Code + Pi.dev. Welcome glitch reports.</span>
+    </p>
+  </section>
+
+</PageAsDeckWrapper>
+
+<style>
+  /* ── Slide-specific composition ─────────────────────────────────────── */
+  .slide-headline--medium {
+    font-size: clamp(1.625rem, 4.5vw, 3.5rem);
+  }
+  .slide-headline--small {
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    max-width: 40ch;
+  }
+  .accent {
+    color: var(--color-accent);
+  }
+
+  /* Component wrappers — neutralize child padding inside slides */
+  .slide-component {
+    width: 100%;
+    max-width: 75rem;
+  }
+  .slide-component :global(section),
+  .slide-component :global(article) {
+    padding-block: 0 !important;
+  }
+
+  /* ── 01 cover ───────────────────────────────────────────────────────── */
+  .cover-presenters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    color: var(--color-text);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+  }
+  .cover-presenters .slide-caption {
+    font-family: var(--font-code);
+  }
+
+  /* ── 02 fomo chips ──────────────────────────────────────────────────── */
+  .fomo-bullets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .fomo-chip {
+    padding: 0.75rem 1.25rem;
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .fomo-chip em {
+    color: var(--color-accent);
+    font-style: italic;
+  }
+
+  /* ── 04 agenda ──────────────────────────────────────────────────────── */
+  .agenda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 50rem;
+  }
+  .agenda li {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    color: var(--color-text);
+  }
+  .agenda-n {
+    font-family: var(--font-code);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .agenda-min {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .agenda-accent {
+    border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+  }
+
+  /* ── 05a account ────────────────────────────────────────────────────── */
+  .slide--account {
+    justify-content: flex-start;
+    padding-top: 5rem;
+  }
+  .account-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    max-width: 80rem;
+  }
+  @media (max-width: 900px) {
+    .account-grid { grid-template-columns: 1fr; }
+  }
+  .account-grid__value-props {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .vp-card {
+    padding: 1rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+  }
+  .vp-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    color: var(--color-text);
+    margin: 0 0 0.375rem;
+  }
+  .vp-card p {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .vp-card--featured {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  }
+  .vp-caption {
+    margin-top: 0.625rem !important;
+    font-size: 0.8125rem !important;
+    font-style: italic;
+  }
+  .vp-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .vp-link:hover { text-decoration: underline; }
+
+  .account-grid__providers {
+    padding: 1.25rem 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+    height: fit-content;
+  }
+  .providers-heading {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .provider-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .provider-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .provider-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+  .provider-note {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .cta-short {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    margin: 0;
+  }
+  .privacy-line {
+    margin-top: 1.5rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+  .disclaimer {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    max-width: 50%;
+  }
+
+  /* ── 05b pulse ──────────────────────────────────────────────────────── */
+  .pulse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 75rem;
+  }
+  .pulse-card {
+    padding: 1.25rem 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+  }
+  .pulse-prompt {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    margin: 0 0 1rem;
+  }
+  .pulse-bars {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .pulse-bar {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+  }
+  .pulse-bar--yes {
+    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+    color: var(--color-text);
+  }
+  .pulse-bar--no {
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+  .pulse-bar__count {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .pulse-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .pulse-scale__median {
+    font-family: var(--font-code);
+    font-size: 1.125rem;
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  .pulse-scale__legend {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  /* ── 06a / 06b demo ─────────────────────────────────────────────────── */
+  .demo-presenters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 70rem;
+  }
+  .demo-presenters--single {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 760px) {
+    .demo-presenters { grid-template-columns: 1fr; }
+  }
+  .demo-card {
+    padding: 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+  }
+  .demo-card__head {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.875rem;
+  }
+  .demo-card__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+  }
+  .demo-card__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .demo-card__firm {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin: 0.125rem 0 0;
+  }
+  .demo-card__angle {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .demo-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .demo-tool {
+    padding: 0.875rem 1.125rem;
+    background: var(--fx-card-bg);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+    border-radius: 0.5rem;
+  }
+  .demo-tool h4 {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    color: var(--color-accent);
+    margin: 0 0 0.25rem;
+  }
+  .demo-tool p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  /* ── 07 / 08 / 09 tracks ────────────────────────────────────────────── */
+  .track-hook {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    color: var(--color-accent);
+    margin: 0 0 1.5rem;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--color-accent);
+    max-width: 50ch;
+  }
+  .track-hints {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 55ch;
+  }
+  .track-hints li {
+    padding: 0.625rem 1rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-text);
+  }
+
+  /* ── 10 mechanics ───────────────────────────────────────────────────── */
+  .mechanics-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+    margin-top: 1.25rem;
+    width: 100%;
+    max-width: 80rem;
+  }
+  @media (max-width: 900px) {
+    .mechanics-grid { grid-template-columns: 1fr; }
+  }
+  .mechanics-col h3 {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .mechanics-questions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .mechanics-questions li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.625rem;
+    align-items: start;
+    padding: 0.625rem 0.875rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .mechanics-questions li span:first-child {
+    font-family: var(--font-code);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .mechanics-questions__closer {
+    border-color: var(--color-accent) !important;
+    background: color-mix(in srgb, var(--color-accent) 6%, var(--fx-card-bg)) !important;
+  }
+  .mechanics-artifact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .mechanics-artifact li {
+    padding: 0.625rem 0.875rem;
+    background: var(--fx-card-bg);
+    border-left: 2px solid var(--color-primary);
+    border-radius: 0 0.375rem 0.375rem 0;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .mechanics-artifact strong {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.125rem;
+  }
+
+  /* ── 11 q5 ──────────────────────────────────────────────────────────── */
+  .slide-body--center { text-align: center; max-width: 60ch; margin-inline: auto; }
+  .q5-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 65rem;
+  }
+  @media (max-width: 760px) {
+    .q5-grid { grid-template-columns: 1fr; }
+  }
+  .q5-card {
+    padding: 1.5rem 1.75rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+  }
+  .q5-card--doer {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 5%, var(--fx-card-bg));
+  }
+  .q5-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text);
+    margin: 0 0 0.5rem;
+  }
+  .q5-card > p {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .q5-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .q5-card li {
+    font-size: 0.875rem;
+    color: var(--color-text);
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--color-border);
+  }
+  .q5-card--doer li {
+    border-left-color: var(--color-accent);
+  }
+
+  /* ── 12 close ───────────────────────────────────────────────────────── */
+  .slide--close { justify-content: center; align-items: center; text-align: center; }
+  .slide--close .slide-headline,
+  .slide--close .slide-subhead,
+  .slide--close .slide-body,
+  .slide--close .slide-eyebrow {
+    text-align: center;
+    margin-inline: auto;
+  }
+  .close-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .close-links a {
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .close-links a:hover { text-decoration: underline; }
+</style>
