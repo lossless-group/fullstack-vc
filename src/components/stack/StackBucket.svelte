@@ -68,6 +68,18 @@
   let pickerOpen = $state(false);
   let pickerHighlight = $state(0);
 
+  // Slug derivation for "create new" — lowercase, hyphen-separate, strip
+  // non-alphanumerics. Matches the maintainer's filename convention for
+  // src/content/tools/<slug>.md, so Michael can drop a markdown file with
+  // the same slug later and the stack entry will pick up rich metadata.
+  function deriveSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
   let filteredTools = $derived.by(() => {
     const q = pickerInput.trim().toLowerCase();
     const available = allTools.filter(t => !occupiedSlugs.has(t.slug));
@@ -81,6 +93,17 @@
       .slice(0, 8);
   });
 
+  // Proposed slug from the current input. Shown as a "create new tool" option
+  // when the user's input doesn't match an existing tool's slug exactly and
+  // the proposed slug isn't already occupied in another bucket.
+  let proposedSlug = $derived(deriveSlug(pickerInput));
+  let canCreateNew = $derived(
+    pickerInput.trim().length > 0 &&
+    proposedSlug.length > 0 &&
+    !allTools.some(t => t.slug === proposedSlug) &&
+    !occupiedSlugs.has(proposedSlug)
+  );
+
   function pick(slug: string) {
     if (!slug) return;
     onAdd(slug);
@@ -89,16 +112,28 @@
     pickerHighlight = 0;
   }
 
+  function createNew() {
+    if (!canCreateNew) return;
+    pick(proposedSlug);
+  }
+
   function onPickerKeydown(e: KeyboardEvent) {
+    // The dropdown can show: N existing matches + (optional) the "create new"
+    // option as the last row. pickerHighlight indexes into that combined list.
+    const totalRows = filteredTools.length + (canCreateNew ? 1 : 0);
     if (e.key === 'ArrowDown') {
-      pickerHighlight = Math.min(pickerHighlight + 1, filteredTools.length - 1);
+      pickerHighlight = Math.min(pickerHighlight + 1, Math.max(0, totalRows - 1));
       e.preventDefault();
     } else if (e.key === 'ArrowUp') {
       pickerHighlight = Math.max(pickerHighlight - 1, 0);
       e.preventDefault();
     } else if (e.key === 'Enter') {
-      if (pickerOpen && filteredTools[pickerHighlight]) {
+      if (!pickerOpen) return;
+      if (pickerHighlight < filteredTools.length && filteredTools[pickerHighlight]) {
         pick(filteredTools[pickerHighlight].slug);
+        e.preventDefault();
+      } else if (canCreateNew) {
+        createNew();
         e.preventDefault();
       }
     } else if (e.key === 'Escape') {
@@ -150,7 +185,7 @@
       aria-autocomplete="list"
       aria-expanded={pickerOpen}
     />
-    {#if pickerOpen && filteredTools.length > 0}
+    {#if pickerOpen && (filteredTools.length > 0 || canCreateNew)}
       <ul class="sbk__picker-results" role="listbox">
         {#each filteredTools as t, i (t.slug)}
           <li class="sbk__picker-result" class:is-active={i === pickerHighlight}>
@@ -170,9 +205,26 @@
             </button>
           </li>
         {/each}
+        {#if canCreateNew}
+          <li
+            class="sbk__picker-result sbk__picker-result--new"
+            class:is-active={pickerHighlight === filteredTools.length}
+          >
+            <button
+              type="button"
+              class="sbk__picker-btn sbk__picker-btn--new"
+              onmousedown={(e) => { e.preventDefault(); createNew(); }}
+              onmouseenter={() => (pickerHighlight = filteredTools.length)}
+            >
+              <span class="sbk__picker-new-icon" aria-hidden="true">+</span>
+              <span class="sbk__picker-new-label">
+                Add <strong>{pickerInput.trim()}</strong> as a new tool
+              </span>
+              <span class="sbk__picker-new-slug">{proposedSlug}</span>
+            </button>
+          </li>
+        {/if}
       </ul>
-    {:else if pickerOpen && pickerInput.trim()}
-      <p class="sbk__picker-empty">No matching tools — registry is maintainer-curated.</p>
     {/if}
   </div>
 
@@ -361,6 +413,52 @@
     padding: 0.5rem;
     font-size: 0.75rem;
     color: var(--color-text-muted);
+  }
+
+  /* "Add as a new tool" row — visually distinct from regular matches */
+  .sbk__picker-result--new {
+    border-top: 1px dashed var(--color-border);
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+  }
+  .sbk__picker-result.is-active.sbk__picker-result--new .sbk__picker-btn--new {
+    background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  }
+  .sbk__picker-btn--new {
+    color: var(--color-accent);
+  }
+  .sbk__picker-btn--new:hover {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+  .sbk__picker-new-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font-weight: 700;
+    font-size: 0.75rem;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+  .sbk__picker-new-label {
+    font-size: 0.8125rem;
+  }
+  .sbk__picker-new-label strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .sbk__picker-new-slug {
+    margin-left: auto;
+    font-family: var(--font-code, monospace);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    padding: 0.125rem 0.375rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
   }
 
   /* ── Card list (dndzone target) ──────────────────────────────────────── */
