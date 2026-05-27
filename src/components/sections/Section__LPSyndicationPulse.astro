@@ -10,12 +10,13 @@ export interface Props {
 
 const { snapshots, isAuthenticated, displayName } = Astro.props;
 
-// Render the three pulse polls in a stable order even if the seed script
-// inserted them in a different sequence. Engagement → SPV → Direct demand is
-// the narrative arc we want the eye to follow: "we engage them, but we don't
-// run the process, even though they want more direct access."
+// Render the pulse polls in a stable order even if the seed scripts inserted
+// them in a different sequence. Narrative arc: do you engage them at all
+// (engagement) → how often / how deeply (frequency) → do you run the process
+// (SPV) → do they actually want more (direct demand).
 const PULSE_ORDER = [
   'poll_2026-05-27_lp-co-invest-engagement',
+  'poll_2026-05-27_lp-syndication-frequency',
   'poll_2026-05-27_lp-spv-process',
   'poll_2026-05-27_lp-direct-demand',
 ];

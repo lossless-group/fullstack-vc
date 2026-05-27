@@ -89,6 +89,9 @@ await db.insert(Poll).values([
     anonymous_display: true,
     allow_revote: true,
     last_vote_at: null,
+    // Renders inside Section__LPSyndicationPulse alongside the three Boolean
+    // pulse polls, not in the standard live polls section at the bottom.
+    display_group: 'lp-syndication-pulse',
     created_by: HOST_USER_ID,
     created_at: now,
     updated_at: now,
