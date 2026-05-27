@@ -17,6 +17,7 @@ import Section__WebinarFirmsRepresented from '../../components/sections/Section_
 import Section__WebinarSurveyVoices from '../../components/sections/Section__WebinarSurveyVoices.astro';
 import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
 import Section__WebinarReflection from '../../components/sections/Section__WebinarReflection.astro';
+import Section__BreakoutsTeaser from '../../components/sections/Section__BreakoutsTeaser.astro';
 import PollEmbed from '../../components/polls/PollEmbed.svelte';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 import { matchesRoster } from '../../lib/oauth-roster';
@@ -145,6 +146,20 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
 
 const surveyKey = `../../data/webinar-survey/${entry.id}.json`;
 const survey = surveyModules[surveyKey]?.default ?? null;
+
+// Eager-load all breakout data modules at build time. Each file exports the
+// session as a named const (e.g. FROM_YES_TO_WIN); we pick the one whose
+// `.parent` matches the slug from frontmatter. data.breakouts unset → null.
+const breakoutModules = import.meta.glob<Record<string, any>>(
+  '../../data/breakouts/*.ts',
+  { eager: true }
+);
+const breakoutsSlug = data.breakouts ?? null;
+const breakoutData = breakoutsSlug
+  ? Object.values(breakoutModules[`../../data/breakouts/${breakoutsSlug}.ts`] ?? {}).find(
+      (v: any) => v && typeof v === 'object' && v.parent === breakoutsSlug
+    ) ?? null
+  : null;
 ---
 
 <BaseThemeLayout
@@ -242,6 +257,7 @@ const survey = surveyModules[surveyKey]?.default ?? null;
 
     <div class="webinar-detail__body">
       <AstroMarkdown node={tree} />
+      {breakoutData && <Section__BreakoutsTeaser data={breakoutData} />}
       <Sources citations={citations} />
     </div>
   </article>

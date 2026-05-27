@@ -1,0 +1,400 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import { FROM_YES_TO_WIN } from '../../../data/breakouts/from-yes-to-win';
+
+const { title, lede, framing, entryState, tracks, questions, artifactFields } = FROM_YES_TO_WIN;
+---
+
+<BaseThemeLayout
+  title={`${title} · Breakouts · FullStack VC`}
+  description={lede}
+  noindex={true}
+  containerClass="px-6 py-12 max-w-5xl mx-auto"
+>
+  <header class="page-header">
+    <p class="eyebrow">Agentic VC Dojo · Monthly All-Hands · 2026-05-27</p>
+    <h1 class="page-title">{title}</h1>
+    <p class="page-lede">{lede}</p>
+  </header>
+
+  <section class="block">
+    <h2 class="block-title">The frame</h2>
+    <p class="entry-state">{entryState}</p>
+    <p class="framing">{framing}</p>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">Three tracks</h2>
+    <div class="tracks-grid">
+      {tracks.map((track) => (
+        <a class="track-card" href={`/breakouts/from-yes-to-win/${track.slug}`}>
+          <div class="track-card-eyebrow">{track.shortName}</div>
+          <div class="track-card-title">{track.title}</div>
+          <div class="track-card-hook">"{track.hook}"</div>
+          <div class="track-card-reality">{track.reality}</div>
+          <div class="track-card-cta">Open track →</div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">Five questions, every track</h2>
+    <ol class="questions">
+      {questions.map((q) => (
+        <li class={`question ${q.n === 5 ? 'question--closer' : ''}`}>
+          <div class="question-n">Q{q.n}</div>
+          <div class="question-body">
+            <p class="question-prompt">{q.prompt}</p>
+            <p class="question-lens">{q.lens}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">What each group brings back</h2>
+    <p class="artifact-intro">
+      Same shape across all three tracks. 90 seconds at the end, fill it out together. Same shape across all groups makes the report-backs land cleanly and lets us publish the artifacts as proposed projects.
+    </p>
+    <div class="artifact-card">
+      {artifactFields.map((field) => (
+        <div class="artifact-field">
+          <div class="artifact-label">{field.label}</div>
+          <div class="artifact-placeholder">{field.placeholder}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="block block--script">
+    <h2 class="block-title">Host script — the Q5 moment</h2>
+    <p class="script-intro">
+      Spoken after the report-backs, before closing remarks. The Q5 poll runs here in the room — not in the breakout discussion. It splits the room into a doer cohort and an audience cohort, both legitimate.
+    </p>
+
+    <div class="script">
+      <p class="script-stage">[After the last group's report-back, audience settled]</p>
+
+      <p>
+        Okay — we've heard from each group. You've each sketched a workflow, a tool, a metric, and an ask. Now I'm going to put one question in front of you.
+      </p>
+
+      <p>
+        The last Wednesday in June is June 24. That's our next monthly all-hands. Between now and then is four weeks. The question is honest, no judgment either way:
+      </p>
+
+      <blockquote class="script-quote">
+        Are you willing <em>and</em> able to make time to dig into what your group sketched — or do you want to hear back at the next session?
+      </blockquote>
+
+      <p>
+        Both answers are real answers. "Hear back" is not opting out — it's opting into the audience, which keeps you in the loop and lets you pick a deeper slot when the timing's right.
+      </p>
+
+      <p>
+        The poll has two options. Pick the honest one.
+      </p>
+
+      <p class="script-stage">[Open Poll 4 — Boolean]</p>
+
+      <p class="script-stage">[Results display]</p>
+
+      <p>
+        If you picked option one — willing and able — you're our June 24 cohort. We'll put one shared surface in front of you in the next 48 hours, and one named 30-minute check-in roughly two weeks from now. That's it. No standing meetings, no overhead. You show up, you dig in, you bring something to demo or something stuck.
+      </p>
+
+      <p>
+        If you picked option two — we'll see you on the 24th. The June session will be built around what this cohort has surfaced. You'll see the results, not have to make them.
+      </p>
+
+      <p>
+        Either way — thank you for being in the room. This is how the dojo gets sharper. See you on June 24.
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">The 4-week coordination spine</h2>
+    <p class="spine-intro">
+      Between May 27 and June 24 is where dojos die. Bare minimum to keep the doer cohort alive:
+    </p>
+    <ul class="spine">
+      <li>
+        <strong>One named check-in.</strong> 30-minute Zoom in week 2 or 3 (June 10 or 17). Low-stakes. Put it on the calendar before the May 27 session ends.
+      </li>
+      <li>
+        <strong>One async surface.</strong> Pick one — Slack channel, shared doc, or a per-track entry under <code>/working-groups/active</code>. Don't proliferate.
+      </li>
+      <li>
+        <strong>A convener per track</strong> — not Michael. One of the doers per track owns the check-in. This is also how June 24's spotlight presenters self-select.
+      </li>
+    </ul>
+  </section>
+</BaseThemeLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 1rem;
+    line-height: 1.1;
+  }
+  .page-lede {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    max-width: 40rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .block {
+    margin-bottom: 3rem;
+    max-width: 48rem;
+  }
+  .block--script {
+    max-width: 44rem;
+  }
+  .block-title {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .entry-state {
+    font-size: 1.0625rem;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+  }
+  .framing {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .tracks-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .tracks-grid {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+  .track-card {
+    display: block;
+    padding: 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .track-card,
+  .track-card * {
+    text-decoration: none;
+  }
+  .track-card-cta {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  .track-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+  .track-card-eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+  }
+  .track-card-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+  .track-card-hook {
+    font-size: 0.9375rem;
+    font-style: italic;
+    color: var(--color-text);
+    margin-bottom: 0.75rem;
+  }
+  .track-card-reality {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+  }
+  .track-card-cta {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+  }
+
+  .questions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .question {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+  }
+  .question--closer {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 6%, var(--fx-card-bg));
+  }
+  .question-n {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+  .question-prompt {
+    font-size: 1rem;
+    color: var(--color-text);
+    margin: 0 0 0.5rem;
+  }
+  .question-lens {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .artifact-intro {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .artifact-card {
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .artifact-field {
+    border-left: 2px solid var(--color-primary);
+    padding-left: 0.875rem;
+  }
+  .artifact-label {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+  .artifact-placeholder {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .script-intro {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1.5rem;
+  }
+  .script {
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.75rem 2rem;
+    line-height: 1.6;
+  }
+  .script p {
+    margin: 0 0 1rem;
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+  .script-stage {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .script-quote {
+    margin: 1.25rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+    font-size: 1.0625rem;
+    font-style: italic;
+    color: var(--color-text);
+  }
+  .script-quote em {
+    text-decoration: underline;
+    font-style: italic;
+  }
+
+  .spine-intro {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .spine {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .spine li {
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.9375rem;
+  }
+  .spine li:last-child {
+    border-bottom: none;
+  }
+  .spine strong {
+    color: var(--color-text);
+  }
+  .spine code {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    padding: 0.125rem 0.375rem;
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    border-radius: 0.25rem;
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import BreakoutTrack from '../../../components/breakouts/BreakoutTrack.astro';
+import { FROM_YES_TO_WIN, getTrack } from '../../../data/breakouts/from-yes-to-win';
+
+const track = getTrack('offer-to-lps')!;
+---
+
+<BaseThemeLayout
+  title={`${track.title} · Breakout · FullStack VC`}
+  description={track.reality}
+  noindex={true}
+  containerClass="px-6 py-12"
+>
+  <BreakoutTrack
+    track={track}
+    entryState={FROM_YES_TO_WIN.entryState}
+    questions={FROM_YES_TO_WIN.questions}
+    artifactFields={FROM_YES_TO_WIN.artifactFields}
+  />
+</BaseThemeLayout>

@@ -149,6 +149,9 @@ const sessions = defineCollection({
     // When true, the session is excluded from /sessions/ listing pages but
     // remains accessible at its direct URL. Use for QA / dry-run sessions.
     unlisted: z.boolean().optional(),
+    // When set, the page renders Section__BreakoutsTeaser after the markdown
+    // body using the data file at src/data/breakouts/<slug>.ts.
+    breakouts: z.string().optional(),
     // status is NOT in frontmatter — derived at render time from date_scheduled.
     // See: src/lib/webinar-status.ts
   }),
