@@ -101,12 +101,12 @@ const PRESENTER_06B = {
   </section>
 
   {/* ─────────────────────────────────────────────────────────────── 02a (panel 2 — experience + tool stack) */}
-  <section class="slide slide--data">
-    <p class="slide-eyebrow" data-reveal>What the room looks like</p>
-    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
-      In motion. Not at the destination.
-    </h2>
-    <div class="slide-component" data-reveal style="--delay: 160ms;">
+  {/* Deck-level header killed — the Section__WebinarSurveyPolls component
+      brings its own ("Where the room sits today" / "Pre-event survey signal")
+      so doubling up wasted vertical space and pushed the tool-stack table
+      below the fold. Component carries the slide. */}
+  <section class="slide slide--data slide--data-tight">
+    <div class="slide-component" data-reveal>
       <Section__WebinarSurveyPolls
         experience={surveyData.experience}
         toolStack={surveyData.toolStack}
@@ -516,6 +516,18 @@ const PRESENTER_06B = {
   .slide-component :global(section),
   .slide-component :global(article) {
     padding-block: 0 !important;
+  }
+
+  /* Slides that compose a Section__ component which brings its own header.
+     Tightens the deck padding so the embedded component gets the full
+     viewport height and both halves (experience + tool stack) fit above
+     the fold. */
+  .slide--data-tight {
+    padding: 1.5rem clamp(1rem, 3vw, 3rem) !important;
+    justify-content: flex-start !important;
+  }
+  .slide--data-tight .slide-component {
+    max-width: 80rem;
   }
 
   /* ── 01 cover ───────────────────────────────────────────────────────── */
