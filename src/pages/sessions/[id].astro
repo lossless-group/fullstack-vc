@@ -18,6 +18,7 @@ import Section__WebinarSurveyVoices from '../../components/sections/Section__Web
 import Section__WebinarPresenters from '../../components/sections/Section__WebinarPresenters.astro';
 import Section__WebinarReflection from '../../components/sections/Section__WebinarReflection.astro';
 import Section__BreakoutsTeaser from '../../components/sections/Section__BreakoutsTeaser.astro';
+import Section__LPSyndicationPulse from '../../components/sections/Section__LPSyndicationPulse.astro';
 import PollEmbed from '../../components/polls/PollEmbed.svelte';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 import { matchesRoster } from '../../lib/oauth-roster';
@@ -46,13 +47,14 @@ const data = entry.data;
 const dbSession = await db.select().from(DbSession).where(eq(DbSession.slug, id!)).get();
 
 let pollSnapshots: PollSnapshot[] = [];
+let pulsePollSnapshots: PollSnapshot[] = [];
 if (dbSession) {
   const polls = await db.select().from(DbPoll).where(eq(DbPoll.session_id, dbSession.id)).all();
   // Fetch all results in parallel.
   const results = await Promise.all(
     polls.map(p => db.select().from(DbPollResult).where(eq(DbPollResult.poll_id, p.id)).get())
   );
-  pollSnapshots = polls.map((poll, i) => {
+  const allSnapshots: PollSnapshot[] = polls.map((poll, i) => {
     const result = results[i] ?? null;
     const isMultiStringInput = poll.template === 'multi-string-input';
     const resultsHidden = !isMultiStringInput && (
@@ -100,8 +102,18 @@ if (dbSession) {
       last_aggregated_at: result?.last_aggregated_at
         ? new Date(result.last_aggregated_at).toISOString()
         : null,
+      // Carry the surface tag through so the page can route the snapshot to
+      // the right section. PollEmbed itself ignores this field.
+      display_group: (poll as any).display_group ?? null,
     };
   });
+
+  // Route by surface: tagged polls render in their themed panel; untagged
+  // polls render in the standard live polls section at the bottom.
+  pulsePollSnapshots = allSnapshots.filter(
+    (s: any) => s.display_group === 'lp-syndication-pulse'
+  );
+  pollSnapshots = allSnapshots.filter((s: any) => !s.display_group);
 }
 
 // ── Auth state (session cookie + roster check) ────────────────────────────
@@ -257,6 +269,13 @@ const breakoutData = breakoutsSlug
 
     <div class="webinar-detail__body">
       <AstroMarkdown node={tree} />
+      {pulsePollSnapshots.length > 0 && (
+        <Section__LPSyndicationPulse
+          snapshots={pulsePollSnapshots}
+          isAuthenticated={isAuthenticated}
+          displayName={displayName}
+        />
+      )}
       {breakoutData && <Section__BreakoutsTeaser data={breakoutData} />}
       <Sources citations={citations} />
     </div>

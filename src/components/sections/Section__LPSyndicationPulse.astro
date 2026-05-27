@@ -1,0 +1,93 @@
+---
+import PollEmbed from '../polls/PollEmbed.svelte';
+import type { PollSnapshot } from '../../lib/poll-templates';
+
+export interface Props {
+  snapshots: PollSnapshot[];
+  isAuthenticated: boolean;
+  displayName: string | null;
+}
+
+const { snapshots, isAuthenticated, displayName } = Astro.props;
+
+// Render the three pulse polls in a stable order even if the seed script
+// inserted them in a different sequence. Engagement → SPV → Direct demand is
+// the narrative arc we want the eye to follow: "we engage them, but we don't
+// run the process, even though they want more direct access."
+const PULSE_ORDER = [
+  'poll_2026-05-27_lp-co-invest-engagement',
+  'poll_2026-05-27_lp-spv-process',
+  'poll_2026-05-27_lp-direct-demand',
+];
+const ordered = [...snapshots].sort((a, b) => {
+  const ai = PULSE_ORDER.indexOf(a.poll_id);
+  const bi = PULSE_ORDER.indexOf(b.poll_id);
+  return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+});
+---
+
+<section class="lp-pulse" aria-labelledby="lp-pulse-heading">
+  <header class="lp-pulse__header">
+    <p class="lp-pulse__eyebrow">Pulse · before the breakouts</p>
+    <h2 id="lp-pulse-heading" class="lp-pulse__title">
+      The LPs as Co-Investors Conundrum
+    </h2>
+    <p class="lp-pulse__lede">
+      LPs want more direct co-invest access. Most firms aren't running the campaign-style process that would deliver it. Where do you actually land? Vote on all three — results update live.
+    </p>
+  </header>
+
+  <div class="lp-pulse__list">
+    {ordered.map((snapshot) => (
+      <PollEmbed
+        client:load
+        pollId={snapshot.poll_id}
+        initialState={snapshot}
+        isAuthenticated={isAuthenticated}
+        displayName={displayName}
+        variant="card"
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .lp-pulse {
+    margin: 3rem 0 0;
+    padding: 2rem 0 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .lp-pulse__header {
+    margin-bottom: 1.75rem;
+  }
+  .lp-pulse__eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-accent);
+    margin: 0 0 0.75rem;
+  }
+  .lp-pulse__title {
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+    line-height: 1.15;
+  }
+  .lp-pulse__lede {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.55;
+    max-width: 38rem;
+  }
+
+  .lp-pulse__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+</style>

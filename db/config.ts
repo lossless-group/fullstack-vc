@@ -64,6 +64,13 @@ const Poll = defineTable({
     // Bumped on every vote into this poll. Drives the 15-minute poll-level
     // grace-period auto-close (v0.0.2+).
     last_vote_at: column.date({ optional: true }),
+    // Optional surface tag. When null, the poll renders in the standard live
+    // polls section at the bottom of the session page. When set, the poll is
+    // pulled into a dedicated themed panel (e.g. 'lp-syndication-pulse' renders
+    // via Section__LPSyndicationPulse between the Format section and the
+    // breakouts teaser) and is EXCLUDED from the standard section to avoid
+    // double-rendering. Same Vote/aggregation/PollEmbed plumbing either way.
+    display_group: column.text({ optional: true }),
     created_by: column.text(),
     created_at: column.date(),
     updated_at: column.date(),

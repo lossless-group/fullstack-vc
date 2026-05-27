@@ -20,6 +20,8 @@
     "migrate:stacks:remote": "astro db execute scripts/migrate-stacks-to-turso.ts --remote",
     "seed:production": "astro db execute scripts/seed-production.ts --remote",
     "seed:production:may27": "astro db execute scripts/seed-production-may27.ts --remote",
+    "seed:lp-pulse": "astro db execute scripts/seed-lp-syndication-pulse.ts",
+    "seed:lp-pulse:remote": "astro db execute scripts/seed-lp-syndication-pulse.ts --remote",
     "seed:test": "astro db execute scripts/seed-test-session.ts --remote",
     "set-poll-status": "astro db execute scripts/set-poll-status.ts"
   },
