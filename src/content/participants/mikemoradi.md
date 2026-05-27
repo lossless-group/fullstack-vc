@@ -16,6 +16,9 @@ current_stack:
   - tool: claude-team
     added: 2026-05-21
     notes: "Administrative & audit-prep workflows at Cortado — May 27 All-Hands demo (joint with Raeed)."
+  - tool: boardy
+    added: 2026-05-27
+    notes: "AI networking agent for warm intros across the network."
 aspirational_stack: []
 abandoned_stack: []
 ---
