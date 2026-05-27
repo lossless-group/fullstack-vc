@@ -258,11 +258,13 @@ const {
       width: 7rem;
     }
 
-    /* Slide counter — separate from chrome so toggling C keeps it visible */
+    /* Slide counter — separate from chrome so toggling C keeps it visible.
+       Top-right so it visually pairs with the chrome header but survives
+       the chrome toggle. */
     .deck-counter {
       position: fixed;
-      bottom: 0.75rem;
-      left: 1rem;
+      top: 0.625rem;
+      right: 1rem;
       display: inline-flex;
       align-items: baseline;
       gap: 0.125rem;
