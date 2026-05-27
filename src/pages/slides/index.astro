@@ -86,35 +86,33 @@ const restDecks = decks.filter((d) => !d.featured);
   description="Section-composed and Reveal-based decks — Agentic VC Dojo and beyond."
   containerClass="px-6 py-12 max-w-6xl mx-auto"
 >
-  <div class="slides-top">
-    <header class="slides-header">
-      <p class="slides-eyebrow">Web-native slides</p>
-      <h1 class="slides-title">
-        <span class="slides-title__accent">Reveal</span> what you're building.
-      </h1>
-      <p class="slides-lede">
-        Decks here render through Reveal.js or the section-composed paradigm.
-        Astro decks compose existing site components; press <kbd>F</kbd> for fullscreen
-        or <kbd>S</kbd> for speaker notes on Reveal decks.
-      </p>
-    </header>
+  {featuredDeck && (
+    <aside class="featured-banner" aria-label="Featured deck">
+      <a href={`/slides/${featuredDeck.slug}`} class="featured-banner__card">
+        <div class="featured-banner__head">
+          <span class="featured-banner__pill">Today</span>
+          {featuredDeck.date && <span class="featured-banner__date">{featuredDeck.date}</span>}
+        </div>
+        <h2 class="featured-banner__title">{featuredDeck.title}</h2>
+        {featuredDeck.description && (
+          <p class="featured-banner__desc">{featuredDeck.description}</p>
+        )}
+        <span class="featured-banner__cta">Open the deck →</span>
+      </a>
+    </aside>
+  )}
 
-    {featuredDeck && (
-      <aside class="featured-deck" aria-label="Featured deck">
-        <a href={`/slides/${featuredDeck.slug}`} class="featured-deck__card">
-          <span class="featured-deck__pill">Today</span>
-          <h2 class="featured-deck__title">{featuredDeck.title}</h2>
-          {featuredDeck.description && (
-            <p class="featured-deck__desc">{featuredDeck.description}</p>
-          )}
-          <footer class="featured-deck__meta">
-            {featuredDeck.date && <span>{featuredDeck.date}</span>}
-            <span class="featured-deck__cta">Open →</span>
-          </footer>
-        </a>
-      </aside>
-    )}
-  </div>
+  <header class="slides-header">
+    <p class="slides-eyebrow">Web-native slides</p>
+    <h1 class="slides-title">
+      <span class="slides-title__accent">Reveal</span> what you're building.
+    </h1>
+    <p class="slides-lede">
+      Decks here render through Reveal.js or the section-composed paradigm.
+      Astro decks compose existing site components; press <kbd>F</kbd> for fullscreen
+      or <kbd>S</kbd> for speaker notes on Reveal decks.
+    </p>
+  </header>
 
   {restDecks.length > 0 && (
     <ul class="slides-grid" role="list">
@@ -145,24 +143,76 @@ const restDecks = decks.filter((d) => !d.featured);
 </BaseThemeLayout>
 
 <style>
-  /* Top region: header (left) + featured deck card (right) */
-  .slides-top {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
-    align-items: start;
+  /* Featured banner — full-width hero above the page header. Impossible to miss. */
+  .featured-banner {
+    display: block;
+    margin: 0 0 2.5rem;
   }
-  @media (min-width: 900px) {
-    .slides-top {
-      grid-template-columns: 1.2fr 1fr;
-      gap: 3rem;
-    }
+  .featured-banner__card {
+    display: block;
+    padding: 1.75rem 2rem 1.5rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--fx-card-bg));
+    border: 1.5px solid color-mix(in srgb, var(--color-accent) 65%, var(--color-border));
+    box-shadow: var(--fx-card-shadow);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease, background 150ms ease;
+  }
+  .featured-banner__card:hover {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 15%, var(--fx-card-bg));
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+  .featured-banner__head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .featured-banner__pill {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .featured-banner__date {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.04em;
+  }
+  .featured-banner__title {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 3vw, 2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .featured-banner__desc {
+    margin: 0 0 1rem;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 72ch;
+  }
+  .featured-banner__cta {
+    display: inline-block;
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-accent);
   }
 
-  .slides-header {
-    /* Header column — left side of the top region */
-  }
+  /* Page header */
+  .slides-header { margin-bottom: 3rem; }
   .slides-eyebrow {
     margin: 0 0 0.625rem;
     font-family: var(--font-code);
