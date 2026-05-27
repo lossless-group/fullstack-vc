@@ -115,7 +115,24 @@ async function main() {
     return;
   }
 
-  // Update canonical row
+  // STEP 1: NULL out unique-constrained provider fields on the duplicate
+  // FIRST. Without this, the UPDATE of canonical to the duplicate's
+  // linkedin_sub / github_handle / google_sub fails with a UNIQUE constraint
+  // violation because both rows briefly hold the same value before the
+  // duplicate's DELETE runs. Capturing the duplicate's data into the `d`
+  // variable above means we still have what we need; the live row's
+  // provider columns just go to NULL momentarily.
+  await client.execute({
+    sql: `UPDATE User SET
+            github_handle = NULL,
+            linkedin_sub  = NULL,
+            google_sub    = NULL,
+            updated_at = ?
+          WHERE id = ?`,
+    args: [new Date().toISOString(), duplicateId],
+  });
+
+  // STEP 2: Now safely UPDATE the canonical with the merged values.
   await client.execute({
     sql: `UPDATE User SET
             github_handle = ?,
@@ -147,7 +164,7 @@ async function main() {
   });
   console.log(`\n✓ Updated canonical row: ${canonicalId}`);
 
-  // Delete the duplicate
+  // STEP 3: Delete the (now provider-stripped) duplicate row.
   await client.execute({
     sql: 'DELETE FROM User WHERE id = ?',
     args: [duplicateId],
