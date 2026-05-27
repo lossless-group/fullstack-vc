@@ -1,5 +1,16 @@
 ---
 export const prerender = true;
+
+// Surfaces the deck on /slides via the index page's auto-discovery.
+export const presentation = {
+  title: "Monthly All-Hands · May 27, 2026",
+  description: "Two Kauffman Fellows share what they've been building. Section-composed deck — three modes live. Today.",
+  date: "2026-05-27",
+  author: "Michael Staton · Mike Moradi · Raeed Zainuddin · Toby Rush",
+  tags: ["All-Hands", "Agentic-VC-Dojo", "Today"],
+  featured: true,
+};
+
 import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
 import surveyData from "../../../data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json";
 import combinedFirms from "../../../data/webinar-survey/2026-05-27_combined-firms.json";

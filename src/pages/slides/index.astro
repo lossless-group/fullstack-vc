@@ -1,12 +1,15 @@
 ---
 /**
- * Slides index — auto-discovers:
- *   1. Standalone Astro decks: `src/pages/slides/<slug>.astro` files that
- *      `export const presentation = { title, description, ... }`.
- *   2. Markdown decks: `src/content/slides/*.md` with frontmatter.
- * Per-deck routing:
- *   - Astro decks resolve directly via Astro's file-based routing (`/slides/<slug>`).
- *   - Markdown decks resolve via `[...slug].astro` to `MarkdownSlideDeck`.
+ * Slides index — auto-discovers standalone Astro decks:
+ *   - Flat: `src/pages/slides/<slug>.astro`
+ *   - Subdirectory: `src/pages/slides/<slug>/index.astro`
+ *
+ * Each deck exports a `presentation = { title, description, date, ... }` const.
+ * A `featured: true` entry pulls out into the top-right "Today" card; the rest
+ * render in the grid below sorted by date descending.
+ *
+ * Markdown deck discovery was removed — Reveal-only markdown decks are still
+ * served by [...slug].astro but don't surface on this index.
  */
 export const prerender = true;
 
@@ -19,11 +22,12 @@ interface Presentation {
   date?: string;
   author?: string;
   tags?: string[];
-  type: 'astro' | 'markdown';
+  featured?: boolean;
+  type: 'astro';
 }
 
-// 1. Auto-discover standalone Astro decks. eager:false avoids loading their
-//    Reveal/CSS bundles into the index page.
+// Discover both flat .astro files AND subdirectory index.astro files.
+// eager:false so each deck's bundle isn't pulled into the index.
 const astroGlobs = import.meta.glob<{
   presentation?: {
     title?: string;
@@ -31,116 +35,134 @@ const astroGlobs = import.meta.glob<{
     date?: string;
     author?: string;
     tags?: string[];
+    featured?: boolean;
   };
-}>('./*.astro');
+}>(['./*.astro', './*/index.astro']);
 
-const astroDecks: Presentation[] = [];
+const decks: Presentation[] = [];
 for (const [path, loader] of Object.entries(astroGlobs)) {
-  if (path.includes('index.astro') || path.includes('[')) continue;
+  // Skip this index file and dynamic catch-alls.
+  if (path === './index.astro' || path.includes('[')) continue;
   try {
     const mod = await loader();
-    if (mod.presentation) {
-      const slug = path.replace('./', '').replace('.astro', '');
-      astroDecks.push({
-        slug,
-        title: mod.presentation.title ?? slug,
-        description: mod.presentation.description ?? '',
-        date: mod.presentation.date,
-        author: mod.presentation.author,
-        tags: mod.presentation.tags,
-        type: 'astro',
-      });
-    }
+    if (!mod.presentation) continue;
+    // Slug from path:
+    //   ./agentic-vc-dojo-launch.astro            → agentic-vc-dojo-launch
+    //   ./2026-05-27_monthly-all-hands/index.astro → 2026-05-27_monthly-all-hands
+    const slug = path
+      .replace(/^\.\//, '')
+      .replace(/\/index\.astro$/, '')
+      .replace(/\.astro$/, '');
+    decks.push({
+      slug,
+      title: mod.presentation.title ?? slug,
+      description: mod.presentation.description ?? '',
+      date: mod.presentation.date,
+      author: mod.presentation.author,
+      tags: mod.presentation.tags,
+      featured: mod.presentation.featured ?? false,
+      type: 'astro',
+    });
   } catch (e) {
     console.warn(`[slides/index] Could not load ${path}:`, e);
   }
 }
 
-// 2. Markdown decks via raw glob — read frontmatter ourselves (no content
-//    collection needed; keeps the slides surface independent).
-const mdGlobs = import.meta.glob<string>('../../content/slides/*.md', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-});
-
-const markdownDecks: Presentation[] = [];
-for (const [path, raw] of Object.entries(mdGlobs)) {
-  const fileName = path.split('/').pop()!.replace(/\.md$/, '');
-  const fmMatch = (raw as string).match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  let title = fileName;
-  let description = '';
-  let date: string | undefined;
-  if (fmMatch) {
-    const fm = fmMatch[1];
-    title = fm.match(/^title:\s*"?([^"\n]+)"?/m)?.[1]?.trim() ?? fileName;
-    description = fm.match(/^description:\s*"?([^"\n]+)"?/m)?.[1]?.trim() ?? '';
-    date = fm.match(/^date:\s*"?([^"\n]+)"?/m)?.[1]?.trim();
-  }
-  markdownDecks.push({
-    slug: fileName,
-    title,
-    description,
-    date,
-    type: 'markdown',
-  });
-}
-
-const presentations = [...astroDecks, ...markdownDecks].sort((a, b) => {
+// Sort all by date descending. Featured decks are pulled out for the hero
+// slot; the remaining flow into the grid in date-desc order.
+decks.sort((a, b) => {
   if (!a.date && !b.date) return a.title.localeCompare(b.title);
   if (!a.date) return 1;
   if (!b.date) return -1;
   return new Date(b.date).getTime() - new Date(a.date).getTime();
 });
+
+const featuredDeck = decks.find((d) => d.featured);
+const restDecks = decks.filter((d) => !d.featured);
 ---
 
 <BaseThemeLayout
   title="Slides · FullStack VC"
-  description="Reveal.js presentations — Astro components and markdown both render here."
-  containerClass="px-6 py-12 max-w-5xl mx-auto"
+  description="Section-composed and Reveal-based decks — Agentic VC Dojo and beyond."
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
 >
-  <header class="slides-header">
-    <p class="slides-eyebrow">Web-native slides</p>
-    <h1 class="slides-title">
-      <span class="slides-title__accent">Reveal</span> what you're building.
-    </h1>
-    <p class="slides-lede">
-      Decks here render through Reveal.js. Astro decks compose existing site components;
-      markdown decks live in <code>src/content/slides/</code>. Hit a deck, then press
-      <kbd>F</kbd> for fullscreen or <kbd>S</kbd> for speaker notes.
-    </p>
-  </header>
+  <div class="slides-top">
+    <header class="slides-header">
+      <p class="slides-eyebrow">Web-native slides</p>
+      <h1 class="slides-title">
+        <span class="slides-title__accent">Reveal</span> what you're building.
+      </h1>
+      <p class="slides-lede">
+        Decks here render through Reveal.js or the section-composed paradigm.
+        Astro decks compose existing site components; press <kbd>F</kbd> for fullscreen
+        or <kbd>S</kbd> for speaker notes on Reveal decks.
+      </p>
+    </header>
 
-  <ul class="slides-grid" role="list">
-    {presentations.map(p => (
-      <li>
-        <a href={`/slides/${p.slug}`} class="slides-card">
-          <span class={`slides-card__type slides-card__type--${p.type}`}>
-            {p.type === 'astro' ? 'Astro' : 'Markdown'}
-          </span>
-          <h2 class="slides-card__title">{p.title}</h2>
-          {p.description && <p class="slides-card__desc">{p.description}</p>}
-          <footer class="slides-card__meta">
-            {p.author && <span>{p.author}</span>}
-            {p.date && <span>{p.date}</span>}
-            <span class="slides-card__cta">Open →</span>
+    {featuredDeck && (
+      <aside class="featured-deck" aria-label="Featured deck">
+        <a href={`/slides/${featuredDeck.slug}`} class="featured-deck__card">
+          <span class="featured-deck__pill">Today</span>
+          <h2 class="featured-deck__title">{featuredDeck.title}</h2>
+          {featuredDeck.description && (
+            <p class="featured-deck__desc">{featuredDeck.description}</p>
+          )}
+          <footer class="featured-deck__meta">
+            {featuredDeck.date && <span>{featuredDeck.date}</span>}
+            <span class="featured-deck__cta">Open →</span>
           </footer>
         </a>
-      </li>
-    ))}
-  </ul>
+      </aside>
+    )}
+  </div>
 
-  {presentations.length === 0 && (
+  {restDecks.length > 0 && (
+    <ul class="slides-grid" role="list">
+      {restDecks.map((p) => (
+        <li>
+          <a href={`/slides/${p.slug}`} class="slides-card">
+            <span class="slides-card__type">Astro</span>
+            <h2 class="slides-card__title">{p.title}</h2>
+            {p.description && <p class="slides-card__desc">{p.description}</p>}
+            <footer class="slides-card__meta">
+              {p.author && <span>{p.author}</span>}
+              {p.date && <span>{p.date}</span>}
+              <span class="slides-card__cta">Open →</span>
+            </footer>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {decks.length === 0 && (
     <p class="slides-empty">
       No decks yet. Drop an <code>.astro</code> file in <code>src/pages/slides/</code>
-      that exports a <code>presentation</code> object, or a markdown file in
-      <code>src/content/slides/</code>.
+      that exports a <code>presentation</code> object — or a subdirectory with an
+      <code>index.astro</code> doing the same.
     </p>
   )}
 </BaseThemeLayout>
 
 <style>
-  .slides-header { margin-bottom: 3rem; }
+  /* Top region: header (left) + featured deck card (right) */
+  .slides-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .slides-top {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+    }
+  }
+
+  .slides-header {
+    /* Header column — left side of the top region */
+  }
   .slides-eyebrow {
     margin: 0 0 0.625rem;
     font-family: var(--font-code);
@@ -169,7 +191,7 @@ const presentations = [...astroDecks, ...markdownDecks].sort((a, b) => {
     color: var(--color-text-muted);
     font-size: 1rem;
     line-height: 1.55;
-    max-width: 60ch;
+    max-width: 55ch;
   }
   .slides-lede code, .slides-empty code {
     font-family: var(--font-code);
@@ -189,6 +211,74 @@ const presentations = [...astroDecks, ...markdownDecks].sort((a, b) => {
     color: var(--color-primary);
   }
 
+  /* Featured "Today" card — top-right of the top region */
+  .featured-deck {
+    /* Featured column — right side of the top region */
+  }
+  .featured-deck__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.75rem 1.75rem 1.5rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--fx-card-bg));
+    border: 1.5px solid color-mix(in srgb, var(--color-accent) 60%, var(--color-border));
+    box-shadow: var(--fx-card-shadow);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease, background 150ms ease;
+    height: 100%;
+  }
+  .featured-deck__card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--fx-card-shadow-hover);
+    transform: translateY(-2px);
+    background: color-mix(in srgb, var(--color-accent) 12%, var(--fx-card-bg));
+  }
+  .featured-deck__pill {
+    align-self: flex-start;
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .featured-deck__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-text);
+  }
+  .featured-deck__desc {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .featured-deck__meta {
+    margin-top: auto;
+    padding-top: 0.625rem;
+    border-top: 1px dashed color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .featured-deck__cta {
+    margin-left: auto;
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  /* Regular decks grid */
   .slides-grid {
     list-style: none;
     margin: 0;
@@ -199,6 +289,9 @@ const presentations = [...astroDecks, ...markdownDecks].sort((a, b) => {
   }
   @media (min-width: 720px) {
     .slides-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1100px) {
+    .slides-grid { grid-template-columns: repeat(3, 1fr); }
   }
 
   .slides-card {
@@ -230,9 +323,8 @@ const presentations = [...astroDecks, ...markdownDecks].sort((a, b) => {
     padding: 0.1875rem 0.5rem;
     border-radius: 999px;
     border: 1px solid currentColor;
+    color: var(--color-primary);
   }
-  .slides-card__type--astro    { color: var(--color-primary); }
-  .slides-card__type--markdown { color: var(--color-secondary); }
 
   .slides-card__title {
     margin: 0;
