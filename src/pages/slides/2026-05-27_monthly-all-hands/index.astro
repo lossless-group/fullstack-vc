@@ -88,16 +88,34 @@ const PRESENTER_06B = {
 
   {/* ─────────────────────────────────────────────────────────────── 02a */}
   <section class="slide slide--data">
-    <p class="slide-eyebrow" data-reveal>Pre-session signals · April 29 launch</p>
+    <p class="slide-eyebrow" data-reveal>Pre-session signals · two sessions in</p>
     <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
-      60 registered. 40 surveyed. <span class="accent">56 firms</span> across two sessions.
+      The room keeps growing.
     </h2>
-    <div class="slide-component" data-reveal style="--delay: 160ms;">
+    <p class="slide-subhead slide-subhead--tight" data-reveal style="--delay: 140ms;">
+      April 29 set the baseline. May 27 builds on it.
+    </p>
+    <div class="slide-component" data-reveal style="--delay: 200ms;">
       <Section__WebinarSurveyStats totals={surveyData.totals} />
     </div>
-    <p class="slide-caption" data-reveal style="--delay: 320ms;">
-      April 29 was the launch. May 27 is today. The room is real.
-    </p>
+
+    <div class="combined-stats" data-reveal style="--delay: 320ms;">
+      <article class="combined-stat">
+        <p class="combined-stat__big">+39</p>
+        <p class="combined-stat__label">Registered for today</p>
+        <p class="combined-stat__note">May 27 · 4 individuals returning from April</p>
+      </article>
+      <article class="combined-stat">
+        <p class="combined-stat__big">+19</p>
+        <p class="combined-stat__label">New firms in May</p>
+        <p class="combined-stat__note">8 firms returning from April</p>
+      </article>
+      <article class="combined-stat combined-stat--total">
+        <p class="combined-stat__big">56</p>
+        <p class="combined-stat__label">Firms across both sessions</p>
+        <p class="combined-stat__note">29 April-only · 19 May-only · 8 in both</p>
+      </article>
+    </div>
   </section>
 
   {/* ─────────────────────────────────────────────────────────────── 02a (panel 2 — experience + tool stack) */}
@@ -530,6 +548,54 @@ const PRESENTER_06B = {
   }
   .slide--data-tight .slide-component {
     max-width: 80rem;
+  }
+
+  .slide-subhead--tight {
+    margin-bottom: 1rem;
+  }
+
+  /* Combined stats row — May 27 additions + cross-session total */
+  .combined-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 75rem;
+  }
+  .combined-stat {
+    padding: 1.25rem 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+  }
+  .combined-stat__big {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+    margin: 0 0 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .combined-stat__label {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    margin: 0 0 0.25rem;
+  }
+  .combined-stat__note {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .combined-stat--total {
+    border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
+    background: color-mix(in srgb, var(--color-accent) 6%, var(--fx-card-bg));
+  }
+  .combined-stat--total .combined-stat__big {
+    color: var(--color-accent);
   }
 
   /* ── 01 cover ───────────────────────────────────────────────────────── */
