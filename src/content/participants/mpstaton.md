@@ -51,6 +51,10 @@ current_stack:
 aspirational_stack:
   - tool: agents-view
     intent: "Browse and search past AI coding sessions."
+  - tool: boardy
+    intent: "Maybe find a stealth anchor or two."
+  - tool: gpgpt
+    intent: "let someone else code for a change."
   - tool: hermes-agent
     intent: "Self-learning agentic framework for high-context, better memory, and persistence."
   - tool: fallow-tools
