@@ -1,21 +1,125 @@
 ---
-export const prerender = true;
+// SSR (not prerendered) so DB-only OAuth signups get a working profile page.
+// Signup no longer commits a participant markdown file (that flow was removed —
+// see lib/user-record.ts), so a curated markdown file may not exist. We render
+// from the file when present (source of truth) and fall back to the Turso
+// User + Stack tables otherwise. This is the fix for Bug 3 in
+// context-v/issue-resolutions/Auth-Identity-System-Worked-but-UX-Failed-Silent-Bounces.md
+// (the route used to 404 for everyone without a markdown file).
+export const prerender = false;
+
 import { getCollection } from 'astro:content';
+import { db, User, Stack, eq, asc } from 'astro:db';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ParticipantStackView from '../../components/stack/ParticipantStackView.astro';
+import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
 
-export async function getStaticPaths() {
-  const participants = await getCollection('participants');
-  return participants.map(entry => ({
-    params: { handle: entry.data.handle },
-    props: { entry },
-  }));
+interface ProfileData {
+  handle: string;
+  name: string;
+  firm?: string;
+  role?: string;
+  kauffman_class?: number | null;
+  github?: string;
+  github_avatar?: string;
+  headshot?: string;
+  linkedin?: string;
+  publish: boolean;
+  current_stack: Array<{ tool: string; added?: Date; notes?: string }>;
+  aspirational_stack: Array<{ tool: string; intent?: string }>;
+  abandoned_stack: Array<{ tool: string; abandoned?: Date; reason?: string }>;
 }
 
-const { entry } = Astro.props;
-const p = entry.data;
+const { handle } = Astro.params;
+if (!handle) return new Response('Not found', { status: 404 });
 
-const isPrivate = !p.publish;
+let p: ProfileData | null = null;
+
+// 1. Curated markdown profile — source of truth when it exists.
+const participants = await getCollection('participants');
+const entry = participants.find(e => e.data.handle === handle);
+if (entry) {
+  const d = entry.data;
+  p = {
+    handle: d.handle,
+    name: d.name,
+    firm: d.firm,
+    role: d.role,
+    kauffman_class: d.kauffman_class,
+    github: (d as any).github,
+    github_avatar: d.github_avatar,
+    headshot: d.headshot,
+    linkedin: d.linkedin,
+    publish: d.publish,
+    current_stack: d.current_stack ?? [],
+    aspirational_stack: d.aspirational_stack ?? [],
+    abandoned_stack: d.abandoned_stack ?? [],
+  };
+} else {
+  // 2. DB fallback — a User row whose github_handle matches this handle, with
+  //    its Stack rows. Anonymous traffic for known markdown handles never
+  //    reaches this branch, so the common path stays DB-free.
+  try {
+    const userRow = await db.select().from(User).where(eq(User.github_handle, handle)).get();
+    if (userRow) {
+      const rows = await db.select().from(Stack)
+        .where(eq(Stack.handle, handle))
+        .orderBy(asc(Stack.position))
+        .all();
+      p = {
+        handle,
+        name: userRow.name ?? handle,
+        firm: userRow.firm ?? undefined,
+        kauffman_class: userRow.kauffman_class,
+        github: `https://github.com/${handle}`,
+        github_avatar: userRow.avatar ?? `https://github.com/${handle}.png`,
+        // No publish column on User yet, so DB-only profiles default to private:
+        // the owner sees their own stack (below), the public sees the stub. Once
+        // the editor's "make public" toggle is wired to persist, gate on that.
+        publish: false,
+        current_stack: rows.filter(r => r.bucket === 'current')
+          .map(r => ({ tool: r.tool, added: r.added ?? undefined, notes: r.notes ?? undefined })),
+        aspirational_stack: rows.filter(r => r.bucket === 'aspirational')
+          .map(r => ({ tool: r.tool, intent: r.intent ?? undefined })),
+        abandoned_stack: rows.filter(r => r.bucket === 'abandoned')
+          .map(r => ({ tool: r.tool, abandoned: r.abandoned ?? undefined, reason: r.reason ?? undefined })),
+      };
+    }
+  } catch (err) {
+    // Turso unreachable — 404 rather than 500. A known markdown handle would
+    // have rendered above without touching the DB.
+    console.error('[people/[handle]] DB fallback failed:', err);
+  }
+}
+
+if (!p) return new Response('Not found', { status: 404 });
+
+// Owner detection — only when the profile isn't public, so an owner viewing
+// their own unpublished profile sees their stack instead of the private stub.
+// Anonymous viewers (no session cookie) skip this entirely.
+let isOwner = false;
+if (!p.publish) {
+  const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+  if (session) {
+    let viewerHandle: string | null = null;
+    try {
+      let row;
+      if (session.provider === 'github') {
+        row = await db.select().from(User).where(eq(User.github_handle, session.subject)).get();
+      } else if (session.provider === 'linkedin') {
+        row = await db.select().from(User).where(eq(User.linkedin_sub, session.subject)).get();
+      } else if (session.provider === 'google') {
+        row = await db.select().from(User).where(eq(User.google_sub, session.subject)).get();
+      }
+      viewerHandle = row?.github_handle ?? (session.provider === 'github' ? session.subject : null);
+    } catch {
+      viewerHandle = session.provider === 'github' ? session.subject : null;
+    }
+    isOwner = !!viewerHandle && viewerHandle.toLowerCase() === handle.toLowerCase();
+  }
+}
+
+const showStack = p.publish || isOwner;
 ---
 
 <BaseThemeLayout
@@ -54,7 +158,14 @@ const isPrivate = !p.publish;
     </a>
   </header>
 
-  {isPrivate ? (
+  {showStack ? (
+    <ParticipantStackView
+      currentStack={p.current_stack}
+      aspirationalStack={p.aspirational_stack}
+      abandonedStack={p.abandoned_stack}
+      handle={p.handle}
+    />
+  ) : (
     <section class="private-stub">
       <h2>This profile is private</h2>
       <p>
@@ -62,13 +173,6 @@ const isPrivate = !p.publish;
         <code>publish: true</code> in their participant entry to share their stack with the community.
       </p>
     </section>
-  ) : (
-    <ParticipantStackView
-      currentStack={p.current_stack}
-      aspirationalStack={p.aspirational_stack}
-      abandonedStack={p.abandoned_stack}
-      handle={p.handle}
-    />
   )}
 </BaseThemeLayout>
 
