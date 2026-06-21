@@ -1,0 +1,761 @@
+---
+export const prerender = true;
+
+// Surfaces the deck on /slides via the index page's auto-discovery.
+export const presentation = {
+  title: "Monthly All-Hands · June 24, 2026 · Dealflow into Second Brains",
+  description: "Three demos on piping dealflow into a second brain — OpenClaw → Notion, OpenClaw → Obsidian, and a from-scratch markdown primer.",
+  date: "2026-06-24",
+  author: "Marcus Brotman · Toby Rush · Michael Staton",
+  tags: ["All-Hands", "Agentic-VC-Dojo", "Second-Brain", "Today"],
+  featured: true,
+};
+
+import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
+// Freshest signal: last session's (May 27) post-event reflection survey +
+// live open poll, plus the cross-session firm network. Same file the June 24
+// session page renders.
+import lastSession from "../../../data/webinar-survey/2026-05-27_monthly-all-hands.json";
+// April 29 reflection — paired with May 27 to show the satisfaction trajectory.
+import firstSession from "../../../data/webinar-survey/2026-04-29_agentic-vc-dojo-launch.json";
+
+// Existing Section__ components we compose into specific slides.
+import Section__WebinarReflection from "../../../components/sections/Section__WebinarReflection.astro";
+import Section__WebinarSurveyVoices from "../../../components/sections/Section__WebinarSurveyVoices.astro";
+import Section__WebinarFirmsRepresented from "../../../components/sections/Section__WebinarFirmsRepresented.astro";
+
+const TITLE = "Monthly All-Hands · June 24, 2026 · Agentic VC Dojo";
+const DESCRIPTION = "Dealflow into Second Brains — three demos on capturing the front of the funnel into a system that compounds.";
+
+const firmsForRender = (lastSession as any).firms ?? [];
+const setupathonAsks = (lastSession as any).poll?.setupathonAsks ?? [];
+const curiosityAsks = (lastSession as any).poll?.curiosityAsks ?? [];
+
+// Satisfaction trajectory across the two sessions surveyed so far.
+const aprRefl = (firstSession as any).reflection;
+const mayRefl = (lastSession as any).reflection;
+const TRAJECTORY = [
+  {
+    label: "Insightful",
+    scale: "/ 10",
+    apr: aprRefl.scores.insightful.mean.toFixed(1),
+    may: mayRefl.scores.insightful.mean.toFixed(1),
+    up: mayRefl.scores.insightful.mean >= aprRefl.scores.insightful.mean,
+  },
+  {
+    label: "Would recommend",
+    scale: "/ 10",
+    apr: aprRefl.scores.recommend.mean.toFixed(1),
+    may: mayRefl.scores.recommend.mean.toFixed(1),
+    up: mayRefl.scores.recommend.mean >= aprRefl.scores.recommend.mean,
+  },
+  {
+    label: "NPS",
+    scale: "",
+    apr: `+${aprRefl.scores.recommend.nps}`,
+    may: `+${mayRefl.scores.recommend.nps}`,
+    up: mayRefl.scores.recommend.nps >= aprRefl.scores.recommend.nps,
+  },
+];
+const aprN = aprRefl.validRespondents;
+const mayN = mayRefl.validRespondents;
+
+// Demos in running order: two practitioner pipelines, then a from-scratch primer.
+const DEMOS = [
+  {
+    slot: "Lightning demo · 1 of 3",
+    name: "Marcus Brotman",
+    firm: "Launch",
+    headshot: "/images/presenter-headshots/headshot__Marcus-Brotman.jpeg",
+    headlinePre: "Intake → ",
+    headlineAccent: "Notion",
+    headlinePost: " for deal-pipeline insight",
+    sub: "Capture the deal at the door, structure it, surface it for the whole firm.",
+    angle: "Intake forms catch the deal. OpenClaw augments + structures the raw submission. Notion becomes the living pipeline everyone on the team actually reads.",
+    tools: [
+      { name: "OpenClaw", note: "Ingests + augments the intake — the active part." },
+      { name: "Notion", note: "The shared pipeline brain — structured, queryable." },
+    ],
+  },
+  {
+    slot: "Lightning demo · 2 of 3",
+    name: "Toby Rush",
+    firm: "Ideem · Founder & CEO",
+    headshot: "/images/participant-headshots/headshot__Toby-Rush.jpeg",
+    headlinePre: "OpenClaw + ",
+    headlineAccent: "Obsidian",
+    headlinePost: " for deal triage",
+    sub: "A founder's deal-flow brain, wired to live company signals.",
+    angle: "Companies arrive (intake, news, intros). OpenClaw ingests + classifies + routes. Obsidian holds the durable memory — notes, links, the watch list.",
+    tools: [
+      { name: "OpenClaw", note: "Agent workflow engine — the active part." },
+      { name: "Obsidian", note: "The 2nd-brain graph — durable memory." },
+    ],
+  },
+  {
+    slot: "Closing primer · 3 of 3",
+    name: "Michael Staton",
+    firm: "FullStack VC · Agent Conductor",
+    headshot: "/images/participant-headshots/headshot__Michael-Staton.jpeg",
+    headlinePre: "Obsidian & Markdown Notebooks ",
+    headlineAccent: "for Dummies",
+    headlinePost: "",
+    sub: "If the first two looked intimidating — here's how to start from zero.",
+    angle: "What a markdown second brain actually is, why plain text + links beats a database for durable memory, and how to stand one up this week.",
+    tools: [
+      { name: "Obsidian", note: "The canvas — local-first, plain-text notes + a link graph." },
+      { name: "Markdown", note: "Portable, future-proof, agent-readable. Owns your notes." },
+    ],
+  },
+];
+---
+
+<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
+
+  {/* ─────────────────────────────────────────────────────────────── 01 cover */}
+  <section class="slide slide--cover">
+    <p class="slide-eyebrow" data-reveal>Agentic VC Dojo · Monthly All-Hands</p>
+    <h1 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Dealflow into Second Brains
+    </h1>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Wednesday · June 24, 2026 · 9:00 AM PT
+    </p>
+    <div class="cover-presenters" data-reveal style="--delay: 240ms;">
+      <span>Marcus Brotman · Toby Rush · Michael Staton</span>
+      <span class="slide-caption">Launch · Ideem · FullStack VC</span>
+    </div>
+    <div class="slide-footnote">
+      <span>In partnership with Kauffman Fellows · <a href="https://kf.events/3ReV0eh">register →</a></span>
+      <span>↓ to start</span>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02 theme */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>This month's theme</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Get the front of the funnel into a brain that compounds.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Intake forms, inbound, sourcing notes, founder calls — into a system that grows sharper instead of rotting in an inbox.
+    </p>
+    <div class="fomo-bullets" data-reveal style="--delay: 240ms;">
+      <span class="fomo-chip">Capture <em>once</em>, reuse <em>everywhere</em></span>
+      <span class="fomo-chip">OpenClaw does the <em>routing</em></span>
+      <span class="fomo-chip">Notion / Obsidian hold the <em>memory</em></span>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 03 trajectory */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>Two sessions surveyed · the trajectory</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      The room is getting <span class="accent">more satisfied</span>, not less.
+    </h2>
+    <p class="slide-subhead slide-subhead--tight" data-reveal style="--delay: 140ms;">
+      April 29 launch → May 27 all-hands. Every measure moved up.
+    </p>
+    <div class="traj-grid" data-reveal style="--delay: 220ms;">
+      {TRAJECTORY.map((t) => (
+        <article class="traj-card">
+          <p class="traj-label">{t.label}</p>
+          <div class="traj-flow">
+            <span class="traj-point traj-point--past">
+              <span class="traj-num">{t.apr}</span>
+              <span class="traj-when">Apr 29</span>
+            </span>
+            <span class={t.up ? "traj-arrow traj-arrow--up" : "traj-arrow"}>→</span>
+            <span class="traj-point traj-point--now">
+              <span class="traj-num">{t.may}{t.scale && <span class="traj-scale">{t.scale}</span>}</span>
+              <span class="traj-when">May 27</span>
+            </span>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="slide-caption" data-reveal style="--delay: 360ms;">
+      Sample: {aprN} respondents in April · {mayN} in May. Small rooms — directional, not statistical. NPS hit a perfect +100 in May (every respondent a promoter).
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 03b last session landed */}
+  <section class="slide slide--data slide--data-tight">
+    <div class="slide-component" data-reveal>
+      <Section__WebinarReflection
+        reflection={lastSession.reflection}
+        contextSetterTxt="From last session · May 27"
+      />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 04 you asked us to set this up */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>You asked · May 27 poll</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      You told us what to set up.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarSurveyVoices
+        id="deck-setupathon-asks"
+        quotes={setupathonAsks}
+        headingTxt="What the room wants to"
+        headingAccentTxt="set up together"
+        ledeTxt="Free-response asks from last session's Setupathon poll. Anonymized."
+      />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 05 what you're curious about */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>You asked · and today answers part of it</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      "Where do I even start?" · "Diligence + portfolio tracking."
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarSurveyVoices
+        id="deck-curiosity-asks"
+        quotes={curiosityAsks}
+        headingTxt="What the room is"
+        headingAccentTxt="curious to see live"
+        ledeTxt="Today's three demos — and the from-scratch primer to close — speak directly to these."
+      />
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 06 the network */}
+  <section class="slide slide--data">
+    <p class="slide-eyebrow" data-reveal>The network</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+      56 firms, two sessions in — and growing.
+    </h2>
+    <div class="slide-component" data-reveal style="--delay: 160ms;">
+      <Section__WebinarFirmsRepresented firms={firmsForRender} />
+    </div>
+    <p class="slide-caption" data-reveal style="--delay: 320ms;">
+      Repeat-attender firms are the strongest signal we're building something worth coming back to.
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 07 format */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>How the next 60 minutes work</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Six steps · ~60 minutes
+    </h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li><span class="agenda-n">01</span><span>Dojo convening + framing</span><span class="agenda-min">5m</span></li>
+      <li><span class="agenda-n">02</span><span>Account setup &amp; polls orientation</span><span class="agenda-min">5m</span></li>
+      <li><span class="agenda-n">03</span><span>Two lightning demos — Marcus, Toby</span><span class="agenda-min">20m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">04</span><span>Markdown second-brain primer — Michael</span><span class="agenda-min">10m</span></li>
+      <li><span class="agenda-n">05</span><span>Live polls</span><span class="agenda-min">5m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">06</span><span>Town hall — bring a dealflow-capture workflow — + Q&amp;A</span><span class="agenda-min">15m</span></li>
+    </ol>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 08 create your account */}
+  <section class="slide slide--account">
+    <p class="slide-eyebrow" data-reveal>Quick precursor · before the polls</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Please create your account and log in.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Two minutes. Unlocks Stacks, Polls, Working Groups &amp; Projects — plus what we haven't cooked up yet.
+    </p>
+
+    <div class="account-grid" data-reveal style="--delay: 240ms;">
+      <div class="account-grid__value-props">
+        <article class="vp-card">
+          <h3>Stacks</h3>
+          <p>Want to explore a new tool? See who's actively using it. See who's archived it. Find someone else with the same interest.</p>
+          <a href="/stacks" class="vp-link">/stacks →</a>
+        </article>
+        <article class="vp-card">
+          <h3>Polls</h3>
+          <p>Agent / AI + web app = better info, unlocks possibilities. Plus, looks cool.</p>
+        </article>
+        <article class="vp-card vp-card--featured">
+          <h3>Working Groups &amp; Projects</h3>
+          <p>Browse strawmen. Enlist in something that resonates. Propose your own. The dojo runs on emergent cooperation.</p>
+          <p class="vp-caption">
+            All current listings are strawmen. Green / Active = Michael will convene if no one else has time. The rest are ideas looking for a facilitator.
+          </p>
+          <a href="/working-groups" class="vp-link">/working-groups →</a>
+          <a href="/projects" class="vp-link">/projects →</a>
+        </article>
+      </div>
+
+      <div class="account-grid__providers">
+        <h3 class="providers-heading">Sign in with</h3>
+        <ul class="provider-list">
+          <li><span class="provider-name">Google Workspace</span><span class="provider-note">most VCs have one</span></li>
+          <li><span class="provider-name">LinkedIn</span><span class="provider-note">same as everywhere else</span></li>
+          <li><span class="provider-name">GitHub</span><span class="provider-note">if no account → get one anyway</span></li>
+        </ul>
+        <p class="cta-short">Top-right → Log in → pick a provider → done.</p>
+      </div>
+    </div>
+
+    <p class="privacy-line" data-reveal style="--delay: 400ms;">
+      Data will never be used for any reason other than better curating experiences for the Dojo.
+    </p>
+    <p class="slide-footnote">
+      <span>Not a company — just an initiative for the Dojo. <a href="/people/mpstaton">see Michael's Stack →</a></span>
+      <span class="disclaimer">Vibe-coded with Claude Code + Pi.dev. Glitches are par for the course; we fix them once Claude explains them to us.</span>
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 09–11 demos */}
+  {DEMOS.map((d) => (
+    <section class="slide slide--demo">
+      <p class="slide-eyebrow" data-reveal>{d.slot}</p>
+      <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+        {d.headlinePre}<span class="accent">{d.headlineAccent}</span>{d.headlinePost}
+      </h2>
+      <p class="slide-subhead" data-reveal style="--delay: 160ms;">{d.sub}</p>
+
+      <div class="demo-presenters demo-presenters--single" data-reveal style="--delay: 240ms;">
+        <article class="demo-card">
+          <div class="demo-card__head">
+            <img src={d.headshot} alt={d.name} class="demo-card__avatar" />
+            <div>
+              <h3 class="demo-card__name">{d.name}</h3>
+              <p class="demo-card__firm">{d.firm}</p>
+            </div>
+          </div>
+          <p class="demo-card__angle">{d.angle}</p>
+        </article>
+        <aside class="demo-tools">
+          {d.tools.map((t) => (
+            <div class="demo-tool">
+              <h4>{t.name}</h4>
+              <p>{t.note}</p>
+            </div>
+          ))}
+        </aside>
+      </div>
+    </section>
+  ))}
+
+  {/* ─────────────────────────────────────────────────────────────── 12 town hall */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>Town hall · the working part</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Bring a dealflow-capture workflow you're <span class="accent">wrestling with</span>.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Where does your front-of-funnel leak? Let's troubleshoot it live, with the room.
+    </p>
+    <ul class="agenda" data-reveal style="--delay: 240ms;">
+      <li><span class="agenda-n">A</span><span>What you capture today — and where it goes to die</span></li>
+      <li><span class="agenda-n">B</span><span>Notion or Obsidian — which fits your team's reality?</span></li>
+      <li class="agenda-accent"><span class="agenda-n">C</span><span>One thing you'll wire up before July's all-hands</span></li>
+    </ul>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 13 close */}
+  <section class="slide slide--close">
+    <p class="slide-eyebrow" data-reveal>Thanks for being in the room</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Capture once. Let it compound.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      This is how the dojo gets sharper.
+    </p>
+    <p class="slide-body slide-body--center" data-reveal style="--delay: 240ms;">
+      <strong>Today — Wednesday · June 24, 2026 · Dealflow into Second Brains</strong>
+    </p>
+    <div class="close-links" data-reveal style="--delay: 320ms;">
+      <a href="/sessions/2026-06-24_dealflow-into-second-brains">Session page (polls + host script)</a>
+      <a href="https://kf.events/3ReV0eh">Register / RSVP →</a>
+    </div>
+    <p class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span class="disclaimer">Built section by section with Claude Code + Pi.dev. Welcome glitch reports.</span>
+    </p>
+  </section>
+
+</PageAsDeckWrapper>
+
+<style>
+  /* ── Slide-specific composition ─────────────────────────────────────── */
+  .slide-headline--medium {
+    font-size: clamp(1.625rem, 4.5vw, 3.5rem);
+  }
+  .slide-headline--small {
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    max-width: 40ch;
+  }
+  .accent {
+    color: var(--color-accent);
+  }
+
+  /* Component wrappers — neutralize child padding inside slides */
+  .slide-component {
+    width: 100%;
+    max-width: 75rem;
+  }
+  .slide-component :global(section),
+  .slide-component :global(article) {
+    padding-block: 0 !important;
+  }
+
+  /* Slides that compose a Section__ component which brings its own header. */
+  .slide--data-tight {
+    padding: 1.5rem clamp(1rem, 3vw, 3rem) !important;
+    justify-content: flex-start !important;
+  }
+  .slide--data-tight .slide-component {
+    max-width: 80rem;
+  }
+
+  /* ── 01 cover ───────────────────────────────────────────────────────── */
+  .cover-presenters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    color: var(--color-text);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+  }
+  .cover-presenters .slide-caption {
+    font-family: var(--font-code);
+  }
+
+  .slide-subhead--tight { margin-bottom: 1rem; }
+
+  /* ── 03 trajectory ──────────────────────────────────────────────────── */
+  .traj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 70rem;
+  }
+  .traj-card {
+    padding: 1.25rem 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+  }
+  .traj-label {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0 0 0.875rem;
+  }
+  .traj-flow {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+  .traj-point {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .traj-num {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .traj-scale {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    margin-left: 0.25rem;
+  }
+  .traj-when {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+  }
+  .traj-point--past .traj-num { color: var(--color-text-muted); }
+  .traj-point--now .traj-num { color: var(--color-accent); }
+  .traj-arrow {
+    font-family: var(--font-code);
+    font-size: 1.5rem;
+    color: var(--color-text-muted);
+  }
+  .traj-arrow--up { color: var(--color-accent); }
+
+  /* ── 02 fomo chips ──────────────────────────────────────────────────── */
+  .fomo-bullets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .fomo-chip {
+    padding: 0.75rem 1.25rem;
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .fomo-chip em {
+    color: var(--color-accent);
+    font-style: italic;
+  }
+
+  /* ── 07 / 12 agenda ─────────────────────────────────────────────────── */
+  .agenda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 50rem;
+  }
+  .agenda li {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    color: var(--color-text);
+  }
+  .agenda-n {
+    font-family: var(--font-code);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .agenda-min {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .agenda-accent {
+    border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+  }
+
+  /* ── 08 account ─────────────────────────────────────────────────────── */
+  .slide--account {
+    justify-content: flex-start;
+    padding-top: 5rem;
+  }
+  .account-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    max-width: 80rem;
+  }
+  @media (max-width: 900px) {
+    .account-grid { grid-template-columns: 1fr; }
+  }
+  .account-grid__value-props {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .vp-card {
+    padding: 1rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+  }
+  .vp-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    color: var(--color-text);
+    margin: 0 0 0.375rem;
+  }
+  .vp-card p {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .vp-card--featured {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  }
+  .vp-caption {
+    margin-top: 0.625rem !important;
+    font-size: 0.8125rem !important;
+    font-style: italic;
+  }
+  .vp-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .vp-link:hover { text-decoration: underline; }
+
+  .account-grid__providers {
+    padding: 1.25rem 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+    height: fit-content;
+  }
+  .providers-heading {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .provider-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .provider-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .provider-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+  .provider-note {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .cta-short {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    margin: 0;
+  }
+  .privacy-line {
+    margin-top: 1.5rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+  .disclaimer {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    max-width: 50%;
+  }
+
+  /* ── 09–11 demo ─────────────────────────────────────────────────────── */
+  .demo-presenters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 70rem;
+  }
+  .demo-presenters--single {
+    grid-template-columns: 1.4fr 1fr;
+  }
+  @media (max-width: 760px) {
+    .demo-presenters { grid-template-columns: 1fr; }
+  }
+  .demo-card {
+    padding: 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+  }
+  .demo-card__head {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.875rem;
+  }
+  .demo-card__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+  }
+  .demo-card__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .demo-card__firm {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin: 0.125rem 0 0;
+  }
+  .demo-card__angle {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .demo-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .demo-tool {
+    padding: 0.875rem 1.125rem;
+    background: var(--fx-card-bg);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+    border-radius: 0.5rem;
+  }
+  .demo-tool h4 {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    color: var(--color-accent);
+    margin: 0 0 0.25rem;
+  }
+  .demo-tool p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  /* ── 13 close ───────────────────────────────────────────────────────── */
+  .slide-body--center { text-align: center; max-width: 60ch; margin-inline: auto; }
+  .slide--close { justify-content: center; align-items: center; text-align: center; }
+  .slide--close .slide-headline,
+  .slide--close .slide-subhead,
+  .slide--close .slide-body,
+  .slide--close .slide-eyebrow {
+    text-align: center;
+    margin-inline: auto;
+  }
+  .close-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .close-links a {
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .close-links a:hover { text-decoration: underline; }
+</style>

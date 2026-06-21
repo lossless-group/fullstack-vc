@@ -48,6 +48,8 @@ rsvpUrl: https://kf.events/3ReV0eh
 
 This month's Agentic VC Dojo is themed **Dealflow into Second Brains** — getting the messy front of the funnel (intake forms, inbound, sourcing notes, founder calls) into a system that compounds instead of rotting in an inbox.
 
+📊 **[Open the session deck →](/slides/2026-06-24_monthly-all-hands)**
+
 Marcus and Toby return to give the demos they had queued up for earlier sessions but didn't get to present, then Michael closes with a ground-floor primer:
 
 - **Marcus Brotman (Launch)** — Intake forms + OpenClaw + Notion for better deal-pipeline insights.
