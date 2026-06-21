@@ -8,16 +8,10 @@ hosts:
  - Michael Staton
  - Emily McMath
 presenters:
-  - Marcus Brotman, Launch
   - Wesley Barrow, Correlation Ventures
   - Nicholas Cooper, Parslee.ai
   - Michael Staton, Fullstack VC
 presenterDetails:
-  - name: Marcus Brotman
-    firm: Launch
-    headshot: /images/presenter-headshots/headshot__Marcus-Brotman.jpeg
-    linkedin: https://www.linkedin.com/in/marcus-brotman/
-    topic: Intake forms + OpenClaw + Notion for better deal-pipeline insights.
   - name: Wesley Barrow
     firm: Correlation Ventures
     headshot: /images/presenter-headshots/headshot__Wesley-Barrow.jpeg
@@ -58,7 +52,7 @@ We'll set the table for the year:
 | **Time** | **Segment** | **What happens** |
 | :----- | :------------------- | :------------------------------------------------------------------------------------------------- |
 | 5 min  | Framing              | The "Dojo" concept, goals, and structure                                                           |
-| 20 min | Inspiration Set      | Four "speed demos" (5 min each) from guests and a Kauffman Fellow                                  |
+| 20 min | Inspiration Set      | Three "speed demos" (5 min each) from guests and a Kauffman Fellow                                 |
 | 5 min  | Polling & Backchannel | Live polls and backchannel discussion                                                              |
 | 20 min | Town Hall            | Bring an AI workflow you're trying to operationalize, or ideas and hunches to discuss             |
 | 10 min | Q&A + Next Steps     | Open Q&A, nail down follow-up actions, and next steps for our Dojo community                       |
@@ -72,13 +66,12 @@ VCs from analyst to partner, Kauffman Fellows of course. No prior AI experience 
 
 We are kicking off a skill-based “peer learning” series on implementing AI Agents to help with Venture Workflows. Will be a “Dojo” series — interested folks can participate, contribute, and enhance concrete skills over time. 
 
-- 20m: **An _Inspiration_ Set**: four “speed demos” (5min each)  
-3 guests and one Kauffman Fellow that have seen a small breakthrough in one of the many venture workflows we all drown in —-
+- 20m: **An _Inspiration_ Set**: three “speed demos” (5min each)  
+2 guests and one Kauffman Fellow that have seen a small breakthrough in one of the many venture workflows we all drown in —-
 
-  1. Intake forms processing and data augmentation, from OpenClaw into Notion
-  2. Portfolio news monitoring, 
-  3. Executive Assistant Agents with context improvements (for email and scheduling), 
-  4. Investment memo generation.  
+  1. Portfolio news monitoring, 
+  2. Executive Assistant Agents with context improvements (for email and scheduling), 
+  3. Investment memo generation.  
 
 The remainder of the time will be polls, discussion, and collaboratively developing tracks for further program development.  
 
