@@ -6,7 +6,7 @@ export const presentation = {
   title: "Monthly All-Hands · May 27, 2026",
   description: "Two Kauffman Fellows share what they've been building. Section-composed deck — three modes live. Today.",
   date: "2026-05-27",
-  author: "Michael Staton · Mike Moradi · Raeed Zainuddin · Toby Rush",
+  author: "Michael Staton · Mike Moradi · Raeed Zainuddin",
   tags: ["All-Hands", "Agentic-VC-Dojo"],
   featured: false,
 };
@@ -24,7 +24,7 @@ import Section__WebinarSurveyVoices from "../../../components/sections/Section__
 import Section__BreakoutsTeaser from "../../../components/sections/Section__BreakoutsTeaser.astro";
 
 const TITLE = "Monthly All-Hands · May 27, 2026 · Agentic VC Dojo";
-const DESCRIPTION = "Two Kauffman Fellows and a founder share what they've been building, breaking, and learning.";
+const DESCRIPTION = "Two Kauffman Fellows share what they've been building, breaking, and learning.";
 
 // Use the combined firms list shape that Section__WebinarFirmsRepresented expects.
 const firmsForRender = (combinedFirms as any).firms ?? [];
@@ -53,12 +53,6 @@ const PRESENTERS_06A = [
   },
 ];
 
-const PRESENTER_06B = {
-  name: "Toby Rush",
-  firm: "Ideem",
-  role: "Founder & CEO",
-  headshot: "/images/participant-headshots/headshot__Toby-Rush.jpeg",
-};
 ---
 
 <PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
@@ -73,8 +67,8 @@ const PRESENTER_06B = {
       Wednesday · May 27, 2026 · 9:00 AM PT
     </p>
     <div class="cover-presenters" data-reveal style="--delay: 240ms;">
-      <span>Mike Moradi · Raeed Zainuddin · Toby Rush</span>
-      <span class="slide-caption">Cortado Ventures · Cortado Ventures · Ideem</span>
+      <span>Mike Moradi · Raeed Zainuddin</span>
+      <span class="slide-caption">Cortado Ventures · Cortado Ventures</span>
     </div>
     <div class="slide-footnote">
       <span>In partnership with Kauffman Fellows</span>
@@ -199,7 +193,7 @@ const PRESENTER_06B = {
     <ol class="agenda" data-reveal style="--delay: 160ms;">
       <li><span class="agenda-n">01</span><span>Dojo Convening</span><span class="agenda-min">5m</span></li>
       <li><span class="agenda-n">02</span><span>Account Setup & Polls Orientation</span><span class="agenda-min">5m</span></li>
-      <li><span class="agenda-n">03</span><span>Two lightning demos</span><span class="agenda-min">20m</span></li>
+      <li><span class="agenda-n">03</span><span>Lightning demo</span><span class="agenda-min">20m</span></li>
       <li><span class="agenda-n">04</span><span>Live polls</span><span class="agenda-min">5m</span></li>
       <li class="agenda-accent"><span class="agenda-n">05</span><span>Three breakout tracks</span><span class="agenda-min">15m</span></li>
       <li class="agenda-accent"><span class="agenda-n">06</span><span>Report-backs, Q&A, willing-and-able for June</span><span class="agenda-min">10m</span></li>
@@ -317,7 +311,7 @@ const PRESENTER_06B = {
 
   {/* ─────────────────────────────────────────────────────────────── 06a Cortado demo */}
   <section class="slide slide--demo">
-    <p class="slide-eyebrow" data-reveal>Lightning demo · 1 of 2</p>
+    <p class="slide-eyebrow" data-reveal>Lightning demo</p>
     <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
       Claude Teams for <span class="accent">firm impact</span>
     </h2>
@@ -338,42 +332,6 @@ const PRESENTER_06B = {
           <p class="demo-card__angle">{p.angle}</p>
         </article>
       ))}
-    </div>
-  </section>
-
-  {/* ─────────────────────────────────────────────────────────────── 06b Toby demo */}
-  <section class="slide slide--demo">
-    <p class="slide-eyebrow" data-reveal>Lightning demo · 2 of 2</p>
-    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
-      OpenClaw <span class="accent">+</span> Obsidian for deal triage and vigilant pipeline management.
-    </h2>
-    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
-      A founder's deal-flow brain, wired to live company signals.
-    </p>
-
-    <div class="demo-presenters demo-presenters--single" data-reveal style="--delay: 240ms;">
-      <article class="demo-card">
-        <div class="demo-card__head">
-          <img src={PRESENTER_06B.headshot} alt={PRESENTER_06B.name} class="demo-card__avatar" />
-          <div>
-            <h3 class="demo-card__name">{PRESENTER_06B.name}</h3>
-            <p class="demo-card__firm">{PRESENTER_06B.firm} · {PRESENTER_06B.role}</p>
-          </div>
-        </div>
-        <p class="demo-card__angle">
-          Companies arrive (intake, news, intros). OpenClaw ingests + classifies + routes. Obsidian holds the durable memory — notes, links, the watch list.
-        </p>
-      </article>
-      <aside class="demo-tools">
-        <div class="demo-tool">
-          <h4>OpenClaw</h4>
-          <p>Agent workflow engine — the active part.</p>
-        </div>
-        <div class="demo-tool">
-          <h4>Obsidian</h4>
-          <p>The 2nd-brain graph — durable memory.</p>
-        </div>
-      </aside>
     </div>
   </section>
 
