@@ -30,19 +30,19 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
-    "@astrojs/db": "^0.21.1",
-    "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/svelte": "^8.1.0",
-    "@astrojs/vercel": "^10.0.6",
+    "@astrojs/db": "^0.21.3",
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/svelte": "^8.1.2",
+    "@astrojs/vercel": "^10.0.8",
     "@lossless-group/lfm": "npm:@jsr/lossless-group__lfm@^0.3.0",
-    "@tailwindcss/vite": "^4.2.2",
-    "astro": "^6.3.1",
-    "jose": "^6.2.2",
+    "@tailwindcss/vite": "^4.3.1",
+    "astro": "^6.4.8",
+    "jose": "^6.2.3",
     "mdast-util-to-string": "^4.0.0",
-    "svelte": "^5.55.4",
-    "svelte-dnd-action": "^0.9.50",
-    "tailwindcss": "^4.2.2",
-    "typescript": "^6.0.2"
+    "svelte": "^5.56.3",
+    "svelte-dnd-action": "^0.9.70",
+    "tailwindcss": "^4.3.1",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@types/node": "^25.6.0"
