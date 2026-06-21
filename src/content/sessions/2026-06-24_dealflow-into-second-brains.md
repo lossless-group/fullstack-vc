@@ -43,6 +43,7 @@ tags:
   - Second-Brain
   - Community
 og_image: /og-default.png
+rsvpUrl: https://kf.events/3ReV0eh
 ---
 
 This month's Agentic VC Dojo is themed **Dealflow into Second Brains** — getting the messy front of the funnel (intake forms, inbound, sourcing notes, founder calls) into a system that compounds instead of rotting in an inbox.
