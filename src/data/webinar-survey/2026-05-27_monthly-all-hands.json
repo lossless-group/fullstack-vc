@@ -1,0 +1,667 @@
+{
+  "generatedAt": "2026-06-21T00:00:00.000Z",
+  "webinarId": "2026-05-27_monthly-all-hands",
+  "sessionTitle": "KF AI SIG | Agentic VC Dojo: AI in Venture Workflows | Session 2 (Monthly All-Hands)",
+  "firms": [
+    {
+      "name": "468 Capital",
+      "domains": [
+        "468cap.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "53 Stations",
+      "domains": [
+        "53stations.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Acasia Ventures",
+      "domains": [
+        "acasia.ventures"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Aire Labs",
+      "domains": [
+        "airelabs.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Alexia VC",
+      "domains": [
+        "alexia.vc"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Alpha JWC Ventures",
+      "domains": [
+        "alphajwc.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Amplifica Capital",
+      "domains": [
+        "amplifica.capital"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Atlantica Ventures",
+      "domains": [
+        "atlanticaventures.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Audaz Capital",
+      "domains": [
+        "audaz.capital"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Blueprint",
+      "domains": [
+        "blueprint.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Cherry Rock Capital",
+      "domains": [
+        "cherryrockcapital.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Cometa",
+      "domains": [
+        "cometa.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Corner Ventures",
+      "domains": [
+        "cornerventures.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Cortado Ventures",
+      "domains": [
+        "cortado.ventures"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Defined VC",
+      "domains": [
+        "definedvc.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Determined Capital",
+      "domains": [
+        "determined-capital.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Domo Invest",
+      "domains": [
+        "domoinvest.com.br"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Domo VC",
+      "domains": [
+        "domo.vc"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "DPI",
+      "domains": [
+        "dpi-llp.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Enza Capital",
+      "domains": [
+        "enza.capital"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Feature VC",
+      "domains": [
+        "featuresvc.co"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "FirstMark",
+      "domains": [
+        "firstmark.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "FJ Labs",
+      "domains": [
+        "fjlabs.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Garage Capital",
+      "domains": [
+        "garage.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Genoa Ventures",
+      "domains": [
+        "genoavc.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Glitch Capital",
+      "domains": [
+        "glitchcap.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Hi.VC",
+      "domains": [
+        "hi.vc"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "HQ Capital",
+      "domains": [
+        "hqcap.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "iMena",
+      "domains": [
+        "imena.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Invest2Innovate",
+      "domains": [
+        "invest2innovate.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Iolar Ventures",
+      "domains": [
+        "iolar.vc"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Josi Health",
+      "domains": [
+        "josihealth.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Kauffman Fellows",
+      "domains": [
+        "kfp.org"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "KB Partners",
+      "domains": [
+        "kbpartners.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Last Mile Ventures",
+      "domains": [
+        "lastmileventures.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "LoftyInc",
+      "domains": [
+        "loftyinc.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Lytical Ventures",
+      "domains": [
+        "lyticalventures.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "M25 Ventures",
+      "domains": [
+        "m25vc.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Medici Capital",
+      "domains": [
+        "medicicap.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Mercury Fund",
+      "domains": [
+        "mercuryfund.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "MGV",
+      "domains": [
+        "mgv.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Monashees",
+      "domains": [
+        "monashees.com",
+        "monashees.com.br"
+      ],
+      "count": 2,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Motley Fool Ventures",
+      "domains": [
+        "foolventures.com"
+      ],
+      "count": 2,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Nido VC",
+      "domains": [
+        "nidovc.com.br"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Notion Capital",
+      "domains": [
+        "notioncapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Novel Capital",
+      "domains": [
+        "novelcapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Novel GP",
+      "domains": [
+        "novelgp.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Prose Ventures",
+      "domains": [
+        "proseventures.com"
+      ],
+      "count": 1,
+      "source": "both",
+      "repeat": true
+    },
+    {
+      "name": "Prysm Capital",
+      "domains": [
+        "prysmcapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Seedstars",
+      "domains": [
+        "seedstars.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Soundboard Venture Fund",
+      "domains": [
+        "soundboardventurefund.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Tribe Capital",
+      "domains": [
+        "tribecap.co"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Voyager VC",
+      "domains": [
+        "voyagervc.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    },
+    {
+      "name": "Walking VC",
+      "domains": [
+        "walking.vc"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "Wild Basin Investments",
+      "domains": [
+        "wildbasininv.com"
+      ],
+      "count": 1,
+      "source": "april-only",
+      "repeat": false
+    },
+    {
+      "name": "WVV Capital",
+      "domains": [
+        "wvvcapital.com"
+      ],
+      "count": 1,
+      "source": "may-only",
+      "repeat": false
+    }
+  ],
+  "reflection": {
+    "_sourceFile": "context-v/extra/2026-05-27/May 28 AI Agentic Dojo Survey results.csv",
+    "respondents": 5,
+    "validRespondents": 5,
+    "scores": {
+      "insightful": {
+        "label": "How insightful was this event?",
+        "scale": "1-10",
+        "n": 5,
+        "mean": 9.6,
+        "median": 10,
+        "min": 9,
+        "max": 10
+      },
+      "recommend": {
+        "label": "How likely to recommend other KF join these talks?",
+        "scale": "1-10",
+        "n": 5,
+        "mean": 9.6,
+        "median": 10,
+        "min": 9,
+        "max": 10,
+        "nps": 100,
+        "promoters": 5,
+        "passives": 0,
+        "detractors": 0
+      }
+    },
+    "highlights": [
+      {
+        "quote": "This group is amazing and going to save my life."
+      },
+      {
+        "quote": "Great session! Very practical. Amazing how Michael, Jules and Toby prepared a bunch of materials to share."
+      },
+      {
+        "quote": "Walked away with a couple new tools and tactics."
+      }
+    ],
+    "gettingBetter": [
+      {
+        "feedback": "Some of the conversation was over my head. Still good to be part of the conversation and be exposed.",
+        "response": "Signal for an explicit on-ramp / beginner track. Add a clearly-labeled \"start here\" thread and a non-technical glossary so newcomers can stay oriented when the room goes deep."
+      }
+    ]
+  },
+  "poll": {
+    "_sourceFile": "context-v/extra/2026-05-27/Poll Results - May 28 AI Agentic Session.csv",
+    "respondents": 7,
+    "questions": [
+      {
+        "key": "setupathon",
+        "prompt": "A KF fellow organized a “Setupathon” for OpenClaw and Hermes Agent where 10-15 Kauffman Fellows just buckled in and got to a working setup. Is there anything you would want a “Setupathon” to help setup? (Self-organized multi-hour live zoom for moral support while we persevere through troubleshooting.)",
+        "substantiveResponses": 4,
+        "declined": 3
+      },
+      {
+        "key": "curiosity",
+        "prompt": "Anything you’ve heard lately you’d be curious to learn more about, see a live example of?",
+        "substantiveResponses": 3,
+        "declined": 4
+      }
+    ],
+    "setupathonAsks": [
+      {
+        "persona": "A diligence-focused emerging manager",
+        "body": "Hermes — maybe.",
+        "source": "wanted"
+      },
+      {
+        "persona": "A LATAM emerging-manager GP",
+        "body": "MCP servers wiring Claude into the VC stack — Affinity / Notion / Drive — so I can query deal flow, GP pipeline, and LP CRM live. Painful to configure alone, transformative once it works.",
+        "source": "wanted"
+      },
+      {
+        "persona": "A Microsoft-stack seed fund",
+        "body": "Yes — all of the above, especially the moral support. We don’t use Claude or Chrome; we run on CoPilot and 365, and we don’t have Pitchbook / TechCrunch / other data subscriptions.",
+        "source": "wanted"
+      },
+      {
+        "persona": "A safety-conscious solo GP",
+        "body": "Is there a recording or FAQ you’d recommend for a nanoclaw install? OpenClaw seems like overkill and not safe. And is there a recording of the last Setupathon?",
+        "source": "wanted"
+      }
+    ],
+    "curiosityAsks": [
+      {
+        "persona": "A non-technical fund partner",
+        "body": "There’s so much information about AI in VC that I don’t even know where to start (as a non-engineer / non-technical person).",
+        "source": "wanted"
+      },
+      {
+        "persona": "A LATAM emerging-manager GP",
+        "body": "The Anthropic / Goldman “forward-deployed engineer” model applied inside an emerging manager’s ops — what actually changes in a 2-person GP’s weekly workflow.",
+        "source": "wanted"
+      },
+      {
+        "persona": "A research-by-phone seed fund",
+        "body": "Most of our research is phone calls with experts. I’d love to learn how to use this for diligence and portfolio tracking.",
+        "source": "wanted"
+      }
+    ]
+  },
+  "_candidates": [
+    {
+      "_name": "Rodrigo Borges",
+      "_firm": "Domo VC",
+      "_email": "rodrigo@domo.vc",
+      "setupathon": "No",
+      "curiosity": "No"
+    },
+    {
+      "_name": "Jonathan Hakakian",
+      "_firm": "Soundboard Venture Fund",
+      "_email": "jonathan@soundboardventurefund.com",
+      "setupathon": "",
+      "curiosity": "There's so much information about AI in VC that I don't even know where to start (as a non-engineer/technical person)..."
+    },
+    {
+      "_name": "Lucas Nelson",
+      "_firm": "Lytical Ventures",
+      "_email": "lucas@lyticalventures.com",
+      "setupathon": "Maybe Hermes.",
+      "curiosity": ""
+    },
+    {
+      "_name": "Marcos Polanco",
+      "_firm": "(personal)",
+      "_email": "mjpolanco@gmail.com",
+      "setupathon": "N/A",
+      "curiosity": "N/A"
+    },
+    {
+      "_name": "Laura Constantini",
+      "_firm": "Nido Ventures",
+      "_email": "laura@nidovc.com.br",
+      "setupathon": "MCP servers wiring Claude into the VC stack — Affinity/Notion/Drive — so I can query deal flow, GP pipeline, and LP CRM live. Painful to configure alone, transformative once it works.",
+      "curiosity": "The Anthropic/Goldman \"forward-deployed engineer\" model applied inside an emerging manager's ops — what actually changes in a 2-person GP's weekly workflow."
+    },
+    {
+      "_name": "Jenny Barba",
+      "_firm": "Feature VC",
+      "_email": "jenny@featuresvc.co",
+      "setupathon": "Yes - all of the above, especially moral support. We don't use Claude or Chrome. We use CoPilot and 365. We also don't have subscriptions to Pitchbook, TechCrunch, or other data sources.",
+      "curiosity": "Most of our research is phone calls with experts. I'd love to learn how to use this for diligence and portfolio tracking."
+    },
+    {
+      "_name": "Patrick Sagisi",
+      "_firm": "Iolar VC",
+      "_email": "patrick@iolar.vc",
+      "setupathon": "Is there a recording or a FAQ that you'd recommend for a nanoclaw (openclaw seems like overkill + not safe) install? Is there a recording of the last “Setupathon”?",
+      "curiosity": ""
+    }
+  ],
+  "_note": "Poll + survey CSVs were downloaded 2026-05-28 but the session ran 2026-05-27 (poll submissions timestamped 2026-05-27). Combines the cross-session firm network with this session’s post-event reflection survey and live open poll, mirroring the single-file shape of 2026-04-29_agentic-vc-dojo-launch.json."
+}

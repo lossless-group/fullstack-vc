@@ -306,20 +306,44 @@ const breakoutData = breakoutsSlug
 
   {survey && (
     <div class="webinar-survey">
-      <Section__WebinarSurveyStats totals={survey.totals} />
-      <Section__WebinarSurveyPolls
-        experience={survey.experience}
-        toolStack={survey.toolStack}
-        surveyed={survey.totals.surveyed}
-      />
-      <Section__WebinarFirmsRepresented firms={survey.firms} />
-      <Section__WebinarSurveyVoices
-        id="wsvoices-building"
-        quotes={survey.quotes}
-        headingTxt="What this room"
-        headingAccentTxt="is actually working on"
-        ledeTxt="Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday."
-      />
+      {survey.totals && <Section__WebinarSurveyStats totals={survey.totals} />}
+      {survey.totals && (survey.experience || survey.toolStack) && (
+        <Section__WebinarSurveyPolls
+          experience={survey.experience}
+          toolStack={survey.toolStack}
+          surveyed={survey.totals.surveyed}
+        />
+      )}
+      {survey.firms && survey.firms.length > 0 && (
+        <Section__WebinarFirmsRepresented firms={survey.firms} />
+      )}
+      {survey.quotes && survey.quotes.length > 0 && (
+        <Section__WebinarSurveyVoices
+          id="wsvoices-building"
+          quotes={survey.quotes}
+          headingTxt="What this room"
+          headingAccentTxt="is actually working on"
+          ledeTxt="Quotes are anonymized. Several of these are exactly what we'll workshop on Thursday."
+        />
+      )}
+      {survey.poll?.setupathonAsks && survey.poll.setupathonAsks.length > 0 && (
+        <Section__WebinarSurveyVoices
+          id="wsvoices-setupathon"
+          quotes={survey.poll.setupathonAsks}
+          headingTxt="What the room wants to"
+          headingAccentTxt="set up together"
+          ledeTxt="Free-response asks for a self-organized 'Setupathon' — lightly edited and anonymized."
+        />
+      )}
+      {survey.poll?.curiosityAsks && survey.poll.curiosityAsks.length > 0 && (
+        <Section__WebinarSurveyVoices
+          id="wsvoices-curiosity"
+          quotes={survey.poll.curiosityAsks}
+          headingTxt="What the room is"
+          headingAccentTxt="curious to see live"
+          ledeTxt="Free-response answers to 'what would you like to learn more about or see a live example of?' — lightly edited."
+        />
+      )}
       {survey.quotesWanted && survey.quotesWanted.length > 0 && (
         <Section__WebinarSurveyVoices
           id="wsvoices-asks"
