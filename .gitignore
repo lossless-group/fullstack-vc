@@ -37,5 +37,8 @@ pnpm-debug.log*
 .vercel/
 .netlify/
 
+# Astro DB bundler temp artifacts
+db.timestamp-*.mjs
+
 # Affinity Designer / Photo / Publisher lock files — created while file is open in the editor
 *~lock~
