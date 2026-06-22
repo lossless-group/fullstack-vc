@@ -1,6 +1,6 @@
 ---
 title: "Dealflow into Second Brains"
-lede: "How to pipe raw dealflow — intake forms, inbound, sourcing notes — into a second brain that actually compounds. Marcus and Toby demo the intake → Notion and OpenClaw → Obsidian pipelines they've been building for deal triage and pipeline insight, then Michael closes with a from-scratch markdown-notebook primer."
+lede: "How to pipe what matters into a second brain that actually compounds. Marcus wires dealflow intake into Notion; Toby funnels his entire personal operation — voice memos, files, messages, meetings — through OpenClaw into Obsidian; and Michael closes with a from-scratch markdown-notebook primer."
 date_scheduled: 2026-06-24T09:00:00-07:00
 date_posted: 2026-06-21
 durationMinutes: 60
@@ -21,7 +21,7 @@ presenterDetails:
     role: Founder, CEO
     headshot: /images/participant-headshots/headshot__Toby-Rush.jpeg
     linkedin: https://www.linkedin.com/in/tobiasrush/
-    topic: OpenClaw + Obsidian for deal triage and vigilant pipeline management.
+    topic: Everything funnels into one second brain — a personal automation stack where voice memos, links, files, messages, and meetings flow through OpenClaw into Obsidian, all self-hosted and secured.
   - name: Michael Staton
     firm: Lossless Group / FullStack VC
     role: Agent Conductor
@@ -52,11 +52,11 @@ This month's Agentic VC Dojo is themed **Dealflow into Second Brains** — getti
 
 Marcus and Toby return to give the demos they had queued up for earlier sessions but didn't get to present, then Michael closes with a ground-floor primer:
 
-- **Marcus Brotman (Launch)** — Intake forms + OpenClaw + Notion for better deal-pipeline insights.
-- **Toby Rush (Ideem)** — OpenClaw + Obsidian for deal triage and vigilant pipeline management.
+- **Marcus Brotman (Launch)** — Intake forms + OpenClaw → **Notion** for better deal-pipeline insight.
+- **Toby Rush (Ideem)** — *Everything funnels into one second brain.* A personal-automation stack where voice memos, links, files, and even WhatsApp/iMessage threads are captured automatically, synthesized by **OpenClaw** agents, and filed into **Obsidian** + a shared Drive — meeting notes via an open-source Granola, Telegram as the agent's command line, all self-hosted and secured (his own OpenClaw, plus one for each of his kids).
 - **Michael Staton (FullStack VC)** — Obsidian & Markdown Notebooks for Dummies. What a markdown second brain is and how to start one from zero.
 
-Two takes on the same problem — one routing into **Notion**, one into **Obsidian** — then a from-scratch primer to close, so you can see how the second-brain choice shapes the workflow whether you're already deep in or starting today.
+A clean arc: Marcus points the second-brain discipline straight at **dealflow**; Toby shows how far the same idea goes when you aim it at your **whole operation**; Michael shows how to **stand one up from scratch**. Toby's bringing more than fits in one slot — so **tell him which threads you most want to see** (the iOS capture shortcuts, the nightly WhatsApp/iMessage sweeps, the self-hosting + security setup, or the Tailscale / TMux plumbing) and he'll go deep on those.
 
 ## When
 
