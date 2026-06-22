@@ -418,6 +418,54 @@ const workingGroups = defineCollection({
   }).passthrough(),
 });
 
+// Two-perspective how-to engine (see context-v/specs/Two-Perspective-How-To-Docs-Engine-on-LFM.md).
+// Soft schemas — most fields optional + passthrough, never hard-fail on extra frontmatter.
+// Structure is intentionally provisional; settling as the first guides get authored.
+const useCases = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/use-cases' }),
+  schema: z.object({
+    title: z.string(),
+    lede: z.string().optional(),
+    perspective: z.string().optional(),       // "use-case"
+    problem: z.string().optional(),
+    difficulty: z.string().optional(),         // beginner | intermediate | advanced
+    maturity_ladder: z.array(z.string()).optional(),
+    tools: z.array(z.string()).optional(),     // tool registry handles this use-case touches
+    guides: z.array(z.string()).optional(),    // optional manual ordering/featuring; otherwise derived
+    order: z.number().optional(),
+    status: z.string().optional(),
+    publish: z.boolean().optional(),
+    date_created: z.coerce.date().optional(),
+    date_modified: z.coerce.date().optional(),
+    authors: z.array(z.string()).optional(),
+    augmented_with: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+  }).passthrough(),
+});
+
+const guides = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
+  schema: z.object({
+    title: z.string(),
+    lede: z.string().optional(),
+    kind: z.string().optional(),               // "how-to"
+    use_cases: z.array(z.string()).optional(), // relation → use-case slugs
+    tools: z.array(z.string()).optional(),     // relation → tool registry handles
+    prerequisites: z.array(z.string()).optional(),
+    estimated_minutes: z.number().optional(),
+    difficulty: z.string().optional(),
+    video: z.string().optional(),
+    order: z.number().optional(),
+    status: z.string().optional(),
+    publish: z.boolean().optional(),
+    date_created: z.coerce.date().optional(),
+    date_modified: z.coerce.date().optional(),
+    authors: z.array(z.string()).optional(),
+    augmented_with: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+  }).passthrough(),
+});
+
 export const collections = {
   pages,
   sessions,
@@ -428,4 +476,6 @@ export const collections = {
   workingGroups,
   tools,
   participants,
+  'use-cases': useCases,
+  guides,
 };
