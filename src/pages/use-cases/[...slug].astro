@@ -1,0 +1,58 @@
+---
+export const prerender = true;
+import { getCollection, type GetStaticPaths } from 'astro:content';
+import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
+import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection('use-cases');
+  return entries.map((entry) => ({
+    params: { slug: entry.id.replace(/\/index$/, '') },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const data = entry.data as any;
+
+const tools = await getCollection('tools');
+const toolUrls = Object.fromEntries(
+  tools.map((t) => [t.id.replace(/\/index$/, ''), (t.data as any).url])
+);
+
+const processor = createLfmProcessor().use(remarkLosslessWikilinks, {
+  resolver: makeDocsWikilinkResolver(toolUrls),
+});
+const mdast = processor.parse(entry.body ?? '');
+const tree = await processor.run(mdast);
+---
+
+<BaseThemeLayout
+  title={`${data.title} · Use-Case · FullStack VC`}
+  description={data.lede ?? data.title}
+  containerClass="px-6 py-12 max-w-3xl mx-auto"
+>
+  <article class="docs-article">
+    <header class="docs-head">
+      <p class="docs-eyebrow">
+        Use-Case{data.difficulty ? ` · ${data.difficulty}` : ''}
+        {data.status && data.status !== 'Published' ? ` · ${data.status}` : ''}
+      </p>
+      <h1 class="docs-title">{data.title}</h1>
+      {data.lede && <p class="docs-lede">{data.lede}</p>}
+    </header>
+
+    <div class="docs-body">
+      <AstroMarkdown node={tree} />
+    </div>
+  </article>
+</BaseThemeLayout>
+
+<style>
+  .docs-eyebrow { font-family: var(--font-code); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-muted); margin: 0 0 0.5rem; }
+  .docs-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.875rem, 4vw, 2.75rem); line-height: 1.1; color: var(--color-text); margin: 0 0 0.75rem; }
+  .docs-lede { font-size: 1.125rem; line-height: 1.6; color: var(--color-text-muted); margin: 0 0 2rem; }
+  .docs-body { line-height: 1.7; color: var(--color-text); }
+</style>
