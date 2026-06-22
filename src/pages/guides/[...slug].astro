@@ -19,12 +19,13 @@ const data = entry.data as any;
 
 // Build a handle → external-url map so [[tools/<handle>]] wikilinks resolve.
 const tools = await getCollection('tools');
+const toolHandles = new Set(tools.map((t) => t.id.replace(/\/index$/, '')));
 const toolUrls = Object.fromEntries(
   tools.map((t) => [t.id.replace(/\/index$/, ''), (t.data as any).url])
 );
 
 const processor = createLfmProcessor().use(remarkLosslessWikilinks, {
-  resolver: makeDocsWikilinkResolver(toolUrls),
+  resolver: makeDocsWikilinkResolver({ toolHandles, toolUrls }),
 });
 const mdast = processor.parse(entry.body ?? '');
 const tree = await processor.run(mdast as any);

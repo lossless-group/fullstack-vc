@@ -1,0 +1,157 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
+import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
+
+export async function getStaticPaths() {
+  const tools = await getCollection('tools');
+  return tools.map((tool) => ({
+    params: { handle: tool.id.replace(/\/index$/, '') },
+    props: { tool },
+  }));
+}
+
+const { tool } = Astro.props as { tool: any };
+const handle: string = tool.id.replace(/\/index$/, '');
+const data = tool.data as any;
+
+const name = data.site_name ?? data.title ?? handle;
+const tagline = data.zinger ?? data.description ?? '';
+const favicon = data.og_favicon ?? data.favicon;
+const officialUrl = data.url;
+
+// Cross-references — the "put it to work" loop.
+const allGuides = await getCollection('guides');
+const allUseCases = await getCollection('use-cases');
+const allTools = await getCollection('tools');
+const allParticipants = await getCollection('participants');
+
+const guidesUsing = allGuides.filter((g) => (g.data as any).tools?.includes(handle));
+const useCasesUsing = allUseCases.filter((u) => (u.data as any).tools?.includes(handle));
+
+const inStacks = allParticipants
+  .filter((p) => (p.data as any).publish)
+  .map((p) => {
+    const d = p.data as any;
+    const has = (arr: any[]) => (arr ?? []).some((e) => e.tool === handle);
+    let kind: string | null = null;
+    if (has(d.current_stack)) kind = 'using';
+    else if (has(d.aspirational_stack)) kind = 'aspiring';
+    return kind ? { handle: p.id, name: d.name ?? p.id, kind } : null;
+  })
+  .filter(Boolean) as { handle: string; name: string; kind: string }[];
+
+// Render the tool's own markdown body (wikilinks resolved, internal-first).
+const toolHandles = new Set(allTools.map((t) => t.id.replace(/\/index$/, '')));
+const toolUrls = Object.fromEntries(allTools.map((t) => [t.id.replace(/\/index$/, ''), (t.data as any).url]));
+const processor = createLfmProcessor().use(remarkLosslessWikilinks, {
+  resolver: makeDocsWikilinkResolver({ toolHandles, toolUrls }),
+});
+const tree = await processor.run(processor.parse(tool.body ?? '') as any);
+const hasBody = (tool.body ?? '').trim().length > 0;
+---
+
+<BaseThemeLayout
+  title={`${name} · Tools · FullStack VC`}
+  description={tagline || `${name} in the Agentic VC Dojo tool registry.`}
+  containerClass="px-6 py-12 max-w-3xl mx-auto"
+>
+  <a href="/stacks/see-all-tools" class="back-link">← All tools</a>
+
+  <article class="tool-detail">
+    <header class="tool-head">
+      <div class="tool-head__id">
+        {favicon && <img src={favicon} alt="" class="tool-head__favicon" width="40" height="40" loading="lazy" />}
+        <h1 class="tool-title">{name}</h1>
+      </div>
+      {tagline && <p class="tool-tagline">{tagline}</p>}
+
+      <div class="tool-meta">
+        {data.pricing && <span class="tool-chip">{data.pricing}</span>}
+        {data.oss === true && <span class="tool-chip">Open source</span>}
+        {Array.isArray(data.tags) && data.tags.map((t: string) => <span class="tool-chip tool-chip--tag">#{t}</span>)}
+      </div>
+
+      <div class="tool-links">
+        {officialUrl && <a href={officialUrl} target="_blank" rel="noopener noreferrer">Official site ↗</a>}
+        {data.docs_url && <a href={data.docs_url} target="_blank" rel="noopener noreferrer">Docs ↗</a>}
+        {data.github_repo_url && <a href={data.github_repo_url} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+      </div>
+    </header>
+
+    {hasBody && (
+      <div class="tool-body">
+        <AstroMarkdown node={tree} />
+      </div>
+    )}
+
+    {(guidesUsing.length > 0 || useCasesUsing.length > 0) && (
+      <section class="tool-work">
+        <h2>Put it to work</h2>
+        {guidesUsing.length > 0 && (
+          <div class="tool-work__group">
+            <h3>Guides</h3>
+            <ul>
+              {guidesUsing.map((g) => (
+                <li><a href={`/guides/${g.id.replace(/\/index$/, '')}`}>{(g.data as any).title}</a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {useCasesUsing.length > 0 && (
+          <div class="tool-work__group">
+            <h3>Use-cases</h3>
+            <ul>
+              {useCasesUsing.map((u) => (
+                <li><a href={`/use-cases/${u.id.replace(/\/index$/, '')}`}>{(u.data as any).title}</a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    )}
+
+    {inStacks.length > 0 && (
+      <section class="tool-work">
+        <h2>In the stacks of</h2>
+        <ul class="tool-stacks">
+          {inStacks.map((p) => (
+            <li>
+              <a href={`/people/${p.handle}`}>{p.name}</a>
+              <span class="tool-stacks__kind">{p.kind}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </article>
+</BaseThemeLayout>
+
+<style>
+  .back-link { display: inline-block; margin-bottom: 1.5rem; font-family: var(--font-code); font-size: 0.8125rem; color: var(--color-primary); text-decoration: none; }
+  .back-link:hover { text-decoration: underline; }
+  .tool-head__id { display: flex; align-items: center; gap: 0.875rem; }
+  .tool-head__favicon { border-radius: 0.5rem; }
+  .tool-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.875rem, 4vw, 2.75rem); line-height: 1.1; color: var(--color-text); margin: 0; }
+  .tool-tagline { font-size: 1.125rem; line-height: 1.6; color: var(--color-text-muted); margin: 0.75rem 0 1rem; }
+  .tool-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+  .tool-chip { font-family: var(--font-code); font-size: 0.75rem; padding: 0.1875rem 0.5rem; border-radius: 999px; border: 1px solid var(--color-border); color: var(--color-text-muted); }
+  .tool-chip--tag { color: var(--color-primary); }
+  .tool-links { display: flex; flex-wrap: wrap; gap: 1.25rem; font-family: var(--font-code); font-size: 0.875rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); }
+  .tool-links a { color: var(--color-primary); text-decoration: none; }
+  .tool-links a:hover { text-decoration: underline; }
+  .tool-body { line-height: 1.7; color: var(--color-text); margin: 1.5rem 0; }
+  .tool-work { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+  .tool-work h2 { font-family: var(--font-display); font-size: 1.375rem; color: var(--color-text); margin: 0 0 1rem; }
+  .tool-work__group h3 { font-family: var(--font-code); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-muted); margin: 1rem 0 0.5rem; }
+  .tool-work ul { margin: 0; padding-left: 1.25rem; }
+  .tool-work li { margin: 0.25rem 0; color: var(--color-text); }
+  .tool-work a { color: var(--color-primary); text-decoration: none; }
+  .tool-work a:hover { text-decoration: underline; }
+  .tool-stacks { list-style: none; padding: 0; }
+  .tool-stacks li { display: flex; align-items: baseline; gap: 0.625rem; }
+  .tool-stacks__kind { font-family: var(--font-code); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); }
+</style>

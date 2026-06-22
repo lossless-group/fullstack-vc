@@ -18,12 +18,13 @@ const { entry } = Astro.props as { entry: any };
 const data = entry.data as any;
 
 const tools = await getCollection('tools');
+const toolHandles = new Set(tools.map((t) => t.id.replace(/\/index$/, '')));
 const toolUrls = Object.fromEntries(
   tools.map((t) => [t.id.replace(/\/index$/, ''), (t.data as any).url])
 );
 
 const processor = createLfmProcessor().use(remarkLosslessWikilinks, {
-  resolver: makeDocsWikilinkResolver(toolUrls),
+  resolver: makeDocsWikilinkResolver({ toolHandles, toolUrls }),
 });
 const mdast = processor.parse(entry.body ?? '');
 const tree = await processor.run(mdast as any);
