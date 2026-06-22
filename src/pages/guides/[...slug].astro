@@ -1,20 +1,20 @@
 ---
 export const prerender = true;
-import { getCollection, type GetStaticPaths } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
 import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
 
-export const getStaticPaths = (async () => {
+export async function getStaticPaths() {
   const entries = await getCollection('guides');
   return entries.map((entry) => ({
     params: { slug: entry.id.replace(/\/index$/, '') },
     props: { entry },
   }));
-}) satisfies GetStaticPaths;
+}
 
-const { entry } = Astro.props;
+const { entry } = Astro.props as { entry: any };
 const data = entry.data as any;
 
 // Build a handle → external-url map so [[tools/<handle>]] wikilinks resolve.
@@ -27,7 +27,7 @@ const processor = createLfmProcessor().use(remarkLosslessWikilinks, {
   resolver: makeDocsWikilinkResolver(toolUrls),
 });
 const mdast = processor.parse(entry.body ?? '');
-const tree = await processor.run(mdast);
+const tree = await processor.run(mdast as any);
 
 const firstUseCase = data.use_cases?.[0];
 ---
