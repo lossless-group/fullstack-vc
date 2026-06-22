@@ -69,6 +69,8 @@ aspirational_stack:
   - tool: firecrawl
     intent: "Attempt to use for web scraping and content extraction."
   - tool: agent37
+  - tool: composio
+    intent: "Wire agents into the VC stack — Affinity, Notion, Drive — with managed auth instead of hand-rolling each integration."
 abandoned_stack:
   - tool: cursor
     abandoned: 2026-03-15
