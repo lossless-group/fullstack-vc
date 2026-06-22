@@ -10,7 +10,9 @@ headshot: /images/participant-headshots/headshot__Abhinaya-Konduru.jpeg
 publish: true
 joined_dojo: 2026-04-29
 current_stack: []
-aspirational_stack: []
+aspirational_stack:
+  - tool: granola
+    intent: "Open-sourced Granola workflows — capture and synthesize meeting notes without a closed SaaS holding the data."
 abandoned_stack: []
 ---
 
