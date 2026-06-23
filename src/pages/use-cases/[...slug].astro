@@ -5,6 +5,7 @@ import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
 import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
+import '../../styles/docs-prose.css';
 
 export async function getStaticPaths() {
   const entries = await getCollection('use-cases');
@@ -45,7 +46,7 @@ const tree = await processor.run(mdast as any);
       {data.lede && <p class="docs-lede">{data.lede}</p>}
     </header>
 
-    <div class="docs-body">
+    <div class="docs-prose">
       <AstroMarkdown node={tree} />
     </div>
   </article>
@@ -55,5 +56,4 @@ const tree = await processor.run(mdast as any);
   .docs-eyebrow { font-family: var(--font-code); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-muted); margin: 0 0 0.5rem; }
   .docs-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.875rem, 4vw, 2.75rem); line-height: 1.1; color: var(--color-text); margin: 0 0 0.75rem; }
   .docs-lede { font-size: 1.125rem; line-height: 1.6; color: var(--color-text-muted); margin: 0 0 2rem; }
-  .docs-body { line-height: 1.7; color: var(--color-text); }
 </style>

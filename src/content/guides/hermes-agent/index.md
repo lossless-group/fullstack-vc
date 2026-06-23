@@ -28,8 +28,6 @@ tags:
   - Nous-Research
 ---
 
-# Put Hermes Agent on Your Dealflow
-
 > [!info] Two doors, one room
 > You can read this as a **use-case** ([[use-cases/automate-dealflow/index|Automate Dealflow]]) or as a **tool** ([[tools/hermes-agent|Hermes Agent]]). Same guide, surfaced from both.
 

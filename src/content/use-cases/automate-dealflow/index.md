@@ -29,8 +29,6 @@ tags:
   - Automation
 ---
 
-# Automate Dealflow
-
 ## The problem, in one breath
 
 A deal shows up — a forwarded email, a warm intro, a deck dropped in Slack, a note you scribbled after a call. Multiply that by everything you see in a week, and the front of your funnel becomes an unsearchable pile. The good ones get a reply; the rest evaporate. You *are* the integration layer between "an opportunity arrived" and "it's in the pipeline," and that's exactly the job an agent should take off your plate.

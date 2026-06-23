@@ -1,0 +1,93 @@
+/* Shared prose styling for the two-perspective how-to engine (use-cases,
+   guides, tools). Articulates LFM / AstroMarkdown output — headings, lists,
+   blockquotes, tables — which Tailwind's preflight otherwise strips bare.
+   Mirrors the treatment in components/markdown/MarkdownReader.astro so docs
+   pages read like the rest of the site's long-form content.
+
+   This is a global stylesheet (imported, not Astro-scoped), so plain
+   `.docs-prose h2` selectors reach the rendered children regardless of the
+   AstroMarkdown component's scope attribute. Callouts keep their own styling
+   from callout.css — these rules cover the plain-markdown nodes. */
+
+.docs-prose {
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.docs-prose h1,
+.docs-prose h2,
+.docs-prose h3,
+.docs-prose h4 {
+  font-family: var(--font-display);
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+  scroll-margin-top: 5rem;
+}
+.docs-prose h1 { font-size: 2rem;     font-weight: 700; line-height: 1.15; margin: 2.5rem 0 0.75rem; }
+.docs-prose h2 { font-size: 1.5rem;   font-weight: 700; margin: 2.5rem 0 0.75rem; }
+.docs-prose h3 { font-size: 1.1875rem; font-weight: 600; margin: 1.75rem 0 0.5rem; }
+.docs-prose h4 { font-size: 1.0625rem; font-weight: 600; margin: 1.5rem 0 0.4rem; }
+.docs-prose > :first-child { margin-top: 0; }
+
+.docs-prose p { margin: 0 0 1.125rem; }
+
+.docs-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+.docs-prose a:hover { text-decoration-thickness: 2px; }
+
+.docs-prose ul,
+.docs-prose ol { margin: 0 0 1.25rem; padding-left: 1.5rem; }
+.docs-prose ul { list-style: disc; }
+.docs-prose ol { list-style: decimal; }
+.docs-prose li { margin-bottom: 0.4rem; }
+.docs-prose li > ul,
+.docs-prose li > ol { margin: 0.4rem 0 0; }
+
+.docs-prose strong { color: var(--color-text); font-weight: 700; }
+.docs-prose em { font-style: italic; }
+
+.docs-prose code {
+  font-family: var(--font-code);
+  font-size: 0.92em;
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+}
+
+.docs-prose blockquote {
+  margin: 1.5rem 0;
+  padding: 0.875rem 1.125rem;
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.docs-prose blockquote p:last-child { margin-bottom: 0; }
+
+.docs-prose hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+
+.docs-prose img { max-width: 100%; height: auto; border-radius: 0.5rem; }
+
+.docs-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.95em;
+}
+.docs-prose th,
+.docs-prose td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.docs-prose th { background: var(--color-surface); font-weight: 700; }
