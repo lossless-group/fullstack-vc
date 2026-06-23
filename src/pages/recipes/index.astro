@@ -1,0 +1,126 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+
+const useCases = await getCollection('use-cases');
+const guides = await getCollection('guides');
+
+function card(entry: any, base: string) {
+  const d = entry.data as any;
+  const slug = entry.id.replace(/\/index$/, '');
+  const isDraft = d.publish === false || (d.status && d.status !== 'Published');
+  return {
+    href: `/${base}/${slug}`,
+    title: d.title ?? slug,
+    lede: d.lede ?? '',
+    isDraft,
+    meta: [d.difficulty, d.estimated_minutes ? `${d.estimated_minutes} min` : null].filter(Boolean),
+    tools: d.tools ?? [],
+    useCases: d.use_cases ?? [],
+  };
+}
+
+const order = (a: any, b: any) => (a.data.order ?? 999) - (b.data.order ?? 999) || String(a.data.title).localeCompare(String(b.data.title));
+const useCaseCards = [...useCases].sort(order).map((e) => card(e, 'use-cases'));
+const guideCards = [...guides].sort(order).map((e) => card(e, 'guides'));
+---
+
+<BaseThemeLayout
+  title="Recipes · FullStack VC"
+  description="How-to content for the Agentic VC Dojo — entered two ways: by the problem you're solving (use-cases) or the guide you want to follow."
+  containerClass="px-6 py-12 max-w-5xl mx-auto"
+>
+  <header class="recipes-hero">
+    <p class="recipes-eyebrow">Two doors, one room</p>
+    <h1 class="recipes-title">Recipes</h1>
+    <p class="recipes-lede">
+      Practical how-to content for putting AI to work in a VC firm. Enter by the
+      <strong>problem you're solving</strong> (a use-case) or by the
+      <strong>guide you want to follow</strong> — they cross-link, so you can step
+      between them.
+    </p>
+  </header>
+
+  <section class="recipes-group" aria-labelledby="uc-heading">
+    <div class="recipes-group__head">
+      <h2 id="uc-heading">Use-Cases</h2>
+      <p>Start from the problem. <em>"Automate dealflow." "Accelerate memo drafts."</em></p>
+    </div>
+    {useCaseCards.length === 0 ? (
+      <p class="recipes-empty">No use-cases yet.</p>
+    ) : (
+      <ul class="recipes-grid" role="list">
+        {useCaseCards.map((c) => (
+          <li>
+            <a href={c.href} class="recipe-card">
+              <div class="recipe-card__top">
+                <span class="recipe-card__kind">Use-Case</span>
+                {c.isDraft && <span class="recipe-card__draft">Draft</span>}
+              </div>
+              <h3 class="recipe-card__title">{c.title}</h3>
+              {c.lede && <p class="recipe-card__lede">{c.lede}</p>}
+              {c.tools.length > 0 && <p class="recipe-card__tools">tools: {c.tools.join(' · ')}</p>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  <section class="recipes-group" aria-labelledby="g-heading">
+    <div class="recipes-group__head">
+      <h2 id="g-heading">Guides</h2>
+      <p>Follow the steps. Each guide uses a specific tool toward a use-case.</p>
+    </div>
+    {guideCards.length === 0 ? (
+      <p class="recipes-empty">No guides yet.</p>
+    ) : (
+      <ul class="recipes-grid" role="list">
+        {guideCards.map((c) => (
+          <li>
+            <a href={c.href} class="recipe-card">
+              <div class="recipe-card__top">
+                <span class="recipe-card__kind">Guide</span>
+                {c.isDraft && <span class="recipe-card__draft">Draft</span>}
+              </div>
+              <h3 class="recipe-card__title">{c.title}</h3>
+              {c.lede && <p class="recipe-card__lede">{c.lede}</p>}
+              <p class="recipe-card__meta">
+                {c.tools.length > 0 && <span>tools: {c.tools.join(' · ')}</span>}
+                {c.meta.length > 0 && <span>{c.meta.join(' · ')}</span>}
+              </p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</BaseThemeLayout>
+
+<style>
+  .recipes-hero { margin-bottom: 2.5rem; max-width: 60ch; }
+  .recipes-eyebrow { font-family: var(--font-code); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-muted); margin: 0 0 0.625rem; }
+  .recipes-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.05; color: var(--color-text); margin: 0 0 0.875rem; }
+  .recipes-lede { font-size: 1.0625rem; line-height: 1.6; color: var(--color-text-muted); margin: 0; }
+
+  .recipes-group { margin-top: 2.5rem; }
+  .recipes-group__head { margin-bottom: 1.25rem; }
+  .recipes-group__head h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--color-text); margin: 0 0 0.25rem; }
+  .recipes-group__head p { font-family: var(--font-code); font-size: 0.8125rem; color: var(--color-text-muted); margin: 0; }
+  .recipes-group__head em { font-style: italic; }
+  .recipes-empty { color: var(--color-text-muted); font-style: italic; }
+
+  .recipes-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .recipes-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .recipes-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .recipe-card { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; padding: 1.25rem; border-radius: 0.875rem; background: var(--fx-card-bg); border: 1px solid var(--fx-card-border, var(--color-border)); box-shadow: var(--fx-card-shadow); text-decoration: none; color: inherit; transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease; }
+  .recipe-card:hover { border-color: var(--color-accent); box-shadow: var(--fx-card-shadow-hover); transform: translateY(-2px); }
+  .recipe-card__top { display: flex; align-items: center; justify-content: space-between; }
+  .recipe-card__kind { font-family: var(--font-code); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); }
+  .recipe-card__draft { font-family: var(--font-code); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); border: 1px solid var(--color-border); border-radius: 999px; padding: 0.0625rem 0.4375rem; }
+  .recipe-card__title { font-family: var(--font-display); font-size: 1.125rem; font-weight: 700; color: var(--color-text); margin: 0; }
+  .recipe-card__lede { font-size: 0.9375rem; line-height: 1.5; color: var(--color-text-muted); margin: 0; }
+  .recipe-card__tools, .recipe-card__meta { font-family: var(--font-code); font-size: 0.75rem; color: var(--color-text-muted); margin: auto 0 0; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+</style>
