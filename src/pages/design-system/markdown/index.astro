@@ -22,10 +22,10 @@ const components = [
   },
   {
     name: 'CodeBlock',
-    purpose: 'Fenced-code renderer with Shiki syntax highlighting. Receives a `code` MDAST node (lang + value). Used for inline code samples in long-form content.',
+    purpose: 'Fenced-code renderer with Shiki syntax highlighting. Receives a `code` MDAST node (lang + value). Used for inline code samples in long-form content. Includes a copy-to-clipboard button (top-right chrome, next to the language label) with a select-text fallback when the Clipboard API is unavailable.',
     cssContract: '--color-surface, --color-border, --font-code',
     href: null,
-    note: 'Demo TBD.',
+    note: 'Copy button added 2026-07-29 for the Recipes guides. Demo TBD.',
     canonical: 'packages/lfm-astro/components/CodeBlock.astro',
   },
   {

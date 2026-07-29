@@ -11,9 +11,38 @@ const langLabel = language ? language.toUpperCase() : undefined;
 ---
 
 <div class="ak-codeblock-wrap">
-  {langLabel && <div class="ak-codeblock-lang">{langLabel}</div>}
+  <div class="ak-codeblock-chrome">
+    {langLabel && <span class="ak-codeblock-lang">{langLabel}</span>}
+    <button class="ak-codeblock-copy" type="button" aria-label="Copy code to clipboard" data-copy-btn>
+      Copy
+    </button>
+  </div>
   <pre class="ak-codeblock"><code>{code}</code></pre>
 </div>
+
+<script>
+  // One delegated listener for every code block on the page.
+  document.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement)?.closest?.('[data-copy-btn]') as HTMLButtonElement | null;
+    if (!btn) return;
+    const code = btn.closest('.ak-codeblock-wrap')?.querySelector('pre code')?.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(code);
+      btn.textContent = 'Copied ✓';
+    } catch {
+      btn.textContent = 'Press ⌘C';
+      const sel = window.getSelection();
+      const range = document.createRange();
+      const codeEl = btn.closest('.ak-codeblock-wrap')?.querySelector('pre code');
+      if (codeEl && sel) {
+        range.selectNodeContents(codeEl);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+</script>
 
 <style>
   .ak-codeblock-wrap {
@@ -24,16 +53,42 @@ const langLabel = language ? language.toUpperCase() : undefined;
     overflow: hidden;
   }
 
-  .ak-codeblock-lang {
+  .ak-codeblock-chrome {
     position: absolute;
     top: 0.5rem;
     right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    z-index: 1;
+  }
+
+  .ak-codeblock-lang {
     font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #64748b;
     pointer-events: none;
+  }
+
+  .ak-codeblock-copy {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 0.3125rem;
+    padding: 0.1875rem 0.5rem;
+    cursor: pointer;
+    transition: color 120ms ease, background 120ms ease;
+  }
+  .ak-codeblock-copy:hover {
+    color: #e2e8f0;
+    background: rgba(148, 163, 184, 0.22);
   }
 
   .ak-codeblock {

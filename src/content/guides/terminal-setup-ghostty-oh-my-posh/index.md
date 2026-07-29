@@ -28,6 +28,13 @@ tags:
   - Getting-Started
 ---
 
+> [!tip] Skip doing the setup yourself
+> Install [[tools/claude-code|Claude Code]] (`brew install --cask claude-code`), open it in your terminal with `claude`, and paste it the link below. After you log in and grant permissions, Claude will do all of this setup *for* you — it reads this article, writes the configs, and installs the tools while you watch.
+
+```text
+Please read https://fullstack-vc.com/guides/terminal-setup-ghostty-oh-my-posh and set up my terminal exactly as it describes: install Ghostty and Oh My Posh via Homebrew, write the Ghostty config, save the my-tokyo theme from the article, and wire it into my ~/.zshrc. Then offer me the optional Step 5 tools one at a time. Ask before overwriting anything that already exists.
+```
+
 > [!info] Why a VC needs a terminal at all
 > Because the most capable agent you can hire right now — [[tools/claude-code|Claude Code]] — lives there. The terminal is its native habitat: it can traverse your folders, read your files, and do real work on your machine. If the black window has kept you on the sidelines, this guide is the on-ramp. Companion read: [[guides/claude-desktop-vs-claude-code/index|Orientation: Claude Desktop vs Claude Code]].
 

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title><!-- SLOT: session — group name --></title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  /* FullStack VC brand — values per references/DESIGN.md (dark mode) */
+  :root {
+    --bg: #0b0d12;            /* obsidian */
+    --surface: #11141c;       /* graphite-950 */
+    --border: #1c2030;        /* graphite-800 */
+    --text: #f6f3ec;          /* bone */
+    --muted: #6b7390;         /* graphite-400 */
+    --primary: #7c5cff;       /* violet-electric */
+    --secondary: #5cf2ff;     /* cyan-vapor */
+    --accent: #b6ff5c;        /* lime-terminal */
+    --flare: #ffb84d;         /* amber-flare */
+    --display: "Space Grotesk", sans-serif;
+    --body: "Inter", sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 52rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    margin: 0 0 0.75rem;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1.1;
+    margin: 0 0 0.75rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin: 0 0 2rem;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 3rem; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    text-decoration: none;
+  }
+  a.chip:hover { border-color: var(--primary); }
+
+  .person {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+    padding: 1rem 1.25rem;
+    margin: 0 0 0.75rem;
+  }
+  .person h3 {
+    font-family: var(--display);
+    font-size: 1.0625rem;
+    margin: 0 0 0.25rem;
+  }
+  .person h3 a { color: var(--text); text-decoration: none; }
+  .person h3 a:hover { color: var(--primary); }
+  .person .throughline { color: var(--muted); font-size: 0.875rem; font-style: italic; margin: 0 0 0.5rem; }
+  .person ul { margin: 0; padding-left: 1.125rem; font-size: 0.9375rem; }
+  .person li { margin: 0.25rem 0; }
+
+  .dialog-note {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 0 0 1rem;
+  }
+  .turn { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; padding: 0.625rem 0; border-bottom: 1px solid var(--border); }
+  .turn:last-child { border-bottom: none; }
+  .turn .who {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--secondary);
+    text-align: right;
+    padding-top: 0.125rem;
+  }
+  .turn p { margin: 0; font-size: 0.9375rem; }
+  .turn--bridge .who { color: var(--muted); font-weight: 400; }
+  .turn--bridge p { color: var(--muted); font-style: italic; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 3rem 0 0.375rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .theme-synthesis {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    margin: 0 0 1.25rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+    padding: 1rem 1.25rem;
+    margin: 0 0 0.75rem;
+  }
+  .card--starred { border-left: 3px solid var(--accent); }
+  .card--action  { border-left: 3px solid var(--flare); }
+  .speaker {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--secondary);
+    margin: 0 0 0.375rem;
+  }
+  .card p { margin: 0; font-size: 0.9375rem; }
+  .card a, .mention-card a { color: var(--primary); text-decoration: none; }
+  .card a:hover, .mention-card a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+
+  .mention-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+    padding: 0.875rem 1.25rem;
+    margin: 0 0 0.625rem;
+  }
+  .mention-card .who {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--muted);
+    align-self: center;
+  }
+  .mention-card .ctx { grid-column: 1 / -1; font-size: 0.875rem; color: var(--muted); margin: 0; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow"><!-- SLOT: eyebrow — e.g. "Agentic VC Dojo · Breakout · 2026-07-29" --></p>
+    <h1><!-- SLOT: title — e.g. "Group 3 — Set the Agenda" --></h1>
+    <p class="meta"><!-- SLOT: meta — session name · N participants · duration --></p>
+    <div class="chips">
+      <!-- SLOT: one chip per participant. With LinkedIn:
+           <a class="chip" href="https://www.linkedin.com/in/...">Jess · Initiate ↗</a>
+           Without: <span class="chip">Jess · Initiate</span> -->
+    </div>
+  </header>
+
+  <!-- SLOT: repeat this block per theme -->
+  <section>
+    <h2><!-- theme title, in the group's own vocabulary --></h2>
+    <p class="theme-synthesis"><!-- one-sentence synthesis of the theme --></p>
+    <article class="card">
+      <p class="speaker"><!-- speaker name --></p>
+      <p><!-- cleaned highlight; entity mentions hyperlinked inline --></p>
+    </article>
+    <article class="card card--starred">
+      <p class="speaker"><!-- speaker --> · ★</p>
+      <p><!-- starred highlight --></p>
+    </article>
+  </section>
+  <!-- /SLOT theme -->
+
+  <section>
+    <h2>Themes by participant</h2>
+    <!-- SLOT: repeat per participant -->
+    <article class="person">
+      <h3><a href="<!-- linkedin url, or drop the <a> if none -->"><!-- name · firm --></a></h3>
+      <p class="throughline"><!-- their through-line: what they kept coming back to --></p>
+      <ul>
+        <li><!-- strongest contribution 1 --></li>
+        <li><!-- strongest contribution 2 --></li>
+      </ul>
+    </article>
+    <!-- /SLOT participant -->
+  </section>
+
+  <section>
+    <h2>Action items</h2>
+    <article class="card card--action">
+      <p class="speaker"><!-- owner --></p>
+      <p><!-- action item --></p>
+    </article>
+  </section>
+
+  <section>
+    <h2>The session, reconstructed</h2>
+    <p class="dialog-note">Reconstructed from notes — not a transcript</p>
+    <!-- SLOT: repeat per turn -->
+    <div class="turn">
+      <span class="who"><!-- speaker --></span>
+      <p><!-- expanded fragment in the speaker's own register --></p>
+    </div>
+    <div class="turn turn--bridge">
+      <span class="who">—</span>
+      <p><!-- connective tissue, e.g. "The group circled back to pricing." --></p>
+    </div>
+    <!-- /SLOT turn -->
+  </section>
+
+  <section>
+    <h2>Mentioned &amp; linked</h2>
+    <div class="mention-card">
+      <a href="<!-- url -->"><!-- entity name --></a>
+      <span class="who"><!-- raised by --></span>
+      <p class="ctx"><!-- one-line context --></p>
+    </div>
+  </section>
+
+  <footer>
+    <span><!-- SLOT: session · group --></span>
+    <span>captured with create-html-breakout-highlights · fullstack-vc.com</span>
+  </footer>
+
+</div>
+</body>
+</html>
