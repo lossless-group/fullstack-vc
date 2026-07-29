@@ -266,6 +266,39 @@ const CHECKUP = [
     </p>
   </section>
 
+  {/* ─────────────────────────────────────────────────────────── 10b breakout echoes */}
+  {(() => {
+    const echo = snapshotById.get("poll_2026-07-29_breakout-echoes");
+    return (
+      <section class="slide slide--poll">
+        <p class="slide-eyebrow" data-reveal>Back from the breakouts · one last question</p>
+        <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+          What was the most <span class="accent">mindblowing</span> thing you heard in there?
+        </h2>
+        <p class="slide-subhead slide-subhead--tight" data-reveal style="--delay: 140ms;">
+          And who did you hear it from? Credit them by name — this is how presenters get discovered.
+        </p>
+        <div class="poll-stage" data-reveal style="--delay: 220ms;">
+          {echo ? (
+            <PollEmbed
+              client:load
+              pollId={echo.poll_id}
+              initialState={echo}
+              isAuthenticated={isAuthenticated}
+              displayName={displayName}
+              variant="present"
+            />
+          ) : (
+            <div class="poll-placeholder">
+              <p>Poll goes live after the breakouts.</p>
+              <p class="poll-placeholder__hint">host: pnpm exec node --env-file=.env scripts/db-execute.mjs scripts/add-breakout-echoes-poll.ts --remote</p>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  })()}
+
   {/* ─────────────────────────────────────────────────────────────── 11 close */}
   <section class="slide slide--close">
     <p class="slide-eyebrow" data-reveal>Thanks for being in the room</p>
