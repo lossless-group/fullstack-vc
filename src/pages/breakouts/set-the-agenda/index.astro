@@ -1,0 +1,337 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import { SET_THE_AGENDA } from '../../../data/breakouts/set-the-agenda';
+
+const { title, lede, framing, entryState, groupMechanics, arc, questions, artifactFields } =
+  SET_THE_AGENDA;
+---
+
+<BaseThemeLayout
+  title={`${title} · Breakouts · FullStack VC`}
+  description={lede}
+  noindex={true}
+  containerClass="px-6 py-12 max-w-5xl mx-auto"
+>
+  <header class="page-header">
+    <p class="eyebrow">Agentic VC Dojo · 2026-07-29</p>
+    <h1 class="page-title">{title}</h1>
+    <p class="page-lede">{lede}</p>
+  </header>
+
+  <section class="block">
+    <h2 class="block-title">The frame</h2>
+    <p class="entry-state">{entryState}</p>
+    <p class="framing">{framing}</p>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">The arc so far</h2>
+    <div class="arc-grid">
+      {arc.map((session) => (
+        <a class="arc-card" href={session.href}>
+          <div class="arc-card-eyebrow">{session.shortName}</div>
+          <div class="arc-card-title">{session.title}</div>
+          <div class="arc-card-gist">{session.gist}</div>
+          <div class="arc-card-cta">Revisit →</div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">How the groups run</h2>
+    <p class="mechanics">{groupMechanics}</p>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">Five questions, every group</h2>
+    <ol class="questions">
+      {questions.map((q) => (
+        <li class={`question ${q.n === 5 ? 'question--closer' : ''}`}>
+          <div class="question-n">Q{q.n}</div>
+          <div class="question-body">
+            <p class="question-prompt">{q.prompt}</p>
+            <p class="question-lens">{q.lens}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title">What each group brings back</h2>
+    <p class="artifact-intro">
+      Same one-pager in every group. The scribe fills it in the last 90 seconds. Same shape across
+      groups is what lets us stack the report-backs into an actual agenda instead of a vibe.
+    </p>
+    <div class="artifact-card">
+      {artifactFields.map((field) => (
+        <div class="artifact-field">
+          <div class="artifact-label">{field.label}</div>
+          <div class="artifact-placeholder">{field.placeholder}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="block block--script">
+    <h2 class="block-title">Host script — turning report-backs into the agenda</h2>
+    <p class="script-intro">
+      Spoken after the last group reports back. The goal is to leave the room with a ranked list,
+      named presenters, and a date — not a summary.
+    </p>
+
+    <div class="script">
+      <p class="script-stage">[After the last group's report-back, audience settled]</p>
+
+      <p>
+        Every group just pitched at least one session and named at least one person who could lead
+        something. That's the raw material. Now we rank it.
+      </p>
+
+      <p>
+        I'm putting the proposed sessions in front of you as a poll — vote for the two you'd show
+        up to without thinking twice.
+      </p>
+
+      <p class="script-stage">[Open poll — multiple choice, pick 2, options read from the one-pagers]</p>
+
+      <p class="script-stage">[Results display]</p>
+
+      <p>
+        The top two are the next two sessions. The people your groups named as presenters — you'll
+        hear from us within 48 hours with a slot and a co-presenter, not a blank page.
+      </p>
+
+      <p>
+        The shared blockers you surfaced don't wait for a monthly session. Anything that's a
+        setup problem rather than a topic becomes a setupathon or a working-group thread — watch
+        for it on the async surface this week.
+      </p>
+
+      <p>
+        Next all-hands is the last Wednesday in August — August 26. You just wrote its agenda.
+        See you there.
+      </p>
+    </div>
+  </section>
+</BaseThemeLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 1rem;
+    line-height: 1.1;
+  }
+  .page-lede {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    max-width: 40rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .block {
+    margin-bottom: 3rem;
+    max-width: 48rem;
+  }
+  .block--script {
+    max-width: 44rem;
+  }
+  .block-title {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .entry-state {
+    font-size: 1.0625rem;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+  }
+  .framing {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .mechanics {
+    font-size: 1rem;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .arc-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .arc-grid {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+  .arc-card {
+    display: block;
+    padding: 1.5rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .arc-card,
+  .arc-card * {
+    text-decoration: none;
+  }
+  .arc-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+  .arc-card-eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+  }
+  .arc-card-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+  .arc-card-gist {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+  }
+  .arc-card-cta {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .questions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .question {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+  }
+  .question--closer {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 6%, var(--fx-card-bg));
+  }
+  .question-n {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+  .question-prompt {
+    font-size: 1rem;
+    color: var(--color-text);
+    margin: 0 0 0.5rem;
+  }
+  .question-lens {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .artifact-intro {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+  }
+  .artifact-card {
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .artifact-field {
+    border-left: 2px solid var(--color-primary);
+    padding-left: 0.875rem;
+  }
+  .artifact-label {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+  .artifact-placeholder {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .script-intro {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1.5rem;
+  }
+  .script {
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.75rem 2rem;
+    line-height: 1.6;
+  }
+  .script p {
+    margin: 0 0 1rem;
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+  .script-stage {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>

@@ -1,0 +1,448 @@
+---
+// SSR — NOT prerendered. This deck embeds live polls, so it needs per-request
+// access to the OAuth cookie (auth state for voting) and the latest Poll +
+// PollResult rows from Astro DB, exactly like /sessions/[id]. The /slides
+// index still discovers it via the exported `presentation` const.
+
+// Surfaces the deck on /slides via the index page's auto-discovery.
+export const presentation = {
+  title: "Monthly All-Hands · July 29, 2026 · The Checkup",
+  description: "Three months in — a checkup. Five describe-it-yourself live polls (embedded right in the deck), then random breakouts co-author the dojo's next arc.",
+  date: "2026-07-29",
+  author: "Michael Staton · the whole room",
+  tags: ["All-Hands", "Agentic-VC-Dojo", "Checkup", "Today"],
+  featured: true,
+};
+
+import { db, Session as DbSession, Poll as DbPoll, PollResult as DbPollResult, eq } from "astro:db";
+import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
+import PollEmbed from "../../../components/polls/PollEmbed.svelte";
+import { verifySession, SESSION_COOKIE_NAME } from "../../../lib/session";
+import { matchesRoster } from "../../../lib/oauth-roster";
+import type { PollSnapshot, PollTemplate } from "../../../lib/poll-templates";
+
+const TITLE = "Monthly All-Hands · July 29, 2026 · Agentic VC Dojo";
+const DESCRIPTION = "The Checkup — the room describes its wins, intrigue, rabbit holes, and time eaters live, then writes the dojo's next agenda in breakouts.";
+
+const SESSION_SLUG = "2026-07-29_monthly-all-hands";
+
+// ── Auth state (session cookie + roster check) — needed for in-slide voting ─
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+const rosterEntry = session ? matchesRoster(session) : null;
+const isAuthenticated = !!session && !!rosterEntry;
+const displayName = rosterEntry?.name ?? session?.name ?? null;
+
+// ── Fetch poll snapshots for this session (mirror of /sessions/[id]) ───────
+const dbSession = await db.select().from(DbSession).where(eq(DbSession.slug, SESSION_SLUG)).get();
+
+const snapshotById = new Map<string, PollSnapshot>();
+if (dbSession) {
+  const polls = await db.select().from(DbPoll).where(eq(DbPoll.session_id, dbSession.id)).all();
+  const results = await Promise.all(
+    polls.map(p => db.select().from(DbPollResult).where(eq(DbPollResult.poll_id, p.id)).get())
+  );
+  polls.forEach((poll, i) => {
+    const result = results[i] ?? null;
+    const isMultiStringInput = poll.template === "multi-string-input";
+    const resultsHidden = !isMultiStringInput && (
+      poll.results_visibility === "host-only" ||
+      (poll.results_visibility === "on-close" && poll.status !== "closed")
+    );
+
+    let tallies: unknown | null = resultsHidden ? null : (result?.tallies ?? null);
+    let totalVotesVisible = !resultsHidden;
+
+    // multi-string-input split visibility (blueprint v2 §16.2): counts always
+    // public, entry content gated by results_visibility. Mirror the results
+    // endpoint so the SSR snapshot matches the next interval-poll fetch.
+    if (isMultiStringInput) {
+      const t = (result?.tallies as {
+        total_strings?: number;
+        total_contributors?: number;
+        entries?: unknown;
+      } | null) ?? {};
+      const contentVisible =
+        poll.results_visibility === "live" ||
+        (poll.results_visibility === "on-close" && poll.status === "closed");
+      tallies = {
+        total_strings: t.total_strings ?? 0,
+        total_contributors: t.total_contributors ?? 0,
+        entries: contentVisible ? (t.entries ?? []) : null,
+      };
+      totalVotesVisible = true;
+    }
+
+    snapshotById.set(poll.id, {
+      poll_id: poll.id,
+      title: poll.title,
+      prompt: poll.prompt,
+      template: poll.template as PollTemplate,
+      options: (poll.options ?? null) as any,
+      allow_revote: !!poll.allow_revote,
+      results_visibility: poll.results_visibility as "live" | "on-close" | "host-only",
+      anonymous_display: !!poll.anonymous_display,
+      status: poll.status as "draft" | "scheduled" | "open" | "closed",
+      total_votes: result?.total_votes ?? 0,
+      total_votes_visible: totalVotesVisible,
+      tallies,
+      last_aggregated_at: result?.last_aggregated_at
+        ? new Date(result.last_aggregated_at).toISOString()
+        : null,
+    });
+  });
+}
+
+// The checkup arc, in running order. Each entry becomes one poll slide; the
+// snapshot is looked up by poll id so a not-yet-seeded DB degrades gracefully
+// to a "polls go live at session start" placeholder instead of breaking.
+const CHECKUP = [
+  {
+    pollId: "poll_2026-07-29_recent-wins",
+    n: 1,
+    eyebrow: "Checkup · Q1 of 5 · Wins",
+    headlinePre: "What's actually ",
+    headlineAccent: "working",
+    headlinePost: "?",
+    sub: "Recent wins, improved workflows, adoption traction with your team. Brag a little — someone else needs exactly what you figured out.",
+  },
+  {
+    pollId: "poll_2026-07-29_recent-intrigue",
+    n: 2,
+    eyebrow: "Checkup · Q2 of 5 · Intrigue",
+    headlinePre: "What's on your ",
+    headlineAccent: "check-out-soon",
+    headlinePost: " list?",
+    sub: "Recent intrigue, aspirational tools, the thing you've been imagining improving but haven't touched yet.",
+  },
+  {
+    pollId: "poll_2026-07-29_rabbit-holes",
+    n: 3,
+    eyebrow: "Checkup · Q3 of 5 · Rabbit holes",
+    headlinePre: "Where did the ",
+    headlineAccent: "time go",
+    headlinePost: "?",
+    sub: "Rabbit holes, yak shaving, dead-ends. No shame — the dead-ends are the dojo's best teaching material.",
+  },
+  {
+    pollId: "poll_2026-07-29_time-eater",
+    n: 4,
+    eyebrow: "Checkup · Q4 of 5 · The time eater",
+    headlinePre: "What eats your time that ",
+    headlineAccent: "agents should take",
+    headlinePost: "?",
+    sub: "One answer — the single biggest time eater you're hoping AI / agents can assist with.",
+  },
+  {
+    pollId: "poll_2026-07-29_breakthrough",
+    n: 5,
+    eyebrow: "Checkup · Q5 of 5 · The breakthrough",
+    headlinePre: "What would be a breakthrough — if you ",
+    headlineAccent: "ever got to it",
+    headlinePost: "?",
+    sub: "The thing you never get around to, but an Agentic Associate doing it would change your practice. One answer.",
+  },
+];
+---
+
+<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
+
+  {/* ─────────────────────────────────────────────────────────────── 01 cover */}
+  <section class="slide slide--cover">
+    <p class="slide-eyebrow" data-reveal>Agentic VC Dojo · Monthly All-Hands</p>
+    <h1 class="slide-headline" data-reveal style="--delay: 80ms;">
+      The Checkup
+    </h1>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Wednesday · July 29, 2026 · 9:00 AM PT
+    </p>
+    <div class="cover-presenters" data-reveal style="--delay: 240ms;">
+      <span>No demos today. The room is the content.</span>
+      <span class="slide-caption">Five live polls · random breakouts · you write the next arc</span>
+    </div>
+    <div class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span>↓ to start</span>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 02 the arc */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>Three months in</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      Time for a checkup.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Three sessions of demos and workflows. Today we find out what actually landed — and what you want next.
+    </p>
+    <div class="fomo-bullets" data-reveal style="--delay: 240ms;">
+      <span class="fomo-chip">April · <em>the launch</em></span>
+      <span class="fomo-chip">May · <em>From Yes to Win</em></span>
+      <span class="fomo-chip">June · <em>Second Brains</em></span>
+      <span class="fomo-chip fomo-chip--now">July · <em>your turn</em></span>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 03 format */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>How the next 60 minutes work</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Checkup → breakouts → you set the agenda
+    </h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li><span class="agenda-n">01</span><span>Dojo convening + framing</span><span class="agenda-min">5m</span></li>
+      <li><span class="agenda-n">02</span><span>Log in — the polls are in this deck</span><span class="agenda-min">3m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">03</span><span>The Checkup — five describe-it polls, live</span><span class="agenda-min">15m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">04</span><span>Breakouts — Set the Agenda (random groups of 4–5)</span><span class="agenda-min">12m</span></li>
+      <li><span class="agenda-n">05</span><span>Report-backs + rank the proposed sessions</span><span class="agenda-min">15m</span></li>
+      <li><span class="agenda-n">06</span><span>Close — next arc locked</span><span class="agenda-min">5m</span></li>
+    </ol>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 04 log in */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>Quick precursor · the polls live in this deck</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Open this deck on your own screen and log in.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      fullstack.vc/slides — today's deck. The next five slides are the polls; you answer right on the slide. Google Workspace, LinkedIn, or GitHub — top-right, two minutes.
+    </p>
+    <p class="slide-caption" data-reveal style="--delay: 260ms;">
+      {isAuthenticated
+        ? `You're in as ${displayName ?? "a member"} — this slide is doing its job.`
+        : "This screen isn't logged in yet — which is exactly what the next five slides will look like until you are."}
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────── 05–09 the checkup polls */}
+  {CHECKUP.map((q) => {
+    const snapshot = snapshotById.get(q.pollId);
+    return (
+      <section class="slide slide--poll">
+        <p class="slide-eyebrow" data-reveal>{q.eyebrow}</p>
+        <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">
+          {q.headlinePre}<span class="accent">{q.headlineAccent}</span>{q.headlinePost}
+        </h2>
+        <p class="slide-subhead slide-subhead--tight" data-reveal style="--delay: 140ms;">{q.sub}</p>
+        <div class="poll-stage" data-reveal style="--delay: 220ms;">
+          {snapshot ? (
+            <PollEmbed
+              client:load
+              pollId={snapshot.poll_id}
+              initialState={snapshot}
+              isAuthenticated={isAuthenticated}
+              displayName={displayName}
+              variant="present"
+            />
+          ) : (
+            <div class="poll-placeholder">
+              <p>Poll goes live at session start.</p>
+              <p class="poll-placeholder__hint">host: pnpm seed:production:jul29 · then set-poll-status</p>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  })}
+
+  {/* ─────────────────────────────────────────────────────────────── 10 breakouts */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>Breakouts · 12 minutes</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">
+      Set the Agenda — <span class="accent">random groups</span>, one page, one one-pager.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Zoom assigns groups of 4–5. Scribe: first name alphabetically. Everything you just described in the checkup is your raw material.
+    </p>
+    <ul class="agenda" data-reveal style="--delay: 240ms;">
+      <li><span class="agenda-n">Q1</span><span>What did you actually change since April — what stuck, what died?</span></li>
+      <li><span class="agenda-n">Q2</span><span>Where are you stuck right now?</span></li>
+      <li><span class="agenda-n">Q3</span><span>What's missing from the arc so far?</span></li>
+      <li><span class="agenda-n">Q4</span><span>Design the next three sessions.</span></li>
+      <li class="agenda-accent"><span class="agenda-n">Q5</span><span>What would you demo, teach, or convene? Everyone answers.</span></li>
+    </ul>
+    <p class="slide-caption" data-reveal style="--delay: 320ms;">
+      Group page → <strong>fullstack.vc/breakouts/set-the-agenda</strong>
+    </p>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────── 11 close */}
+  <section class="slide slide--close">
+    <p class="slide-eyebrow" data-reveal>Thanks for being in the room</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">
+      You just wrote the next arc.
+    </h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Top-ranked sessions become August + September. Named presenters hear from us in 48 hours.
+    </p>
+    <p class="slide-body slide-body--center" data-reveal style="--delay: 240ms;">
+      <strong>Next all-hands — Wednesday · August 26, 2026</strong>
+    </p>
+    <div class="close-links" data-reveal style="--delay: 320ms;">
+      <a href="/sessions/2026-07-29_monthly-all-hands">Session page (polls + notes)</a>
+      <a href="/breakouts/set-the-agenda">Breakout page →</a>
+    </div>
+    <p class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span class="disclaimer">Built section by section with Claude Code. Welcome glitch reports.</span>
+    </p>
+  </section>
+
+</PageAsDeckWrapper>
+
+<style>
+  /* ── Slide-specific composition ─────────────────────────────────────── */
+  .slide-headline--medium {
+    font-size: clamp(1.625rem, 4.5vw, 3.5rem);
+  }
+  .slide-headline--small {
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    max-width: 40ch;
+  }
+  .accent {
+    color: var(--color-accent);
+  }
+  .slide-subhead--tight { margin-bottom: 1rem; }
+
+  /* ── 01 cover ───────────────────────────────────────────────────────── */
+  .cover-presenters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    color: var(--color-text);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+  }
+  .cover-presenters .slide-caption {
+    font-family: var(--font-code);
+  }
+
+  /* ── 02 arc chips ───────────────────────────────────────────────────── */
+  .fomo-bullets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .fomo-chip {
+    padding: 0.75rem 1.25rem;
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 0.625rem;
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .fomo-chip em {
+    color: var(--color-accent);
+    font-style: italic;
+  }
+  .fomo-chip--now {
+    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    border-color: var(--color-accent);
+  }
+
+  /* ── 03 / 10 agenda ─────────────────────────────────────────────────── */
+  .agenda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 50rem;
+  }
+  .agenda li {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--fx-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    color: var(--color-text);
+  }
+  .agenda-n {
+    font-family: var(--font-code);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .agenda-min {
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .agenda-accent {
+    border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+  }
+
+  /* ── 05–09 poll slides ──────────────────────────────────────────────── */
+  .slide--poll {
+    justify-content: flex-start;
+    padding-top: 4rem;
+  }
+  .poll-stage {
+    width: 100%;
+    max-width: 56rem;
+    margin-top: 1rem;
+    /* Poll entries can outgrow the slide — scroll inside the stage, never
+       the deck. */
+    max-height: 62vh;
+    overflow-y: auto;
+    border-radius: 0.75rem;
+  }
+  .poll-placeholder {
+    padding: 3rem 2rem;
+    background: var(--fx-card-bg);
+    border: 1px dashed var(--color-border);
+    border-radius: 0.75rem;
+    text-align: center;
+  }
+  .poll-placeholder p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+  }
+  .poll-placeholder__hint {
+    margin-top: 0.5rem !important;
+    font-family: var(--font-code) !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* ── 11 close ───────────────────────────────────────────────────────── */
+  .slide-body--center { text-align: center; max-width: 60ch; margin-inline: auto; }
+  .slide--close { justify-content: center; align-items: center; text-align: center; }
+  .slide--close .slide-headline,
+  .slide--close .slide-subhead,
+  .slide--close .slide-body,
+  .slide--close .slide-eyebrow {
+    text-align: center;
+    margin-inline: auto;
+  }
+  .close-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .close-links a {
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .close-links a:hover { text-decoration: underline; }
+  .disclaimer {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    max-width: 50%;
+  }
+</style>
