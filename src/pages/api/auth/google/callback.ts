@@ -183,5 +183,10 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 
   // /me is the provider-aware landing — routes the user based on which
   // providers the row has linked, not just the active cookie.
+  const returnTo = cookies.get('fsvc_oauth_return_to')?.value;
+  cookies.delete('fsvc_oauth_return_to', { path: '/' });
+  if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')) {
+    return redirect(returnTo, 302);
+  }
   return redirect('/me', 302);
 };

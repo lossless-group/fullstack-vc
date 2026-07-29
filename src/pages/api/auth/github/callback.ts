@@ -184,7 +184,9 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   // edit page redirects unauthed users to /login?next=/people/foo/edit, and
   // we round-trip them back here on success). Otherwise default to the user's
   // own edit page.
-  const next = url.searchParams.get('state-next'); // forwarded by /login if needed
+  const returnTo = cookies.get('fsvc_oauth_return_to')?.value;
+  cookies.delete('fsvc_oauth_return_to', { path: '/' });
+  const next = returnTo ?? url.searchParams.get('state-next'); // cookie set by /api/auth/*/login?next=
   const dest = next && next.startsWith('/') && !next.startsWith('//')
     ? next
     : `/people/${ghUser.login}/stack/edit`;

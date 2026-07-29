@@ -32,6 +32,20 @@ export const GET: APIRoute = ({ url, cookies, redirect }) => {
     maxAge: 600,
   });
 
+  // Round-trip destination: /login?next=/some/page → cookie → callback redirect.
+  // Relative paths only (no '//' or absolute URLs) to prevent open redirects.
+  const next = url.searchParams.get('next');
+  if (next && next.startsWith('/') && !next.startsWith('//')) {
+    cookies.set('fsvc_oauth_return_to', next, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: import.meta.env.PROD,
+      maxAge: 600,
+    });
+  }
+
+
   const callbackUrl = new URL('/api/auth/google/callback', url.origin).toString();
   const authorize = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   authorize.searchParams.set('response_type', 'code');

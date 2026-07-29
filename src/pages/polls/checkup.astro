@@ -1,0 +1,258 @@
+---
+// Mobile-first "one question per screen" surface for the July 29 Checkup
+// polls. SAME polls, SAME poll ids as the deck and session page — votes all
+// land in the same tallies. Built for the WhatsApp blast: vertical
+// scroll-snap, fill it out, swipe, next question.
+//
+// SSR (not prerendered): needs the OAuth cookie for voting + fresh Poll rows.
+import { db, Session as DbSession, Poll as DbPoll, PollResult as DbPollResult, eq } from 'astro:db';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import PollEmbed from '../../components/polls/PollEmbed.svelte';
+import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
+import { matchesRoster } from '../../lib/oauth-roster';
+import type { PollSnapshot, PollTemplate } from '../../lib/poll-templates';
+
+const SESSION_SLUG = '2026-07-29_monthly-all-hands';
+
+// Fixed running order — checkup 1-5, then the post-breakout mindblower.
+const ORDER = [
+  { id: 'poll_2026-07-29_recent-wins',      short: 'Recent wins' },
+  { id: 'poll_2026-07-29_recent-intrigue',  short: 'Recent intrigue' },
+  { id: 'poll_2026-07-29_rabbit-holes',     short: 'Rabbit holes' },
+  { id: 'poll_2026-07-29_time-eater',       short: 'The time eater' },
+  { id: 'poll_2026-07-29_breakthrough',     short: 'The breakthrough' },
+  { id: 'poll_2026-07-29_breakout-echoes',  short: 'The mindblower' },
+];
+
+const session = await verifySession(Astro.cookies.get(SESSION_COOKIE_NAME)?.value);
+const rosterEntry = session ? matchesRoster(session) : null;
+const isAuthenticated = !!session && !!rosterEntry;
+const displayName = rosterEntry?.name ?? session?.name ?? null;
+
+const dbSession = await db.select().from(DbSession).where(eq(DbSession.slug, SESSION_SLUG)).get();
+
+const snapshotById = new Map<string, PollSnapshot>();
+if (dbSession) {
+  const polls = await db.select().from(DbPoll).where(eq(DbPoll.session_id, dbSession.id)).all();
+  const results = await Promise.all(
+    polls.map(p => db.select().from(DbPollResult).where(eq(DbPollResult.poll_id, p.id)).get())
+  );
+  polls.forEach((poll, i) => {
+    const result = results[i] ?? null;
+    const isMSI = poll.template === 'multi-string-input';
+    const resultsHidden = !isMSI && (
+      poll.results_visibility === 'host-only' ||
+      (poll.results_visibility === 'on-close' && poll.status !== 'closed')
+    );
+    let tallies: unknown | null = resultsHidden ? null : (result?.tallies ?? null);
+    let totalVotesVisible = !resultsHidden;
+    if (isMSI) {
+      const t = (result?.tallies as { total_strings?: number; total_contributors?: number; entries?: unknown } | null) ?? {};
+      const contentVisible =
+        poll.results_visibility === 'live' ||
+        (poll.results_visibility === 'on-close' && poll.status === 'closed');
+      tallies = {
+        total_strings: t.total_strings ?? 0,
+        total_contributors: t.total_contributors ?? 0,
+        entries: contentVisible ? (t.entries ?? []) : null,
+      };
+      totalVotesVisible = true;
+    }
+    snapshotById.set(poll.id, {
+      poll_id: poll.id,
+      title: poll.title,
+      prompt: poll.prompt,
+      template: poll.template as PollTemplate,
+      options: (poll.options ?? null) as any,
+      allow_revote: !!poll.allow_revote,
+      results_visibility: poll.results_visibility as 'live' | 'on-close' | 'host-only',
+      anonymous_display: !!poll.anonymous_display,
+      status: poll.status as 'draft' | 'scheduled' | 'open' | 'closed',
+      total_votes: result?.total_votes ?? 0,
+      total_votes_visible: totalVotesVisible,
+      tallies,
+      last_aggregated_at: result?.last_aggregated_at
+        ? new Date(result.last_aggregated_at).toISOString()
+        : null,
+    });
+  });
+}
+
+const screens = ORDER
+  .map((o, i) => ({ ...o, n: i + 1, snapshot: snapshotById.get(o.id) }))
+  .filter(s => s.snapshot);
+const total = screens.length;
+---
+
+<BaseThemeLayout
+  title="The Checkup · 6 quick questions · FullStack VC"
+  description="The July 29 Agentic VC Dojo checkup — 6 describe-it-yourself questions, one per screen, about 3 minutes. Wins, intrigue, rabbit holes, time eaters, breakthroughs, and the mindblower from your breakout."
+  image="/images/og/checkup-vertical.jpg"
+  imageWidth={1080}
+  imageHeight={1620}
+  noindex={true}
+  containerClass=""
+>
+  <div class="snap-root">
+
+    <section class="screen screen--intro">
+      <p class="intro-eyebrow">Agentic VC Dojo · July 29</p>
+      <h1 class="intro-title">The Checkup</h1>
+      <p class="intro-sub">{total} questions · one per screen · about 3 minutes.</p>
+      {!isAuthenticated && (
+        <p class="intro-auth">
+          <a href={`/login?next=${encodeURIComponent('/polls/checkup')}`}>Log in first →</a>
+          <span>(Google, LinkedIn, or GitHub — 30 seconds)</span>
+        </p>
+      )}
+      <p class="intro-swipe">Swipe up to start ↑</p>
+    </section>
+
+    {screens.map((s) => (
+      <section class="screen" id={`q${s.n}`}>
+        <header class="screen-head">
+          <span class="screen-count">{s.n} / {total}</span>
+          <span class="screen-short">{s.short}</span>
+        </header>
+        <div class="screen-poll">
+          <PollEmbed
+            client:load
+            pollId={s.snapshot!.poll_id}
+            initialState={s.snapshot!}
+            isAuthenticated={isAuthenticated}
+            displayName={displayName}
+            variant="card"
+          />
+        </div>
+        <a class="screen-next" href={s.n < total ? `#q${s.n + 1}` : '#done'}>
+          {s.n < total ? 'Next question ↓' : 'Finish ↓'}
+        </a>
+      </section>
+    ))}
+
+    <section class="screen screen--intro" id="done">
+      <h2 class="intro-title intro-title--small">That's the checkup. 🙏</h2>
+      <p class="intro-sub">Answers land live in the session tallies — thank you.</p>
+      <p class="intro-auth"><a href="/sessions/2026-07-29_monthly-all-hands">See the session page →</a></p>
+    </section>
+
+  </div>
+</BaseThemeLayout>
+
+<style>
+  /* Full-viewport vertical snap. The page body scrolls; each screen snaps. */
+  .snap-root {
+    height: 100dvh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+  .screen {
+    min-height: 100dvh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    padding: max(env(safe-area-inset-top), 1rem) 1rem max(env(safe-area-inset-bottom), 1rem);
+  }
+
+  .screen--intro {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  .intro-eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .intro-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 12vw, 4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    margin: 0;
+    background: var(--fx-headline-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .intro-title--small { font-size: clamp(1.75rem, 8vw, 2.5rem); }
+  .intro-sub {
+    font-size: 1.0625rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 28rem;
+  }
+  .intro-auth {
+    margin: 0.5rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .intro-auth a {
+    font-family: var(--font-code);
+    font-size: 1rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .intro-auth span {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .intro-swipe {
+    margin-top: 2.5rem;
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    color: var(--color-accent);
+    animation: bob 1.6s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .screen-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.5rem 0.25rem 0.75rem;
+  }
+  .screen-count {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+  .screen-short {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-muted);
+  }
+  .screen-poll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border-radius: 0.75rem;
+  }
+  .screen-next {
+    display: block;
+    text-align: center;
+    padding: 0.875rem;
+    margin-top: 0.75rem;
+    font-family: var(--font-code);
+    font-size: 0.9375rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-radius: 0.625rem;
+    background: var(--fx-card-bg);
+  }
+  .screen-next:active { border-color: var(--color-primary); }
+</style>

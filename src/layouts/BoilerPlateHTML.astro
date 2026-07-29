@@ -14,6 +14,9 @@ export interface Props {
    * Generate the default image with `pnpm --filter fullstack-vc gen:og`.
    */
   image?: string;
+  /** Pixel dimensions of the OG image. Override for non-16:9 cards (e.g. vertical WhatsApp cards). */
+  imageWidth?: number;
+  imageHeight?: number;
   ogType?: 'website' | 'article';
 }
 
@@ -24,6 +27,8 @@ const {
   favicon = "/favicon.svg",
   noindex = false,
   image = "/og-default.jpg",
+  imageWidth = 1280,
+  imageHeight = 720,
   ogType = "website",
 } = Astro.props;
 
@@ -67,8 +72,8 @@ const canonicalUrl = new URL(Astro.url.pathname, siteOrigin + '/').toString();
   <meta property="og:image" content={ogImage} />
   <meta property="og:image:secure_url" content={ogImage} />
   <meta property="og:image:type" content={ogImage.endsWith('.png') ? 'image/png' : 'image/jpeg'} />
-  <meta property="og:image:width" content="1280" />
-  <meta property="og:image:height" content="720" />
+  <meta property="og:image:width" content={String(imageWidth)} />
+  <meta property="og:image:height" content={String(imageHeight)} />
   <meta property="og:site_name" content="FullStack VC" />
 
   <!-- Twitter / X -->

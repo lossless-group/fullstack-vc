@@ -156,5 +156,10 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   // /me is the new provider-aware landing — it inspects the User row and
   // routes dual-provider users to the right edit page rather than dumping
   // LinkedIn-only users on the public people index.
+  const returnTo = cookies.get('fsvc_oauth_return_to')?.value;
+  cookies.delete('fsvc_oauth_return_to', { path: '/' });
+  if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')) {
+    return redirect(returnTo, 302);
+  }
   return redirect('/me', 302);
 };

@@ -1,0 +1,60 @@
+<svg width="1080" height="1620" viewBox="0 0 1080 1620" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headline" x1="0%" y1="0%" x2="100%" y2="60%">
+      <stop offset="0%" stop-color="#7c5cff"/>
+      <stop offset="100%" stop-color="#5cf2ff"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#5cf2ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#b6ff5c" stop-opacity="0.55"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="12%" r="70%">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#7c5cff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- obsidian base -->
+  <rect width="1080" height="1620" fill="#0b0d12"/>
+  <rect width="1080" height="1620" fill="url(#glow)"/>
+  <!-- gradient frame -->
+  <rect x="36" y="36" width="1008" height="1548" rx="28" fill="none" stroke="url(#frame)" stroke-width="3"/>
+
+  <!-- eyebrow -->
+  <text x="540" y="200" text-anchor="middle" font-family="Menlo, monospace" font-size="30" letter-spacing="10" fill="#6b7390">AGENTIC VC DOJO · JUL 29</text>
+
+  <!-- headline -->
+  <text x="540" y="360" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-weight="bold" font-size="140" fill="url(#headline)">The</text>
+  <text x="540" y="510" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-weight="bold" font-size="140" fill="url(#headline)">Checkup</text>
+
+  <!-- sub -->
+  <text x="540" y="610" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="42" fill="#f6f3ec">6 questions · one per screen · ~3 min</text>
+
+  <!-- question chips -->
+  <g font-family="Menlo, monospace" font-size="34">
+    <rect x="140" y="700" width="800" height="92" rx="18" fill="#11141c" stroke="#1c2030" stroke-width="2"/>
+    <text x="180" y="758" fill="#b6ff5c">01</text><text x="260" y="758" fill="#f6f3ec">Recent wins</text>
+
+    <rect x="140" y="812" width="800" height="92" rx="18" fill="#11141c" stroke="#1c2030" stroke-width="2"/>
+    <text x="180" y="870" fill="#b6ff5c">02</text><text x="260" y="870" fill="#f6f3ec">Recent intrigue</text>
+
+    <rect x="140" y="924" width="800" height="92" rx="18" fill="#11141c" stroke="#1c2030" stroke-width="2"/>
+    <text x="180" y="982" fill="#b6ff5c">03</text><text x="260" y="982" fill="#f6f3ec">Rabbit holes</text>
+
+    <rect x="140" y="1036" width="800" height="92" rx="18" fill="#11141c" stroke="#1c2030" stroke-width="2"/>
+    <text x="180" y="1094" fill="#b6ff5c">04</text><text x="260" y="1094" fill="#f6f3ec">The time eater</text>
+
+    <rect x="140" y="1148" width="800" height="92" rx="18" fill="#11141c" stroke="#1c2030" stroke-width="2"/>
+    <text x="180" y="1206" fill="#b6ff5c">05</text><text x="260" y="1206" fill="#f6f3ec">The breakthrough</text>
+
+    <rect x="140" y="1260" width="800" height="92" rx="18" fill="#11141c" stroke="#7c5cff" stroke-width="2"/>
+    <text x="180" y="1318" fill="#b6ff5c">06</text><text x="260" y="1318" fill="#f6f3ec">The mindblower</text>
+  </g>
+
+  <!-- CTA -->
+  <text x="540" y="1440" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-weight="bold" font-size="46" fill="#b6ff5c">Tap → answer → swipe</text>
+
+  <!-- footer -->
+  <text x="540" y="1530" text-anchor="middle" font-family="Menlo, monospace" font-size="30" letter-spacing="6" fill="#6b7390">fullstack-vc.com</text>
+</svg>
