@@ -3,6 +3,8 @@ site_name: "Vercel"
 title: "Vercel — the frontend cloud, now agentic infrastructure"
 zinger: "Push to git, get a deployed site — and increasingly, the infrastructure your agents deploy to and run on."
 url: https://vercel.com/
+og_image: "/images/tool-banners/banner__vercel.png"
+og_favicon: "/images/tool-favicons/favicon__vercel.png"
 description: "Vercel is the deployment platform behind most modern frontend stacks (and every FullStack VC / Astro Knots site): connect a repo, every push deploys globally with preview environments per branch. It has since grown an agentic-infrastructure layer — sandboxed VM environments, durable orchestration for agent workflows, an AI Gateway unifying hundreds of models, Fluid Compute, and tenant isolation — positioning it as the place agents both ship to and run on."
 tags:
   - Cloud-Platforms

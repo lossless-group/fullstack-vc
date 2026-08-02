@@ -2,11 +2,12 @@
 title: "The Tool-Calling & Auth Layer for AI Agents"
 zinger: "Give your agents secure, managed access to 1,000+ apps — auth, tool calls, and sandboxed execution handled for you."
 url: https://composio.dev/
+og_image: "/images/tool-banners/banner__composio.png"
+og_favicon: "/images/tool-favicons/favicon__composio.png"
 slug: composio
 date_created: 2026-06-22
 date_modified: 2026-06-22
 description: "Developer infrastructure that connects AI agents to external apps. Composio handles the unglamorous parts of agentic tool use — OAuth and delegated auth, just-in-time tool definitions, sandboxed execution, and parallel calls — across 1,000+ integrations (Gmail, Notion, Slack, GitHub, CRMs, and more). Works with the major agent frameworks and the model context protocol (MCP), so builders wire an agent into real systems without hand-rolling each integration."
-og_favicon: "https://composio.dev/favicon.ico"
 docs_url: "https://docs.composio.dev/"
 github_repo_url: "https://github.com/ComposioHQ/composio"
 github_profile_url: "https://github.com/ComposioHQ"

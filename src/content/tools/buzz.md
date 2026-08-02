@@ -3,6 +3,8 @@ site_name: "Buzz"
 title: "Buzz — your people, your agents, your project"
 zinger: "One collaborative workspace for teammates and AI agents working the same project."
 url: https://buzz.xyz/
+og_image: "/images/tool-banners/banner__buzz.png"
+og_favicon: "/images/tool-favicons/favicon__buzz.svg"
 description: "Buzz is a unified workspace that puts your team members, your AI agents, and your project in one place — humans and agents collaborating in the same surface rather than agents living off to the side in separate tools. Early-stage and open for testing."
 tags:
   - Agentic-AI

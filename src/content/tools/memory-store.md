@@ -3,6 +3,8 @@ site_name: "Memory Store"
 title: "Memory Store — one shared memory for teammates and agents"
 zinger: "Aggregates Gmail, Slack, Granola, and Claude into a shared memory that both your team and your agents can draw on."
 url: https://memory.store/
+og_image: "/images/tool-banners/banner__memory-store.png"
+og_favicon: "/images/tool-favicons/favicon__memory-store.png"
 description: "Memory Store pulls conversations and context from tools like Gmail, Slack, Granola, and Claude into one centralized knowledge base, automatically organized by project, person, and decision. Exposed as an MCP server, so the same shared memory surfaces relevant context inside whatever app — or agent — needs it. Pitched at daily Claude users for personal knowledge management and at teams tired of re-answering the same questions."
 tags:
   - Second-Brain

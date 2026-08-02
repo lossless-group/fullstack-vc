@@ -3,9 +3,10 @@ site_name: "Oh My Posh"
 title: Oh My Posh
 zinger: "A prompt theme engine for any shell."
 url: https://ohmyposh.dev
+og_image: "/images/tool-banners/banner__oh-my-posh.png"
+og_favicon: "/images/tool-favicons/favicon__oh-my-posh.svg"
 github_repo_url: 'https://github.com/JanDeDobbeleer/oh-my-posh'
 docs_url: 'https://ohmyposh.dev/docs'
-favicon: 'https://ohmyposh.dev/img/favicon.ico'
 description: 'Oh My Posh is a cross-shell prompt theme engine. It turns the blank command-line prompt into a configurable instrument panel — git status, current path, execution time, cloud context, battery — driven by a single JSON theme file, with ~100 stock themes to start from.'
 tags:
   - Developer-Experience
