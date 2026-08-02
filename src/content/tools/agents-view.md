@@ -3,14 +3,14 @@ site_name: "AgentsView"
 title: "Local-first observability for AI agent sessions"
 zinger: "See what your agents actually did — locally, without shipping logs to a vendor."
 url: https://www.agentsview.io/
+og_image: "/images/tool-banners/banner__agents-view.png"
+og_favicon: "/images/tool-favicons/favicon__agents-view.png"
 slug: agents-view
 site_uuid: 9ca66ddf-820d-4334-8408-1b4f2020e2df
 date_created: 2026-05-17
 date_modified: 2026-05-21
 og_title: AgentsView
 og_description: "Local-first desktop and web app for AI agent sessions"
-og_image: "https://agentsview.io/og-image.png"
-og_favicon: "https://www.agentsview.io/favicon.svg"
 og_site_name: AgentsView
 og_type: website
 og_last_fetch: "2026-05-17T18:34:25.861Z"

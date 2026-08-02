@@ -3,7 +3,8 @@ site_name: "Origami"
 title: "Origami — find your perfect customers in one prompt"
 zinger: "AI lead research: describe your ideal customer in natural language, get verified leads from 50+ live data sources."
 url: https://origami.chat/
-favicon: https://origami.chat/origamiicon.svg
+og_image: "/images/tool-banners/banner__origami.png"
+og_favicon: "/images/tool-favicons/favicon__origami.png"
 description: "Origami is an AI-powered lead research platform. You describe your target customer profile in a prompt; it searches 50+ data sources in real time — Google Maps, social profiles, job boards, company websites — and returns matching leads with verified contact information. Aimed at the niche industries and buyer profiles that static databases like Apollo, ZoomInfo, or Clay struggle to cover."
 tags:
   - Sales-Intelligence

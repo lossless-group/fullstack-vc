@@ -3,7 +3,8 @@ site_name: "Claude Desktop"
 title: "Anthropic's Claude desktop app"
 zinger: "Claude as a conversation partner — chat, artifacts, and connectors."
 url: https://claude.ai/download
-og_favicon: https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/ce67964e7-CAX1bqSh.png
+og_image: "/images/tool-banners/banner__claude-desktop.jpg"
+og_favicon: "/images/tool-favicons/favicon__claude-desktop.png"
 tags: [AI-Assistants, Chat-Apps, MCP-Clients]
 description: "Claude Desktop is Anthropic's native desktop app for chatting with Claude. Conversation-first: artifacts rendered live, Projects for standing context, and MCP connectors that reach Gmail, Calendar, Drive, and CRMs. The frictionless front door to Claude — same models as Claude Code, different embodiment."
 ---
