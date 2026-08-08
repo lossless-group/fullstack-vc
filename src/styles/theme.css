@@ -85,6 +85,29 @@
      technique is used as in dark/vibrant, while staying clean and minimal. */
   --fx-headline-gradient: linear-gradient(120deg, var(--color__ink) 0%, var(--color__violet-deep) 100%);
   --fx-flare-color: var(--color__violet-deep);
+
+  /* Code tokens — consumed as inline styles by Shiki via lib/code-highlight.ts.
+     The house neons are far too hot on bone, so each one is mixed down toward
+     ink until it carries on a light background. */
+  --code-bg: var(--color__bone-warm);
+  --code-fg: var(--color__ink);
+  --code-border: var(--color__graphite-200);
+  --code-comment: var(--color__graphite-600);
+  --code-keyword: var(--color__violet-deep);
+  --code-string: color-mix(in srgb, var(--color__lime-terminal) 42%, var(--color__ink));
+  --code-function: color-mix(in srgb, var(--color__cyan-vapor) 38%, var(--color__ink));
+  --code-number: color-mix(in srgb, var(--color__amber-flare) 55%, var(--color__ink));
+  --code-type: color-mix(in srgb, var(--color__magenta-fuse) 52%, var(--color__ink));
+  --code-variable: var(--color__ink);
+  --code-tag: var(--color__violet-deep);
+  --code-attr: color-mix(in srgb, var(--color__cyan-vapor) 38%, var(--color__ink));
+  --code-punctuation: var(--color__graphite-600);
+  --code-added: color-mix(in srgb, var(--color__lime-terminal) 42%, var(--color__ink));
+  --code-removed: color-mix(in srgb, var(--color__magenta-fuse) 55%, var(--color__ink));
+  --code-invalid: var(--color__magenta-fuse);
+  --code-chrome-text: var(--color__graphite-600);
+  --code-chrome-bg: color-mix(in srgb, var(--color__graphite-200) 40%, transparent);
+  --code-chrome-bg-hover: color-mix(in srgb, var(--color__graphite-200) 65%, transparent);
 }
 
 /* ----------------------------------------------------------------------------
@@ -108,6 +131,28 @@
   --fx-card-border-hover: var(--color__violet-electric);
   --fx-headline-gradient: linear-gradient(135deg, var(--color__violet-electric), var(--color__cyan-vapor));
   --fx-flare-color: var(--color__violet-electric);
+
+  /* Code tokens — the neons run at full strength here; this is the mode the
+     palette was designed for. */
+  --code-bg: var(--color__graphite-950);
+  --code-fg: var(--color__bone);
+  --code-border: var(--color__graphite-800);
+  --code-comment: var(--color__graphite-400);
+  --code-keyword: var(--color__violet-electric);
+  --code-string: var(--color__lime-terminal);
+  --code-function: var(--color__cyan-vapor);
+  --code-number: var(--color__amber-flare);
+  --code-type: var(--color__magenta-fuse);
+  --code-variable: var(--color__graphite-200);
+  --code-tag: var(--color__violet-electric);
+  --code-attr: var(--color__cyan-vapor);
+  --code-punctuation: var(--color__graphite-400);
+  --code-added: var(--color__lime-terminal);
+  --code-removed: var(--color__magenta-fuse);
+  --code-invalid: var(--color__magenta-fuse);
+  --code-chrome-text: var(--color__graphite-400);
+  --code-chrome-bg: color-mix(in srgb, var(--color__graphite-600) 30%, transparent);
+  --code-chrome-bg-hover: color-mix(in srgb, var(--color__graphite-600) 50%, transparent);
 }
 
 /* ----------------------------------------------------------------------------
@@ -141,6 +186,28 @@
     var(--color__magenta-fuse) 100%
   );
   --fx-flare-color: var(--color__lime-terminal);
+
+  /* Code tokens — violet-tinted bed, and keywords swap to magenta so the
+     block doesn't dissolve into the violet chrome around it. */
+  --code-bg: color-mix(in srgb, var(--color__violet-deep) 14%, var(--color__obsidian));
+  --code-fg: var(--color__bone);
+  --code-border: color-mix(in srgb, var(--color__violet-electric) 60%, transparent);
+  --code-comment: color-mix(in srgb, var(--color__violet-electric) 55%, var(--color__bone));
+  --code-keyword: var(--color__magenta-fuse);
+  --code-string: var(--color__lime-terminal);
+  --code-function: var(--color__cyan-vapor);
+  --code-number: var(--color__amber-flare);
+  --code-type: var(--color__violet-electric);
+  --code-variable: var(--color__bone);
+  --code-tag: var(--color__magenta-fuse);
+  --code-attr: var(--color__cyan-vapor);
+  --code-punctuation: color-mix(in srgb, var(--color__cyan-vapor) 60%, var(--color__bone));
+  --code-added: var(--color__lime-terminal);
+  --code-removed: var(--color__magenta-fuse);
+  --code-invalid: var(--color__magenta-fuse);
+  --code-chrome-text: color-mix(in srgb, var(--color__cyan-vapor) 60%, var(--color__bone));
+  --code-chrome-bg: color-mix(in srgb, var(--color__violet-electric) 22%, transparent);
+  --code-chrome-bg-hover: color-mix(in srgb, var(--color__violet-electric) 38%, transparent);
 }
 
 /* ----------------------------------------------------------------------------

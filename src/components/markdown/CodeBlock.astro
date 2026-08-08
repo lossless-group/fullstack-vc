@@ -1,4 +1,11 @@
 ---
+// CodeBlock — fenced code inside LFM-rendered content.
+//
+// Highlighting happens at build time in lib/code-highlight.ts, which emits
+// inline `var(--code-*)` colors. All palette decisions live in theme.css;
+// nothing here hardcodes a color.
+import { highlightCode, resolveLang } from '../../lib/code-highlight';
+
 export interface Props {
   language?: string;
   code: string;
@@ -7,17 +14,21 @@ export interface Props {
 
 const { language, code } = Astro.props as Props;
 
-const langLabel = language ? language.toUpperCase() : undefined;
+const resolved = resolveLang(language);
+// Show the author's own fence label when they gave one; only fall back to the
+// resolved grammar so an unlabeled block doesn't claim to be something it isn't.
+const langLabel = language?.trim() ? language.trim().toUpperCase() : undefined;
+const html = await highlightCode(code, language);
 ---
 
-<div class="ak-codeblock-wrap">
+<div class="ak-codeblock-wrap" data-lang={resolved}>
   <div class="ak-codeblock-chrome">
     {langLabel && <span class="ak-codeblock-lang">{langLabel}</span>}
     <button class="ak-codeblock-copy" type="button" aria-label="Copy code to clipboard" data-copy-btn>
       Copy
     </button>
   </div>
-  <pre class="ak-codeblock"><code>{code}</code></pre>
+  <div class="ak-codeblock" set:html={html} />
 </div>
 
 <script>
@@ -49,18 +60,27 @@ const langLabel = language ? language.toUpperCase() : undefined;
     position: relative;
     margin-bottom: 1.5rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--border);
+    /* was var(--border), which is not a token in this system — the border
+       silently fell back to currentColor. */
+    border: 1px solid var(--code-border);
     overflow: hidden;
   }
 
+  /* A real header row, not an overlay. Absolutely positioning this floated it
+     over the first line of code and crowded the right edge. */
   .ak-codeblock-chrome {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.75rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.625rem;
-    z-index: 1;
+    padding: 0.375rem 0.625rem 0.375rem 0.875rem;
+    background: var(--code-chrome-bg);
+    border-bottom: 1px solid var(--code-border);
+  }
+
+  /* Keeps Copy hard right when a block has no language label. */
+  .ak-codeblock-chrome > :only-child {
+    margin-left: auto;
   }
 
   .ak-codeblock-lang {
@@ -68,41 +88,56 @@ const langLabel = language ? language.toUpperCase() : undefined;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
+    color: var(--code-chrome-text);
     pointer-events: none;
   }
 
   .ak-codeblock-copy {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-code, ui-monospace, SFMono-Regular, Menlo, monospace);
     font-size: 0.65rem;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #94a3b8;
-    background: rgba(148, 163, 184, 0.12);
-    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: var(--code-chrome-text);
+    /* Transparent on the chrome bar — a filled background would vanish into
+       it, since the bar now uses --code-chrome-bg itself. */
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: 0.3125rem;
     padding: 0.1875rem 0.5rem;
     cursor: pointer;
-    transition: color 120ms ease, background 120ms ease;
+    transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
   }
-  .ak-codeblock-copy:hover {
-    color: #e2e8f0;
-    background: rgba(148, 163, 184, 0.22);
+  .ak-codeblock-copy:hover,
+  .ak-codeblock-copy:focus-visible {
+    color: var(--code-fg);
+    background: var(--code-chrome-bg-hover);
+    border-color: var(--code-border);
   }
 
-  .ak-codeblock {
+  /* Shiki emits its own <pre>; this wrapper owns layout, that owns color. */
+  .ak-codeblock :global(pre.shiki) {
     padding: 1rem;
-    background: #0f172a;
-    color: #e2e8f0;
     overflow-x: auto;
     font-size: 0.85rem;
     line-height: 1.6;
     margin: 0;
   }
 
-  .ak-codeblock code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
+  .ak-codeblock :global(pre.shiki code) {
+    font-family: var(--font-code, ui-monospace, SFMono-Regular, Menlo, Monaco,
+      Consolas, "Liberation Mono", "Courier New", monospace);
+    display: block;
+  }
+
+  /* Shiki wraps each line in <span class="line">, separated by a literal
+     newline. Inside a <pre> that newline already breaks the line, so these
+     spans MUST stay inline — making them block double-spaces every block. */
+  .ak-codeblock :global(pre.shiki .line) {
+    display: inline;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ak-codeblock-copy { transition: none; }
   }
 </style>
