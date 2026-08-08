@@ -71,6 +71,8 @@ aspirational_stack:
   - tool: agent37
   - tool: composio
     intent: "Wire agents into the VC stack — Affinity, Notion, Drive — with managed auth instead of hand-rolling each integration."
+  - tool: mcpmarket
+    intent: "Find MCP servers worth wiring up, then version and sync our Agent Skills across the team instead of copy-pasting SKILL.md files."
 abandoned_stack:
   - tool: cursor
     abandoned: 2026-03-15
