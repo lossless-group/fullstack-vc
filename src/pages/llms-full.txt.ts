@@ -17,6 +17,7 @@ import { SITE_SEO } from '../config/seo';
 import { loadAllProjects, projectHref } from '../lib/load-projects';
 import { loadAllWorkingGroups, workingGroupHref } from '../lib/load-working-groups';
 import template from '../llms/llms-full.md?raw';
+import { entryDateMs as changelogDateMs, resolveEntryDate } from '../lib/changelog-date';
 
 // Prerendered for the same reason as /llms.txt — LLM crawlers expect a
 // stable, build-deterministic, statically-served file. The
@@ -109,11 +110,12 @@ export const GET: APIRoute = async () => {
 
   let changelogAll: Awaited<ReturnType<typeof getCollection<'changelog'>>> = [];
   try { changelogAll = await getCollection('changelog'); } catch { changelogAll = []; }
-  const changelog = [...changelogAll].sort((a, b) => {
-    const da = entryDateMs(a.data as AnyData);
-    const db = entryDateMs(b.data as AnyData);
-    return db - da;
-  });
+  // Changelog uses its own resolver rather than the generic entryDateMs above:
+  // it prefers the ship date over the last-modified date, and falls back to the
+  // YYYY-MM-DD in the entry id. See src/lib/changelog-date.ts.
+  const changelog = [...changelogAll].sort(
+    (a, b) => changelogDateMs(b.data as AnyData, b.id) - changelogDateMs(a.data as AnyData, a.id),
+  );
 
   type Kind = 'venture-handbook' | 'session' | 'project' | 'working-group' | 'tool' | 'participant' | 'changelog';
   type Tagged = {
@@ -207,7 +209,7 @@ export const GET: APIRoute = async () => {
       title: data.title ?? entry.id,
       url: `${root}/changelog/${entry.id}/`,
       sourcePath: `changelog/${entry.id}.md`,
-      lastModified: isoDate(data.date),
+      lastModified: isoDate(resolveEntryDate(data, entry.id)),
       body: entry.body ?? '',
     });
   }

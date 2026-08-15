@@ -1,8 +1,15 @@
 ---
 export const prerender = true;
-import { getCollection, render, type GetStaticPaths } from 'astro:content';
+// GetStaticPaths is exported from `astro`, not `astro:content`. Imported from
+// the wrong module it resolved to `never`, which typed Astro.props as never and
+// made every `entry.*` read below a type error. Fixed while adding the date
+// fallback so the new code type-checks against the real entry type.
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import BannerWithOverlay from '../../components/changelog/BannerWithOverlay.astro';
+import { resolveEntryDate } from '../../lib/changelog-date';
+import { formatDate } from '../../lib/format-date';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const entries = await getCollection('changelog');
@@ -12,18 +19,26 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }));
 };
 
+// Astro types Astro.props from a local `Props` declaration. Without it the
+// entry is `unknown` and every field read below is an error.
+type Props = { entry: CollectionEntry<'changelog'> };
+
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const data = entry.data;
 
-function formatDate(d: Date): string {
-  return d.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
-}
+// No date key is required by the schema — resolve through the fallback chain
+// and render the date line only when one is found.
+const date = resolveEntryDate(data, entry.id);
+// `lede` is the standard's field name; `summary` is this site's original one.
+const lede = data.lede ?? data.summary;
+// Normalized to arrays by the schema's `stringList`, so both join cleanly.
+const augmentedWith = data.augmented_with?.join(' · ');
 ---
 
 <BaseThemeLayout
   title={`${data.title} · Changelog · FullStack VC`}
-  description={data.summary ?? data.title}
+  description={lede ?? data.title}
   containerClass="px-6 py-12 max-w-3xl mx-auto"
 >
   <a href="/changelog" class="back-link">← All changelog entries</a>
@@ -32,18 +47,18 @@ function formatDate(d: Date): string {
     <div class="changelog-detail__banner">
       <BannerWithOverlay
         src={data.image}
-        eyebrow={`Changelog · ${formatDate(data.date)}`}
+        eyebrow={date ? `Changelog · ${formatDate(date)}` : 'Changelog'}
         title={data.image_text ?? data.title}
-        subtitle={data.summary?.slice(0, 140)}
+        subtitle={lede?.slice(0, 140)}
       />
     </div>
   )}
 
   <article class="changelog-detail">
     <header class="changelog-detail__head">
-      <span class="changelog-detail__eyebrow">{formatDate(data.date)}{data.category ? ` · ${data.category}` : ''}</span>
+      <span class="changelog-detail__eyebrow">{[date && formatDate(date), data.category].filter(Boolean).join(' · ')}</span>
       <h1 class="changelog-detail__title">{data.title}</h1>
-      {data.summary && <p class="changelog-detail__summary">{data.summary}</p>}
+      {lede && <p class="changelog-detail__summary">{lede}</p>}
 
       <dl class="changelog-detail__meta">
         {data.authors && data.authors.length > 0 && (
@@ -52,10 +67,10 @@ function formatDate(d: Date): string {
             <dd>{data.authors.join(' · ')}</dd>
           </div>
         )}
-        {data.augmented_with && (
+        {augmentedWith && (
           <div class="changelog-detail__meta-row">
             <dt>Augmented with</dt>
-            <dd>{data.augmented_with}</dd>
+            <dd>{augmentedWith}</dd>
           </div>
         )}
         {data.tags && data.tags.length > 0 && (

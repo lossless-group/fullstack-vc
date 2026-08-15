@@ -3,6 +3,8 @@ export const prerender = true;
 import { getCollection } from 'astro:content';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import BannerWithOverlay from '../../components/changelog/BannerWithOverlay.astro';
+import { entryDateMs, resolveEntryDate } from '../../lib/changelog-date';
+import { formatDate } from '../../lib/format-date';
 
 const all = await getCollection('changelog');
 
@@ -15,15 +17,21 @@ function entryIndex(id: string): number {
   return match ? parseInt(match[1], 10) : 0;
 }
 
+// Dates resolve through the fallback chain rather than reading `data.date`
+// bare — no date key is required by the schema any more. Undated entries
+// sort to 0 and sink to the bottom instead of throwing.
 const sorted = all.sort((a, b) => {
-  const dateDelta = b.data.date.getTime() - a.data.date.getTime();
+  const dateDelta = entryDateMs(b.data, b.id) - entryDateMs(a.data, a.id);
   if (dateDelta !== 0) return dateDelta;
   return entryIndex(b.id) - entryIndex(a.id);
 });
 
-function formatDate(d: Date): string {
-  return d.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
-}
+// Precomputed so the date is resolved once per entry, not once per use.
+const entries = sorted.map(entry => ({
+  entry,
+  date: resolveEntryDate(entry.data, entry.id),
+  lede: entry.data.lede ?? entry.data.summary,
+}));
 ---
 
 <BaseThemeLayout
@@ -43,7 +51,7 @@ function formatDate(d: Date): string {
     </p>
   </header>
 
-  {sorted.length === 0 && (
+  {entries.length === 0 && (
     <div
       class="p-10 rounded-xl text-center"
       style="background: var(--fx-card-bg); border: 1px dashed var(--color-border);"
@@ -55,25 +63,25 @@ function formatDate(d: Date): string {
   )}
 
   <div class="changelog-list">
-    {sorted.map(entry => (
+    {entries.map(({ entry, date, lede }) => (
       <article class="changelog-entry">
         {entry.data.image ? (
           <BannerWithOverlay
             src={entry.data.image}
             href={`/changelog/${entry.id}`}
-            eyebrow={`Changelog · ${formatDate(entry.data.date)}`}
+            eyebrow={date ? `Changelog · ${formatDate(date)}` : 'Changelog'}
             title={entry.data.image_text ?? entry.data.title}
-            subtitle={entry.data.summary?.slice(0, 140)}
+            subtitle={lede?.slice(0, 140)}
           />
         ) : (
           <a href={`/changelog/${entry.id}`} class="changelog-entry__no-banner">
-            <span class="changelog-entry__eyebrow">Changelog · {formatDate(entry.data.date)}</span>
+            <span class="changelog-entry__eyebrow">Changelog{date ? ` · ${formatDate(date)}` : ''}</span>
             <h2 class="changelog-entry__title">{entry.data.title}</h2>
           </a>
         )}
 
         <div class="changelog-entry__meta">
-          <span class="changelog-entry__date">{formatDate(entry.data.date)}</span>
+          {date && <span class="changelog-entry__date">{formatDate(date)}</span>}
           {entry.data.category && (
             <span class="changelog-entry__category">{entry.data.category}</span>
           )}

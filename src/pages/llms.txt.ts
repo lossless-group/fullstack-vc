@@ -24,6 +24,8 @@ import { SITE_SEO } from '../config/seo';
 import { loadAllProjects, projectHref } from '../lib/load-projects';
 import { loadAllWorkingGroups, workingGroupHref } from '../lib/load-working-groups';
 import template from '../llms/llms.md?raw';
+import { entryDateMs as changelogDateMs, resolveEntryDate } from '../lib/changelog-date';
+import { toIsoDate } from '../lib/format-date';
 
 export const prerender = true;
 
@@ -192,24 +194,20 @@ export const GET: APIRoute = async () => {
   // ── Changelog ────────────────────────────────────────────────────────
   let changelogAll: Awaited<ReturnType<typeof getCollection<'changelog'>>> = [];
   try { changelogAll = await getCollection('changelog'); } catch { changelogAll = []; }
-  const changelog = [...changelogAll].sort((a, b) => {
-    const da = entryDateMs(a.data as AnyData);
-    const db = entryDateMs(b.data as AnyData);
-    return db - da;
-  });
+  // Changelog uses its own resolver rather than the generic entryDateMs above:
+  // it prefers the ship date over the last-modified date, and falls back to the
+  // YYYY-MM-DD in the entry id. See src/lib/changelog-date.ts.
+  const changelog = [...changelogAll].sort(
+    (a, b) => changelogDateMs(b.data as AnyData, b.id) - changelogDateMs(a.data as AnyData, a.id),
+  );
   const changelogLines: string[] = [];
   for (const entry of changelog) {
     const data = entry.data as AnyData;
     const url = `${root}/changelog/${entry.id}/`;
     const title = data.title ?? entry.id;
-    const dateStr = (() => {
-      const d = data.date;
-      if (!d) return '';
-      const dt = d instanceof Date ? d : new Date(d);
-      return Number.isNaN(dt.getTime()) ? '' : dt.toISOString().slice(0, 10);
-    })();
+    const dateStr = toIsoDate(resolveEntryDate(data, entry.id));
     const label = dateStr ? `${dateStr} — ${title}` : title;
-    const lede = data.summary;
+    const lede = data.lede ?? data.summary;
     changelogLines.push(lede ? `- [${label}](${url}): ${lede}` : `- [${label}](${url})`);
   }
 

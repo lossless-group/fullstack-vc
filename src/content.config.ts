@@ -1,6 +1,20 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+// Accept a YAML scalar OR a YAML list for fields the tree writes both ways,
+// and normalize to an array so renderers have one shape to handle.
+//
+// `augmented_with` is the live example: this site's entries write it as a
+// string ("Claude Code on Opus 4.7") while the tree-wide frontmatter standard
+// writes it as a list. Pinning either shape turns a routine normalization
+// sweep into a build failure — the same class of break that requiring `date`
+// caused on the changelog collection.
+const stringList = z
+  .union([z.string(), z.array(z.string())])
+  .transform((v) => (Array.isArray(v) ? v : [v]))
+  .nullable()
+  .optional();
+
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
@@ -164,9 +178,35 @@ const changelog = defineCollection({
   loader: glob({ pattern: ['**/*.md', '!releases/**'], base: './changelog' }),
   schema: z.object({
     title: z.string(),
-    date: z.coerce.date(),
-    authors: z.array(z.string()).optional(),
-    augmented_with: z.string().optional(),
+    // ── Dates ────────────────────────────────────────────────────────────
+    // Every spelling is optional + nullable. `date` is the legacy key this
+    // site was built on; the tree-wide frontmatter standard renames it to the
+    // editorial pair below. Requiring `date` is what made that rename a
+    // build-breaking change here, so nothing is required now — renderers
+    // resolve a date through the fallback chain in src/lib/changelog-date.ts,
+    // which prefers hand-authored `date` and falls back through the editorial
+    // keys to the YYYY-MM-DD in the entry id.
+    //
+    // Soft validation matches the `releases` collection below and the
+    // no-hard-validation principle: a missing or typo'd date warns in the UI
+    // by rendering nothing, it does not fail the build.
+    date: z.coerce.date().nullable().optional(),
+    date_authored_initial_draft: z.coerce.date().nullable().optional(),
+    date_authored_current_draft: z.coerce.date().nullable().optional(),
+    date_created: z.coerce.date().nullable().optional(),
+    date_modified: z.coerce.date().nullable().optional(),
+    date_posted: z.coerce.date().nullable().optional(),
+    date_scheduled: z.coerce.date().nullable().optional(),
+    // ── Editorial ────────────────────────────────────────────────────────
+    // `publish` gates nothing here yet — recorded so the key round-trips.
+    publish: z.boolean().optional(),
+    // `lede` is the standard's field; `summary` is this site's original name
+    // for the same thing. Both accepted, renderers prefer `lede`.
+    lede: z.string().optional(),
+    status: z.string().optional(),
+    // Scalar-or-list tolerant — see `stringList` at the top of this file.
+    authors: stringList,
+    augmented_with: stringList,
     category: z.string().optional(),
     tags: z.array(z.string()).optional(),
     summary: z.string().optional(),
