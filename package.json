@@ -20,6 +20,8 @@
     "audit:stacks": "node scripts/_audit-stack-drift.mjs",
     "sync:stacks": "node --env-file=.env scripts/db-execute.mjs scripts/sync-stacks.ts",
     "sync:stacks:remote": "node --env-file=.env scripts/db-execute.mjs scripts/sync-stacks.ts --remote",
+    "add:stack:turso": "node scripts/add-to-stack-turso.mjs",
+    "sync:stacks:turso": "node scripts/sync-stacks-turso.mjs",
     "rename:handle": "node --env-file=.env scripts/db-execute.mjs scripts/rename-user-handle.ts",
     "rename:handle:remote": "node --env-file=.env scripts/db-execute.mjs scripts/rename-user-handle.ts --remote",
     "sync:people": "node --env-file=.env scripts/db-execute.mjs scripts/sync-people-from-db.ts",

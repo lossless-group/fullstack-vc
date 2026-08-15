@@ -48,6 +48,8 @@ current_stack:
   - tool: github
     added: 2020-01-01
     notes: "Source of truth for every repo — Lossless monorepo, all Astro-Knots sites, LFM package, the whole lot."
+  - tool: aside
+    notes: "Agent-native browser — drives logged-in sites directly; using it for portco email → filed-PDF exports."
 aspirational_stack:
   - tool: agents-view
     intent: "Browse and search past AI coding sessions."
@@ -62,8 +64,7 @@ aspirational_stack:
   - tool: pi-dev
     intent: "Terminal-based coding agent for quick tasks and command-line work."
   - tool: n8n
-    added: 2025-06-01
-    notes: "Workflow automation, mostly self-hosted."
+    intent: "Workflow automation, mostly self-hosted."
   - tool: crew-ai
     intent: "Want to evaluate for VC diligence workflows."
   - tool: firecrawl
@@ -73,6 +74,8 @@ aspirational_stack:
     intent: "Wire agents into the VC stack — Affinity, Notion, Drive — with managed auth instead of hand-rolling each integration."
   - tool: mcpmarket
     intent: "Find MCP servers worth wiring up, then version and sync our Agent Skills across the team instead of copy-pasting SKILL.md files."
+  - tool: comet
+    intent: "Free on every platform — the one to hand to non-technical colleagues once the agentic-browser recipe is proven on Aside."
 abandoned_stack:
   - tool: cursor
     abandoned: 2026-03-15
@@ -89,6 +92,7 @@ abandoned_stack:
   - tool: trae-ide
     abandoned: 2025-10-28
     reason: "Found Claude Code better over time."
+
 ---
 
 Founder of Lossless Group and FullStack VC. Building the Agentic VC Dojo as a place for venture capitalists to practice using AI in their actual workflows.
