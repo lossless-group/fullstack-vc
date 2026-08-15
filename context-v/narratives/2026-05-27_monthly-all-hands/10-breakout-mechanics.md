@@ -24,6 +24,9 @@ artifact_fields:
   - "The one tool we'd reach for first"
   - "The metric that says it's working"
   - "The thing we'd need from the dojo to actually build it"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

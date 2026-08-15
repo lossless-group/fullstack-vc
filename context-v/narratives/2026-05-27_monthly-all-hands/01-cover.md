@@ -5,6 +5,9 @@ headline: "Monthly All-Hands"
 subhead: "Wednesday · May 27, 2026 · 9:00 AM PT"
 presenters_short: "Mike Moradi & Raeed Zainuddin · Cortado Ventures"
 partner: "Kauffman Fellows"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

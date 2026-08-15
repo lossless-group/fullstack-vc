@@ -15,6 +15,7 @@ authors:
   - Michael Staton
 date_created: 2026-04-27
 date_modified: 2026-04-27
+publish: true
 ---
 
 # Optimize for Localized OpenGraph Metadata and Banner Image with Overlay

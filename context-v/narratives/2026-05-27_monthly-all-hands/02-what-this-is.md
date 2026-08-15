@@ -6,6 +6,9 @@ subhead: "Two Kauffman Fellows share what they've been building, breaking, and l
 fomo_bullets:
   - "Copilot on steroids for firm impact"
   - "OpenClaw does heavy lifting"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

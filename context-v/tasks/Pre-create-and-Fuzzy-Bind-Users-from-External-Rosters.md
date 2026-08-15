@@ -15,6 +15,7 @@ authors:
   - Michael Staton
 date_created: 2026-05-21
 date_modified: 2026-05-21
+publish: false
 ---
 
 # Pre-create Turso User Rows from External Rosters and Fuzzy-Bind to Public Participant Profiles

@@ -15,6 +15,7 @@ authors:
   - Michael Staton
 date_created: 2026-05-21
 date_modified: 2026-05-21
+publish: true
 ---
 
 # Migrate Participant Stacks from Markdown to Turso with DB→Markdown Materialization

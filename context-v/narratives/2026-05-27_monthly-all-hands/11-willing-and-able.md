@@ -13,6 +13,9 @@ coordination_spine:
   - "One async surface (Slack channel or shared doc — pick one)"
   - "A convener per track from the doer cohort (not the host)"
 next_session_date: "Wednesday · June 24, 2026"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

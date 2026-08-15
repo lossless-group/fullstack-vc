@@ -26,6 +26,9 @@ tags:
   - Dididecks-AI
 authors:
   - Michael Staton
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: false
 ---
 
 # Build Section-Composed Decks Alongside Reveal — with Live Theme + Mode as a Hard Constraint

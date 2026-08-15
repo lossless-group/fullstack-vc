@@ -9,6 +9,9 @@ tracks_teaser:
   - "Internal Conviction → IC"
   - "Syndicate to VCs"
   - "Offer to LPs"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

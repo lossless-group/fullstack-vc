@@ -15,6 +15,7 @@ authors:
   - Michael Staton
 date_created: 2026-05-09
 date_modified: 2026-05-09
+publish: false
 ---
 
 # Auth + Identity System Worked, but the Post-Login UX Silently Bounces Users

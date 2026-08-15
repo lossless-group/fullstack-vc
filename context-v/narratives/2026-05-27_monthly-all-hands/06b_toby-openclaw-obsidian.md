@@ -31,6 +31,9 @@ takeaway_questions:
   - "What breaks at scale — what's the failure mode?"
 audience_relevance: "Most direct relevance for anyone drowning in dealflow they can't stay current on — solo investors, scouts, ops-light funds. Also relevant to anyone curious about Obsidian-as-2nd-brain for the firm."
 why_a_founder_demoing_to_vcs: "Toby's been wiring these tools up from the founder side — same workflow muscles, different vantage. Watching a builder show his pipeline-management stack is the inversion VCs rarely get."
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

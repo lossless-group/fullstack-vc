@@ -11,6 +11,9 @@ agent_hints:
   - "SPV doc-set assembly + status comms"
   - "LP-curiosity feeder: light updates between deals to keep the muscle warm"
 ties_to_slide_05: true
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

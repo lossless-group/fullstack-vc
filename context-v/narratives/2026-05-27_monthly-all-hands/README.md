@@ -1,3 +1,10 @@
+---
+title: "Narratives — 2026-05-27 Monthly All-Hands deck"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
+---
+
 # Narratives — 2026-05-27 Monthly All-Hands deck
 
 One markdown file per slide. Frontmatter for structured fields the section component reads. Body for prose hints to whoever (you, future Claude) composes the layout.

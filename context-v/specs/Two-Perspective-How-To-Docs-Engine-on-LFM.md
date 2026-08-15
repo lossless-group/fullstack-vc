@@ -28,6 +28,9 @@ tags:
   - Content-Collections
 authors:
   - Michael Staton
+date_created: 2026-06-22
+date_modified: 2026-06-22
+publish: true
 ---
 
 # A Two-Perspective How-To Engine — Use-Cases ✕ Tool-Uses, Built on LFM

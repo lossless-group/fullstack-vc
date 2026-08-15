@@ -1,3 +1,9 @@
+---
+title: "Troubleshooting SSG Authentication and the Port to SSR with a Database"
+date_created: 2026-04-28
+date_modified: 2026-04-28
+publish: true
+---
 
 
 # The Issue needing Resolution

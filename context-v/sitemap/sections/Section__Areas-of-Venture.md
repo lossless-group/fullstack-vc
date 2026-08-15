@@ -1,3 +1,9 @@
+---
+title: "Areas of Venture | A Section with a Grid Layout"
+date_created: 2026-04-27
+date_modified: 2026-04-27
+publish: false
+---
 
 
 # Areas of Venture | A Section with a Grid Layout

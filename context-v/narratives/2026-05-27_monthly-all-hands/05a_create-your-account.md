@@ -36,6 +36,9 @@ also_more_to_come: "Things we haven't cooked up yet — once accounts exist, the
 privacy_posture: "Data will never be used for any reason other than better curating experiences for the Dojo."
 cta_short: "Top-right → Log in → pick a provider → done."
 disclaimer_vibe_coded: "We're vibe-coding / agentic-engineering this whole thing with Claude Code + Pi.dev. If something glitches mid-login, that's par for the course — we'll fix it once we understand it (Claude usually has to explain it to us first)."
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

@@ -111,6 +111,9 @@ panels:
       - "A LATAM seed investor — end-to-end automations across sourcing, screening, follow-ups, and internal evaluation."
       - "An early-stage life-sciences investor — exploring an 'agent-powered autonomous startup' with 4-5 PhD-level agents."
     seconds: 20
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide GROUP is

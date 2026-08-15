@@ -10,6 +10,9 @@ links:
   - label: "From Yes to Win (breakouts detail)"
     href: "/breakouts/from-yes-to-win"
 partner: "Kauffman Fellows"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

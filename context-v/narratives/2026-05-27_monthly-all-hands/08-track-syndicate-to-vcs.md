@@ -10,6 +10,9 @@ agent_hints:
   - "Warm-intro draft generator per target fund + partner"
   - "Round-build status tracker (who's in, who's looking, who passed)"
   - "Talking-points generator for each fund's known thesis"
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

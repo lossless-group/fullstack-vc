@@ -28,6 +28,9 @@ takeaway_questions:
   - "Where did Cortado hit walls — what didn't work?"
   - "What does 'better housekeeping for agents' actually look like in practice?"
 audience_relevance: "Most direct relevance for solo / small-team funds without dedicated ops headcount."
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is

@@ -15,6 +15,9 @@ agenda:
     minutes: 15
   - step: "Report-backs, Q&A, and the willing-and-able question for June"
     minutes: 10
+date_created: 2026-05-27
+date_modified: 2026-05-27
+publish: true
 ---
 
 ## What this slide is
