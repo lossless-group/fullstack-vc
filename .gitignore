@@ -42,3 +42,6 @@ db.timestamp-*.mjs
 
 # Affinity Designer / Photo / Publisher lock files — created while file is open in the editor
 *~lock~
+
+# Processed image staging — CDN is the source of truth for served bytes
+.image-staging/

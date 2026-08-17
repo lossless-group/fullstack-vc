@@ -1,0 +1,187 @@
+/**
+ * image-carousel.css — shared block + element styles for the
+ * ImageCarousel--{Variant} components.
+ *
+ * Sibling stylesheet in the Callout mould (structural component + types
+ * registry + stylesheet). Modifier styles live in each variant component's
+ * scoped <style>; only the block and its elements live here.
+ *
+ * Class grammar mirrors the house component-file grammar:
+ *   .lfm-carousel            block
+ *   .lfm-carousel__track     element
+ *   .lfm-carousel--peek      modifier
+ */
+
+.lfm-carousel {
+  /* Layer 3 tokens — namespaced --lfm-* per the LFM extensibility contract. */
+  --lfm-carousel-gap: 1rem;
+  --lfm-carousel-radius: 0.5rem;
+  --lfm-carousel-bg: var(--color-surface-2, rgba(127, 127, 127, 0.06));
+  --lfm-carousel-border: var(--color-border, rgba(127, 127, 127, 0.24));
+  --lfm-carousel-fg-muted: var(--color-text-muted, var(--muted-foreground, #888));
+  --lfm-carousel-accent: var(--color-primary, var(--primary, #3b82f6));
+  --lfm-carousel-ordinal-bg: var(--color-primary, var(--primary, #3b82f6));
+  --lfm-carousel-ordinal-fg: #fff;
+
+  margin: 1.75rem 0;
+  container-type: inline-size;
+}
+
+.lfm-carousel__title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+}
+
+.lfm-carousel__readout {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--lfm-carousel-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Track — scroll-snap does the work, so every variant survives JS being off. */
+.lfm-carousel__track {
+  display: flex;
+  gap: var(--lfm-carousel-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  padding-bottom: 0.5rem;
+  outline-offset: 4px;
+}
+
+.lfm-carousel__slide {
+  scroll-snap-align: center;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lfm-carousel__media {
+  position: relative;
+  background: var(--lfm-carousel-bg);
+  border: 1px solid var(--lfm-carousel-border);
+  border-radius: var(--lfm-carousel-radius);
+  overflow: hidden;
+}
+
+.lfm-carousel__media img {
+  display: block;
+  width: 100%;
+  height: var(--lfm-carousel-media-h, auto);
+  object-fit: cover;
+  object-position: top center;
+}
+
+.lfm-carousel__ordinal {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--lfm-carousel-ordinal-bg);
+  color: var(--lfm-carousel-ordinal-fg);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.lfm-carousel:not(.lfm-carousel--numbered) .lfm-carousel__ordinal {
+  display: none;
+}
+
+.lfm-carousel__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.lfm-carousel__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.lfm-carousel__caption {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--lfm-carousel-fg-muted);
+}
+
+/* Nav — used by the Stepper and Peek variants. */
+.lfm-carousel__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.lfm-carousel__arrow {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid var(--lfm-carousel-border);
+  background: var(--lfm-carousel-bg);
+  color: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lfm-carousel__arrow:hover {
+  border-color: var(--lfm-carousel-accent);
+}
+
+.lfm-carousel__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.lfm-carousel__dots {
+  display: flex;
+  gap: 0.375rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lfm-carousel__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--lfm-carousel-border);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--lfm-carousel-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lfm-carousel__dot[data-active] {
+  background: var(--lfm-carousel-accent);
+  border-color: var(--lfm-carousel-accent);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lfm-carousel__track {
+    scroll-behavior: auto;
+  }
+}

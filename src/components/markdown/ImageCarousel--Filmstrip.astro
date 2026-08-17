@@ -1,0 +1,89 @@
+---
+/**
+ * ImageCarousel--Filmstrip — scanning variant of the `:::image-carousel` directive.
+ *
+ * Every frame visible at a glance, scroll horizontally for the rest. Use when
+ * the reader wants the gist without committing to an interaction.
+ *
+ * Ships no JavaScript — scroll-snap is the whole mechanism.
+ *
+ * Selected by ImageCarousel.astro on `variant="filmstrip"` (the default).
+ * Siblings: --Stepper, --Peek, --ContactSheet.
+ */
+import { collectSlides, readOptions, carouselUid } from './image-carousel-types';
+import './image-carousel.css';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node } = Astro.props;
+const slides = collectSlides(node);
+const { title, numbered, maxHeight } = readOptions(node);
+const uid = carouselUid(slides, 'filmstrip');
+const count = slides.length;
+---
+
+{count > 0 && (
+  <figure
+    class:list={['lfm-carousel', 'lfm-carousel--filmstrip', numbered && 'lfm-carousel--numbered']}
+    data-lfm-carousel
+    data-variant="filmstrip"
+    data-count={count}
+    id={uid}
+    style={maxHeight ? `--lfm-carousel-media-h: ${maxHeight}` : undefined}
+  >
+    {title && (
+      <figcaption class="lfm-carousel__title">
+        {title}
+        <span class="lfm-carousel__readout">{count} images</span>
+      </figcaption>
+    )}
+
+    <div
+      class="lfm-carousel__track"
+      data-track
+      tabindex="0"
+      role="group"
+      aria-label={title ? `${title} — ${count} images` : `Image sequence, ${count} images`}
+    >
+      {slides.map((slide, i) => (
+        <div class="lfm-carousel__slide" data-slide id={`${uid}-${i + 1}`}>
+          <div class="lfm-carousel__media">
+            {numbered && <span class="lfm-carousel__ordinal" aria-hidden="true">{i + 1}</span>}
+            <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          </div>
+          {(slide.label || slide.caption) && (
+            <div class="lfm-carousel__meta">
+              {slide.label && <span class="lfm-carousel__label">{slide.label}</span>}
+              {slide.caption && <span class="lfm-carousel__caption">{slide.caption}</span>}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </figure>
+)}
+
+<style>
+  /* Modifier-only styles; block + elements live in image-carousel.css */
+  :global(.lfm-carousel--filmstrip .lfm-carousel__slide) {
+    width: min(320px, 72cqi);
+  }
+
+  /* proximity, not mandatory — free scrolling reads better when scanning */
+  :global(.lfm-carousel--filmstrip .lfm-carousel__track) {
+    scroll-snap-type: x proximity;
+  }
+
+  :global(.lfm-carousel--filmstrip .lfm-carousel__media img) {
+    height: var(--lfm-carousel-media-h, 190px);
+  }
+
+  @container (max-width: 480px) {
+    :global(.lfm-carousel--filmstrip .lfm-carousel__slide) {
+      width: 86cqi;
+    }
+  }
+</style>

@@ -4,6 +4,7 @@ import { toString } from "mdast-util-to-string";
 import CodeBlock from "./CodeBlock.astro";
 import Callout from "./Callout.astro";
 import MarkdownImage from "./MarkdownImage.astro";
+import ImageCarousel from "./ImageCarousel.astro";
 
 export interface Props {
   node: Root | Content;
@@ -257,6 +258,11 @@ function childrenOf(n: any): any[] {
   }
   if (directive.name === "image") {
     return <MarkdownImage node={directive} data={data} />;
+  }
+  // `img-carousel` is a syntactic alias of `image-carousel` — both normalise to
+  // the same component, per the LFM polyglot rule (aliases render identically).
+  if (directive.name === "image-carousel" || directive.name === "img-carousel") {
+    return <ImageCarousel node={directive} data={data} />;
   }
   // Fallback: render children as-is
   return (

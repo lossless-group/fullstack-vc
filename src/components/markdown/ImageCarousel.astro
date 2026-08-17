@@ -1,0 +1,47 @@
+---
+/**
+ * ImageCarousel — block-level router for the `:::image-carousel` /
+ * `:::img-carousel` LFM container directive.
+ *
+ * Holds no markup of its own. It reads the `variant` attribute and defers to
+ * the matching modifier sibling, so AstroMarkdown's dispatch stays a one-liner
+ * and the variant set is enumerated in exactly one place
+ * (image-carousel-types.ts).
+ *
+ *   ImageCarousel.astro              ← this file (block)
+ *   ImageCarousel--Filmstrip.astro   ← modifier siblings
+ *   ImageCarousel--Stepper.astro
+ *   ImageCarousel--Peek.astro
+ *   ImageCarousel--ContactSheet.astro
+ *   image-carousel-types.ts          ← registry + slide extraction
+ *   image-carousel.css               ← shared block + element styles
+ *   image-carousel.client.ts         ← progressive enhancement (Stepper, Peek)
+ *
+ * Unknown variants fall back to the default rather than failing the build,
+ * per LFM's no-hard-validation posture.
+ */
+import { resolveVariant } from './image-carousel-types';
+import Filmstrip from './ImageCarousel--Filmstrip.astro';
+import Stepper from './ImageCarousel--Stepper.astro';
+import Peek from './ImageCarousel--Peek.astro';
+import ContactSheet from './ImageCarousel--ContactSheet.astro';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node, data } = Astro.props;
+const variant = resolveVariant(node);
+
+const VARIANT_COMPONENTS = {
+  filmstrip: Filmstrip,
+  stepper: Stepper,
+  peek: Peek,
+  'contact-sheet': ContactSheet,
+} as const;
+
+const Variant = VARIANT_COMPONENTS[variant];
+---
+
+<Variant node={node} data={data} />

@@ -1,0 +1,130 @@
+---
+/**
+ * ImageCarousel--Peek — editorial variant of the `:::image-carousel` directive.
+ *
+ * A dominant focal frame with its neighbours bleeding in at reduced opacity, so
+ * the sequence reads as a sequence without losing the hero image. Use inside
+ * prose where the carousel is an illustration rather than an instruction.
+ *
+ *   :::image-carousel{variant="peek" title="Setting up Aside"}
+ *   ::image{src="/1.jpg" alt="…" label="Welcome" caption="…"}
+ *   :::
+ *
+ * Selected by ImageCarousel.astro on `variant="peek"`. Siblings:
+ * --Filmstrip, --Stepper, --ContactSheet.
+ */
+import { collectSlides, readOptions, carouselUid } from './image-carousel-types';
+import './image-carousel.css';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node } = Astro.props;
+const slides = collectSlides(node);
+const { title, numbered, maxHeight } = readOptions(node);
+const uid = carouselUid(slides, 'peek');
+const count = slides.length;
+---
+
+{count > 0 && (
+  <figure
+    class:list={['lfm-carousel', 'lfm-carousel--peek', numbered && 'lfm-carousel--numbered']}
+    data-lfm-carousel
+    data-variant="peek"
+    data-count={count}
+    id={uid}
+    style={maxHeight ? `--lfm-carousel-media-h: ${maxHeight}` : undefined}
+  >
+    {title && (
+      <figcaption class="lfm-carousel__title">
+        {title}
+        <span class="lfm-carousel__readout" data-readout aria-live="polite">{count} images</span>
+      </figcaption>
+    )}
+
+    <div
+      class="lfm-carousel__track"
+      data-track
+      tabindex="0"
+      role="group"
+      aria-label={title ? `${title} — ${count} images` : `Image sequence, ${count} images`}
+    >
+      {slides.map((slide, i) => (
+        <div class="lfm-carousel__slide" data-slide id={`${uid}-${i + 1}`}>
+          <div class="lfm-carousel__media">
+            {numbered && <span class="lfm-carousel__ordinal" aria-hidden="true">{i + 1}</span>}
+            <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          </div>
+          {(slide.label || slide.caption) && (
+            <div class="lfm-carousel__meta">
+              {slide.label && <span class="lfm-carousel__label">{slide.label}</span>}
+              {slide.caption && <span class="lfm-carousel__caption">{slide.caption}</span>}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <nav class="lfm-carousel__nav" aria-label="Carousel navigation">
+      <button type="button" class="lfm-carousel__arrow" data-prev aria-label="Previous image">‹</button>
+      <ol class="lfm-carousel__dots">
+        {slides.map((slide, i) => (
+          <li>
+            <a
+              href={`#${uid}-${i + 1}`}
+              class="lfm-carousel__dot"
+              data-dot
+              aria-label={slide.label ? `Go to: ${slide.label}` : `Go to image ${i + 1}`}
+            >
+              <span aria-hidden="true">{i + 1}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <button type="button" class="lfm-carousel__arrow" data-next aria-label="Next image">›</button>
+    </nav>
+  </figure>
+)}
+
+<style>
+  /* Modifier-only styles; block + elements live in image-carousel.css */
+  :global(.lfm-carousel--peek) .lfm-carousel__slide,
+  :global(.lfm-carousel--peek .lfm-carousel__slide) {
+    width: min(76%, 640px);
+  }
+
+  :global(.lfm-carousel--peek .lfm-carousel__track) {
+    padding-inline: 12%;
+  }
+
+  :global(.lfm-carousel--peek .lfm-carousel__media) {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  /* Neighbours recede; the focal frame stays full-strength. */
+  :global(.lfm-carousel--peek .lfm-carousel__slide:not([data-active]) .lfm-carousel__media) {
+    opacity: 0.45;
+    transform: scale(0.94);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.lfm-carousel--peek .lfm-carousel__media) {
+      transition: none;
+    }
+  }
+
+  @container (max-width: 480px) {
+    :global(.lfm-carousel--peek .lfm-carousel__slide) {
+      width: 86cqi;
+    }
+    :global(.lfm-carousel--peek .lfm-carousel__track) {
+      padding-inline: 7%;
+    }
+  }
+</style>
+
+<script>
+  import '../markdown/image-carousel.client';
+</script>

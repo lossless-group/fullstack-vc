@@ -1,0 +1,145 @@
+---
+export const prerender = true;
+import BaseThemeLayout from '../../../layouts/BaseThemeLayout.astro';
+import ModeThemeToggle from '../../../components/ui/ModeThemeToggle.astro';
+import AstroMarkdown from '../../../components/markdown/AstroMarkdown.astro';
+import { parseMarkdown } from '@lossless-group/lfm';
+
+// Every variant of the `:::image-carousel` directive, parsed and rendered
+// through the same `parseMarkdown()` + AstroMarkdown path production uses.
+// If it looks wrong here it's wrong in production.
+//
+// The sample sequence is the four-screen Aside setup flow, which is a genuine
+// ordered sequence — the case this component exists for.
+
+const CDN = 'https://ik.imagekit.io/xvpgfijuw/fullstack-vc/agent-native-browsers';
+
+const slides = `::image{src="${CDN}/Aside__Welcome-Screen_20260817T164659Z.jpg" alt="Aside's first-run welcome screen, headlined 'The AI browser that gets complex work done across your Websites, Accounts, History'" label="Welcome" caption="The pitch, and the permission model, in three words."}
+::image{src="${CDN}/Aside__Onboarding--Recovery-Key_20260817T171052Z.jpg" alt="Aside onboarding step titled 'Back up your recovery key', with the twelve-word phrase redacted" label="Recovery key" caption="Twelve words, unrecoverable if lost. Phrase redacted here."}
+::image{src="${CDN}/Aside__Onboarding--Browser-Agent_20260817T164659Z.jpg" alt="Aside onboarding slide reading 'Anything you do in a browser, Aside can do for you' with example prompts" label="The agent" caption="Note the first example prompt: 'Write an investor update.'"}
+::image{src="${CDN}/Aside__Onboarding--Setup-Complete_20260817T164659Z.jpg" alt="Aside's final setup screen, 'You're all set!', with three checked options" label="Done" caption="Default browser, Dock, telemetry. Then you're live."}`;
+
+const sampleMd = `## The four variants
+
+All four render the same four images. Pick by what the reader needs to *do*.
+
+### 1. \`filmstrip\` — scan the whole sequence
+
+Every frame visible at a glance, scroll horizontally for the rest. Best when the
+reader wants the gist without committing to a click. No JavaScript required.
+
+:::image-carousel{variant="filmstrip" title="Setting up Aside"}
+${slides}
+:::
+
+### 2. \`stepper\` — walk it one screen at a time
+
+One full-width frame, numbered dots, prev/next, and a live "Step N of M" readout.
+Best for an actual procedure the reader might follow along with. **This is the one
+built for a setup flow.**
+
+:::image-carousel{variant="stepper" title="Setting up Aside"}
+${slides}
+:::
+
+### 3. \`peek\` — editorial focus
+
+A dominant focal frame with its neighbours bleeding in at reduced opacity, so the
+sequence reads as a sequence without losing the hero image. Best inside prose where
+the carousel is an illustration rather than an instruction.
+
+:::image-carousel{variant="peek" title="Setting up Aside"}
+${slides}
+:::
+
+### 4. \`contact-sheet\` — no scrolling at all
+
+A responsive grid; every frame on screen at once, numbered. Not really a carousel —
+but for a four-step flow it's often the most honest option, because nothing is hidden
+behind an interaction.
+
+:::image-carousel{variant="contact-sheet" title="Setting up Aside"}
+${slides}
+:::
+
+## Syntax
+
+\`\`\`markdown
+:::image-carousel{variant="stepper" title="Setting up Aside"}
+::image{src="/1.jpg" alt="…" label="Welcome" caption="…"}
+::image{src="/2.jpg" alt="…" label="Recovery key" caption="…"}
+:::
+\`\`\`
+
+\`:::img-carousel\` is a syntactic alias — identical render, per the LFM polyglot rule.
+
+### Attributes
+
+| Attribute | Values | Default | Notes |
+|---|---|---|---|
+| \`variant\` | \`filmstrip\` · \`stepper\` · \`peek\` · \`contact-sheet\` | \`filmstrip\` | Unknown values fall back to the default rather than failing |
+| \`title\` | string | — | Renders above the track; also becomes the group's accessible name |
+| \`numbered\` | \`true\` · \`false\` | \`true\` | Ordinal badge on each frame |
+| \`max-height\` | CSS length | per-variant | Caps media height |
+
+Per-slide, the nested \`::image\` accepts \`src\`, \`alt\`, \`label\` (short step name) and
+\`caption\`.
+
+### Alias check
+
+The block below uses \`:::img-carousel\` rather than \`:::image-carousel\`. It must render
+identically to variant 1 above.
+
+:::img-carousel{variant="filmstrip" title="Alias test — img-carousel"}
+${slides}
+:::
+
+### Degradation
+
+Every variant is CSS-first: \`scroll-snap\` and anchor-link dots do the work, so the
+component stays usable with JavaScript disabled. The script only adds the live step
+readout, active-dot state, and arrow-key support. \`prefers-reduced-motion\` disables
+smooth scrolling and the peek transition.
+`;
+
+const tree = await parseMarkdown(sampleMd);
+---
+
+<BaseThemeLayout
+  title="Image Carousels · Design System · FullStack VC"
+  description="Every variant of the LFM :::image-carousel directive, rendered through the production markdown pipeline."
+  containerClass="px-6 py-12 max-w-4xl mx-auto"
+>
+  <meta name="robots" content="noindex, nofollow" slot="head" />
+
+  <header class="ds-head">
+    <p class="ds-eyebrow">Design System · Markdown</p>
+    <h1>Image Carousels</h1>
+    <p class="ds-lede">
+      The <code>:::image-carousel</code> container directive, in four variants. Built for
+      <em>sequences</em> — a setup flow, a before/after, a step-by-step — so every variant
+      keeps the ordinal position visible.
+    </p>
+    <ModeThemeToggle />
+  </header>
+
+  <article class="docs-prose">
+    <AstroMarkdown node={tree} />
+  </article>
+</BaseThemeLayout>
+
+<style>
+  .ds-head { margin-bottom: 2.5rem; }
+  .ds-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #888);
+    margin-bottom: 0.5rem;
+  }
+  .ds-lede {
+    color: var(--color-text-muted, #888);
+    max-width: 60ch;
+    margin: 0.5rem 0 1.5rem;
+  }
+</style>

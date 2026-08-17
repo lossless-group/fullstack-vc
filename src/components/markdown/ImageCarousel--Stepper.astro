@@ -1,0 +1,110 @@
+---
+/**
+ * ImageCarousel--Stepper — procedural variant of the `:::image-carousel` directive.
+ *
+ * One full-width frame at a time, numbered dots, prev/next, and a live
+ * "Step N of M" readout. Use for a procedure the reader might follow along with.
+ *
+ *   :::image-carousel{variant="stepper" title="Setting up Aside"}
+ *   ::image{src="/1.jpg" alt="…" label="Welcome" caption="…"}
+ *   :::
+ *
+ * Selected by ImageCarousel.astro on `variant="stepper"`. Siblings:
+ * --Filmstrip, --Peek, --ContactSheet.
+ */
+import { collectSlides, readOptions, carouselUid } from './image-carousel-types';
+import './image-carousel.css';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node } = Astro.props;
+const slides = collectSlides(node);
+const { title, numbered, maxHeight } = readOptions(node);
+const uid = carouselUid(slides, 'stepper');
+const count = slides.length;
+---
+
+{count > 0 && (
+  <figure
+    class:list={['lfm-carousel', 'lfm-carousel--stepper', numbered && 'lfm-carousel--numbered']}
+    data-lfm-carousel
+    data-variant="stepper"
+    data-count={count}
+    id={uid}
+    style={maxHeight ? `--lfm-carousel-media-h: ${maxHeight}` : undefined}
+  >
+    {title && (
+      <figcaption class="lfm-carousel__title">
+        {title}
+        <span class="lfm-carousel__readout" data-readout aria-live="polite">Step 1 of {count}</span>
+      </figcaption>
+    )}
+
+    <div
+      class="lfm-carousel__track"
+      data-track
+      tabindex="0"
+      role="group"
+      aria-label={title ? `${title} — ${count} steps` : `Step sequence, ${count} steps`}
+    >
+      {slides.map((slide, i) => (
+        <div class="lfm-carousel__slide" data-slide id={`${uid}-${i + 1}`}>
+          <div class="lfm-carousel__media">
+            {numbered && <span class="lfm-carousel__ordinal" aria-hidden="true">{i + 1}</span>}
+            <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          </div>
+          {(slide.label || slide.caption) && (
+            <div class="lfm-carousel__meta">
+              {slide.label && <span class="lfm-carousel__label">{slide.label}</span>}
+              {slide.caption && <span class="lfm-carousel__caption">{slide.caption}</span>}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <nav class="lfm-carousel__nav" aria-label="Step navigation">
+      <button type="button" class="lfm-carousel__arrow" data-prev aria-label="Previous step">‹</button>
+      <ol class="lfm-carousel__dots">
+        {slides.map((slide, i) => (
+          <li>
+            <a
+              href={`#${uid}-${i + 1}`}
+              class="lfm-carousel__dot"
+              data-dot
+              aria-label={slide.label ? `Go to step ${i + 1}: ${slide.label}` : `Go to step ${i + 1}`}
+            >
+              <span aria-hidden="true">{i + 1}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <button type="button" class="lfm-carousel__arrow" data-next aria-label="Next step">›</button>
+    </nav>
+  </figure>
+)}
+
+<style>
+  /* Modifier-only styles; block + elements live in image-carousel.css */
+  :global(.lfm-carousel--stepper .lfm-carousel__slide) {
+    width: 100%;
+  }
+
+  /* contain, not cover — a procedure screenshot must not be cropped */
+  :global(.lfm-carousel--stepper .lfm-carousel__media img) {
+    height: var(--lfm-carousel-media-h, auto);
+    object-fit: contain;
+  }
+
+  /* Reserve caption height so the frame doesn't jump between steps. */
+  :global(.lfm-carousel--stepper .lfm-carousel__meta) {
+    min-height: 2.5rem;
+  }
+</style>
+
+<script>
+  import '../markdown/image-carousel.client';
+</script>

@@ -52,11 +52,21 @@ Nearly all of it is **behind a login, and most of it has no API you can get at**
 
 An agent-native browser routes around all of it. You have permission to use these sites — you're a customer, an investor, a board member. The agent uses that same permission through the same front door. No integration, no API key, no IT ticket, no vendor negotiation.
 
+
 The corollary, which we'll come back to: that same property means the agent inherits **everything** you're logged into, all at once.
 
 ## The field, as of August 2026
 
 The category is roughly a year old and moving fast enough that this table is a snapshot, not a standing recommendation.
+
+Installing one takes about four screens. Aside's, in order:
+
+:::image-carousel{variant="peek" title="Setting up Aside"}
+::image{src="https://ik.imagekit.io/xvpgfijuw/fullstack-vc/agent-native-browsers/Aside__Welcome-Screen_20260817T164659Z.jpg" alt="Aside's first-run welcome screen, headlined 'The AI browser that gets complex work done across your Websites, Accounts, History', with a preview of the sidebar showing Tasks, Routines and Customize" label="Welcome" caption="'Websites, Accounts, History' is the category thesis in three words — and the security problem in the same three."}
+::image{src="https://ik.imagekit.io/xvpgfijuw/fullstack-vc/agent-native-browsers/Aside__Onboarding--Recovery-Key_20260817T171052Z.jpg" alt="Aside onboarding step titled 'Back up your recovery key', explaining that the key lets you reset your password and cannot be recovered if lost, with the twelve-word phrase and key identifier redacted" label="Recovery key" caption="Twelve words, unrecoverable if lost. Redacted here — treat it like a seed phrase, because it is one."}
+::image{src="https://ik.imagekit.io/xvpgfijuw/fullstack-vc/agent-native-browsers/Aside__Onboarding--Browser-Agent_20260817T164659Z.jpg" alt="Aside onboarding slide reading 'Anything you do in a browser, Aside can do for you', with example prompts including 'Write an investor update' and 'Find unused subs and request refunds' above a row of app icons for Gmail, WhatsApp, Notion and Jira" label="The agent" caption="Note the first example prompt — 'Write an investor update.' These products know exactly who is buying."}
+::image{src="https://ik.imagekit.io/xvpgfijuw/fullstack-vc/agent-native-browsers/Aside__Onboarding--Setup-Complete_20260817T164659Z.jpg" alt="Aside's final setup screen, 'You're all set!', with three checked options: set Aside as default browser, add Aside to Dock, and share crash and usage statistics" label="Done" caption="Default browser, Dock, telemetry — the third one is worth an actual decision."}
+:::
 
 | Browser | Platform | The distinguishing thing |
 |---|---|---|
@@ -76,6 +86,8 @@ The category is roughly a year old and moving fast enough that this table is a s
 ## The flagship recipe: every email from a portco, filed as PDFs
 
 This is the one I reach for most, and it's a good first real task because the output is verifiable and it touches nothing destructive.
+
+::image{src="https://ik.imagekit.io/xvpgfijuw/fullstack-vc/agent-native-browsers/Aside__Gmail-Export--Portco-Updates_20260817T165240Z.jpg" alt="Aside driving Gmail on a search for binti.com: a long results list of quarterly investor updates from founder Felicia Curcuru going back to 2015, with Aside's agent panel on the right showing the typed instruction to save each update as a date-named PDF and its progress note reading 'That's a long list - 51 update emails so far and there may be more'" caption="Aside running this recipe against a real portfolio company. The agent found 51 investor updates going back to 2015 — a decade of correspondence that existed in exactly one inbox. Attachment names on the Series Seed row are redacted."}
 
 **Why you want it.** The full correspondence history with a portfolio company is a genuine asset that almost always exists in exactly one place: one partner's inbox, searchable only by them, lost entirely when they leave. Pulled out as filed documents, it becomes the input to a quarterly portfolio review, the raw material for a data room at the up-round, the reconstruction of what was actually promised in a board seat conversation two years ago, and — increasingly — a corpus you can point an agent at.
 

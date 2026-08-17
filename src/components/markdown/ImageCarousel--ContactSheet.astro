@@ -1,0 +1,87 @@
+---
+/**
+ * ImageCarousel--ContactSheet — no-interaction variant of the
+ * `:::image-carousel` directive.
+ *
+ * A responsive grid: every frame on screen at once, numbered. Not a carousel in
+ * the strict sense — but for a short sequence it is often the most honest
+ * option, because nothing is hidden behind an interaction.
+ *
+ * Ships no JavaScript and does not scroll.
+ *
+ * Selected by ImageCarousel.astro on `variant="contact-sheet"`. Siblings:
+ * --Filmstrip, --Stepper, --Peek.
+ */
+import { collectSlides, readOptions, carouselUid } from './image-carousel-types';
+import './image-carousel.css';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node } = Astro.props;
+const slides = collectSlides(node);
+const { title, numbered, maxHeight } = readOptions(node);
+const uid = carouselUid(slides, 'contact-sheet');
+const count = slides.length;
+---
+
+{count > 0 && (
+  <figure
+    class:list={['lfm-carousel', 'lfm-carousel--contact-sheet', numbered && 'lfm-carousel--numbered']}
+    data-lfm-carousel
+    data-variant="contact-sheet"
+    data-count={count}
+    id={uid}
+    style={maxHeight ? `--lfm-carousel-media-h: ${maxHeight}` : undefined}
+  >
+    {title && (
+      <figcaption class="lfm-carousel__title">
+        {title}
+        <span class="lfm-carousel__readout">{count} images</span>
+      </figcaption>
+    )}
+
+    <div
+      class="lfm-carousel__track"
+      role="group"
+      aria-label={title ? `${title} — ${count} images` : `Image sequence, ${count} images`}
+    >
+      {slides.map((slide, i) => (
+        <div class="lfm-carousel__slide" data-slide id={`${uid}-${i + 1}`}>
+          <div class="lfm-carousel__media">
+            {numbered && <span class="lfm-carousel__ordinal" aria-hidden="true">{i + 1}</span>}
+            <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          </div>
+          {(slide.label || slide.caption) && (
+            <div class="lfm-carousel__meta">
+              {slide.label && <span class="lfm-carousel__label">{slide.label}</span>}
+              {slide.caption && <span class="lfm-carousel__caption">{slide.caption}</span>}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </figure>
+)}
+
+<style>
+  /* Modifier-only styles; block + elements live in image-carousel.css */
+  /* Overrides the shared flex track with a grid — nothing scrolls here. */
+  :global(.lfm-carousel--contact-sheet .lfm-carousel__track) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    overflow-x: visible;
+    scroll-snap-type: none;
+    padding-bottom: 0;
+  }
+
+  :global(.lfm-carousel--contact-sheet .lfm-carousel__slide) {
+    width: auto;
+  }
+
+  :global(.lfm-carousel--contact-sheet .lfm-carousel__media img) {
+    height: var(--lfm-carousel-media-h, 170px);
+  }
+</style>

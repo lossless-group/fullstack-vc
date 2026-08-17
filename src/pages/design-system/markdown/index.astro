@@ -29,6 +29,14 @@ const components = [
     canonical: 'packages/lfm-astro/components/CodeBlock.astro',
   },
   {
+    name: 'ImageCarousel',
+    purpose: 'Renders `:::image-carousel{variant=…}` container directives (alias: `:::img-carousel`) holding a sequence of nested `::image` leaf directives. Four variants — filmstrip, stepper, peek, contact-sheet — all CSS-first via scroll-snap, so they function with JavaScript disabled; the script only adds the live step readout, active-dot state, and arrow-key nav. Built for ordered sequences (setup flows, before/after), so every variant keeps the ordinal visible.',
+    cssContract: '--lfm-carousel-gap, --lfm-carousel-radius, --lfm-carousel-bg, --lfm-carousel-border, --lfm-carousel-fg-muted, --lfm-carousel-accent, --lfm-carousel-ordinal-bg/-fg, --lfm-carousel-media-h',
+    href: '/design-system/markdown/image-carousel',
+    note: '4 variants · alias check · reduced-motion aware.',
+    canonical: 'Site-local — not yet extracted to packages/lfm-astro.',
+  },
+  {
     name: 'MarkdownImage',
     purpose: 'Renders `:::image{src=… alt=…}` directive blocks with caption support. Distinct from inline `![alt](src)` images, which go through AstroMarkdown directly.',
     cssContract: '--color-text-muted, --color-border',
