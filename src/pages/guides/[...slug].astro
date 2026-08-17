@@ -68,12 +68,6 @@ const firstUseCase = data.use_cases?.[0];
         <AstroMarkdown node={tree} />
       </div>
     </article>
-
-    {/* Outline comes from LFM's remarkHeadingIds — no DOM scraping, no local
-        slug computation. Renders nothing on short documents. */}
-    <aside class="docs-aside">
-      <TableOfContents headings={(tree as any).data?.headings ?? []} />
-    </aside>
   </div>
 </BaseThemeLayout>
 

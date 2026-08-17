@@ -7,10 +7,10 @@
  * JumboPopdown__More). Split out only because Astro has no inline component
  * declarations and the outline nests to arbitrary depth.
  */
-import type { TocNode } from './toc-types';
+import type { LfmHeadingNode } from '@lossless-group/lfm';
 
 interface Props {
-  nodes: TocNode[];
+  nodes: LfmHeadingNode[];
   level?: number;
 }
 
