@@ -1,0 +1,82 @@
+---
+/**
+ * TableOfContents — reading-position ToC for LFM-rendered articles.
+ *
+ * Renders from `tree.data.headings` (LFM ≥0.4.0 `remarkHeadingIds`). Does not
+ * scrape the DOM and does not compute slugs — anchor identity belongs to the
+ * package, per lfm/context-v/Maintain-Heading-Anchors-and-Share-Links.md.
+ *
+ * THREE STATES, ONE RENDER. Deliberately *not* split into
+ * `TableOfContents--{Variant}.astro` siblings: the states are viewport-driven,
+ * not author-chosen. All three exist in this markup simultaneously and CSS
+ * decides which is visible. Modifier siblings are for variants an author picks
+ * (cf. ImageCarousel--Peek).
+ *
+ *   Rail       wide desktop     persistent left column
+ *   Collapsed  laptop / narrow  hamburger; expands right as an overlay
+ *   Header     mobile           top bar naming the current heading; expands down
+ *
+ * Spec: astro-knots/context-v/specs/Reading-Position-Table-of-Contents-for-LFM-Articles.md
+ */
+import TocList from './TableOfContents__List.astro';
+import { nestHeadings, filterHeadings, type TocHeading } from './toc-types';
+import './table-of-contents.css';
+
+interface Props {
+  /** `tree.data.headings` from parseMarkdown / createLfmProcessor. */
+  headings?: TocHeading[];
+  /** Shallowest heading level to include. */
+  minDepth?: number;
+  /** Deepest heading level to include. */
+  maxDepth?: number;
+  /** Below this many entries the ToC renders nothing — a 2-item outline is noise. */
+  minEntries?: number;
+  title?: string;
+}
+
+const {
+  headings = [],
+  minDepth = 2,
+  maxDepth = 3,
+  minEntries = 3,
+  title = 'On this page',
+} = Astro.props;
+
+const filtered = filterHeadings(headings, minDepth, maxDepth);
+const tree = nestHeadings(filtered);
+const enough = filtered.length >= minEntries;
+---
+
+{enough && (
+  <nav class="lfm-toc" data-toc aria-label={title}>
+    {/* Mobile bar. Its label names the heading currently being read — the
+        client script fills it; this fallback covers the no-JS case. */}
+    <button type="button" class="lfm-toc__bar" data-toc-toggle aria-expanded="false">
+      <span class="lfm-toc__bar-kicker">{title}</span>
+      <span class="lfm-toc__bar-label" data-toc-label>{filtered[0]?.text}</span>
+      <span class="lfm-toc__chevron" aria-hidden="true">▾</span>
+    </button>
+
+    {/* Laptop hamburger — same panel, different affordance. */}
+    <button
+      type="button"
+      class="lfm-toc__burger"
+      data-toc-toggle
+      aria-expanded="false"
+      aria-label={title}
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+
+    <div class="lfm-toc__panel" data-toc-panel>
+      <p class="lfm-toc__title">{title}</p>
+      <TocList nodes={tree} />
+    </div>
+  </nav>
+)}
+
+<script>
+  import '../markdown/table-of-contents.client';
+</script>

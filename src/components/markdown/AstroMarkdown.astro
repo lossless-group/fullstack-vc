@@ -1,6 +1,7 @@
 ---
 import type { Root, Content, Heading, List, ListItem, Link, Image, Code, InlineCode, Paragraph, Blockquote } from "mdast";
 import { toString } from "mdast-util-to-string";
+import { slugifyHeading } from "@lossless-group/lfm";
 import CodeBlock from "./CodeBlock.astro";
 import Callout from "./Callout.astro";
 import MarkdownImage from "./MarkdownImage.astro";
@@ -56,11 +57,12 @@ function childrenOf(n: any): any[] {
 {type === "heading" && (() => {
   const heading = node as Heading;
   const text = toString(heading);
-  const id = text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
+  // Anchor identity belongs to LFM, not to this renderer. `remarkHeadingIds`
+  // (≥0.4.0) stamps `data.id` with a deduped slug and attaches the matching
+  // outline at `tree.data.headings`, which is what the ToC renders from.
+  // Computing a slug here is what made anchors drift between sites; the
+  // fallback calls LFM's own slugifier so there is still exactly one algorithm.
+  const id = (heading.data as any)?.id ?? slugifyHeading(text);
 
   const level = heading.depth ?? 1;
 

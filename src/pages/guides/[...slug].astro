@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
+import TableOfContents from '../../components/markdown/TableOfContents.astro';
 import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
 import '../../styles/docs-prose.css';
 
@@ -37,7 +38,7 @@ const firstUseCase = data.use_cases?.[0];
 <BaseThemeLayout
   title={`${data.title} · Guide · FullStack VC`}
   description={data.lede ?? data.title}
-  containerClass="px-6 py-12 max-w-3xl mx-auto"
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
 >
   <nav class="docs-crumbs">
     {firstUseCase && <a href={`/use-cases/${firstUseCase}`}>← {firstUseCase.replace(/-/g, ' ')}</a>}
@@ -46,23 +47,76 @@ const firstUseCase = data.use_cases?.[0];
     )}
   </nav>
 
-  <article class="docs-article">
-    <header class="docs-head">
-      <p class="docs-eyebrow">
-        Guide{data.difficulty ? ` · ${data.difficulty}` : ''}{data.estimated_minutes ? ` · ${data.estimated_minutes} min` : ''}
-        {data.status && data.status !== 'Published' ? ` · ${data.status}` : ''}
-      </p>
-      <h1 class="docs-title">{data.title}</h1>
-      {data.lede && <p class="docs-lede">{data.lede}</p>}
-    </header>
+  <div class="docs-layout">
+    {/* Outline comes from LFM's remarkHeadingIds — no DOM scraping, no local
+        slug computation. Renders nothing on short documents. */}
+    <aside class="docs-aside">
+      <TableOfContents headings={(tree as any).data?.headings ?? []} />
+    </aside>
 
-    <div class="docs-prose">
-      <AstroMarkdown node={tree} />
-    </div>
-  </article>
+    <article class="docs-article">
+      <header class="docs-head">
+        <p class="docs-eyebrow">
+          Guide{data.difficulty ? ` · ${data.difficulty}` : ''}{data.estimated_minutes ? ` · ${data.estimated_minutes} min` : ''}
+          {data.status && data.status !== 'Published' ? ` · ${data.status}` : ''}
+        </p>
+        <h1 class="docs-title">{data.title}</h1>
+        {data.lede && <p class="docs-lede">{data.lede}</p>}
+      </header>
+
+      <div class="docs-prose">
+        <AstroMarkdown node={tree} />
+      </div>
+    </article>
+
+    {/* Outline comes from LFM's remarkHeadingIds — no DOM scraping, no local
+        slug computation. Renders nothing on short documents. */}
+    <aside class="docs-aside">
+      <TableOfContents headings={(tree as any).data?.headings ?? []} />
+    </aside>
+  </div>
 </BaseThemeLayout>
 
 <style>
+  /* Rail beside the article at ≥1280px; the ToC collapses itself below that,
+     so the grid simply reverts to a single column. */
+  /* `main` is a flex item (BaseThemeLayout wraps the slot in .flex.flex-col),
+     and flex descendants refuse to shrink below their content unless told to.
+     Without this chain the widest child — a table with a min-width — propagates
+     its width all the way up and the whole column bleeds past the viewport.
+     `overflow-x: clip` rather than `hidden`: clip doesn't create a scroll
+     container, so it can't break the sticky rail nested inside. */
+  .docs-layout {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  .docs-article,
+  .docs-prose { min-width: 0; max-width: 100%; }
+  @media (min-width: 1280px) {
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: 3rem;
+      align-items: start;
+    }
+  }
+  /* Keep the prose measure at its comfortable width; the rail takes the rest. */
+  .docs-article { max-width: 48rem; }
+
+  /* ≥1280 the rail rides along as a sticky grid item — its parent .docs-layout
+     is as tall as the article, so it has somewhere to travel. Below that the
+     ToC positions itself `fixed` and leaves the flow entirely, so this wrapper
+     collapses to nothing and the article reclaims full width. */
+  .docs-aside { align-self: start; }
+  @media (min-width: 1280px) {
+    .docs-aside { position: sticky; top: 2rem; }
+  }
+  /* Clear the fixed bar at mobile so it doesn't sit on the title. */
+  @media (max-width: 767.98px) {
+    .docs-article { padding-top: 2.75rem; }
+  }
   .docs-crumbs { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-bottom: 1.5rem; font-family: var(--font-code); font-size: 0.8125rem; }
   .docs-crumbs a { color: var(--color-primary); text-decoration: none; }
   .docs-crumbs a:hover { text-decoration: underline; }

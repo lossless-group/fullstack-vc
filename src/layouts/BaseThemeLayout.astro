@@ -44,7 +44,17 @@ const {
 >
   <div class="min-h-screen flex flex-col">
     {!hideChrome && <Header />}
-    <main class={`flex-1 ${containerClass}`}>
+    {/* `w-full min-w-0` is load-bearing, not decorative.
+        Callers pass `mx-auto` in containerClass to centre the column — but an
+        auto cross-axis margin on a flex item DISABLES `align-items: stretch`,
+        so <main> stopped filling its parent and sized to fit-content instead,
+        growing to its max-content width. Measured: 637px <main> inside a 500px
+        viewport, with html/body/wrapper all correctly at 500 and nothing
+        inside main exceeding its content box.
+        `w-full` restores a definite width; `max-w-*` still caps it and
+        `mx-auto` still centres it once there's free space. `min-w-0` covers the
+        separate flex case where a wide descendant refuses to shrink. */}
+    <main class={`flex-1 w-full min-w-0 ${containerClass}`}>
       <slot />
     </main>
     {!hideChrome && <Footer />}

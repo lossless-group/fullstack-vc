@@ -82,11 +82,41 @@
 
 .docs-prose img { max-width: 100%; height: auto; border-radius: 0.5rem; }
 
+/* AstroMarkdown wraps every table in `.ak-table-wrap`. Nothing styled it, so a
+   table wider than the viewport simply overflowed and clipped its right-hand
+   column — visible on any narrow window with a 3-column comparison table.
+   Unscoped on purpose: the class is emitted by the component, so it should
+   behave the same wherever that component renders, not only inside .docs-prose. */
+.ak-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain; /* don't chain to the page / trigger back-nav */
+}
+
+/* Below this the columns crush into unreadable slivers, so the table stops
+   shrinking and the wrapper scrolls instead. This is what makes the wrapper
+   above do anything — with `width: 100%` alone there is never overflow to
+   scroll, just squeezed content. */
+.ak-table-wrap > table {
+  /* Wide enough that a 3-column comparison table stays legible, narrow enough
+     to fit inside a browser at its minimum window width (~500px in Chrome)
+     without the scroller itself becoming the thing that overflows. */
+  min-width: 26rem;
+}
+
 .docs-prose table {
   width: 100%;
   border-collapse: collapse;
   margin: 1.25rem 0;
   font-size: 0.95em;
+}
+
+/* Long unbroken strings (URLs, package names) shouldn't be able to widen a
+   cell past its share of the table. */
+.docs-prose th,
+.docs-prose td {
+  overflow-wrap: break-word;
 }
 .docs-prose th,
 .docs-prose td {

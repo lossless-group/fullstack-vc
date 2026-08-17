@@ -37,6 +37,14 @@ const components = [
     canonical: 'Site-local — not yet extracted to packages/lfm-astro.',
   },
   {
+    name: 'TableOfContents',
+    purpose: 'Reading-position table of contents for LFM articles. Renders from `tree.data.headings` (LFM ≥0.4.0 `remarkHeadingIds`) — no DOM scraping, no local slug computation. Three viewport-driven states in one render: persistent left rail ≥1280px, hamburger-with-right-overlay 768–1279px, and a mobile top bar whose label names the heading currently being read. Deliberately NOT split into `--` modifier siblings: the states are viewport-driven, not author-chosen. `TableOfContents__List.astro` is the recursive `<ul>` element; `toc-types.ts` holds the flat-to-tree fold (destined for LFM itself).',
+    cssContract: '--lfm-toc-w, --lfm-toc-fg, --lfm-toc-fg-active, --lfm-toc-bg, --lfm-toc-border, --lfm-toc-radius',
+    href: null,
+    note: '3 states · scrollspy · works without JS. Demo TBD — visible on any /guides page.',
+    canonical: 'Site-local — not yet extracted to packages/lfm-astro.',
+  },
+  {
     name: 'MarkdownImage',
     purpose: 'Renders `:::image{src=… alt=…}` directive blocks with caption support. Distinct from inline `![alt](src)` images, which go through AstroMarkdown directly.',
     cssContract: '--color-text-muted, --color-border',
