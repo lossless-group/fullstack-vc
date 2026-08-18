@@ -13,7 +13,7 @@ order: 19
 status: Draft
 publish: true
 date_created: 2026-08-17
-date_modified: 2026-08-17
+date_modified: 2026-08-18
 authors:
   - Michael Staton
 augmented_with: "Claude Code on Opus 5"
@@ -84,6 +84,24 @@ That doesn't mean don't do it. It means the extraction step needs a verification
 On model choice: **MiniMax M2.5** scored 98.6% with a 100% pass rate on structured extraction in independent testing, and **GLM-5** landed around 77.8% — the two strongest self-hosted picks. **DeepSeek V4** supports JSON output and tool calls natively across a 1M-token context, which matters when the source document is a 200-page data room PDF rather than an email.
 
 For tool-calling accuracy specifically — right function, right parameters, right types — the **Berkeley Function Calling Leaderboard** is the one to watch; V4 added web search and memory categories.
+
+### The overnight option — run the big model slowly
+
+Everything above assumes you're calling a hosted model. There's a third path worth knowing about for this job specifically, and more or less only this job: **[Colibrí](https://github.com/JustVugg/colibri)**, a pure-C inference engine — Apache 2.0, one ~2,400-line file, zero dependencies — that runs frontier MoE models on hardware you already own by treating disk, RAM and VRAM as a single memory hierarchy. It keeps the dense backbone resident and streams routed experts off NVMe on demand. GLM-5.2 activates only ~40–55B of its 744B parameters per forward pass, so most of the model can sit on disk: **744B in about 25GB of RAM** — plus 372GB of disk, which is the part the headline drops. It supports most of the table above: GLM-5.2, Kimi K3, DeepSeek V4-Flash.
+
+It is slow. Roughly 0.05–0.1 tok/s cold, ~1.8 tok/s warm on a 128GB CPU-only desktop, 5.8–6.8 tok/s across six RTX 5090s. The project says plainly that it offers "no SLA on speed."
+
+**Which is exactly why it's useless for Job 1 and interesting here.** Four reasons the fit is specific to batch extraction:
+
+- **Nobody is waiting.** A queue that runs overnight doesn't care about latency, only about whether the work is done by morning.
+- **The output is short.** The tok/s penalty falls on decode, and extraction emits a few hundred tokens of JSON per document — not the thousands an agentic coding turn generates. The long part, the 200-page data room, is input.
+- **Batch is the workload the architecture actually wants.** The cold number is dire and the warm one is 20–40× better. A hundred documents of the same type route to substantially the same experts, so the cache warms once and stays warm. Run one document and you get the bad number; run the queue and you get the good one.
+- **You get the *big* model.** This is the real argument. Value accuracy is a property of the model, and the laptop-sized alternative is a worse extractor — in the one job where being worse is hardest to notice. Colibrí inverts the usual local-inference tradeoff: rather than shrinking the model to fit the machine, it fits the machine to the model and pays in wall-clock.
+
+It's also the job where the confidentiality case is strongest. Data rooms, cap tables, portco financials, diligence material under NDA — Job 5 makes this argument about recorded calls, and it applies with more force to documents someone handed you under terms.
+
+> [!warning] What it doesn't fix
+> Colibrí changes *where* the model runs, not how well it extracts. **83.0% value accuracy on text still applies**, the verification step above is still the actual engineering, and the quantization and disk-streaming tradeoffs have not been measured against that benchmark by anyone. Treat it as what it calls itself — an open research platform — rather than a pipeline you'd hand to an analyst.
 
 ## Job 3 — Data analysis
 
