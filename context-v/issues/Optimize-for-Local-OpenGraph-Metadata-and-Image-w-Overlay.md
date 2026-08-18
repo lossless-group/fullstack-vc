@@ -16,6 +16,8 @@ authors:
 date_created: 2026-04-27
 date_modified: 2026-04-27
 publish: true
+site_uuid: 15050fa6-b9c2-4c63-9793-f43797c55fa3
+hex_code: db9n8l
 ---
 
 # Optimize for Localized OpenGraph Metadata and Banner Image with Overlay

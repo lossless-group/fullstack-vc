@@ -31,6 +31,10 @@ audience_relevance: "Most direct relevance for solo / small-team funds without d
 date_created: 2026-05-27
 date_modified: 2026-05-27
 publish: true
+site_uuid: d966966f-7e31-4358-8681-e441e5e917e1
+hex_code: 2d234u
+date_authored_initial_draft: 2026-05-27
+date_authored_current_draft: 2026-05-27
 ---
 
 ## What this slide is

@@ -34,6 +34,10 @@ why_a_founder_demoing_to_vcs: "Toby's been wiring these tools up from the founde
 date_created: 2026-05-27
 date_modified: 2026-05-27
 publish: true
+site_uuid: 0e3262ac-8516-4dbe-b02b-17bf8da87a88
+hex_code: dd1coj
+date_authored_initial_draft: 2026-05-27
+date_authored_current_draft: 2026-05-27
 ---
 
 ## What this slide is

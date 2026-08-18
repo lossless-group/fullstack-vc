@@ -16,6 +16,8 @@ authors:
 date_created: 2026-05-21
 date_modified: 2026-05-21
 publish: true
+site_uuid: f011752a-0d1e-4c0c-906e-97649b846260
+hex_code: u108ew
 ---
 
 # Wire Google Workspace OAuth as a Third Identity Provider

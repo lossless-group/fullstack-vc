@@ -27,6 +27,10 @@ artifact_fields:
 date_created: 2026-05-27
 date_modified: 2026-05-27
 publish: true
+site_uuid: 43c21a48-b59c-471e-b4cf-92f0576ca1b3
+hex_code: gnluav
+date_authored_initial_draft: 2026-05-27
+date_authored_current_draft: 2026-05-27
 ---
 
 ## What this slide is

@@ -22,6 +22,10 @@ data_snapshot:
 date_created: 2026-05-27
 date_modified: 2026-05-27
 publish: true
+site_uuid: bc31f6aa-719b-4887-9dc0-c58a290de478
+hex_code: agn7tz
+date_authored_initial_draft: 2026-05-27
+date_authored_current_draft: 2026-05-27
 ---
 
 ## What this slide is

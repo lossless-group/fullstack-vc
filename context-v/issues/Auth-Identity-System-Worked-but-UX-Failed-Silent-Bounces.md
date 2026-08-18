@@ -16,6 +16,8 @@ authors:
 date_created: 2026-05-09
 date_modified: 2026-05-09
 publish: false
+site_uuid: b607624a-c971-4f86-9c07-49d5bfed3910
+hex_code: d1w1ly
 ---
 
 # Auth + Identity System Worked, but the Post-Login UX Silently Bounces Users
