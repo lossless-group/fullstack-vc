@@ -16,7 +16,7 @@ order: 20
 status: Draft
 publish: true
 date_created: 2026-07-29
-date_modified: 2026-07-29
+date_modified: 2026-10-06
 authors:
   - Michael Staton
 augmented_with: "Claude Code on Fable 5"
@@ -301,6 +301,123 @@ This is the stylized multi-line frame you saw in the screenshots — what Oh My 
 
 What you're pasting, in plain language: the `blocks` array is the prompt, top to bottom. Block one is the header line — machine, user, timestamp. Block two is the context line — the cloud segments (Azure, AWS, GCP, Kubernetes) stay invisible unless you're actually in one of those contexts, and the git segment lights up inside repositories. Block three is the full path. Block four is right-aligned telemetry — execution time, RAM, battery. Block five is the `└─>` you type after. Every color is an inline hex code (`#7eb8da` is the frame's blue) — change one string, get a different prompt.
 
+### Prefer Starship? Same prompt, different engine
+
+[Starship](https://starship.rs) is another popular prompt engine. It's a single fast binary configured with one TOML file, and it's what Michael runs on his main dev machine. The config below is a port of `my-tokyo`: the same frame, colors, segments, and order, so a terminal set up with Starship looks the same as one set up with Oh My Posh. Use **one or the other**, not both.
+
+```bash
+brew install starship
+```
+
+In `~/.zshrc`, replace the `oh-my-posh` line (if you added it) with:
+
+```bash
+eval "$(starship init zsh)"
+```
+
+Then save this as `~/.config/starship.toml`:
+
+```toml
+# Michael's "my-tokyo" prompt, ported from Oh My Posh to Starship.
+# Save as ~/.config/starship.toml
+
+add_newline = false
+continuation_prompt = " "
+
+format = """
+[┏](#7eb8da)\
+[\\[](#7eb8da)[\uf108 ](#ffffff)[:](#7eb8da)[\uf8ff](#ffffff)$hostname[:](#7eb8da)[\ueb99 ](#ffffff)$username[\\]](#7eb8da)\
+$time\
+(\n[┣](#7eb8da)$aws$gcloud$azure$kubernetes$package$git_branch$git_status)\
+\n[┣](#7eb8da)$directory\
+\n[┣](#7eb8da)$fill$cmd_duration$memory_usage$battery\
+\n[└─](#7eb8da)$status> """
+
+[hostname]
+ssh_only = false
+format = "[$hostname](#7eb8da)"
+
+[username]
+show_always = true
+format = "[$user](#7eb8da)"
+
+[time]
+disabled = false
+time_format = "%Y%m%d@%H:%M:%S"
+format = "[\\[](#7eb8da)[\uf073](#ffffff)[ $time](#7eb8da)[\\]](#7eb8da)"
+
+[aws]
+format = "[\\[](#7eb8da)[\uf270](#ffffff) [$profile](#ffff00)(@[$region](#ffff00))[\\]](#7eb8da)"
+
+[gcloud]
+format = "[\\[](#7eb8da)[\uf1a0](#ffffff) [$project](#ffff00) :: [$account](#ffff00)[\\]](#7eb8da)"
+
+[azure]
+disabled = false
+format = "[\\[](#7eb8da)[\uebd8](#ffffff) Subscription: [$subscription](#ffff00)[\\]](#7eb8da)"
+
+[kubernetes]
+disabled = false
+format = "[\\[](#ffa5d8)[\U000f10fe](#ffffff) [$context](#ffff00)( :: [$namespace](#ffff00))[\\]](#ffa5d8)"
+
+[package]
+format = "[\\[](#ffa5d8)[\uf487](#ffffff)[ $version](#ffa5d8)[\\]](#ffa5d8)"
+
+[git_branch]
+format = "[\\[](#ffa5d8)[\ue725 ](#ffffff)[$branch](#ffa5d8)"
+
+[git_status]
+format = "[( $ahead_behind)( [\uf044](#ffffff)( $conflicted)( $untracked)( $modified)( $deleted)( $renamed))( [\uf046](#ffffff) $staged)( [\ueb4b](#ffffff) $stashed)\\]](#ffa5d8)"
+ahead = "↑${count}"
+behind = "↓${count}"
+diverged = "↑${ahead_count} ↓${behind_count}"
+up_to_date = "≡"
+untracked = "?${count}"
+modified = "~${count}"
+deleted = "-${count}"
+renamed = "»${count}"
+staged = "+${count}"
+stashed = "${count}"
+conflicted = "!${count}"
+
+[directory]
+truncation_length = 100
+truncate_to_repo = false
+format = "[\\[](#7eb8da)[\uf115](#ffffff) [$path](#98bfad)[$read_only](#98bfad)[\\]](#7eb8da)"
+
+[fill]
+symbol = " "
+
+[cmd_duration]
+min_time = 0
+show_milliseconds = true
+format = "[\\[](#be9ddf)[\uf252](#ffffff)[ $duration](#be9ddf)[\\]](#be9ddf)"
+
+[memory_usage]
+disabled = false
+threshold = -1
+format = "[\\[](#be9ddf)[\ue266](#ffffff)[ RAM: $ram](#be9ddf)[\\]](#be9ddf)"
+
+[battery]
+format = "[\\[$symbol$percentage\uf295\\]]($style)"
+full_symbol = "\ue22f "
+charging_symbol = "\ueb2d "
+discharging_symbol = "\uf244 "
+[[battery.display]]
+threshold = 100
+style = "#f36943"
+
+[status]
+disabled = false
+format = "[\\[Error, check your command\\]](#ffa5d8)"
+```
+
+Open a new window (or run `exec zsh`) and you'll see the same framed prompt. A few small differences from the Oh My Posh version, because the two engines expose slightly different data:
+
+- The git segment shows a git icon rather than a GitHub or GitLab logo for the remote, and it counts staged files as one number rather than splitting them into added, modified, and deleted.
+- Execution time reads like `40ms` or `1s234ms` instead of `0.040s`.
+- There's no yellow `[#]` root marker. You shouldn't be running your shell as root anyway.
+
 ## Step 4 — Understand what the prompt is telling you
 
 Michael's theme draws a connected multi-line frame down the left margin (those `┏ ┣ └─` box-drawing characters) with a segment per line. Reading top to bottom:
@@ -413,7 +530,8 @@ Type `y` and you get a three-pane, arrow-key file browser with image and text pr
 ## Troubleshooting
 
 - **Boxes/question marks instead of icons** — you're likely in a different terminal app (Terminal.app, VS Code's terminal) that lacks Nerd Font fallback. Either use Ghostty or install a Nerd Font (`brew install font-jetbrains-mono-nerd-font`) and set it in that app.
-- **Prompt didn't change** — the `eval "$(oh-my-posh init zsh ...)"` line has to be in `~/.zshrc` and you need a *new* shell: run `exec zsh` or open a new window.
+- **Prompt didn't change** — the `eval "$(oh-my-posh init zsh ...)"` line (or `eval "$(starship init zsh)"` for Starship) has to be in `~/.zshrc` and you need a *new* shell: run `exec zsh` or open a new window. Only one of the two should be there; if both are, whichever comes last wins.
+- **Starship shows an error about the config** — run `starship explain` to see which part of `~/.config/starship.toml` it can't read. The usual cause is a copy-paste that lost a backslash.
 - **Prompt feels slow in huge repos** — the git segment's status scan is the usual culprit. In the theme JSON, set `fetch_status` to `false` in the git segment's options.
 - **Changed the Ghostty config, nothing happened** — reload with Cmd+Shift+, or open a new window; config is read at startup.
 
