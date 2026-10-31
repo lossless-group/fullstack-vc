@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-05-21
 at_semantic_version: 0.0.0.1
 status: Planned
-augmented_with: Claude Code (Opus 4.7)
+augmented_with:
+  - Claude Code (Opus 4.7)
 category: Task
 tags: [Storage, Identity-Model, Astro-DB, Turso, Materialization, GitHub-App-Retirement, Participants, Stacks, Build-In-Public, SSR-vs-SSG, Schema-Migration, Content-Materialization]
 authors:

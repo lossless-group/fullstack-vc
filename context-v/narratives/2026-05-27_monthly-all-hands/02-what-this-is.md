@@ -13,6 +13,8 @@ site_uuid: 51ad99dd-898e-4c21-b48b-6552b092c0a2
 hex_code: p4s94e
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+authors:
+  - Michael Staton
 type: Narratives
 ---
 

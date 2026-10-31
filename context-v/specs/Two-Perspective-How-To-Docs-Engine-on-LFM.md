@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-06-22
 at_semantic_version: 0.0.2.0
 status: Draft
-augmented_with: Claude Code (Opus 4.8, 1M context)
+augmented_with:
+  - Claude Code (Opus 4.8, 1M context)
 category: Specification
 tags:
   - Documentation-Engine

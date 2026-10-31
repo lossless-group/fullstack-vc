@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-05-09
 at_semantic_version: 0.0.1.0
 status: Open
-augmented_with: Claude Code (Opus 4.7)
+augmented_with:
+  - Claude Code (Opus 4.7)
 category: Issue Resolution
 tags: [Authentication, OAuth, GitHub-OAuth, LinkedIn-OAuth, Identity-Model, Turso, Astro-DB, Session-Cookie, OAuth-State-Mismatch, Back-Button, SSR-Routing, Prerender-404, Observability, Auth-Event-Log, Post-Login-UX]
 authors:

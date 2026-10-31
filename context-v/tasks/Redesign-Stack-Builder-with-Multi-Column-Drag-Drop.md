@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-05-21
 at_semantic_version: 0.0.0.1
 status: Planned
-augmented_with: Claude Code (Opus 4.7)
+augmented_with:
+  - Claude Code (Opus 4.7)
 category: Task
 tags: [UI, UX, Drag-Drop, Svelte, Stack-Builder, Participant-Editor, Two-Column-Layout, Accessibility, Cross-Column-Reshape, Mobile-Fallback, Touch-UX, Svelte-DnD-Action]
 authors:

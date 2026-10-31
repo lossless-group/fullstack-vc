@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-05-21
 at_semantic_version: 0.0.0.1
 status: Planned
-augmented_with: Claude Code (Opus 4.7)
+augmented_with:
+  - Claude Code (Opus 4.7)
 category: Task
 tags: [Identity-Model, Turso, User-Table, Pre-Creation, Zoom-Ingest, Fuzzy-Matching, OAuth-Binding, Participant-Profiles, Privacy-Boundary, Build-in-Public, Public-Private-Split]
 authors:

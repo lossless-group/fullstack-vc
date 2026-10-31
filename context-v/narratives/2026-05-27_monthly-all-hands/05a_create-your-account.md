@@ -43,6 +43,8 @@ site_uuid: 8069d08d-d7e9-4eae-8aa5-c134405b53ef
 hex_code: bfx203
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+authors:
+  - Michael Staton
 type: Narratives
 ---
 

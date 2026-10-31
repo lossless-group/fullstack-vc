@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-05-21
 at_semantic_version: 0.0.0.1
 status: Planned
-augmented_with: Claude Code (Opus 4.7)
+augmented_with:
+  - Claude Code (Opus 4.7)
 category: Task
 tags: [Authentication, OAuth, Google-OAuth, Google-Workspace, Identity-Model, Provider-Parity, Session-Cookie, Roster-Matching, Header-Auth-Indicator, May-27-Prep]
 authors:

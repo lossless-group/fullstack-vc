@@ -8,7 +8,8 @@ date_first_published:
 date_last_updated: 2026-08-15
 at_semantic_version: 0.0.1.0
 status: Open
-augmented_with: Claude Code (Opus 5)
+augmented_with:
+  - Claude Code (Opus 5)
 category: Issue Resolution
 tags: [Astro-DB, Turso, libSQL, Deprecation, Technical-Debt, Migration, Database, Scripts, SSR, Stacks, Polling, Cleanup]
 authors:
