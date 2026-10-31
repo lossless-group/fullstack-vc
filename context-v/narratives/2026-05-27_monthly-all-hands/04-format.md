@@ -22,6 +22,7 @@ site_uuid: e6e7052e-98b4-4074-bf12-ef6addac7718
 hex_code: tn2luw
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+type: Narratives
 ---
 
 ## What this slide is

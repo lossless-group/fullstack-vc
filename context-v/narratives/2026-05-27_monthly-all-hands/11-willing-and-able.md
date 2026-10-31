@@ -20,6 +20,7 @@ site_uuid: 77741a1c-0074-4545-966d-12b04c198199
 hex_code: fsxi5e
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+type: Narratives
 ---
 
 ## What this slide is

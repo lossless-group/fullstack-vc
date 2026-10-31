@@ -18,6 +18,7 @@ date_modified: 2026-05-21
 publish: false
 site_uuid: 410540b6-2759-4dad-96a8-7a07bf2507cf
 hex_code: bwkmpo
+type: Tasks
 ---
 
 # Pre-create Turso User Rows from External Rosters and Fuzzy-Bind to Public Participant Profiles

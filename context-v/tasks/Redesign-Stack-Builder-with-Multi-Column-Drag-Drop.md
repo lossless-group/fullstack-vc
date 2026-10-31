@@ -18,6 +18,7 @@ date_modified: 2026-05-21
 publish: true
 site_uuid: 3051bb32-cf66-43a4-9ac2-168132da21b6
 hex_code: sqittb
+type: Tasks
 ---
 
 # Redesign Stack Builder with Toggleable Multi-Column Layout and Cross-Column Drag-Drop

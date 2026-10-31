@@ -38,6 +38,7 @@ site_uuid: 0e3262ac-8516-4dbe-b02b-17bf8da87a88
 hex_code: dd1coj
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+type: Narratives
 ---
 
 ## What this slide is

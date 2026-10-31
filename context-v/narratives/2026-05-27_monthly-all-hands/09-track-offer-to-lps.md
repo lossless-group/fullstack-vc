@@ -18,6 +18,7 @@ site_uuid: b48eb2f4-a4c0-4b1d-98f2-e23dfe2aeedc
 hex_code: z84pty
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+type: Narratives
 ---
 
 ## What this slide is

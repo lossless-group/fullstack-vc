@@ -18,6 +18,7 @@ hex_code: zir7z3
 date_created: 2026-08-15
 date_modified: 2026-08-15
 publish: false
+type: Issues
 ---
 
 # Retire the Legacy Astro DB Layer in Favor of Direct Turso Access

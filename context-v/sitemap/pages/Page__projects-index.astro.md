@@ -19,6 +19,7 @@ date_modified: 2026-04-27
 publish: true
 site_uuid: e83e61f8-a0bf-4732-9a8a-23e0bbef1622
 hex_code: gm3hbh
+type: Sitemap
 ---
 
 # Page Spec — `projects/index.astro` & `projects/[slug].astro`

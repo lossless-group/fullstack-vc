@@ -7,6 +7,7 @@ site_uuid: 4aff9635-1ec2-4161-b404-ebdcf51d01f6
 hex_code: chv0ym
 date_authored_initial_draft: 2026-05-27
 date_authored_current_draft: 2026-05-27
+type: Narratives
 ---
 
 # Narratives — 2026-05-27 Monthly All-Hands deck
