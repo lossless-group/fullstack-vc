@@ -6,6 +6,7 @@ import CodeBlock from "./CodeBlock.astro";
 import Callout from "./Callout.astro";
 import MarkdownImage from "./MarkdownImage.astro";
 import ImageCarousel from "./ImageCarousel.astro";
+import ToolShowcase from "./ToolShowcase.astro";
 
 export interface Props {
   node: Root | Content;
@@ -265,6 +266,9 @@ function childrenOf(n: any): any[] {
   // the same component, per the LFM polyglot rule (aliases render identically).
   if (directive.name === "image-carousel" || directive.name === "img-carousel") {
     return <ImageCarousel node={directive} data={data} />;
+  }
+  if (directive.name === "tool-showcase") {
+    return <ToolShowcase node={directive} data={data} />;
   }
   // Fallback: render children as-is
   return (

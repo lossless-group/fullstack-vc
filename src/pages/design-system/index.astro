@@ -279,6 +279,12 @@ const components = [
     props: 'tags: {value, count}[] (built at render), total: number, gridSelector? (default "[data-tool-grid]")',
   },
   {
+    name: 'ToolShowcase',
+    purpose: 'Renders the LFM `:::tool-showcase` directive (same authoring syntax as lossless-site: a list of [[tools/<handle>]] wikilinks) as a horizontal carousel of registry ToolCards. CSS scroll-snap does the scrolling (swipe and trackpad work natively); prev/next buttons scroll one card. Unknown handles are skipped. Resets .docs-prose list spacing inside cards so they match the catalogue.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',
+    props: 'node: the containerDirective (wired from AstroMarkdown); optional directive attribute {title} becomes the list\'s aria-label',
+  },
+  {
     name: 'TagChip (Svelte)',
     purpose: 'A tag as a control inside the search islands. Stores Train-Case, displays Normal Case. Selected and removable states fill with --color-primary; that fill is the only cue for active facets.',
     cssContract: '--color-primary, --color-background, --color-text, --color-text-muted, --color-border, --font-code',

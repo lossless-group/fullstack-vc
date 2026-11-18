@@ -1,0 +1,127 @@
+---
+/* ToolShowcase — renders the `:::tool-showcase` directive as a carousel of
+   registry ToolCards.
+
+   Same authoring syntax as lossless-site's directive (site/src/components/
+   toolkit/ToolShowcaseIsland.astro): a list of wikilinks to tools.
+
+     :::tool-showcase
+     - [[tools/instinct|Instinct]]
+     - [[tools/town|Town]]
+     :::
+
+   By the time this runs, remarkLosslessWikilinks has turned each item into a
+   link to /tools/<handle>; we collect those handles in list order and look
+   them up in the tools collection. Unknown handles are skipped, so a typo
+   drops one card rather than breaking the page.
+
+   The carousel is a CSS scroll-snap row (swipe and trackpad work natively);
+   the prev/next buttons are a small progressive enhancement. */
+import { getCollection } from 'astro:content';
+import ToolCard from '../stack/ToolCard.astro';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node } = Astro.props;
+
+function collectHandles(n: any, out: string[] = []): string[] {
+  if (n?.type === 'link' && typeof n.url === 'string') {
+    const m = n.url.match(/^\/tools\/([^/?#]+)\/?$/);
+    if (m) out.push(decodeURIComponent(m[1]));
+  }
+  for (const c of n?.children ?? []) collectHandles(c, out);
+  return out;
+}
+
+const handles = [...new Set(collectHandles(node))];
+const tools = await getCollection('tools');
+const byHandle = new Map(tools.map((t) => [t.id.replace(/\/index$/, ''), t]));
+const cards = handles.map((h) => byHandle.get(h)).filter(Boolean) as typeof tools;
+
+// Same adoption count as /stacks/see-all-tools: published members whose
+// current stack lists the tool.
+const participants = await getCollection('participants');
+const using = new Map<string, number>();
+for (const p of participants) {
+  if (!p.data.publish) continue;
+  for (const item of p.data.current_stack ?? []) using.set(item.tool, (using.get(item.tool) ?? 0) + 1);
+}
+const label = node?.attributes?.title ?? 'Tools';
+---
+
+{cards.length > 0 && (
+  <div class="tool-showcase" data-tool-showcase>
+    <div class="tool-showcase__bar">
+      <span class="tool-showcase__count">{cards.length} tool{cards.length === 1 ? '' : 's'}</span>
+      <div class="tool-showcase__nav">
+        <button type="button" class="tool-showcase__btn" data-dir="-1" aria-label="Previous tools">←</button>
+        <button type="button" class="tool-showcase__btn" data-dir="1" aria-label="Next tools">→</button>
+      </div>
+    </div>
+    <ul class="tool-showcase__track" role="list" aria-label={label} tabindex="0">
+      {cards.map((t) => {
+        const slug = t.id.replace(/\/index$/, '');
+        const count = using.get(slug) ?? 0;
+        return (
+          <li class="tool-showcase__item">
+            <ToolCard slug={slug} data={t.data as any} notes={count > 0 ? `${count} member${count === 1 ? '' : 's'} using` : undefined} />
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+)}
+
+<script>
+  // Prev/next scroll by one card width. Re-run safe: each showcase is wired once.
+  document.querySelectorAll<HTMLElement>('[data-tool-showcase]:not([data-wired])').forEach((root) => {
+    root.dataset.wired = '';
+    const track = root.querySelector<HTMLElement>('.tool-showcase__track');
+    if (!track) return;
+    const step = () => (track.querySelector<HTMLElement>('.tool-showcase__item')?.offsetWidth ?? 280) + 16;
+    root.querySelectorAll<HTMLButtonElement>('.tool-showcase__btn').forEach((b) =>
+      b.addEventListener('click', () => track.scrollBy({ left: Number(b.dataset.dir) * step(), behavior: 'smooth' }))
+    );
+  });
+</script>
+
+<style>
+  .tool-showcase { margin: 1.75rem 0; }
+  .tool-showcase__bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: .6rem;
+  }
+  .tool-showcase__count {
+    font-family: var(--font-code); font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--color-text-muted);
+  }
+  .tool-showcase__nav { display: flex; gap: .4rem; }
+  .tool-showcase__btn {
+    width: 2rem; height: 2rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--color-border); background: var(--color-surface);
+    color: var(--color-text); font-size: .95rem; line-height: 1;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .tool-showcase__btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+  .tool-showcase__track {
+    list-style: none; margin: 0; padding: .25rem .1rem 1rem;
+    display: grid; grid-auto-flow: column; grid-auto-columns: min(18rem, 82%);
+    gap: 1rem; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory; scrollbar-width: thin;
+  }
+  .tool-showcase__track:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: .5rem; }
+  /* Prose styles add bullets and indents to list items; a card row wants neither. */
+  .tool-showcase__item { scroll-snap-align: start; display: flex; margin: 0; padding: 0; }
+  .tool-showcase__item::before, .tool-showcase__item::marker { content: none; }
+  .tool-showcase__item > :global(*) { width: 100%; }
+  /* The cards' own tag lists inherit .docs-prose list spacing and bullets
+     too; reset them so a card looks the same here as in the catalogue. */
+  .tool-showcase__item :global(ul) { margin: 0; padding-left: 0; list-style: none; }
+  .tool-showcase__item :global(li) { margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) { .tool-showcase__btn { transition: none; } }
+</style>

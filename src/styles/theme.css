@@ -15,6 +15,8 @@
   /* Named colors — devtools-meets-dojo improvisation */
   --color__violet-electric: #7c5cff;
   --color__violet-deep: #4b2fc9;
+  --color__lavender-soft: #b8a8ff;
+  --color__violet-bright: #9370ff;
   --color__lime-terminal: #b6ff5c;
   --color__cyan-vapor: #5cf2ff;
   --color__magenta-fuse: #ff5cd6;
@@ -71,6 +73,10 @@
   --color-text: var(--color__ink);
   --color-text-muted: var(--color__graphite-600);
   --color-border: var(--color__graphite-200);
+  /* Links in prose: a lighter, brighter violet than primary, over a lavender
+     underline. ~3.1:1 on bone, a deliberate trade for a lighter feel. */
+  --color-link: var(--color__violet-bright);
+  --color-link-underline: var(--color__lavender-soft);
 
   /* Effect tokens — minimal in light mode */
   --fx-glow-opacity: 0.06;
@@ -120,6 +126,9 @@
   --color-text: var(--color__bone);
   --color-text-muted: var(--color__graphite-400);
   --color-border: var(--color__graphite-800);
+  /* Lavender reads at ~9.3:1 on obsidian, lighter and more legible than violet. */
+  --color-link: var(--color__lavender-soft);
+  --color-link-underline: color-mix(in srgb, var(--color__lavender-soft) 55%, transparent);
 
   /* Effect tokens — moderate in dark mode */
   --fx-glow-opacity: 0.22;
@@ -165,6 +174,8 @@
   --color-text: var(--color__bone);
   --color-text-muted: color-mix(in srgb, var(--color__cyan-vapor) 60%, var(--color__bone));
   --color-border: var(--color__violet-electric);
+  --color-link: var(--color__lavender-soft);
+  --color-link-underline: color-mix(in srgb, var(--color__lavender-soft) 55%, transparent);
 
   /* Effect tokens — maximum impact */
   --fx-glow-opacity: 0.55;
@@ -227,6 +238,8 @@
   --color-text: var(--color-text);
   --color-text-muted: var(--color-text-muted);
   --color-border: var(--color-border);
+  --color-link: var(--color-link);
+  --color-link-underline: var(--color-link-underline);
 
   --font-sans: var(--font-body);
   --font-display: var(--font-display);

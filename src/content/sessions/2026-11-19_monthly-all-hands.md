@@ -31,11 +31,24 @@ og_image: /og-default.png
 
 ### 1. What's new in Claude and ChatGPT, and how to use it in VC
 
-Claude and ChatGPT have both shipped big updates to their apps since our last session. We'll go through the ones that matter most for venture work, with ideas for using each one in your fund.
+Both apps changed a lot since our July session. We'll go through the updates that matter most for venture work, with a fund use for each.
+
+**Claude**
+- **Chat and Cowork became one Claude.** Ask a quick question or hand over a long job, and get back a finished doc, spreadsheet or deck, even after you close the laptop. *Use it for:* a first-draft IC memo and summary deck from a data-room export.
+- **Claude Meetings (beta).** Claude joins a Google Meet, takes notes and builds docs live. *Use it for:* a running list of every deal discussed in the partner meeting, with owners and next steps.
+- **Claude Data, Sheets and Whiteboards.** Live dashboards with agreed metric definitions, spreadsheets that export to Excel, and apps like Carta and HubSpot that open inside Claude. *Use it for:* a portfolio KPI dashboard the whole partnership trusts.
+- **Security tools for IT.** A downloadable security report, checks against your data-loss tools, and a block on personal Claude accounts on firm laptops. *Use it for:* the operational due-diligence questionnaire from your LPs.
+
+**ChatGPT**
+- **Dots, agents that keep working.** A dot has its own computer and works between conversations, under rules you set for what it may do without asking. *Use it for:* a morning triage of inbound decks against your thesis. Note: dots are on by default for Enterprise workspaces from Nov 18 unless an admin opts out.
+- **ChatGPT inside Microsoft 365.** A Word add-in, SharePoint folders inside ChatGPT, and @ChatGPT in Teams. *Use it for:* comparing term sheets straight from the SharePoint deal folder.
+- **GPT-6.** Answers can include charts, comparisons and small interactive tools. It no longer switches to deeper thinking on its own, so pick a higher reasoning level for hard questions.
+
+If your firm built custom GPTs, they're being retired and moved to plugins. We'll cover what that means.
 
 ### 2. Personal agents: use cases and shared best practices
 
-The group chat has been comparing personal agents for weeks: Instinct, Town, Muse, Grok, OpenClaw and others. We'll talk through what fellows actually use them for, what's worked, what hasn't, and the practices worth sharing. Bring your "best thing I've done with my agent" story.
+The group chat has been comparing personal agents for weeks: Instinct, Town, Muse, Grok Bot, OpenClaw and others. We'll talk through what fellows actually use them for, what's worked, what hasn't, and the practices worth sharing. Bring your "best thing I've done with my agent" story.
 
 ### 3. Creating a home connector
 
