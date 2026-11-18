@@ -2,7 +2,6 @@
 handle: adrianna-code
 name: "adrianna-code"
 firm: "Cherry Rock Capital"
-headshot: "https://media.licdn.com/dms/image/v2/D4D03AQF7DxFcTK7CWg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1715187136130?e=1779926400&v=beta&t=lO_E3XXpUr6gDV-IuILVjJyoQN9YHT5WK5nbm-F4KNA"
 linkedin: https://www.linkedin.com/in/adriannasamaniego/
 kauffman_class: 28
 github: https://github.com/adrianna-code

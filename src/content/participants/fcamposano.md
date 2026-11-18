@@ -1,13 +1,13 @@
 ---
 handle: fcamposano
 name: "Felipe Camposano"
-firm: ""
-role: ""
-kauffman_class: null
-directory_profile_kauffman: ""
-linkedin: ""
+firm: "Taram Capital"
+role: "Managing Partner"
+kauffman_class: 16
+directory_profile_kauffman: https://www.kauffmanfellows.org/fellows/felipe-camposano
+linkedin: https://www.linkedin.com/in/fcamposa
+headshot: /images/participant-headshots/headshot__Felipe-Camposano.jpeg
 github_avatar: "https://github.com/fcamposano.png"
-headshot: ""
 publish: true
 joined_dojo: 2026-05-28
 # Hand-created to unblock /people/fcamposano — was a 404 because this is a

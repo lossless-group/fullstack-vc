@@ -9,4 +9,12 @@ title: "fallow: codebase intelligence for typescript and javascript"
 description: "Free open-source static analysis, plus optional paid runtime intelligence for hot paths, cold paths, and runtime-backed code decisions."
 og_image: https://i.imgur.com/WItUoYa.png
 favicon: "https://fallow.tools/favicon.svg"
+tags:
+  - Static-Analysis
+  - Code-Quality
+  - Developer-Tools
+  - TypeScript
+  - JavaScript
+  - Open-Source
+  - AI-Coding
 ---

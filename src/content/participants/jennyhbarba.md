@@ -1,6 +1,7 @@
 ---
 handle: jennyhbarba
 name: "Jenny Barba"
+headshot: /images/participant-headshots/headshot__Jenny-Barba.jpeg
 firm: "Features Capital"
 role: "Managing Partner, Cofounder"
 directory_profile_kauffman: https://www.kauffmanfellows.org/fellows/jenny-barba

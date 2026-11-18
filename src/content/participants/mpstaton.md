@@ -74,6 +74,8 @@ current_stack:
   - tool: claude-team
   - tool: claude-cowork
   - tool: chatgpt
+  - tool: railway
+  - tool: glen
 aspirational_stack:
   - tool: agents-view
     intent: "Browse and search past AI coding sessions."

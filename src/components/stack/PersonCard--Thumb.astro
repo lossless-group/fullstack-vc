@@ -33,8 +33,20 @@ const joinedLabel = joinedOn
 ---
 
 <a class="pcard" href={`/people/${handle}`}>
+  {/* Remote avatars expire (LinkedIn's signed URLs do, within months), so a
+      failed load swaps in the initials chip rather than a broken image. */}
   {avatar ? (
-    <img class="pcard__avatar" src={avatar} alt="" loading="lazy" decoding="async" />
+    <>
+      <img
+        class="pcard__avatar"
+        src={avatar}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+      />
+      <span class="pcard__avatar pcard__avatar--initials" aria-hidden="true" hidden>{initials(name)}</span>
+    </>
   ) : (
     <span class="pcard__avatar pcard__avatar--initials" aria-hidden="true">{initials(name)}</span>
   )}
@@ -98,6 +110,9 @@ const joinedLabel = joinedOn
     color: var(--color-primary);
     letter-spacing: 0.02em;
   }
+  /* The display rules above would otherwise beat the hidden attribute the
+     image-error fallback toggles. */
+  .pcard__avatar[hidden] { display: none; }
 
   .pcard__id { min-width: 0; display: flex; flex-direction: column; gap: 0.0625rem; }
   .pcard__name {

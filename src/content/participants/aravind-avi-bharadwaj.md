@@ -1,12 +1,12 @@
 ---
 handle: aravind-avi-bharadwaj
 name: "Aravind “Avi” Bharadwaj"
+headshot: /images/participant-headshots/headshot__Avi-Bharadwaj.jpeg
 firm: "Intel Capital"
 role: "Investment Partner"
 kauffman_class: 29
 directory_profile_kauffman: "https://www.kauffmanfellows.org/fellows/aravind-bharadwaj"
 linkedin: https://www.linkedin.com/in/aravindbharadwaj/
-headshot: "https://media.licdn.com/dms/image/v2/D5603AQGkPgAocMwIZw/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1674263436482?e=1781740800&v=beta&t=O0EvXNAP6DrPZOEE-QXjCmDnEVnKFbuYYCb_d3WhqII"
 publish: false
 joined_dojo: 2026-05-27
 # Originally an auto-generated stub from generate-orphan-md-stubs.ts;
