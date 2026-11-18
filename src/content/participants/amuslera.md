@@ -10,7 +10,10 @@ headshot: https://media.licdn.com/dms/image/v2/D5603AQHGlfWW7KhRUg/profile-displ
 directory_profile_kauffman: https://www.kauffmanfellows.org/fellows/ariel-muslera
 publish: true
 joined_dojo: 2026-04-30
-current_stack: []
+current_stack:
+  - tool: claude-code
+  - tool: magnet-window-manager
+  - tool: omarchy
 aspirational_stack: []
 abandoned_stack: []
 ---

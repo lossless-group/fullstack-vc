@@ -9,12 +9,15 @@ headshot: /images/participant-headshots/headshot__Jehan-Chu.jpeg
 kauffman_class: 24
 publish: true
 joined_dojo: 2026-05-09
-current_stack: []
+current_stack:
+  - tool: instinct
+  - tool: grok-bot
 aspirational_stack:
   - tool: openclaw
     intent: "Get it running for the first time — on something, anything, anywhere."
   - tool: agent37
-abandoned_stack: []
+abandoned_stack:
+  - tool: muse
 ---
 
 Hosting the OpenClaw Setupathon support group on 2026-05-09. Equal parts participant and host — solidarity setup, not guided tutorial.

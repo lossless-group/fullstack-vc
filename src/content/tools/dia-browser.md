@@ -17,6 +17,8 @@ tags:
   - Research
   - Reading
   - Synthesis
+og_image: "/images/tool-banners/banner__dia-browser.jpg"
+og_favicon: "/images/tool-favicons/favicon__dia-browser.png"
 ---
 
 Dia descends from Arc, and it shows — it is the best-*designed* thing in this category by a comfortable margin. The core interaction is an assistant with awareness of **every tab you have open**, which turns the browser into a reading and synthesis surface rather than an execution surface. "Compare these six pricing pages," "what do these four founder interviews agree on," "draft a summary from what's in front of me."

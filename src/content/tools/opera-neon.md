@@ -16,6 +16,8 @@ tags:
   - Agentic-AI
   - Browser-Automation
   - Opera
+og_image: "/images/tool-banners/banner__opera-neon.png"
+og_favicon: "/images/tool-favicons/favicon__opera-neon.png"
 ---
 
 Neon is Opera's entry, and the distinguishing fact is the provenance: this is a company that has shipped a browser continuously since 1995, arriving at agentic features from the browser side rather than the model side. Everyone else in this category is an AI company that built a browser. If your concern is that a nine-month-old startup is now the thing standing between your logins and the open web, that difference is not nothing.

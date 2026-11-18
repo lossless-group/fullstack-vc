@@ -266,6 +266,24 @@ const components = [
     cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-display, --font-code',
     props: 'name (required), firm?, role?, avatar?, profile?, topic?, topicLabel? (default "Presenting on"), tbd? (default false; auto-detected when name === "TBD")',
   },
+  {
+    name: 'PagefindSearch (Svelte)',
+    purpose: 'Site-wide spill-out search palette in the header, ported from lossless-toolkit-site. Full-text over tools, recipes, sessions, published people, projects and working groups (records from /search-records.json, indexed by scripts/build-search-index.mjs after build). "Show" chips filter by kind (OR); tag chips AND together. Backspace on an empty input pops the last tag; arrow keys + Enter jump to a result; matches are tinted with the primary color, never browser yellow. A fixed sheet on phones. In dev, run `pnpm search:dev` to build the index into public/pagefind/.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-background, --color-border, --font-code',
+    props: 'bundlePath? (default "/pagefind/"), placeholder? (default "Search tools, people, recipes…")',
+  },
+  {
+    name: 'ToolFilter (Svelte)',
+    purpose: 'Multi-tag + text filter bar for /stacks/see-all-tools/. Toggles `hidden` on server-rendered cards whose <li> carries data-tags / data-text; tags AND together and chip counts recount against what is still visible. Shares lib/search-state.svelte.js with PagefindSearch, so tags picked in the palette arrive selected, and ?q=&tags= restores the view.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',
+    props: 'tags: {value, count}[] (built at render), total: number, gridSelector? (default "[data-tool-grid]")',
+  },
+  {
+    name: 'TagChip (Svelte)',
+    purpose: 'A tag as a control inside the search islands. Stores Train-Case, displays Normal Case. Selected and removable states fill with --color-primary; that fill is the only cue for active facets.',
+    cssContract: '--color-primary, --color-background, --color-text, --color-text-muted, --color-border, --font-code',
+    props: 'tagString (required), count?, showCount?, isSelected?, removable?, title?, onclick?({tag, selected})',
+  },
 ];
 ---
 

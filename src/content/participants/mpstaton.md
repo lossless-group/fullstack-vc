@@ -15,9 +15,6 @@ current_stack:
   - tool: claude-code
     added: 2026-04-01
     notes: "Daily driver for Astro-Knots development, AI-Labs, general coding and even file management."
-  - tool: windsurf
-    added: 2026-03-15
-    notes: "Memory efficent, AI-Native IDE with pair-programming — Cascade keeps me in flow state."
   - tool: ghostty
     added: 2025-05-29
     notes: "Fast, feature-rich terminal emulator with GPU acceleration."
@@ -50,6 +47,33 @@ current_stack:
     notes: "Source of truth for every repo — Lossless monorepo, all Astro-Knots sites, LFM package, the whole lot."
   - tool: aside
     notes: "Agent-native browser — drives logged-in sites directly; using it for portco email → filed-PDF exports."
+  - tool: devin
+  - tool: twenty
+  - tool: playwright
+  - tool: nixos
+  - tool: hyprland
+  - tool: event-hog
+  - tool: warp-terminal
+  - tool: vercel
+  - tool: trustedrouter
+  - tool: trae-ide
+  - tool: papermark
+  - tool: outline
+  - tool: origami
+  - tool: omarchy
+  - tool: arch-linux
+  - tool: oh-my-posh
+  - tool: instinct
+  - tool: imagekit
+  - tool: hermes-agent
+  - tool: agent37
+  - tool: granola
+  - tool: dia-browser
+  - tool: context-dev
+  - tool: claude-desktop
+  - tool: claude-team
+  - tool: claude-cowork
+  - tool: chatgpt
 aspirational_stack:
   - tool: agents-view
     intent: "Browse and search past AI coding sessions."
@@ -57,8 +81,6 @@ aspirational_stack:
     intent: "Maybe find a stealth anchor or two."
   - tool: gpgpt
     intent: "let someone else code for a change."
-  - tool: hermes-agent
-    intent: "Self-learning agentic framework for high-context, better memory, and persistence."
   - tool: fallow-tools
     intent: "Improve code quality and reduce AI Slop and technical debt."
   - tool: pi-dev
@@ -69,7 +91,6 @@ aspirational_stack:
     intent: "Want to evaluate for VC diligence workflows."
   - tool: firecrawl
     intent: "Attempt to use for web scraping and content extraction."
-  - tool: agent37
   - tool: composio
     intent: "Wire agents into the VC stack — Affinity, Notion, Drive — with managed auth instead of hand-rolling each integration."
   - tool: mcpmarket
@@ -89,9 +110,6 @@ abandoned_stack:
   - tool: craft-docs
     abandoned: 2026-04-28
     reason: "Found Obsidian better over time, as it gave me access to all the content at the filesystem level and had a Plugin ecosystem."
-  - tool: trae-ide
-    abandoned: 2025-10-28
-    reason: "Found Claude Code better over time."
 
 ---
 

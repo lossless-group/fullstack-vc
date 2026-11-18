@@ -17,6 +17,8 @@ tags:
   - Browser-Automation
   - Local-First
   - Y-Combinator
+og_image: "/images/tool-banners/banner__aside.png"
+og_favicon: "/images/tool-favicons/favicon__aside.ico"
 ---
 
 Aside's pitch is the sharpest in the category: **no integrations.** Where most automation tooling asks which SaaS connectors it can install, Aside's agent just uses the websites and the logins you already have, operating them the way you would by hand. That covers the long tail of venture software that will never expose an API you can get a key for — a portco's internal dashboard, a fund-admin portal, a data room with a bespoke viewer.

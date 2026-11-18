@@ -5,6 +5,7 @@ import JumboPopdown__Projects from '../ui/menus/JumboPopdown__Projects.astro';
 import JumboPopdown__WorkingGroups from '../ui/menus/JumboPopdown__WorkingGroups.astro';
 import JumboPopdown__More from '../ui/menus/JumboPopdown__More.astro';
 import MobileNav from './MobileNav.astro';
+import PagefindSearch from '../search/PagefindSearch.svelte';
 import { loadProjectsForPopdown } from '../../lib/load-projects';
 import { loadWorkingGroupsForPopdown } from '../../lib/load-working-groups';
 
@@ -32,6 +33,10 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
       <img src="/favicon.svg" alt="" width="28" height="28" />
       <span class="site-header__wordmark">FullStack VC</span>
     </a>
+
+    <div class="site-header__search">
+      <PagefindSearch client:idle placeholder="Search…" />
+    </div>
 
     <nav class="site-header__nav" aria-label="Primary">
       <a href="/dojo" class="site-header__link">Dojo</a>
@@ -533,10 +538,26 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
        display:none on mobile, this rule keeps the actions pinned right. */
     margin-left: auto;
   }
+  /* Search takes whatever the nav leaves. It shrinks before the nav wraps,
+     and on phones (nav collapsed into MobileNav) it takes the freed row. */
+  .site-header__search {
+    flex: 1 1 10rem;
+    min-width: 8rem;
+    max-width: 22rem;
+  }
+  @media (max-width: 1100px) {
+    .site-header__inner { gap: 1rem; }
+    .site-header__nav { gap: 0.9rem; }
+  }
   @media (max-width: 640px) {
     .site-header__nav {
       display: none;
     }
+    .site-header__search { max-width: none; min-width: 0; }
+  }
+  /* Phones: the mark alone carries the brand so search gets the row. */
+  @media (max-width: 480px) {
+    .site-header__wordmark { display: none; }
   }
 </style>
 

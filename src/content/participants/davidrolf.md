@@ -12,9 +12,18 @@ joined_dojo: 2026-06-22
 current_stack:
   - tool: openclaw
     notes: "Hardened build (set up by colleagues) on a dedicated Mac mini in Docker, running a few months. Talks to it via Telegram — currently using it to summarize news articles and podcasts."
+  - tool: claude-code
+  - tool: replit
+  - tool: claude-desktop
+  - tool: microsoft-onedrive
+  - tool: microsoft-copilot
+  - tool: affinity
 aspirational_stack:
   - tool: obsidian
     intent: "Build a real second brain — still choosing between Obsidian / Notion / OpenClaw / Nemo / Hermes (and intrigued by Muesli). The compelling part is 'putting it all together.'"
+  - tool: town
+  - tool: claude-cowork
+abandoned_stack: []
 ---
 
 Head of Visa Ventures since 2022 — the corporate venture arm of Visa, making strategic minority investments into companies relevant to Visa's business. Kauffman Fellow, Class 12.

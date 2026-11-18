@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="81.537" height="79.86" viewBox="0 0 81.537 79.86"><defs>
+    <!-- Ultra saturated favicon gradient - maximum vibrancy for brand recognition -->
+    <linearGradient id="soarBrandGrad" gradientUnits="userSpaceOnUse" x1="56.7" y1="80.1" x2="122.1" y2="130.4">
+      <stop offset="0" stop-color="#FFEA00"/><!-- Pure vivid yellow -->
+      <stop offset="0.33" stop-color="#FF6B00"/><!-- Bright vibrant orange -->
+      <stop offset="0.67" stop-color="#FF0000"/><!-- Pure red -->
+      <stop offset="1" stop-color="#C41E3A"/><!-- Deep magenta-red -->
+    </linearGradient>
+  </defs><!-- SOAR mark · Ultra saturated warm gradient (yellow→orange→red→magenta) -->
+  <!-- Circle centres are BAKED into cx/cy on purpose. soarBrandGrad is
+       userSpaceOnUse, so a per-circle transform="translate(...)" moves that
+       circle's user space and drags the gradient with it — every dot then
+       samples the same yellow end of the ramp instead of its own position
+       along it. Re-introducing the transforms turns the dots flat yellow. -->
+  <g id="Group_1" data-name="Group 1" transform="translate(-56.703 -65.98)">
+    <path id="Path_1" data-name="Path 1" d="M102.8,98.09c8.97,6.42,1.91,18.94-7.42,15.79-2.11-.71-2.93-2.02-4.65-3.24a14.824,14.824,0,0,0-14.59-1.49c-4.67,2.16-6.15,6.76-12.2,5.76-10.69-1.77-9.06-17.78,1.75-17.39,4.26.16,5.17,2.54,8.31,4.44a14.794,14.794,0,0,0,16.53-1.11c.91-.73,1.81-1.84,2.76-2.55,2.41-1.8,7.04-1.96,9.5-.2Z" fill="url(#soarBrandGrad)" opacity="0.95"/>
+    <path id="Path_2" data-name="Path 2" d="M119.91,83.94c-6.79-8.69-19-1.12-15.46,8.07.8,2.08,2.15,2.84,3.44,4.51a14.831,14.831,0,0,1,2.1,14.51c-1.97,4.75-6.5,6.42-5.24,12.44,2.22,10.61,18.15,8.3,17.3-2.48-.33-4.25-2.76-5.05-4.78-8.12a14.8,14.8,0,0,1,.42-16.56c.69-.94,1.76-1.89,2.43-2.87,1.69-2.49,1.66-7.12-.2-9.5Z" fill="url(#soarBrandGrad)" opacity="0.95"/>
+    <circle id="Ellipse_1" data-name="Ellipse 1" cx="82.66" cy="90.43" r="8.53" fill="url(#soarBrandGrad)"/>
+    <circle id="Ellipse_2" data-name="Ellipse 2" cx="97.93" cy="74.51" r="8.53" fill="url(#soarBrandGrad)"/>
+    <circle id="Ellipse_3" data-name="Ellipse 3" cx="129.71" cy="104.98" r="8.53" fill="url(#soarBrandGrad)"/>
+    <circle id="Ellipse_4" data-name="Ellipse 4" cx="97.57" cy="137.31" r="8.53" fill="url(#soarBrandGrad)"/>
+    <circle id="Ellipse_5" data-name="Ellipse 5" cx="81.64" cy="122.04" r="8.53" fill="url(#soarBrandGrad)"/>
+  </g>
+</svg>

@@ -16,8 +16,18 @@ current_stack:
   - tool: obsidian
     added: 2026-05-21
     notes: "Second Brain wired to dealflow via OpenClaw — May 27 All-Hands demo."
-aspirational_stack: []
-abandoned_stack: []
+  - tool: muesli
+  - tool: twenty
+  - tool: claude-code
+  - tool: openai-codex
+aspirational_stack:
+  - tool: grok-bot
+  - tool: town
+  - tool: buzz
+  - tool: microsoft-copilot
+abandoned_stack:
+  - tool: granola
+  - tool: wispr-flow
 ---
 
 Founder of Ideem and Kauffman Fellow, Class 23. Served his fellowship at Ant/Alibaba.

@@ -15,6 +15,8 @@ tags:
   - Agentic-AI
   - Browser-Automation
   - Multi-Model
+og_image: "/images/tool-banners/banner__tabbit.png"
+og_favicon: "/images/tool-favicons/favicon__tabbit.png"
 ---
 
 Tabbit's angle is **model choice inside the browser**. It ships with ten-plus LLMs available natively, so the model becomes a per-task decision — a cheap fast one for form filling, a frontier one for the reasoning-heavy extraction — without maintaining separate subscriptions or moving between apps. Everyone else in the category either picks a model for you ([[tools/comet|Comet]]) or asks you to bring your own ([[tools/aside|Aside]]).

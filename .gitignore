@@ -45,3 +45,6 @@ db.timestamp-*.mjs
 
 # Processed image staging — CDN is the source of truth for served bytes
 .image-staging/
+
+# Pagefind index written by `pnpm search:dev`
+public/pagefind/

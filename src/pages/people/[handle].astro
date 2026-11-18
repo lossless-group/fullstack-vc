@@ -24,6 +24,7 @@ interface ProfileData {
   github_avatar?: string;
   headshot?: string;
   linkedin?: string;
+  website?: string;
   publish: boolean;
   current_stack: Array<{ tool: string; added?: Date; notes?: string }>;
   aspirational_stack: Array<{ tool: string; intent?: string }>;
@@ -50,6 +51,7 @@ if (entry) {
     github_avatar: d.github_avatar,
     headshot: d.headshot,
     linkedin: d.linkedin,
+    website: d.website,
     publish: d.publish,
     current_stack: d.current_stack ?? [],
     aspirational_stack: d.aspirational_stack ?? [],
@@ -148,6 +150,7 @@ const showStack = p.publish || isOwner;
       <p class="participant-head__links">
         {p.github && <a href={p.github} target="_blank" rel="noopener noreferrer">GitHub</a>}
         {p.linkedin && <a href={p.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
+        {p.website && <a href={p.website} target="_blank" rel="noopener noreferrer">Website</a>}
       </p>
     </div>
 

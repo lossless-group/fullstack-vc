@@ -13,7 +13,8 @@ joined_dojo: 2026-05-27
 # User.id: charlie@seedstars.com
 # Last provider: google
 current_stack: []
-aspirational_stack: []
+aspirational_stack:
+  - tool: ctd-ai
 abandoned_stack: []
 ---
 

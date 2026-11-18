@@ -19,8 +19,19 @@ current_stack:
   - tool: chromatic
   - tool: paseo
   - tool: cloudflare
-aspirational_stack: []
-abandoned_stack: []
+  - tool: instinct
+  - tool: claude-code
+  - tool: github
+  - tool: cargo
+  - tool: lemlist
+  - tool: comet
+aspirational_stack:
+  - tool: town
+  - tool: aside
+  - tool: ai-rob-snyder
+abandoned_stack:
+  - tool: clay
+  - tool: claude-in-chrome
 ---
 
 Founder of Aire Labs, which builds custom AI models, machine-learning workflows, and geospatial visualizations for teams leading energy-transition and carbon-removal projects. Kauffman Fellow, Class 18.

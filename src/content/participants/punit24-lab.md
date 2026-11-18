@@ -8,6 +8,7 @@ joined_dojo: 2026-07-29
 current_stack:
   - tool: claude-desktop
     added: 2026-07-29
+  - tool: instinct
 aspirational_stack: []
 abandoned_stack: []
 ---

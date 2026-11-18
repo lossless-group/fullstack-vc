@@ -16,6 +16,8 @@ tags:
   - Browser-Automation
   - Human-in-the-Loop
   - Governance
+og_image: "/images/tool-banners/banner__fellou.png"
+og_favicon: "/images/tool-favicons/favicon__fellou.ico"
 ---
 
 Fellou's bet is that the thing blocking adoption isn't capability, it's **legibility**. Every other browser in this category takes your instruction and starts acting; you find out what it decided to do by watching it happen. Fellou renders the plan first — a visual, inspectable, editable workflow — and only executes once you've looked at it. You can delete a step, change one, or stop it partway through.

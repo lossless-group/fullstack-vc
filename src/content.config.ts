@@ -97,6 +97,7 @@ const participants = defineCollection({
     // Lives under /public/images/participant-headshots/.
     headshot: z.string().optional(),
     linkedin: z.string().optional(),
+    website: z.string().optional(),       // personal site or blog
     // Directory profile URLs follow the `directory_profile_{slug}` convention
     // so we can add new directories (e.g., directory_profile_endeavor,
     // directory_profile_techstars) without inventing one-off field names.

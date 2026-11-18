@@ -17,6 +17,8 @@ tags:
   - Browser-Automation
   - Research
   - Perplexity
+og_image: "/images/tool-banners/banner__comet.png"
+og_favicon: "/images/tool-favicons/favicon__comet.png"
 ---
 
 Comet is Perplexity's answer to the question "what if the browser itself were the agent." It's Chromium underneath, so every site works the way you expect, with an assistant that can see the current page and — crucially — **act inside the sessions you're already authenticated into**. That's the capability that separates this category from a chat window: it isn't reasoning about a description of your inbox, it's operating your inbox.

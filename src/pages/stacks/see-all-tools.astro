@@ -3,6 +3,7 @@ export const prerender = true;
 import { getCollection } from 'astro:content';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ToolCard from '../../components/stack/ToolCard.astro';
+import ToolFilter from '../../components/search/ToolFilter.svelte';
 
 const allTools = await getCollection('tools');
 const allParticipants = await getCollection('participants');
@@ -28,11 +29,23 @@ const tools = allTools
     displayName: (t.data.site_name ?? t.id).toLowerCase(),
   }))
   .sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+// Tag facet for the filter bar, most-used first. Counts are over every tool;
+// the island recounts against whatever the current selection leaves visible.
+const tagCounts = new Map<string, number>();
+for (const t of tools) for (const tag of t.data.tags ?? []) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+const tagFacet = [...tagCounts]
+  .map(([value, count]) => ({ value, count }))
+  .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+
+// What the text filter matches against: name, title, one-liner, description.
+const searchText = (d: (typeof tools)[number]['data']) =>
+  [d.site_name, d.title, d.zinger, d.description].filter(Boolean).join(' ').toLowerCase();
 ---
 
 <BaseThemeLayout
   title="All tools · Stacks · FullStack VC"
-  description="Every tool in the Agentic VC Dojo registry — alphabetical, no filters."
+  description="Every tool in the Agentic VC Dojo registry — alphabetical, filterable by tag and text."
   containerClass="px-6 py-12 max-w-6xl mx-auto"
 >
   <section class="all-tools-hero">
@@ -41,17 +54,19 @@ const tools = allTools
     </p>
     <h1 class="all-tools-hero__title">All tools in the registry</h1>
     <p class="all-tools-hero__lede">
-      <strong>{tools.length}</strong> tool{tools.length === 1 ? '' : 's'} tracked. Alphabetical, no filters — the front-door
-      <a href="/stacks">/stacks</a> page surfaces only the most-adopted handful.
+      <strong>{tools.length}</strong> tool{tools.length === 1 ? '' : 's'} tracked, alphabetical. Pick several tags to narrow
+      to tools that carry all of them — the front-door <a href="/stacks">/stacks</a> page surfaces only the most-adopted handful.
     </p>
   </section>
+
+  <ToolFilter client:load tags={tagFacet} total={tools.length} />
 
   {tools.length === 0 ? (
     <p class="all-tools-empty">No tools in the registry yet.</p>
   ) : (
-    <ul class="all-tools-grid" role="list">
+    <ul class="all-tools-grid" role="list" data-tool-grid>
       {tools.map(({ slug, data, count }) => (
-        <li class="all-tools-cell">
+        <li class="all-tools-cell" data-tags={(data.tags ?? []).join(',')} data-text={searchText(data)}>
           <ToolCard
             slug={slug}
             data={data}
@@ -131,5 +146,7 @@ const tools = allTools
   @media (min-width: 1300px) { .all-tools-grid { grid-template-columns: repeat(4, 1fr); } }
 
   .all-tools-cell { display: flex; }
+  /* `display: flex` above would otherwise beat the hidden attribute the filter sets. */
+  .all-tools-cell[hidden] { display: none; }
   .all-tools-cell > * { width: 100%; }
 </style>

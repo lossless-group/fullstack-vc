@@ -16,6 +16,8 @@ tags:
   - Local-First
   - Privacy
   - Browser-Automation
+og_image: "/images/tool-banners/banner__sigma-browser.png"
+og_favicon: "/images/tool-favicons/favicon__sigma-browser.png"
 ---
 
 Sigma's differentiator is where the inference happens. Its assistant runs **locally by default**, which changes the answer to the question that decides whether a firm can actually use one of these: *when the agent reads this page, where does the page go?*
