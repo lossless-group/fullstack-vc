@@ -27,6 +27,7 @@
     "db:merge-people": "node scripts/db-merge-people.mjs",
     "db:audit-people": "node scripts/db-audit-people.mjs",
     "db:backfill-logins": "node scripts/backfill-login-interactions.mjs",
+    "db:link-participants": "node scripts/link-participants.mjs",
     "rename:handle": "node --env-file=.env scripts/db-execute.mjs scripts/rename-user-handle.ts",
     "rename:handle:remote": "node --env-file=.env scripts/db-execute.mjs scripts/rename-user-handle.ts --remote",
     "sync:people": "node --env-file=.env scripts/db-execute.mjs scripts/sync-people-from-db.ts",

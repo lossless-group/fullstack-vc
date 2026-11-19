@@ -221,6 +221,24 @@ Several exports of one session merge: the earliest registration and any "Attende
 
 **Signing in:** look each login email up on the cards. On a match, set `People.user_id`. If there's no match but the person is already linked by `user_id`, add the new email as a card (`source: login`). Record the login as an interaction. `User` itself is unchanged, and we never pre-create `User` rows. Until sign-in does this, `pnpm db:backfill-logins` records past successful logins from `AuthEvent`.
 
+**Linking public profiles** (`pnpm db:link-participants`, `DRY_RUN=true` first). Each `src/content/participants/<handle>.md` is matched to a person, in order:
+
+1. a person already holding that handle;
+2. their login account, found by the profile's `github:` field or its handle;
+3. exactly one person with the same name;
+4. a decision in `context-v/extra/participant-review.json`;
+5. otherwise a similar name goes on that review list (`"link:prs_…"` or `"new"`), and anyone left over becomes a new person, so `People` holds everyone.
+
+A linked person gets `People.handle`, and the profile fills what the database lacks:
+- **name:** the profile's curated name, unless the profile's name is just its handle (a stub);
+- **firm and role:** on the role card for that firm, meaning the card whose address is at the firm's domain (by name or initials: `mgv.vc` is Maschmeyer Group Ventures); never on an unrelated card;
+- **links:** on the socials card;
+- **login account:** `People.user_id` and the account's addresses. University, alumni and vanity addresses (`lylan.com`) go on the personal card.
+
+The profile wins a conflict. Anything it can't settle (an address or account already belonging to someone else) is reported and left alone.
+
+Information also flows the other way, by hand: a profile missing a firm is filled from the firm-name lists in `scripts/build-*.ts` when the registration domain names it.
+
 ## 7. Queries this enables
 
 ```sql

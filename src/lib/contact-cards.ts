@@ -150,8 +150,12 @@ export function pickPrimaryCard<T extends StoredCard>(cards: T[]): T | null {
 export function derivedPersonFields(cards: StoredCard[]) {
   const primary = pickPrimaryCard(cards);
   const role = primary?.card_type === 'role' ? primary : pickPrimaryCard(cards.filter((c) => c.card_type === 'role'));
+  // When the primary card has no address (a firm known only from a profile),
+  // send to the next card that has one: another role, then personal.
+  const withEmail = (list: StoredCard[]) => pickPrimaryCard(list.filter((c) => typeof c.card.email === 'string'));
+  const fallback = withEmail(cards.filter((c) => c.card_type === 'role')) ?? withEmail(cards);
   return {
-    email: (primary?.card.email as string | undefined) ?? null,
+    email: (primary?.card.email as string | undefined) ?? (fallback?.card.email as string | undefined) ?? null,
     // A card imported from a registration may only know the domain.
     org: (role?.card.org as string | undefined) ?? (role?.card.org_domain as string | undefined) ?? null,
     title: (role?.card.title as string | undefined) ?? null,
@@ -172,9 +176,9 @@ export function withMostRecentEmail(card: Record<string, unknown>, lastUsed: Map
 }
 
 // ─── Reads ───────────────────────────────────────────────────────────────────
-export async function loadCards(db: Executor, personId: string): Promise<(StoredCard & { id: string })[]> {
+export async function loadCards(db: Executor, personId: string): Promise<(StoredCard & { id: string; source: string })[]> {
   const res = await db.execute({
-    sql: 'SELECT id, card_type, active, timeframe, card, created_at FROM PersonContactCards WHERE person_id = ?',
+    sql: 'SELECT id, card_type, active, timeframe, card, source, created_at FROM PersonContactCards WHERE person_id = ?',
     args: [personId],
   });
   return res.rows.map((r) => ({
@@ -183,6 +187,7 @@ export async function loadCards(db: Executor, personId: string): Promise<(Stored
     active: Number(r.active) === 1,
     timeframe: r.timeframe ? JSON.parse(String(r.timeframe)) : null,
     card: JSON.parse(String(r.card)),
+    source: String(r.source),
     created_at: String(r.created_at),
   }));
 }
@@ -300,6 +305,14 @@ export async function addEmailAlias(db: Executor, cardId: string, email: string)
     card: { ...card, email_aliases: [...(card.email_aliases ?? []), e] },
     source: String(row.source),
   });
+}
+
+/** Deletes a card (a mistaken one, say) and recomputes its person. */
+export async function removeContactCard(db: Executor, cardId: string): Promise<void> {
+  const row = (await db.execute({ sql: 'SELECT person_id FROM PersonContactCards WHERE id = ?', args: [cardId] })).rows[0];
+  if (!row) return;
+  await db.execute({ sql: 'DELETE FROM PersonContactCards WHERE id = ?', args: [cardId] });
+  await recomputePerson(db, String(row.person_id));
 }
 
 export interface InteractionInput {

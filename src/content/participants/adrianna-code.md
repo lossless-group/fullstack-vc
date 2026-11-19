@@ -1,6 +1,6 @@
 ---
 handle: adrianna-code
-name: "adrianna-code"
+name: "Adrianna Samaniego"
 firm: "Cherry Rock Capital"
 linkedin: https://www.linkedin.com/in/adriannasamaniego/
 kauffman_class: 28
