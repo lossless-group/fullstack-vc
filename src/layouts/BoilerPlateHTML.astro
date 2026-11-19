@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import Analytics from '../components/Analytics.astro';
+import { SITE_CARD_KEY, shareKeyForPath } from '../lib/share-cards';
 
 export interface Props {
   title?: string;
@@ -9,13 +10,16 @@ export interface Props {
   favicon?: string;
   noindex?: boolean;
   /**
-   * Path to the OG/Twitter card image, relative to the site root (e.g. `/og-default.png`).
-   * Resolved against `Astro.site` to produce the absolute URL social platforms require.
-   * Generate the default image with `pnpm --filter fullstack-vc gen:og`.
+   * Share card key (src/lib/share-cards.ts). Omit it: a page's key is its own
+   * URL path, and pages without a card get the universal site card. Pass it
+   * only where the path isn't the key (the /s/ section share pages).
    */
+  shareKey?: string;
+  /** @deprecated Share images now come from the build-time cards; ignored. */
   image?: string;
-  /** Pixel dimensions of the OG image. Override for non-16:9 cards (e.g. vertical WhatsApp cards). */
+  /** @deprecated See `image`. */
   imageWidth?: number;
+  /** @deprecated See `image`. */
   imageHeight?: number;
   ogType?: 'website' | 'article';
 }
@@ -26,16 +30,20 @@ const {
   themeClass = "theme-default",
   favicon = "/favicon.svg",
   noindex = false,
-  image = "/og-default.jpg",
-  imageWidth = 1280,
-  imageHeight = 720,
+  shareKey,
   ogType = "website",
 } = Astro.props;
 
 // Social platforms require absolute URLs. Astro.site is set in astro.config.mjs;
 // fall back to the request origin so dev previews still emit valid tags.
 const siteOrigin = Astro.site?.toString().replace(/\/$/, '') ?? Astro.url.origin;
-const ogImage = new URL(image, siteOrigin + '/').toString();
+// Share images (blueprint: Share-Every-Page-and-Section-With-Its-Own-OG-Image):
+// one og:image, the tall 3:4 card chat apps show large; the wide card goes in
+// twitter:image only. Never two og:image tags. The site card keeps the
+// hand-made illustration as its wide image.
+const cardKey = shareKey ?? await shareKeyForPath(Astro.url.pathname);
+const ogImage = new URL(`/og/tall/${cardKey}.jpg`, siteOrigin + '/').toString();
+const twitterImage = new URL(cardKey === SITE_CARD_KEY ? '/og-default.jpg' : `/og/wide/${cardKey}.jpg`, siteOrigin + '/').toString();
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin + '/').toString();
 ---
 
@@ -71,16 +79,18 @@ const canonicalUrl = new URL(Astro.url.pathname, siteOrigin + '/').toString();
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={ogImage} />
   <meta property="og:image:secure_url" content={ogImage} />
-  <meta property="og:image:type" content={ogImage.endsWith('.png') ? 'image/png' : 'image/jpeg'} />
-  <meta property="og:image:width" content={String(imageWidth)} />
-  <meta property="og:image:height" content={String(imageHeight)} />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1080" />
+  <meta property="og:image:height" content="1440" />
+  <meta property="og:image:alt" content={title} />
   <meta property="og:site_name" content="FullStack VC" />
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image" content={twitterImage} />
+  <meta name="twitter:image:alt" content={title} />
 
   <!-- Pre-paint mode application to avoid FOUC -->
   <script is:inline>

@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
+import ShareButton from '../../components/ui/ShareButton.astro';
 import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
 import '../../styles/docs-prose.css';
 
@@ -66,7 +67,7 @@ const hasBody = (tool.body ?? '').trim().length > 0;
     <header class="tool-head">
       <div class="tool-head__id">
         {favicon && <img src={favicon} alt="" class="tool-head__favicon" width="40" height="40" loading="lazy" />}
-        <h1 class="tool-title">{name}</h1>
+        <h1 class="tool-title">{name}<ShareButton icon title={name} label="Share this tool" /></h1>
       </div>
       {tagline && <p class="tool-tagline">{tagline}</p>}
 

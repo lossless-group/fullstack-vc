@@ -39,6 +39,8 @@ export default defineConfig({
     svelte(),
     sitemap({
       filter: (page) =>
+        // /s/ pages are section-share redirects, noindex; the canonical is page#heading.
+        !page.includes('/s/') &&
         !page.includes('/llms.txt') &&
         !page.includes('/llms-full.txt') &&
         !page.endsWith('/404/') &&

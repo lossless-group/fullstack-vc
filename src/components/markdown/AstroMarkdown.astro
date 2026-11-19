@@ -7,6 +7,7 @@ import Callout from "./Callout.astro";
 import MarkdownImage from "./MarkdownImage.astro";
 import ImageCarousel from "./ImageCarousel.astro";
 import ToolShowcase from "./ToolShowcase.astro";
+import HeadingAnchor from "./HeadingAnchor.astro";
 
 export interface Props {
   node: Root | Content;
@@ -66,6 +67,12 @@ function childrenOf(n: any): any[] {
   const id = (heading.data as any)?.id ?? slugifyHeading(text);
 
   const level = heading.depth ?? 1;
+  // Section sharing: a page that has /s/ share pages passes
+  // data={{ shareBase, shareDepths }}, and those headings get a share button
+  // that shares the section's own page (its own card), not page#id.
+  const share = data?.shareBase && (data.shareDepths ?? [2, 3]).includes(level)
+    ? `${data.shareBase}${id}/`
+    : undefined;
 
   if (level === 1) {
     return (
@@ -83,6 +90,7 @@ function childrenOf(n: any): any[] {
         {childrenOf(node).map((child) => (
           <Astro.self node={child} data={data} />
         ))}
+        {share && <HeadingAnchor id={id} label={text} shareUrl={share} />}
       </h2>
     );
   }
@@ -93,6 +101,7 @@ function childrenOf(n: any): any[] {
         {childrenOf(node).map((child) => (
           <Astro.self node={child} data={data} />
         ))}
+        {share && <HeadingAnchor id={id} label={text} shareUrl={share} />}
       </h3>
     );
   }

@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import { parseMarkdown } from '@lossless-group/lfm';
 import BookReaderLayout from '../../../layouts/BookReaderLayout.astro';
 import AstroMarkdown from '../../../components/markdown/AstroMarkdown.astro';
+import { sectionShareBase } from '../../../lib/share-cards';
 import Sources from '../../../components/markdown/Sources.astro';
 
 export async function getStaticPaths() {
@@ -74,6 +75,6 @@ const updated: Date | null = (data as any).date_modified ?? (data as any).date_p
   prev={prevProp}
   next={nextProp}
 >
-  <AstroMarkdown node={tree} />
+  <AstroMarkdown node={tree} data={{ shareBase: sectionShareBase('handbook', entry.id.replace(/^\d+-/, '')), shareDepths: [2, 3] }} />
   <Sources citations={citations} />
 </BookReaderLayout>

@@ -1,0 +1,105 @@
+---
+// Shares this page (or `url`): native share sheet on phones, copy on desktop.
+// The shared URL carries the page's own og:image, so the unfurl is this page's
+// card, not a generic one. One delegated listener per page.
+// Ported from sites/cathode-site/src/components/ui/ShareButton.astro.
+interface Props {
+  url?: string;
+  title?: string;
+  label?: string;
+  /** Icon only, sized to sit inline beside a page title. */
+  icon?: boolean;
+}
+const { url, title, label = 'Share', icon = false } = Astro.props;
+const shareUrl = new URL(url ?? Astro.url.pathname, Astro.site).href;
+---
+
+<button
+  type="button"
+  class:list={['share-button', icon && 'share-button--icon']}
+  data-share-url={shareUrl}
+  data-share-title={title}
+  title={icon ? label : undefined}
+  aria-label={`${label}: copy or send a link to this page`}
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+    <path d="M16 6l-4-4-4 4" />
+    <path d="M12 2v13" />
+  </svg>
+  {!icon && <span class="share-button__label">{label}</span>}
+</button>
+
+<script>
+  import { resultLabel, shareOrCopy, showShareToast } from '../../utils/share';
+  if (!(window as any).__fsvShareBound) {
+    (window as any).__fsvShareBound = true;
+    document.addEventListener('click', async (e) => {
+      const btn = (e.target as HTMLElement)?.closest?.('.share-button') as HTMLButtonElement | null;
+      if (!btn?.dataset.shareUrl) return;
+      const result = await shareOrCopy(btn.dataset.shareUrl, btn.dataset.shareTitle);
+      showShareToast(result, btn.dataset.shareUrl, btn.dataset.shareTitle);
+      const text = resultLabel[result];
+      if (!text) return;
+      const labelEl = btn.querySelector('.share-button__label');
+      const prior = labelEl?.textContent;
+      const priorTitle = btn.title;
+      if (labelEl) labelEl.textContent = text;
+      else btn.title = text;
+      btn.classList.add('is-done');
+      setTimeout(() => {
+        if (labelEl && prior) labelEl.textContent = prior;
+        btn.title = priorTitle;
+        btn.classList.remove('is-done');
+      }, 1400);
+    });
+  }
+</script>
+
+<style>
+  .share-button {
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8125rem;
+    padding: 0.45rem 0.8rem;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    color: var(--color-text);
+  }
+  .share-button svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+  /* Inline beside a page title: the most-used share on the page. */
+  .share-button--icon {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 0.3em;
+    padding: 0.15em;
+    border: 0;
+    border-radius: 0.3rem;
+    color: var(--color-primary);
+    /* Size from the title, not the small button text. */
+    font-size: inherit;
+  }
+  .share-button--icon svg {
+    width: 0.6em;
+    height: 0.6em;
+  }
+  .share-button--icon:hover {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+  .share-button--icon:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .share-button.is-done {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+</style>

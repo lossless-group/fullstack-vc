@@ -279,6 +279,18 @@ const components = [
     props: 'tags: {value, count}[] (built at render), total: number, gridSelector? (default "[data-tool-grid]")',
   },
   {
+    name: 'ShareButton',
+    purpose: 'Shares the current page (or `url`): the native share sheet on phones, a copied link plus a "Link copied" toast on desktop. The `icon` variant sits inline in a page title (recipes, tool pages), sized from the title. Ported from cathode-site; helper in src/utils/share.ts. Part of the share-images system (blueprint: Share-Every-Page-and-Section-With-Its-Own-OG-Image).',
+    cssContract: '--color-primary, --color-text, --color-border, --color-surface (toast), --font-code (toast)',
+    props: 'url? (default: this page), title?, label? (default "Share"), icon? (default false)',
+  },
+  {
+    name: 'HeadingAnchor',
+    purpose: 'The always-visible share icon beside an h2/h3 in long-form content. Shares the section\'s /s/ page, which carries that section\'s own share card and redirects to page#heading (chat apps ignore #fragments). Rendered by AstroMarkdown when a page passes data={{ shareBase, shareDepths }}; ids come from LFM, never recomputed here. Ported from cathode-site.',
+    cssContract: '--color-primary, --color-text-muted',
+    props: 'id (from node.data.id), label?, shareUrl?, shareTitle?',
+  },
+  {
     name: 'ToolShowcase',
     purpose: 'Renders the LFM `:::tool-showcase` directive (same authoring syntax as lossless-site: a list of [[tools/<handle>]] wikilinks) as a horizontal carousel of registry ToolCards. CSS scroll-snap does the scrolling (swipe and trackpad work natively); prev/next buttons scroll one card. Unknown handles are skipped. Resets .docs-prose list spacing inside cards so they match the catalogue.',
     cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',

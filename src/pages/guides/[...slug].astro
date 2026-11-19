@@ -4,6 +4,8 @@ import { getCollection } from 'astro:content';
 import { createLfmProcessor, remarkLosslessWikilinks } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
+import ShareButton from '../../components/ui/ShareButton.astro';
+import { sectionShareBase } from '../../lib/share-cards';
 import TableOfContents from '../../components/markdown/TableOfContents.astro';
 import { makeDocsWikilinkResolver } from '../../lib/docs/wikilink-resolver';
 import '../../styles/docs-prose.css';
@@ -18,6 +20,10 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props as { entry: any };
 const data = entry.data as any;
+// Drafts have no /s/ section pages (share-cards skips them), so no section buttons.
+const shareData = data.publish !== false
+  ? { shareBase: sectionShareBase('guides', entry.id.replace(/\/index$/, '')), shareDepths: [2, 3] }
+  : undefined;
 
 // Build a handle → external-url map so [[tools/<handle>]] wikilinks resolve.
 const tools = await getCollection('tools');
@@ -60,12 +66,12 @@ const firstUseCase = data.use_cases?.[0];
           Guide{data.difficulty ? ` · ${data.difficulty}` : ''}{data.estimated_minutes ? ` · ${data.estimated_minutes} min` : ''}
           {data.status && data.status !== 'Published' ? ` · ${data.status}` : ''}
         </p>
-        <h1 class="docs-title">{data.title}</h1>
+        <h1 class="docs-title">{data.title}<ShareButton icon title={data.title} label="Share this recipe" /></h1>
         {data.lede && <p class="docs-lede">{data.lede}</p>}
       </header>
 
       <div class="docs-prose">
-        <AstroMarkdown node={tree} />
+        <AstroMarkdown node={tree} data={shareData} />
       </div>
     </article>
   </div>

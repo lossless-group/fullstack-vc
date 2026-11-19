@@ -11,7 +11,9 @@ export interface Props {
   noindex?: boolean;
   containerClass?: string;
   hideChrome?: boolean;
-  /** Override the OG/Twitter card image for this page (path from site root). */
+  /** Share card key; omit to use the page's own path (see BoilerPlateHTML). */
+  shareKey?: string;
+  /** @deprecated Share images come from build-time cards; ignored. */
   image?: string;
   imageWidth?: number;
   imageHeight?: number;
@@ -25,6 +27,7 @@ const {
   noindex = false,
   containerClass = '',
   hideChrome = false,
+  shareKey,
   image,
   imageWidth,
   imageHeight,
@@ -37,6 +40,7 @@ const {
   description={description}
   themeClass={themeClass}
   noindex={noindex}
+  shareKey={shareKey}
   image={image}
   imageWidth={imageWidth}
   imageHeight={imageHeight}
