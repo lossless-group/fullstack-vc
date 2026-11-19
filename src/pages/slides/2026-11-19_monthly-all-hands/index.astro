@@ -26,6 +26,10 @@ const allTools = await getCollection("tools");
 const codeFirst = ["dididecks-ai", "memopop-ai"]
   .map((slug) => allTools.find((t) => t.id === slug))
   .filter(Boolean) as typeof allTools;
+// What we run on the connector pattern today, shown on the "not a someday idea" slide.
+const ourConnectors = ["lossless-at", "event-hog", "hope-ai", "kay-os"]
+  .map((slug) => allTools.find((t) => t.id === slug))
+  .filter(Boolean) as typeof allTools;
 
 const TITLE = "Monthly All-Hands · Nov 19, 2026 · Agents at Work";
 const DESCRIPTION = "What's new in Claude and ChatGPT for VCs, personal agents in practice, and building a home connector.";
@@ -268,7 +272,7 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
   </section>
 
   {/* ── 15c we run this today, why now */}
-  <section class="slide">
+  <section class="slide slide--connectors">
     <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
     <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Not a someday idea. <span class="accent">Three firms run on one today.</span></h2>
     <ol class="agenda" data-reveal style="--delay: 160ms;">
@@ -276,6 +280,11 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
       <li><span class="agenda-n">✓</span><span><strong>Shared files:</strong> event-hog ran a three-person team's conference from Claude in October; every note became a saved change under its author's name.</span><span class="agenda-min"></span></li>
       <li class="agenda-accent"><span class="agenda-n">→</span><span><strong>Why it's easy now:</strong> it needs a version-controlled store (GitHub and GitLab work), and Cloudflare Artifacts makes it cheap and invisible: git repos for agents, next to the connector on Workers, and nobody sees GitHub.</span><span class="agenda-min"></span></li>
     </ol>
+    <div data-reveal style="--delay: 240ms;">
+      <div class="connector-cards">
+        {ourConnectors.map((t) => <ToolCard slug={t.id} data={t.data as any} />)}
+      </div>
+    </div>
   </section>
 
   {/* ── 15c2 folder convention */}
@@ -409,6 +418,12 @@ per folder and tool, and approval for sensitive actions.</pre>
   .slide.slide--bold .bold-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; width: 100%; max-width: 84rem; }
   .slide.slide--bold .bold-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
   .bold-cards :global(a) { text-decoration: none; }
+  .slide.slide--connectors .connector-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; align-items: start; width: 100%; max-width: 84rem; margin-top: 1.5rem; }
+  .connector-cards :global(a) { text-decoration: none; }
+  .slide.slide--connectors .agenda { max-width: 84rem; }
+  .slide.slide--connectors .agenda li { padding: .5rem 1.25rem; font-size: 1.05rem; line-height: 1.4; }
+  .connector-cards :global(.tool-card__desc),
+  .connector-cards :global(.tool-card__tags) { display: none; }
 
   .slide-body--center { text-align: center; max-width: 60ch; margin-inline: auto; }
   .slide--close { justify-content: center; align-items: center; text-align: center; }
@@ -420,6 +435,7 @@ per folder and tool, and approval for sensitive actions.</pre>
 
   @media (max-width: 760px) {
     .habits, .two-col, .slide.slide--bold .bold-grid, .slide.slide--bold .bold-cards { grid-template-columns: 1fr; }
+    .slide.slide--connectors .connector-cards { grid-template-columns: 1fr 1fr; }
     .month-grid { grid-template-columns: 1fr; }
     .slide--month { justify-content: flex-start; padding-top: 3rem; }
   }
