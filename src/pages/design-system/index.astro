@@ -286,7 +286,7 @@ const components = [
   },
   {
     name: 'HeadingAnchor',
-    purpose: 'The always-visible share icon beside an h2/h3 in long-form content. Shares the section\'s /s/ page, which carries that section\'s own share card and redirects to page#heading (chat apps ignore #fragments). Rendered by AstroMarkdown when a page passes data={{ shareBase, shareDepths }}; ids come from LFM, never recomputed here. Ported from cathode-site.',
+    purpose: 'The anchor beside every h2–h4 that AstroMarkdown renders. Two modes, both sending the heading text with the link (share-sheet title on phones, toast on desktop). Share mode (a share icon, always visible): on pages that pass data={{ shareBase, shareDepths }}, those headings share their /s/ page, which carries the section\'s own card and redirects to page#heading, because chat apps ignore #fragments. Link mode (a link icon, quiet until hover): every other heading copies or shares page#id. Ids come from LFM, never recomputed here. Ported from cathode-site.',
     cssContract: '--color-primary, --color-text-muted',
     props: 'id (from node.data.id), label?, shareUrl?, shareTitle?',
   },

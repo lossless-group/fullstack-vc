@@ -67,12 +67,14 @@ function childrenOf(n: any): any[] {
   const id = (heading.data as any)?.id ?? slugifyHeading(text);
 
   const level = heading.depth ?? 1;
-  // Section sharing: a page that has /s/ share pages passes
-  // data={{ shareBase, shareDepths }}, and those headings get a share button
-  // that shares the section's own page (its own card), not page#id.
+  // Every h2–h4 gets an anchor. On a page with /s/ share pages (it passes
+  // data={{ shareBase, shareDepths }}), those depths share the section's own
+  // page and card; every other heading copies or shares page#id. Either way
+  // the heading text travels with the link.
   const share = data?.shareBase && (data.shareDepths ?? [2, 3]).includes(level)
     ? `${data.shareBase}${id}/`
     : undefined;
+  const anchor = level >= 2 && level <= 4;
 
   if (level === 1) {
     return (
@@ -90,7 +92,7 @@ function childrenOf(n: any): any[] {
         {childrenOf(node).map((child) => (
           <Astro.self node={child} data={data} />
         ))}
-        {share && <HeadingAnchor id={id} label={text} shareUrl={share} />}
+        {anchor && <HeadingAnchor id={id} label={text} shareUrl={share} />}
       </h2>
     );
   }
@@ -101,7 +103,7 @@ function childrenOf(n: any): any[] {
         {childrenOf(node).map((child) => (
           <Astro.self node={child} data={data} />
         ))}
-        {share && <HeadingAnchor id={id} label={text} shareUrl={share} />}
+        {anchor && <HeadingAnchor id={id} label={text} shareUrl={share} />}
       </h3>
     );
   }
@@ -112,6 +114,7 @@ function childrenOf(n: any): any[] {
         {childrenOf(node).map((child) => (
           <Astro.self node={child} data={data} />
         ))}
+        {anchor && <HeadingAnchor id={id} label={text} shareUrl={share} />}
       </h4>
     );
   }

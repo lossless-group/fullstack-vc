@@ -107,7 +107,16 @@ const description = shareUrl
       // existing fragment or tracking query on the current URL isn't carried in.
       const url = `${window.location.origin}${window.location.pathname}#${id}`;
 
-      const done = (text: string) => {
+      // Same path as a section share, so the heading text goes out with the
+      // link: the share sheet's title on phones, the toast on desktop. Only
+      // the preview differs: page#id unfurls with the page's card, since chat
+      // apps ignore fragments; headings with their own /s/ page take the
+      // branch above instead.
+      const heading = btn.dataset.headingLabel ?? btn.dataset.shareTitle;
+      const result = await shareOrCopy(url, heading);
+      showShareToast(result, url, heading);
+      const text = resultLabel[result];
+      if (text) {
         btn.classList.add('is-copied');
         const prior = btn.getAttribute('aria-label');
         btn.setAttribute('aria-label', text);
@@ -115,26 +124,6 @@ const description = shareUrl
           btn.classList.remove('is-copied');
           if (prior) btn.setAttribute('aria-label', prior);
         }, 1200);
-      };
-
-      try {
-        await navigator.clipboard.writeText(url);
-        done('Link copied');
-      } catch {
-        // Clipboard API is unavailable on insecure origins and in some
-        // embedded webviews. Put the URL somewhere the user can grab it
-        // rather than throwing an alert at them.
-        const sel = window.getSelection();
-        const tmp = document.createElement('span');
-        tmp.textContent = url;
-        tmp.style.cssText = 'position:absolute;left:-9999px';
-        document.body.appendChild(tmp);
-        const range = document.createRange();
-        range.selectNodeContents(tmp);
-        sel?.removeAllRanges();
-        sel?.addRange(range);
-        done('Press ⌘C to copy');
-        setTimeout(() => tmp.remove(), 4000);
       }
 
       // Reflect the anchor in the address bar without a scroll jump, so the
@@ -146,9 +135,10 @@ const description = shareUrl
 
 <style>
   .lfm-heading-anchor {
-    /* Hidden until the heading is hovered or the button is focused — the
-       affordance shouldn't compete with the heading it belongs to. */
-    opacity: 0;
+    /* Quiet until the heading is hovered or the button is focused, so it
+       doesn't compete with the heading, but never invisible: a link nobody
+       can see is one nobody uses. */
+    opacity: 0.3;
     background: none;
     border: none;
     padding: 0;
