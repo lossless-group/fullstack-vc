@@ -291,6 +291,12 @@ const components = [
     props: 'id (from node.data.id), label?, shareUrl?, shareTitle?',
   },
   {
+    name: 'HoverCard',
+    purpose: 'A link to a person or a tool that shows its card on hover or keyboard focus: PersonCard--Thumb for /people/<handle>, ToolCard (with the "N members using" note and an "Open the tool page" link) for /tools/<handle>. AstroMarkdown renders it for any local link to those routes, which in practice means LFM wikilinks; the resolver also tags them wikilink--person / wikilink--tool. Each link carries its card in a <template> (valid inside a paragraph, unlike block markup), and one script clones it into a single floating popover, above or below the link. Private profiles get a plain link and no card. Phones don\'t hover, so a tap follows the link. Escape closes it.',
+    cssContract: '--color-primary, --color-anchor-hover, --color-background, --color-border, --color-text, --font-code (plus the cards\' own contracts)',
+    props: 'href, kind: "person" | "tool", handle; link text via the default slot',
+  },
+  {
     name: 'ToolShowcase',
     purpose: 'Renders the LFM `:::tool-showcase` directive (same authoring syntax as lossless-site: a list of [[tools/<handle>]] wikilinks) as a horizontal carousel of registry ToolCards. CSS scroll-snap does the scrolling (swipe and trackpad work natively); prev/next buttons scroll one card. Unknown handles are skipped. Resets .docs-prose list spacing inside cards so they match the catalogue.',
     cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',

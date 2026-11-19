@@ -8,6 +8,7 @@ import MarkdownImage from "./MarkdownImage.astro";
 import ImageCarousel from "./ImageCarousel.astro";
 import ToolShowcase from "./ToolShowcase.astro";
 import HeadingAnchor from "./HeadingAnchor.astro";
+import HoverCard from "./HoverCard.astro";
 
 export interface Props {
   node: Root | Content;
@@ -161,6 +162,17 @@ function childrenOf(n: any): any[] {
 {type === "link" && (() => {
   const link = node as Link;
   const isExternal = link.url?.startsWith('http');
+  // Hover cards: a local link to a person or a tool shows that card on hover.
+  const smart = link.url?.match(/^\/(people|tools)\/([^/?#]+)\/?$/);
+  if (smart) {
+    return (
+      <HoverCard href={link.url} kind={smart[1] === 'people' ? 'person' : 'tool'} handle={decodeURIComponent(smart[2])}>
+        {childrenOf(link).map((child) => (
+          <Astro.self node={child} data={data} />
+        ))}
+      </HoverCard>
+    );
+  }
   return (
     <a
       href={link.url}

@@ -1,0 +1,202 @@
+---
+/* HoverCard — a link to a person or a tool that shows its card on hover.
+
+   AstroMarkdown renders this for local links to /people/<handle> and
+   /tools/<handle> (in practice, LFM wikilinks; the resolver also tags them
+   wikilink--person / wikilink--tool). The card is the same one the site uses
+   elsewhere: PersonCard--Thumb for people, ToolCard for tools.
+
+   Why a <template>: these links sit inside paragraphs, and a card is block
+   markup. A <div> inside a <p> makes the browser close the paragraph early.
+   <template> is allowed in phrasing content and isn't rendered, so each link
+   carries its card inertly; one script (below) clones it into a single
+   floating popover on hover or keyboard focus.
+
+   Private profiles get no card: the link renders plain, so nothing hidden
+   leaks into a popover. Phones don't hover; a tap just follows the link. */
+import { getCollection } from 'astro:content';
+import PersonCardThumb from '../stack/PersonCard--Thumb.astro';
+import ToolCard from '../stack/ToolCard.astro';
+
+interface Props {
+  href: string;
+  kind: 'person' | 'tool';
+  handle: string;
+}
+
+const { href, kind, handle } = Astro.props;
+
+let person: any = null;
+let tool: any = null;
+let usingCount = 0;
+
+if (kind === 'person') {
+  const entry = (await getCollection('participants')).find((p) => p.data.handle === handle && p.data.publish);
+  if (entry) {
+    const d = entry.data;
+    person = {
+      handle: d.handle,
+      name: d.name,
+      firm: d.firm,
+      role: d.role,
+      avatar: d.headshot || d.github_avatar,
+      toolCount: (d.current_stack?.length ?? 0) + (d.aspirational_stack?.length ?? 0) + (d.abandoned_stack?.length ?? 0),
+      kauffmanClass: d.kauffman_class ?? undefined,
+      joinedOn: d.joined_dojo,
+    };
+  }
+} else {
+  const entry = (await getCollection('tools')).find((t) => t.id.replace(/\/index$/, '') === handle);
+  if (entry && entry.data.publish !== false) {
+    tool = entry;
+    for (const p of await getCollection('participants')) {
+      if (p.data.publish && (p.data.current_stack ?? []).some((s) => s.tool === handle)) usingCount++;
+    }
+  }
+}
+
+const hasCard = Boolean(person || tool);
+---
+
+{hasCard ? (
+  <span class="hover-card-wrap" data-hover-card={kind}><a href={href} class={`hover-card__link hover-card__link--${kind}`}><slot /></a><template data-hover-card-content>
+      <div class={`hover-card__card hover-card__card--${kind}`}>
+        {person && <PersonCardThumb {...person} />}
+        {tool && (
+          <>
+            <ToolCard slug={handle} data={tool.data} notes={usingCount > 0 ? `${usingCount} member${usingCount === 1 ? '' : 's'} using` : undefined} />
+            <a class="hover-card__more" href={href}>Open the tool page →</a>
+          </>
+        )}
+      </div>
+    </template></span>
+) : (
+  <a href={href}><slot /></a>
+)}
+
+<script>
+  // One popover for the whole page, filled from the hovered link's template.
+  // Mouse hover and keyboard focus show it after a short delay (so skimming
+  // past a name doesn't flash cards); leaving the link and the card hides it.
+  const SHOW_DELAY = 260;
+  const HIDE_DELAY = 180;
+
+  if (!(window as any).__fsvHoverCards) {
+    (window as any).__fsvHoverCards = true;
+
+    const pop = document.createElement('div');
+    pop.className = 'hover-card';
+    pop.setAttribute('role', 'tooltip');
+    pop.id = 'hover-card';
+    pop.hidden = true;
+    document.body.appendChild(pop);
+
+    let showTimer: number | undefined;
+    let hideTimer: number | undefined;
+    let current: HTMLElement | null = null;
+
+    const place = (anchor: HTMLElement) => {
+      const r = anchor.getBoundingClientRect();
+      const gap = 10;
+      const w = pop.offsetWidth;
+      const h = pop.offsetHeight;
+      const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+      const below = r.bottom + gap + h <= window.innerHeight || r.top - gap - h < 0;
+      pop.dataset.side = below ? 'below' : 'above';
+      pop.style.left = `${left + window.scrollX}px`;
+      pop.style.top = `${(below ? r.bottom + gap : r.top - gap - h) + window.scrollY}px`;
+    };
+
+    const show = (wrap: HTMLElement) => {
+      const tpl = wrap.querySelector<HTMLTemplateElement>('template[data-hover-card-content]');
+      const link = wrap.querySelector<HTMLElement>('.hover-card__link');
+      if (!tpl || !link) return;
+      if (current !== wrap) {
+        pop.replaceChildren(tpl.content.cloneNode(true));
+        current = wrap;
+      }
+      pop.hidden = false;
+      link.setAttribute('aria-describedby', pop.id);
+      place(link);
+      requestAnimationFrame(() => pop.classList.add('is-open'));
+    };
+
+    const hide = () => {
+      pop.classList.remove('is-open');
+      current?.querySelector('.hover-card__link')?.removeAttribute('aria-describedby');
+      pop.hidden = true;
+      current = null;
+    };
+
+    const scheduleShow = (wrap: HTMLElement) => {
+      clearTimeout(hideTimer);
+      clearTimeout(showTimer);
+      showTimer = window.setTimeout(() => show(wrap), current === wrap ? 0 : SHOW_DELAY);
+    };
+    const scheduleHide = () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(hide, HIDE_DELAY);
+    };
+
+    const wrapOf = (t: EventTarget | null) => (t as HTMLElement | null)?.closest?.('[data-hover-card]') as HTMLElement | null;
+
+    document.addEventListener('pointerover', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const wrap = wrapOf(e.target);
+      if (wrap) scheduleShow(wrap);
+      else if ((e.target as HTMLElement)?.closest?.('.hover-card')) clearTimeout(hideTimer);
+    });
+    document.addEventListener('pointerout', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const from = e.target as HTMLElement;
+      const to = e.relatedTarget as HTMLElement | null;
+      const leaving = (wrapOf(from) || from.closest?.('.hover-card')) && !(wrapOf(to) === current || to?.closest?.('.hover-card'));
+      if (leaving) scheduleHide();
+    });
+    document.addEventListener('focusin', (e) => {
+      const wrap = wrapOf(e.target);
+      if (wrap) scheduleShow(wrap);
+    });
+    document.addEventListener('focusout', (e) => {
+      if (wrapOf(e.target) && !pop.contains(e.relatedTarget as Node)) scheduleHide();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !pop.hidden) hide();
+    });
+    window.addEventListener('scroll', () => { if (!pop.hidden) hide(); }, { passive: true });
+  }
+</script>
+
+<style is:global>
+  /* Global: the popover lives on <body>, outside this component's scope. */
+  .hover-card {
+    position: absolute;
+    z-index: 90;
+    width: min(24rem, calc(100vw - 16px));
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 140ms ease, transform 140ms ease;
+    filter: drop-shadow(0 18px 36px color-mix(in srgb, var(--color-text) 22%, transparent));
+  }
+  .hover-card[data-side='above'] { transform: translateY(-4px); }
+  .hover-card.is-open { opacity: 1; transform: none; }
+  .hover-card__card { display: flex; flex-direction: column; gap: 0.4rem; }
+  .hover-card__card--tool { width: min(20rem, calc(100vw - 16px)); }
+  .hover-card__card > :first-child { width: 100%; }
+  .hover-card__more {
+    align-self: flex-end;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.55rem;
+  }
+  .hover-card__more:hover { color: var(--color-anchor-hover, var(--color-primary)); border-color: currentColor; }
+  @media (prefers-reduced-motion: reduce) {
+    .hover-card { transition: none; transform: none; }
+  }
+</style>

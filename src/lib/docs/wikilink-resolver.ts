@@ -52,14 +52,16 @@ export function makeDocsWikilinkResolver(opts: DocsResolverOptions = {}) {
     if (p.startsWith('use-cases/') || p.startsWith('guides/')) {
       return { url: `/${p}`, isLocal: true, display };
     }
+    // Person and tool links get a semantic class (LFM stamps it on the link
+    // node); AstroMarkdown renders them as HoverCards.
     if (p.startsWith('people/')) {
-      return { url: `/${p}`, isLocal: true, display };
+      return { url: `/${p}`, isLocal: true, display, classes: ['wikilink--person'] };
     }
     if (p.startsWith('tools/')) {
       const handle = p.slice('tools/'.length);
       // First preference: an internal page on our site.
       if (toolHandles.has(handle)) {
-        return { url: `/tools/${handle}`, isLocal: true, display };
+        return { url: `/tools/${handle}`, isLocal: true, display, classes: ['wikilink--tool'] };
       }
       // Fallback: the tool's own site, only if we don't host a page for it.
       const url = toolUrls[handle];
@@ -67,7 +69,7 @@ export function makeDocsWikilinkResolver(opts: DocsResolverOptions = {}) {
     }
     if (!p.includes('/')) {
       // bare token — treat as a participant handle
-      return { url: `/people/${p}`, isLocal: true, display };
+      return { url: `/people/${p}`, isLocal: true, display, classes: ['wikilink--person'] };
     }
     return null;
   };
