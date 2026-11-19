@@ -45,7 +45,6 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
       <JumboPopdown__More triggerLabelTxt="More" />
       <a href="/recipes" class="site-header__link">Recipes</a>
       <a href="/sessions" class="site-header__link">Sessions</a>
-      <a href="/changelog" class="site-header__link">Changelog</a>
       {/* Auth indicator: tri-state.
             data-state="out"     → red dot + "Log in" pill, link to /login
             data-state="partial" → yellow dot + avatar, click opens tooltip
@@ -549,10 +548,14 @@ const [popdownProjects, popdownWorkingGroups] = await Promise.all([
     .site-header__inner { gap: 1rem; }
     .site-header__nav { gap: 0.9rem; }
   }
-  @media (max-width: 640px) {
+  /* Below 1080px the full nav no longer fits beside a usable search box
+     (measured: the row overflows under ~950px), so it folds into MobileNav. */
+  @media (max-width: 1079px) {
     .site-header__nav {
       display: none;
     }
+  }
+  @media (max-width: 640px) {
     .site-header__search { max-width: none; min-width: 0; }
   }
   /* Phones: the mark alone carries the brand so search gets the row. */

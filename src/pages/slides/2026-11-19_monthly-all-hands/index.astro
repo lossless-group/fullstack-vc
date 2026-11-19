@@ -171,18 +171,67 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
     <p class="slide-caption" data-reveal style="--delay: 320ms;">Background reading: fullstack-vc.com/guides/personal-agents-in-the-dojo</p>
   </section>
 
-  {/* ── 15 segment 3 */}
+  {/* ── 15 segment 3: the problem */}
   <section class="slide">
     <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
-    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">Every AI app keeps its own memory. <span class="accent">Give them one home.</span></h2>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">A connector per tool. Skills per person. Memory per app. <span class="accent">Nothing spans them.</span></h2>
     <p class="slide-subhead" data-reveal style="--delay: 160ms;">
-      One small server you own, a folder of plain files every agent can read and write, in Claude, ChatGPT, Cursor and Codex.
+      This is every team using Claude or ChatGPT right now. So no agent can do this: "Find the company in our CRM, pull our research note from the wiki, and draft the follow-up."
     </p>
-    <ol class="agenda" data-reveal style="--delay: 240ms;">
-      <li><span class="agenda-n">✓</span><span>Proof: event-hog ran a three-person team's conference notes live in October</span><span class="agenda-min"></span></li>
-      <li><span class="agenda-n">→</span><span>The recipe: seven steps on Cloudflare, from empty folder to "connected in Claude"</span><span class="agenda-min"></span></li>
-      <li class="agenda-accent"><span class="agenda-n">!</span><span>The rule that matters: the files are the record, and tools only add</span><span class="agenda-min"></span></li>
+  </section>
+
+  {/* ── 15b one door, four things */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">One connector the whole team adds. <span class="accent">Four things behind it.</span></h2>
+    <ul class="templates" data-reveal style="--delay: 160ms;">
+      <li><strong>Skills</strong><span>the firm's playbooks: how we write a memo, how we log a founder call</span></li>
+      <li><strong>Context</strong><span>thesis, portfolio, who's who, written once</span></li>
+      <li><strong>Memory</strong><span>what the agents learn, as plain files with full history</span></li>
+      <li><strong>Tools</strong><span>CRM, wiki, email, calendar, each with its own permissions</span></li>
+    </ul>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">Who can read, who can write, what needs a human to approve: set once, for everyone.</p>
+  </section>
+
+  {/* ── 15c we run this today, why now */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Not a someday idea. <span class="accent">Three firms run on one today.</span></h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li><span class="agenda-n">✓</span><span><strong>One connector per firm:</strong> Palmer AI, The Water Foundation and Lossless each add one connector, and Claude calls their Twenty, Outline and Plane through it, with shared skills.</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">✓</span><span><strong>Shared files:</strong> event-hog ran a three-person team's conference from Claude in October; every note became a saved change under its author's name.</span><span class="agenda-min"></span></li>
+      <li class="agenda-accent"><span class="agenda-n">→</span><span><strong>Why it's easy now:</strong> it needs a version-controlled store (GitHub and GitLab work), and Cloudflare Artifacts makes it cheap and invisible: git repos for agents, next to the connector on Workers, and nobody sees GitHub.</span><span class="agenda-min"></span></li>
     </ol>
+  </section>
+
+  {/* ── 15c2 folder convention */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Name the folders <span class="accent">so the model knows there are rules.</span></h2>
+    <ul class="templates" data-reveal style="--delay: 160ms;">
+      <li><strong>context-v/</strong><span>thesis, portfolio, people, plans</span></li>
+      <li><strong>context-v/agent-skills/</strong><span>shared skills, one SKILL.md each</span></li>
+      <li><strong>docs-v/</strong><span>documentation for people and agents</span></li>
+      <li><strong>changelog-v/</strong><span>dated notes on what changed</span></li>
+      <li><strong>memory-v/</strong><span>what the agents learn and save</span></li>
+    </ul>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">"memory" and "docs" mean a hundred layouts in a model's training data. The -v is ours: it says this folder follows a pattern, so find it and keep to it. Not required; it's how we work.</p>
+  </section>
+
+  {/* ── 15d ask for it */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">You don't write it. <span class="accent">You ask Claude Code or Codex for it.</span></h2>
+    <pre class="prompt" data-reveal style="--delay: 160ms;">Build me a home connector: a remote MCP server on Cloudflare
+Workers that my team adds once in Claude and ChatGPT.
+Behind it, a version-controlled repo (Cloudflare Artifacts,
+or GitHub/GitLab): context-v/,
+context-v/agent-skills/ (served as prompts), docs-v/,
+changelog-v/, memory-v/. Every write is a commit under the
+person's name; tools only add. Proxy our CRM and wiki through it
+with stored credentials. Sign-in per person, a permission table
+per folder and tool, and approval for sensitive actions.</pre>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">The full prompt and recipe: fullstack-vc.com/guides/one-home-connector. Start with the files, then add one tool at a time.</p>
   </section>
 
   {/* ── 16 close */}
@@ -193,6 +242,7 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
     <div class="close-links" data-reveal style="--delay: 240ms;">
       <a href="/timelines/claude-and-chatgpt">Six months of Claude and ChatGPT →</a>
       <a href="/guides/personal-agents-in-the-dojo/">Takeaways from Using Personal Agents →</a>
+      <a href="/guides/one-home-connector/">One Home Connector for Your Whole Team →</a>
       <a href="/sessions/2026-11-19_monthly-all-hands">Session page →</a>
     </div>
     <p class="slide-footnote">
@@ -243,6 +293,11 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
   .templates span { font-size: .9rem; color: var(--color-text-muted); }
   .templates + .slide-caption { margin-top: 1.25rem; max-width: 60rem; }
   .templates em { font-style: normal; font-family: var(--font-code); font-size: .7rem; color: var(--color-accent); margin-left: .3rem; }
+
+  .prompt { margin: 0; width: 100%; max-width: 52rem; padding: 1.1rem 1.3rem; border-radius: .7rem; border: 1px solid var(--color-border);
+    background: var(--fx-card-bg); font-family: var(--font-code); font-size: clamp(.8rem, 1.25vw, 1rem); line-height: 1.55; color: var(--color-text); white-space: pre-wrap; }
+
+  .prompt + .slide-caption { margin-top: 1rem; }
 
   .prompts { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; max-width: 56rem; }
   .prompts li { padding: .55rem 1rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--color-border));

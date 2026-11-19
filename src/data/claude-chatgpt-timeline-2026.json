@@ -72,6 +72,18 @@
     "prior": true
   },
   {
+    "date": "2026-05-06",
+    "vendor": "Anthropic",
+    "track": "Claude Code",
+    "title": "Dreams for Claude Managed Agents",
+    "summary": "A dream reads an agent's memory and past session transcripts, then rewrites the memory: duplicates merged, stale entries replaced, new insights surfaced. Launched at Code with Claude.",
+    "plans": "Claude Platform, research preview by request; still in preview, newer models added through Nov 9",
+    "importance": 2,
+    "source": "https://platform.claude.com/docs/en/release-notes/overview",
+    "verified": true,
+    "prior": true
+  },
+  {
     "date": "2026-05-14",
     "vendor": "OpenAI",
     "track": "Codex",
@@ -637,9 +649,20 @@
     "date": "2026-10-08",
     "vendor": "Anthropic",
     "track": "Claude",
-    "title": "Claude Dashboards and Motion; Docs and Slides GA",
-    "summary": "Live dashboards from your data enter beta; Motion makes animated explainers that export as MP4. Docs, Slides and Design leave beta on every plan.",
-    "plans": "Dashboards: paid plans; Motion: Team and Enterprise beta; Docs/Slides/Design: all plans",
+    "title": "Claude Dashboards beta; Docs and Slides GA",
+    "summary": "Live dashboards from BigQuery, Databricks, Snowflake or Salesforce enter beta. Docs, Slides and Design leave beta on every plan including Free; decks export to PowerPoint, PDF or Google Slides.",
+    "plans": "Dashboards: paid plans; Docs/Slides/Design: all plans",
+    "importance": 2,
+    "source": "https://claude.com/resources/articles/dashboards-and-motion",
+    "verified": true
+  },
+  {
+    "date": "2026-10-08",
+    "vendor": "Anthropic",
+    "track": "Claude",
+    "title": "Claude Motion: animated explainers (beta)",
+    "summary": "Claude turns a prompt, data or a document into a short animated explainer you edit in place, then download as MP4 or open in Adobe, Descript, Runway and others.",
+    "plans": "Team and Enterprise, beta",
     "importance": 2,
     "source": "https://claude.com/resources/articles/dashboards-and-motion",
     "verified": true
@@ -719,6 +742,17 @@
     "plans": "Claude Enterprise (several parts beta)",
     "importance": 2,
     "source": "https://claude.com/resources/articles/claude-enterprise-security-updates",
+    "verified": true
+  },
+  {
+    "date": "2026-11-06",
+    "vendor": "Anthropic",
+    "track": "Claude Code",
+    "title": "How Claude \"dreams\": the components of agent memory",
+    "summary": "Anthropic's research post on how agents decide what to remember, and how dreaming reviews past sessions to fix mistakes and reorganize memory between tasks.",
+    "plans": "Research post; the feature itself is Dreams for Managed Agents (research preview)",
+    "importance": 1,
+    "source": "https://www.anthropic.com/research/components-of-agent-memory",
     "verified": true
   },
   {

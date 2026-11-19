@@ -56,7 +56,9 @@ Background reading: **[Takeaways from Using Personal Agents](/guides/personal-ag
 
 ### 3. Creating a home connector
 
-A connector lets Claude or ChatGPT read and write your own data and tools directly. We'll walk through building a home connector of your own, so the work you do with your agents has one place to live.
+Today every tool is its own connector, every person keeps their own skills, and every AI app keeps its own memory. The fix: **create one home connector, and let it manage everything else.** Your whole team adds it once, and behind it sit the firm's shared skills, context, memory and tools, each with permissions. All it needs is a version-controlled document store. We already run this for three firms, and Cloudflare Artifacts now makes that store easy, cheap and invisible, so you can ask Claude Code or Codex to build the whole thing.
+
+📘 **[One Home Connector for Your Whole Team →](/guides/one-home-connector/)**: the full recipe, with the folder layout we use and a prompt you can paste.
 
 ## When
 

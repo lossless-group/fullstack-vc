@@ -22,4 +22,4 @@ tags:
   - Cloudflare
 ---
 
-Built in the Dojo's orbit and used live by a three-person team at a conference in October 2026. It's the worked example behind [[guides/home-connector-on-cloudflare-artifacts/index|Build a Home Connector on Cloudflare Artifacts]]: one small server you own, every agent connects to it, and the files are the record.
+Built in the Dojo's orbit and used live by a three-person team at a conference in October 2026. It's a worked example behind [[guides/one-home-connector/index|One Home Connector for Your Whole Team]]: one small server, every agent on the team connects to it, and the files are the record.
