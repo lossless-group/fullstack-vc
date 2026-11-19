@@ -51,13 +51,27 @@ const client = createClient({
 console.log(`sync-stacks-turso ${dryRun ? '(DRY RUN)' : ''}`);
 console.log('');
 
+// The "Make my profile public" switch (src/lib/profile-visibility.ts) is
+// materialized too: a saved choice rewrites the markdown's `publish:` line.
+// The table only exists once someone has saved the toggle.
+const visibility = new Map();
+try {
+  const vis = await client.execute(`SELECT handle, publish FROM ProfileVisibility`);
+  for (const r of vis.rows) visibility.set(String(r.handle), Number(r.publish) === 1);
+} catch {
+  // No ProfileVisibility table yet: nothing to materialize.
+}
+
+const stackHandles = new Set(
+  (await client.execute(`SELECT DISTINCT handle FROM Stack`)).rows.map((r) => r.handle),
+);
+
 let handles;
 if (handleEnv) {
   handles = [handleEnv];
 } else {
-  const rows = await client.execute(`SELECT DISTINCT handle FROM Stack`);
-  handles = rows.rows.map((r) => r.handle);
-  console.log(`ALL mode: ${handles.length} handle(s) with Stack rows.`);
+  handles = [...new Set([...stackHandles, ...visibility.keys()])];
+  console.log(`ALL mode: ${stackHandles.size} handle(s) with Stack rows, ${visibility.size} with a saved visibility.`);
 }
 
 const participantsDir = path.resolve(process.cwd(), 'src/content/participants');
@@ -97,11 +111,21 @@ for (const handle of handles) {
   summary.total_aspirational += aspirational.length;
   summary.total_abandoned += abandoned.length;
 
-  const updated = rewriteThreeArrays(existing, {
-    current_stack: emitItemArray('current_stack', current.map(rowToCurrent)),
-    aspirational_stack: emitItemArray('aspirational_stack', aspirational.map(rowToAspirational)),
-    abandoned_stack: emitItemArray('abandoned_stack', abandoned.map(rowToAbandoned)),
-  });
+  // A handle with no Stack rows (here only for its visibility) keeps its
+  // markdown stack: rewriting it from zero rows would wipe a markdown-only stack.
+  let updated = stackHandles.has(handle)
+    ? rewriteThreeArrays(existing, {
+        current_stack: emitItemArray('current_stack', current.map(rowToCurrent)),
+        aspirational_stack: emitItemArray('aspirational_stack', aspirational.map(rowToAspirational)),
+        abandoned_stack: emitItemArray('abandoned_stack', abandoned.map(rowToAbandoned)),
+      })
+    : existing;
+  const saved = visibility.get(handle.toLowerCase());
+  if (saved !== undefined) {
+    updated = /^publish:.*$/m.test(updated)
+      ? updated.replace(/^publish:.*$/m, `publish: ${saved}`)
+      : updated.replace(/^---\n/, `---\npublish: ${saved}\n`);
+  }
 
   if (updated === existing) {
     summary.handles_unchanged++;

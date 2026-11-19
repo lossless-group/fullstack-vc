@@ -11,6 +11,7 @@ import BaseThemeLayout from '../../../../layouts/BaseThemeLayout.astro';
 import StackBuilder from '../../../../components/stack/StackBuilder.svelte';
 import { verifySession, SESSION_COOKIE_NAME } from '../../../../lib/session';
 import { matchesRoster } from '../../../../lib/oauth-roster';
+import { getProfileVisibility } from '../../../../lib/profile-visibility';
 
 export const prerender = false;
 
@@ -65,7 +66,7 @@ const existing = allParticipants.find(p => p.data.handle === handle);
 
 const initialName        = existing?.data.name ?? rosterEntry.name ?? session.name ?? '';
 const initialFirm        = existing?.data.firm ?? rosterEntry.firm ?? '';
-const initialPublic      = existing?.data.publish ?? false;
+const initialPublic      = (await getProfileVisibility(handle)) ?? existing?.data.publish ?? false;
 const avatar = existing?.data.headshot ?? existing?.data.github_avatar ?? session.avatar;
 
 // Hydrate stack buckets from Turso so the editor reflects in-progress edits

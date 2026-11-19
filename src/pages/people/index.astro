@@ -1,11 +1,16 @@
 ---
-export const prerender = true;
+// Rendered per request, not prerendered: a member's "Make my profile public"
+// switch (Turso, lib/profile-visibility.ts) has to show here on the next load,
+// not after the next deploy.
+export const prerender = false;
 import { getCollection } from 'astro:content';
+import { getAllProfileVisibility, isPublic } from '../../lib/profile-visibility';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import PersonCardThumb from '../../components/stack/PersonCard--Thumb.astro';
 
 const all = await getCollection('participants');
-const visible = all.filter(p => p.data.publish);
+const saved = await getAllProfileVisibility();
+const visible = all.filter(p => isPublic(p.data.handle, p.data.publish, saved));
 const hiddenCount = all.length - visible.length;
 
 const cards = visible.map(p => {

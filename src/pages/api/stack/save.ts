@@ -24,6 +24,7 @@ import { db, Stack, User, eq, and } from 'astro:db';
 import { verifySession, SESSION_COOKIE_NAME } from '../../../lib/session';
 import { matchesRoster } from '../../../lib/oauth-roster';
 import { resolveCanonicalUserId } from '../../../lib/user-record';
+import { setProfileVisibility } from '../../../lib/profile-visibility';
 
 export const prerender = false;
 
@@ -66,6 +67,8 @@ const SavePayload = z.object({
   name: z.string().optional(),
   firm: z.string().optional(),
   role: z.string().optional(),
+  // The "Make my profile public" toggle. Persisted to Turso (ProfileVisibility);
+  // ignored from 2026-05-21 until 2026-11-18, see lib/profile-visibility.ts.
   publish: z.boolean().optional(),
   body: z.string().optional(),
 });
@@ -222,6 +225,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
   } catch (err) {
     return json({ error: 'stack write failed', detail: String((err as Error).message ?? err) }, 502);
+  }
+
+  if (save.publish !== undefined) {
+    try {
+      await setProfileVisibility(save.handle, user_id, save.publish);
+    } catch (err) {
+      return json({ error: 'visibility write failed', detail: String((err as Error).message ?? err) }, 502);
+    }
   }
 
   return json({

@@ -13,6 +13,7 @@ import { db, User, Stack, eq, asc } from 'astro:db';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import ParticipantStackView from '../../components/stack/ParticipantStackView.astro';
 import { verifySession, SESSION_COOKIE_NAME } from '../../lib/session';
+import { getProfileVisibility } from '../../lib/profile-visibility';
 
 interface ProfileData {
   handle: string;
@@ -52,7 +53,8 @@ if (entry) {
     headshot: d.headshot,
     linkedin: d.linkedin,
     website: d.website,
-    publish: d.publish,
+    // The member's own switch (Turso) wins over the markdown snapshot.
+    publish: (await getProfileVisibility(d.handle)) ?? d.publish,
     current_stack: d.current_stack ?? [],
     aspirational_stack: d.aspirational_stack ?? [],
     abandoned_stack: d.abandoned_stack ?? [],
@@ -75,10 +77,9 @@ if (entry) {
         kauffman_class: userRow.kauffman_class,
         github: `https://github.com/${handle}`,
         github_avatar: userRow.avatar ?? `https://github.com/${handle}.png`,
-        // No publish column on User yet, so DB-only profiles default to private:
-        // the owner sees their own stack (below), the public sees the stub. Once
-        // the editor's "make public" toggle is wired to persist, gate on that.
-        publish: false,
+        // DB-only profiles are private until the member switches on "Make my
+        // profile public" in the editor (lib/profile-visibility.ts).
+        publish: (await getProfileVisibility(handle)) ?? false,
         current_stack: rows.filter(r => r.bucket === 'current')
           .map(r => ({ tool: r.tool, added: r.added ?? undefined, notes: r.notes ?? undefined })),
         aspirational_stack: rows.filter(r => r.bucket === 'aspirational')
