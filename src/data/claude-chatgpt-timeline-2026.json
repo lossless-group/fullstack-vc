@@ -1,5 +1,89 @@
 [
   {
+    "date": "2025-11-24",
+    "vendor": "Anthropic",
+    "track": "Claude Code",
+    "title": "Claude Code in the desktop app",
+    "summary": "Claude Code arrives in the Claude desktop app alongside Opus 4.5, running several local and remote coding sessions side by side. Today it's the Code tab.",
+    "plans": "Paid plans (today: Pro, Max, Ultra, Team, Enterprise)",
+    "importance": 2,
+    "source": "https://www.anthropic.com/news/claude-opus-4-5",
+    "verified": true,
+    "prior": true
+  },
+  {
+    "date": "2026-01-12",
+    "vendor": "Anthropic",
+    "track": "Claude",
+    "title": "Cowork in the desktop app",
+    "summary": "Cowork brings Claude Code's agent abilities to the desktop app for work beyond coding: files, reports, research.",
+    "plans": "Research preview, desktop",
+    "importance": 2,
+    "source": "https://support.claude.com/en/articles/12138966-release-notes",
+    "verified": true,
+    "prior": true
+  },
+  {
+    "date": "2026-04-09",
+    "vendor": "Anthropic",
+    "track": "Claude",
+    "title": "Cowork generally available",
+    "summary": "Cowork leaves preview on macOS and Windows through the Claude desktop app.",
+    "plans": "Desktop app",
+    "importance": 2,
+    "source": "https://support.claude.com/en/articles/12138966-release-notes",
+    "verified": true,
+    "prior": true
+  },
+  {
+    "date": "2026-04-17",
+    "vendor": "Anthropic",
+    "track": "Claude",
+    "title": "Claude Design",
+    "summary": "An Anthropic Labs product for designs, prototypes, slides and one-pagers made with Claude, applying your team's design system.",
+    "plans": "Pro, Max, Team, Enterprise (research preview)",
+    "importance": 2,
+    "source": "https://www.anthropic.com/news/claude-design-anthropic-labs",
+    "verified": true,
+    "prior": true
+  },
+  {
+    "date": "2026-04-22",
+    "vendor": "OpenAI",
+    "track": "ChatGPT",
+    "title": "Workspace agents (research preview)",
+    "summary": "Shared team agents, an evolution of GPTs, that run on Codex in the cloud and work in ChatGPT or Slack.",
+    "plans": "Business, Enterprise, Edu, Teachers",
+    "importance": 2,
+    "source": "https://openai.com/index/introducing-workspace-agents-in-chatgpt/",
+    "verified": true,
+    "prior": true
+  },
+  {
+    "date": "2026-04-23",
+    "vendor": "OpenAI",
+    "track": "Model",
+    "title": "GPT-5.5",
+    "summary": "OpenAI's model going into the window, for agentic coding, computer use and knowledge work; GPT-5.5 Pro for harder problems. In the API from Apr 24.",
+    "plans": "Plus, Pro, Business, Enterprise; API",
+    "importance": 2,
+    "source": "https://openai.com/index/introducing-gpt-5-5/",
+    "verified": true,
+    "prior": true
+  },
+  {
+    "date": "2026-05-14",
+    "vendor": "OpenAI",
+    "track": "Codex",
+    "title": "Codex in the ChatGPT mobile app",
+    "summary": "Check on, steer and approve Codex work running on your Mac from your phone. Preview; generally available Jun 25.",
+    "plans": "All plans incl. Free and Go",
+    "importance": 2,
+    "source": "https://openai.com/index/work-with-codex-from-anywhere/",
+    "verified": true,
+    "prior": true
+  },
+  {
     "date": "2026-05-21",
     "vendor": "OpenAI",
     "track": "Codex",
@@ -569,6 +653,17 @@
     "plans": null,
     "importance": 1,
     "source": "https://claude.com/resources/articles/code-review-is-now-generally-available",
+    "verified": true
+  },
+  {
+    "date": "2026-10-15",
+    "vendor": "Anthropic",
+    "track": "Claude Code",
+    "title": "Nested sessions and a rebuilt desktop Code tab",
+    "summary": "Claude can hand a task to a separate session that sits under the original in the sidebar and reports back. Plus saved environments, a session rail with context and changes, and /btw side chats.",
+    "plans": "Claude desktop app, local and SSH sessions; third-party deployments from Oct 19. Each nested session draws on usage separately",
+    "importance": 2,
+    "source": "https://claude.com/docs/cowork/changelog",
     "verified": true
   },
   {

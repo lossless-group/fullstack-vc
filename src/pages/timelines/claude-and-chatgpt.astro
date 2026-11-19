@@ -11,9 +11,13 @@ import timeline from '../../data/claude-chatgpt-timeline-2026.json';
 
 type Item = {
   date: string; vendor: 'Anthropic' | 'OpenAI'; track: string; title: string; summary: string;
-  plans: string | null; importance: number; source: string; verified: boolean;
+  plans: string | null; importance: number; source: string; verified: boolean; prior?: boolean;
 };
-const items = (timeline as Item[]).filter((i) => i.verified).sort((a, b) => a.date.localeCompare(b.date));
+const all = (timeline as Item[]).filter((i) => i.verified).sort((a, b) => a.date.localeCompare(b.date));
+// `prior` entries predate the window: shown as context above May, left out of
+// the counts and the headline tally.
+const items = all.filter((i) => !i.prior);
+const prior = all.filter((i) => i.prior);
 
 const monthKey = (d: string) => d.slice(0, 7);
 const monthLabel = (k: string) =>
@@ -21,12 +25,23 @@ const monthLabel = (k: string) =>
 const dayLabel = (d: string) =>
   new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T00:00:00Z`));
 
-const months = [...new Set(items.map((i) => monthKey(i.date)))].map((k) => ({
+const dayYearLabel = (d: string) =>
+  new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T00:00:00Z`));
+
+const months = [
+  ...(prior.length ? [{
+    key: 'before', label: 'Where things stood going in', prior: true,
+    anthropic: prior.filter((i) => i.vendor === 'Anthropic'),
+    openai: prior.filter((i) => i.vendor === 'OpenAI'),
+  }] : []),
+  ...[...new Set(items.map((i) => monthKey(i.date)))].map((k) => ({
   key: k,
   label: monthLabel(k),
   anthropic: items.filter((i) => monthKey(i.date) === k && i.vendor === 'Anthropic'),
   openai: items.filter((i) => monthKey(i.date) === k && i.vendor === 'OpenAI'),
-}));
+  prior: false,
+})),
+];
 
 // The track chips, in reading order. "Model" items belong to both vendors.
 const TRACKS = [
@@ -69,15 +84,16 @@ const headlines = items.filter((i) => i.importance === 3).length;
 
   <div class="tl-months">
   {months.map((m) => (
-    <section class="tl-month" data-month={m.key} aria-labelledby={`m-${m.key}`}>
+    <section class:list={['tl-month', { 'tl-month--prior': m.prior }]} data-month={m.key} aria-labelledby={`m-${m.key}`}>
       <h2 class="tl-month__label" id={`m-${m.key}`}>{m.label}</h2>
+      {m.prior && <p class="tl-month__note">Launched before May 18 and often mistaken for new. Context for everything below.</p>}
       <div class="tl-lanes">
         {[['Anthropic', m.anthropic], ['OpenAI', m.openai]].map(([vendor, list]) => (
           <ol class={`tl-lane tl-lane--${(vendor as string).toLowerCase()}`} aria-label={`${vendor} in ${m.label}`}>
             {(list as Item[]).map((i) => (
               <li class:list={['tl-item', { 'tl-item--headline': i.importance === 3 }]} data-track={i.track} data-importance={i.importance}>
                 <div class="tl-item__meta">
-                  <time datetime={i.date}>{dayLabel(i.date)}</time>
+                  <time datetime={i.date}>{i.prior ? dayYearLabel(i.date) : dayLabel(i.date)}</time>
                   <span class="tl-item__track">{i.track === 'Model' ? 'Model' : i.track}</span>
                   {i.importance === 3 && <span class="tl-item__flag">Headline</span>}
                 </div>
@@ -166,6 +182,9 @@ const headlines = items.filter((i) => i.importance === 3).length;
   .tl-lanes-head, .tl-lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
   .tl-lanes-head { font-family: var(--font-code); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-muted); padding: 0 .25rem .4rem; border-bottom: 1px solid var(--color-border); }
   .tl-month { padding: 1.5rem 0 .5rem; border-bottom: 1px dashed var(--color-border); }
+  .tl-month--prior { padding: 1.25rem 1.25rem .75rem; margin-top: .75rem; border: 1px dashed var(--color-border); border-radius: .9rem; background: color-mix(in srgb, var(--color-surface) 45%, transparent); }
+  .tl-month--prior .tl-item { opacity: .88; }
+  .tl-month__note { margin: -.6rem 0 1rem; font-size: .85rem; color: var(--color-text-muted); }
   .tl-month__label { margin: 0 0 1rem; font-family: var(--font-display); font-size: 1.35rem; color: var(--color-text); }
   .tl-lane { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .75rem; }
   .tl-item { position: relative; padding: .85rem 1rem; border-radius: .7rem; border: 1px solid var(--color-border); background: var(--fx-card-bg, var(--color-surface)); }

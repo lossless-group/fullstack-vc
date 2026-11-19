@@ -22,8 +22,8 @@ import timeline from "../../../data/claude-chatgpt-timeline-2026.json";
 const TITLE = "Monthly All-Hands · Nov 19, 2026 · Agents at Work";
 const DESCRIPTION = "What's new in Claude and ChatGPT for VCs, personal agents in practice, and building a home connector.";
 
-type Item = { date: string; vendor: string; track: string; title: string; importance: number; verified: boolean };
-const items = (timeline as Item[]).filter((i) => i.verified && i.importance >= 2).sort((a, b) => a.date.localeCompare(b.date));
+type Item = { date: string; vendor: string; track: string; title: string; importance: number; verified: boolean; prior?: boolean };
+const items = (timeline as Item[]).filter((i) => i.verified && !i.prior && i.importance >= 2).sort((a, b) => a.date.localeCompare(b.date));
 const months = [...new Set(items.map((i) => i.date.slice(0, 7)))].map((k) => ({
   key: k,
   label: new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" }).format(new Date(`${k}-01T00:00:00Z`)),
@@ -31,7 +31,7 @@ const months = [...new Set(items.map((i) => i.date.slice(0, 7)))].map((k) => ({
   openai: items.filter((i) => i.date.startsWith(k) && i.vendor === "OpenAI"),
 }));
 const day = (d: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${d}T00:00:00Z`));
-const total = (timeline as Item[]).filter((i) => i.verified).length;
+const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
 ---
 
 <PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
