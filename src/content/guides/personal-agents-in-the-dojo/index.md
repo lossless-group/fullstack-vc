@@ -79,13 +79,13 @@ The thread kept coming back to the same few questions:
 
 > "There is going to be strong resistance (and rightly so) to allow personal agents into the work environments. Agents never forget. They capture context and memory. The IP leakage from personal agents in an enterprise is massive."
 
-Security is already how fellows choose between products. Varun asked about Town because it "seems to have better security than Instinct," and [[pocketcreates|Pocket]] was "hearing security concerns" about Instinct back in August. Before you connect a personal agent to work email, ask what it stores, where, and who at the vendor can see it. Most firms will have rules here, and Microsoft shops in particular may already have a managed option.
+Security is already how fellows choose between products. [[varun-malhotra|Varun Malhotra]] asked about Town because it "seems to have better security than Instinct," and [[pocketcreates|Pocket]] was "hearing security concerns" about Instinct back in August. Before you connect a personal agent to work email, ask what it stores, where, and who at the vendor can see it. Most firms will have rules here, and Microsoft shops in particular may already have a managed option.
 
 Even the most ambitious setups keep a person in the loop. [[georgebabu|George]]'s team runs agents for prospect research, call prep, call debriefs and suggested emails, but [[georgebabu|George]] is "not ready to let them go send emails on our behalf."
 
 ## Not for everyone (yet)
 
-Not everyone in the group is convinced. "What do people use town / muse / instinct for? I feel the use is not as much for me," Yao asked. [[tobyrush|Toby]]'s answer is a good test: these agents pay off most for **repetitive tasks you can describe once**, like booking, scheduling, summarizing, reminding and filing. If your week is mostly judgment calls, start smaller. Give an agent one job and its own inbox, and see whether it earns more.
+Not everyone in the group is convinced. "What do people use town / muse / instinct for? I feel the use is not as much for me," [[yao-meng|Yao Meng]] asked. [[tobyrush|Toby]]'s answer is a good test: these agents pay off most for **repetitive tasks you can describe once**, like booking, scheduling, summarizing, reminding and filing. If your week is mostly judgment calls, start smaller. Give an agent one job and its own inbox, and see whether it earns more.
 
 ## Bring your story
 
