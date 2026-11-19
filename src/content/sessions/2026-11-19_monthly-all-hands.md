@@ -27,6 +27,8 @@ og_image: /og-default.png
 
 🎟️ **[Register on Zoom →](https://kf.events/4BX40HK)**
 
+📊 **[Open the session deck →](/slides/2026-11-19_monthly-all-hands)**
+
 ## What we'll cover
 
 ### 1. What's new in Claude and ChatGPT, and how to use it in VC
