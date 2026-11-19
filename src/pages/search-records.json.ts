@@ -14,6 +14,7 @@
 // listing should not surface what the index pages hide.
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import timeline from '../data/claude-chatgpt-timeline-2026.json';
 
 export const prerender = true;
 
@@ -105,6 +106,19 @@ export const GET: APIRoute = async () => {
         meta: { title: w.data.title, kind: 'Working Group' },
         filters: { kind: ['Working-Group'], tag: tagsOf(w.data.tags) },
       })),
+
+    // Standalone data pages: one record each, carrying every release title
+    // so "Dots" or "Opus 5.5" finds the timeline.
+    {
+      url: '/timelines/claude-and-chatgpt',
+      content: join(
+        'Six months of Claude and ChatGPT',
+        'Timeline of Claude, ChatGPT, Claude Code, Codex and model releases, May to November 2026.',
+        ...(timeline as { title: string; summary: string }[]).map((i) => `${i.title}. ${i.summary}`),
+      ),
+      meta: { title: 'Six months of Claude and ChatGPT', kind: 'Timeline' },
+      filters: { kind: ['Timeline'], tag: ['Claude', 'ChatGPT', 'Claude-Code', 'Codex'] },
+    },
   ];
 
   return new Response(JSON.stringify(records), { headers: { 'content-type': 'application/json' } });

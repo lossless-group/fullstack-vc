@@ -124,6 +124,7 @@ export function getPageCards(): Promise<ShareCard[]> {
       { key: 'working-groups', kicker: 'Working groups', title: 'Small groups, one problem each.' },
       { key: 'changelog', kicker: 'Changelog', title: 'What changed on the hub.', subtitle: 'Ship notes, newest first.' },
       { key: 'read/venture-handbook', kicker: 'Venture Handbook', title: 'How venture actually works, chapter by chapter.' },
+      { key: 'timelines/claude-and-chatgpt', kicker: 'Timeline · May to Nov 2026', title: 'Six months of Claude and ChatGPT.', subtitle: 'Apps, Claude Code, Codex and models, side by side, each linked to its source.' },
     ];
 
     for (const t of await getCollection('tools')) {

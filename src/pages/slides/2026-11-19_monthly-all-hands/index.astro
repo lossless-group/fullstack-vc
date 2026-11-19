@@ -1,0 +1,265 @@
+---
+// Agents at Work · Nov 19, 2026. Prerendered: no live polls this time.
+// The month-by-month slides read src/data/claude-chatgpt-timeline-2026.json,
+// the same file behind /timelines/claude-and-chatgpt, so the deck and the
+// page can't disagree. This deck is itself the "decks as code" example from
+// segment 1: HTML, CSS and a little JS, on a link.
+export const prerender = true;
+
+// Surfaces the deck on /slides via the index page's auto-discovery.
+export const presentation = {
+  title: "Monthly All-Hands · Nov 19, 2026 · Agents at Work",
+  description: "What's new in Claude and ChatGPT and how to use it in a fund, what fellows have learned from personal agents, and how to build a home connector.",
+  date: "2026-11-19",
+  author: "Michael Staton",
+  tags: ["All-Hands", "Agentic-VC-Dojo", "Claude", "ChatGPT", "Today"],
+  featured: true,
+};
+
+import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
+import timeline from "../../../data/claude-chatgpt-timeline-2026.json";
+
+const TITLE = "Monthly All-Hands · Nov 19, 2026 · Agents at Work";
+const DESCRIPTION = "What's new in Claude and ChatGPT for VCs, personal agents in practice, and building a home connector.";
+
+type Item = { date: string; vendor: string; track: string; title: string; importance: number; verified: boolean };
+const items = (timeline as Item[]).filter((i) => i.verified && i.importance >= 2).sort((a, b) => a.date.localeCompare(b.date));
+const months = [...new Set(items.map((i) => i.date.slice(0, 7)))].map((k) => ({
+  key: k,
+  label: new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" }).format(new Date(`${k}-01T00:00:00Z`)),
+  anthropic: items.filter((i) => i.date.startsWith(k) && i.vendor === "Anthropic"),
+  openai: items.filter((i) => i.date.startsWith(k) && i.vendor === "OpenAI"),
+}));
+const day = (d: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${d}T00:00:00Z`));
+const total = (timeline as Item[]).filter((i) => i.verified).length;
+---
+
+<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
+
+  {/* ── 01 cover */}
+  <section class="slide slide--cover">
+    <p class="slide-eyebrow" data-reveal>Agentic VC Dojo · Monthly All-Hands</p>
+    <h1 class="slide-headline" data-reveal style="--delay: 80ms;">Agents at <span class="accent">Work</span></h1>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">Thursday · November 19, 2026 · 9:00 AM PT</p>
+    <div class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span>↓ to start</span>
+    </div>
+  </section>
+
+  {/* ── 02 agenda */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>The next 60 minutes</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">Three things, in order</h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li class="agenda-accent"><span class="agenda-n">01</span><span>What's new in Claude and ChatGPT, and how to use it in a fund</span><span class="agenda-min">20m</span></li>
+      <li><span class="agenda-n">02</span><span>Personal agents: use cases and shared best practices</span><span class="agenda-min">20m</span></li>
+      <li><span class="agenda-n">03</span><span>Creating a home connector</span><span class="agenda-min">15m</span></li>
+      <li><span class="agenda-n">04</span><span>Questions and what's next</span><span class="agenda-min">5m</span></li>
+    </ol>
+  </section>
+
+  {/* ── 03 segment 1 */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>01 · What's new</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Six months, <span class="accent">{total} releases.</span></h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Claude, ChatGPT, Claude Code, Codex and the models behind them, May to November. Every one is on the hub, linked to its source.
+    </p>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">fullstack-vc.com/timelines/claude-and-chatgpt</p>
+  </section>
+
+  {/* ── 04–09 month by month */}
+  {months.map((m) => (
+    <section class="slide slide--month">
+      <p class="slide-eyebrow" data-reveal>01 · What's new · {m.label}</p>
+      <div class="month-grid" data-reveal style="--delay: 80ms;">
+        {[["Anthropic", m.anthropic], ["OpenAI", m.openai]].map(([vendor, list]) => (
+          <div class={`month-col month-col--${(vendor as string).toLowerCase()}`}>
+            <h3>{vendor}</h3>
+            <ul>
+              {(list as Item[]).map((i) => (
+                <li class:list={{ "is-headline": i.importance === 3 }}>
+                  <span class="month-day">{day(i.date)}</span>
+                  <span>{i.title}</span>
+                </li>
+              ))}
+              {(list as Item[]).length === 0 && <li class="is-quiet"><span class="month-day">·</span><span>Nothing major</span></li>}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  {/* ── 10 Claude picks */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>01 · What's new · Claude, for a fund</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Four Claude changes worth <span class="accent">using this week</span></h2>
+    <ol class="picks" data-reveal style="--delay: 160ms;">
+      <li><strong>Cowork and chat are one Claude</strong> <em>Sep 16</em><span>Hand over the data-room export; get back a first-draft IC memo and a summary deck, even after you close the laptop.</span></li>
+      <li><strong>One memory, and you can see it</strong> <em>Jul 10 · Aug 25</em><span>Claude keeps what it learns about your fund in Settings › Memory › Topics, editable. Sensitive topics stay out unless you opt in.</span></li>
+      <li><strong>Docs, Sheets, Slides, and Google files</strong> <em>Sep 16 · Oct 6</em><span>Decks, docs and models in any chat; native Google Docs, Sheets and Slides edited from Claude or inside the file.</span></li>
+      <li><strong>Meetings, Data and Whiteboards</strong> <em>Nov 10 · 12</em><span>Claude takes the partner-meeting notes; portfolio KPI dashboards on certified metrics that LPs can see live without your data access; a whiteboard that turns IC debate into owners and dates.</span></li>
+    </ol>
+  </section>
+
+  {/* ── 11 ChatGPT picks */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>01 · What's new · ChatGPT, for a fund</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Five ChatGPT changes <span class="accent">to know</span></h2>
+    <ol class="picks" data-reveal style="--delay: 160ms;">
+      <li><strong>ChatGPT for Financial Services</strong> <em>Sep 10</em><span>PitchBook, Crunchbase, Preqin, FactSet, Capital IQ and Datasite built in, on GPT-6 Astra; it drafts models and memos in your firm's templates, with information barriers. Started with investment banking and equity research; sold to eligible institutions.</span></li>
+      <li><strong>Workspace agents: build once, share with the team</strong> <em>GA May 21</em><span>Describe the workflow and ChatGPT builds the agent; it runs on a schedule or from Slack and asks before sensitive steps. OpenAI's own example scores inbound leads, emails them and updates the CRM: swap leads for pitches and it's a deal-intake agent.</span></li>
+      <li><strong>Dots: agents that keep working</strong> <em>Sep 29</em><span>Its own cloud computer and browser, 4,000+ apps, and a memory that learns how you judge things. It acts on new evidence without being asked: rerun the portfolio model when a company's monthly update lands, and flag what changed. Rules decide what it may do alone.</span></li>
+      <li><strong>ChatGPT Work, also inside Microsoft 365</strong> <em>Jul 9 · Sep 10–17</em><span>An agent that stays with a project for hours and hands back sheets, slides and docs; OpenAI says finance teams cut month-end close from days to hours. Plus a Word add-in and SharePoint folders: compare term sheets straight from the deal folder.</span></li>
+      <li><strong>GPT-6, and now 6.2 for valuation work</strong> <em>Oct 7 · Nov 17</em><span>GPT-6 answers with charts and small tools, but pick a higher reasoning level for real diligence. OpenAI says Astra works Financial Modeling World Cup challenges in Excel about four times faster than the winning human, and 6.2 is trained on DCFs, valuation workbooks and investment memos.</span></li>
+    </ol>
+  </section>
+
+  {/* ── 11b artifact templates */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>01 · What's new · Artifacts, rebuilt</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">One chat, <span class="accent">seven kinds of work product</span></h2>
+    <ul class="templates" data-reveal style="--delay: 160ms;">
+      <li><strong>Docs</strong><span>living, shared documents</span></li>
+      <li><strong>Slides</strong><span>decks from a prompt</span></li>
+      <li><strong>Design</strong><span>on-canvas, your design system</span></li>
+      <li><strong>Data</strong><span>live dashboards, certified metrics</span></li>
+      <li><strong>Sheets</strong><span>formulas, tabs, export to .xlsx <em>beta</em></span></li>
+      <li><strong>Whiteboards</strong><span>brainstorm with Claude live <em>beta</em></span></li>
+      <li><strong>Motion</strong><span>animated explainers, MP4 <em>Team/Ent beta</em></span></li>
+    </ul>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">They work in Claude Code too, and you can view and edit them on iOS and Android. Pre–Sep 16 chat artifacts are now "legacy": still shareable, no new ones.</p>
+  </section>
+
+  {/* ── 12 heads-up */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>01 · What's new · Tell your IT person</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Four <span class="accent">defaults</span> changing under you</h2>
+    <ul class="picks picks--warn" data-reveal style="--delay: 160ms;">
+      <li><strong>ChatGPT Dots are on for Enterprise</strong> <em>since Nov 18</em><span>Unless an admin opted out. A dot can learn from connected apps unprompted, and disconnecting an app doesn't delete what it already pulled.</span></li>
+      <li><strong>Claude Data turns on for Enterprise</strong> <em>Fri, Nov 20</em><span>Unless an owner already saved a setting. Sheets, Whiteboards and Motion stay off on Enterprise until an admin enables them (Organization settings › Artifacts); on Team they're already on.</span></li>
+      <li><strong>Custom GPTs are being retired</strong> <em>announced Sep 11</em><span>Your "memo GPT" needs to move to a plugin.</span></li>
+      <li><strong>Claude Meetings skips outside guests</strong> <em>Nov 12</em><span>Founder pitch calls need an admin to allow external participants.</span></li>
+    </ul>
+  </section>
+
+  {/* ── 13 decks as code */}
+  <section class="slide slide--bold">
+    <p class="slide-eyebrow" data-reveal>01 · What's new · A takeaway for the bold</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Ditch PowerPoint. <span class="accent">Have Claude write the deck as code.</span></h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      HTML, JS and SVG. Your brand as code, not a template. Live data and polls inside. Versioned, and shared as a link that opens without an account.
+    </p>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">You're looking at one. This deck is a web page.</p>
+  </section>
+
+  {/* ── 14 segment 2 */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>02 · Personal agents</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">What's the best thing you've done <span class="accent">with your agent?</span></h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      Instinct, Town, Muse, Grok Bot, OpenClaw, Hermes. The group chat has been testing them on real lives for weeks.
+    </p>
+    <ul class="prompts" data-reveal style="--delay: 240ms;">
+      <li>Does it act before you ask?</li>
+      <li>Can it really reach your email, calendars and accounts?</li>
+      <li>What's built in, and what can you add?</li>
+      <li>Personal life, or your firm?</li>
+    </ul>
+    <p class="slide-caption" data-reveal style="--delay: 320ms;">Background reading: fullstack-vc.com/guides/personal-agents-in-the-dojo</p>
+  </section>
+
+  {/* ── 15 segment 3 */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>03 · A home connector</p>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">Every AI app keeps its own memory. <span class="accent">Give them one home.</span></h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+      One small server you own, a folder of plain files every agent can read and write, in Claude, ChatGPT, Cursor and Codex.
+    </p>
+    <ol class="agenda" data-reveal style="--delay: 240ms;">
+      <li><span class="agenda-n">✓</span><span>Proof: event-hog ran a three-person team's conference notes live in October</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">→</span><span>The recipe: seven steps on Cloudflare, from empty folder to "connected in Claude"</span><span class="agenda-min"></span></li>
+      <li class="agenda-accent"><span class="agenda-n">!</span><span>The rule that matters: the files are the record, and tools only add</span><span class="agenda-min"></span></li>
+    </ol>
+  </section>
+
+  {/* ── 16 close */}
+  <section class="slide slide--close">
+    <p class="slide-eyebrow" data-reveal>Thanks for being in the room</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Bring a story next time.</h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">The replay goes up on the session page.</p>
+    <div class="close-links" data-reveal style="--delay: 240ms;">
+      <a href="/timelines/claude-and-chatgpt">Six months of Claude and ChatGPT →</a>
+      <a href="/guides/personal-agents-in-the-dojo/">Takeaways from Using Personal Agents →</a>
+      <a href="/sessions/2026-11-19_monthly-all-hands">Session page →</a>
+    </div>
+    <p class="slide-footnote">
+      <span>In partnership with Kauffman Fellows</span>
+      <span class="disclaimer">Built with Claude Code. This deck is HTML.</span>
+    </p>
+  </section>
+
+</PageAsDeckWrapper>
+
+<style>
+  .slide-headline--medium { font-size: clamp(1.625rem, 4.5vw, 3.5rem); }
+  .slide-headline--small { font-size: clamp(1.5rem, 3.5vw, 2.5rem); max-width: 40ch; }
+  .accent { color: var(--color-accent); }
+
+  .agenda { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .5rem; max-width: 52rem; }
+  .agenda li { display: grid; grid-template-columns: 3rem 1fr auto; align-items: center; gap: 1rem; padding: .875rem 1.25rem;
+    background: var(--fx-card-bg); border: 1px solid var(--color-border); border-radius: .5rem;
+    font-family: var(--font-display); font-size: clamp(1rem, 1.6vw, 1.25rem); color: var(--color-text); }
+  .agenda-n { font-family: var(--font-code); font-weight: 700; color: var(--color-accent); }
+  .agenda-min { font-family: var(--font-code); font-size: .875rem; color: var(--color-text-muted); }
+  .agenda-accent { border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border)); }
+
+  /* Month slides: two lanes, headline releases emphasised. */
+  .slide--month { justify-content: center; }
+  .month-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; width: 100%; max-width: 64rem; }
+  .month-col { background: var(--fx-card-bg); border: 1px solid var(--color-border); border-radius: .75rem; padding: 1rem 1.25rem; }
+  .month-col--anthropic { border-top: 4px solid #d97757; }
+  .month-col--openai { border-top: 4px solid #10a37f; }
+  .month-col h3 { margin: 0 0 .6rem; font-family: var(--font-code); font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-muted); }
+  .month-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; }
+  .month-col li { display: grid; grid-template-columns: 3.6rem 1fr; gap: .6rem; font-family: var(--font-display); font-size: clamp(.95rem, 1.5vw, 1.15rem); color: var(--color-text); line-height: 1.3; }
+  .month-col li.is-headline { color: var(--color-accent); font-weight: 700; }
+  .month-col li.is-quiet { color: var(--color-text-muted); }
+  .month-day { font-family: var(--font-code); font-size: .8rem; color: var(--color-text-muted); padding-top: .15em; }
+
+  /* Picks: what changed, when, and the fund use. */
+  .picks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .6rem; max-width: 60rem; }
+  .picks li { padding: .85rem 1.15rem; background: var(--fx-card-bg); border: 1px solid var(--color-border); border-radius: .6rem; border-left: 3px solid var(--color-accent); }
+  .picks strong { font-family: var(--font-display); font-size: clamp(1rem, 1.6vw, 1.2rem); color: var(--color-text); }
+  .picks em { font-style: normal; font-family: var(--font-code); font-size: .8rem; color: var(--color-text-muted); margin-left: .5rem; }
+  .picks span { display: block; margin-top: .25rem; font-size: clamp(.9rem, 1.3vw, 1.02rem); color: var(--color-text-muted); line-height: 1.45; }
+  .picks--warn li { border-left-color: #e8a33d; }
+
+  .templates { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .6rem; width: 100%; max-width: 60rem; }
+  .templates li { padding: .8rem 1rem; background: var(--fx-card-bg); border: 1px solid var(--color-border); border-top: 3px solid #d97757; border-radius: .6rem; }
+  .templates strong { display: block; font-family: var(--font-display); font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: var(--color-text); }
+  .templates span { font-size: .9rem; color: var(--color-text-muted); }
+  .templates + .slide-caption { margin-top: 1.25rem; max-width: 60rem; }
+  .templates em { font-style: normal; font-family: var(--font-code); font-size: .7rem; color: var(--color-accent); margin-left: .3rem; }
+
+  .prompts { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; max-width: 56rem; }
+  .prompts li { padding: .55rem 1rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent); font-family: var(--font-display); font-size: clamp(.95rem, 1.4vw, 1.1rem); color: var(--color-text); }
+
+  .slide--bold .slide-headline { max-width: 22ch; }
+
+  .slide-body--center { text-align: center; max-width: 60ch; margin-inline: auto; }
+  .slide--close { justify-content: center; align-items: center; text-align: center; }
+  .slide--close .slide-headline, .slide--close .slide-subhead, .slide--close .slide-eyebrow { text-align: center; margin-inline: auto; }
+  .close-links { display: flex; flex-direction: column; gap: .5rem; margin-top: 1.5rem; }
+  .close-links a { font-family: var(--font-code); font-size: .9375rem; color: var(--color-primary); text-decoration: none; }
+  .close-links a:hover { color: var(--color-anchor-hover, var(--color-primary)); }
+  .disclaimer { font-family: var(--font-code); font-size: .6875rem; color: var(--color-text-muted); text-align: right; max-width: 50%; }
+
+  @media (max-width: 760px) {
+    .month-grid { grid-template-columns: 1fr; }
+    .slide--month { justify-content: flex-start; padding-top: 3rem; }
+  }
+</style>

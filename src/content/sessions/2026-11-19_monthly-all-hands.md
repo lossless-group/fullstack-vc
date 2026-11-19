@@ -33,6 +33,8 @@ og_image: /og-default.png
 
 Both apps changed a lot since our July session. We'll go through the updates that matter most for venture work, with a fund use for each.
 
+📅 **[See the full six-month timeline →](/timelines/claude-and-chatgpt)**: every Claude, ChatGPT, Claude Code, Codex and model release since May, side by side, each linked to its source.
+
 **Claude**
 - **Chat and Cowork became one Claude.** Ask a quick question or hand over a long job, and get back a finished doc, spreadsheet or deck, even after you close the laptop. *Use it for:* a first-draft IC memo and summary deck from a data-room export.
 - **Claude Meetings (beta).** Claude joins a Google Meet, takes notes and builds docs live. *Use it for:* a running list of every deal discussed in the partner meeting, with owners and next steps.

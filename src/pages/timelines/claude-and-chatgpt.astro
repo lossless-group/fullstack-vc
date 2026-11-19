@@ -1,0 +1,194 @@
+---
+// Six months of Claude and ChatGPT, side by side, month by month.
+// Data: src/data/claude-chatgpt-timeline-2026.json (also read by the
+// 2026-11-19 session deck, so the page and the slides can't disagree).
+// Every item links its primary source (Anthropic or OpenAI). Filter chips are
+// plain JS toggling `hidden`; with JS off, everything shows.
+export const prerender = true;
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ShareButton from '../../components/ui/ShareButton.astro';
+import timeline from '../../data/claude-chatgpt-timeline-2026.json';
+
+type Item = {
+  date: string; vendor: 'Anthropic' | 'OpenAI'; track: string; title: string; summary: string;
+  plans: string | null; importance: number; source: string; verified: boolean;
+};
+const items = (timeline as Item[]).filter((i) => i.verified).sort((a, b) => a.date.localeCompare(b.date));
+
+const monthKey = (d: string) => d.slice(0, 7);
+const monthLabel = (k: string) =>
+  new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${k}-01T00:00:00Z`));
+const dayLabel = (d: string) =>
+  new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T00:00:00Z`));
+
+const months = [...new Set(items.map((i) => monthKey(i.date)))].map((k) => ({
+  key: k,
+  label: monthLabel(k),
+  anthropic: items.filter((i) => monthKey(i.date) === k && i.vendor === 'Anthropic'),
+  openai: items.filter((i) => monthKey(i.date) === k && i.vendor === 'OpenAI'),
+}));
+
+// The track chips, in reading order. "Model" items belong to both vendors.
+const TRACKS = [
+  { value: 'Claude', label: 'Claude apps' },
+  { value: 'Claude Code', label: 'Claude Code' },
+  { value: 'ChatGPT', label: 'ChatGPT' },
+  { value: 'Codex', label: 'Codex' },
+  { value: 'Model', label: 'Models' },
+];
+const counts = Object.fromEntries(TRACKS.map((t) => [t.value, items.filter((i) => i.track === t.value).length]));
+const headlines = items.filter((i) => i.importance === 3).length;
+---
+
+<BaseThemeLayout
+  title="Six Months of Claude and ChatGPT · FullStack VC"
+  description="Every Claude, ChatGPT, Claude Code, Codex and model release from May to November 2026, side by side, each linked to its source."
+  containerClass="px-6 py-12 max-w-6xl mx-auto"
+>
+  <header class="tl-head">
+    <p class="tl-eyebrow">Agentic VC Dojo · Timeline · May 18 – Nov 18, 2026</p>
+    <h1 class="tl-title">Six months of Claude and ChatGPT<ShareButton icon title="Six months of Claude and ChatGPT" label="Share this timeline" /></h1>
+    <p class="tl-lede">
+      What Anthropic and OpenAI shipped in the apps, in Claude Code and Codex, and in their models: {items.length} releases,
+      each checked against the company's own release notes and linked to them. The {headlines} that matter most for a fund are highlighted.
+    </p>
+  </header>
+
+  <div class="tl-filters" role="group" aria-label="Filter the timeline">
+    <button type="button" class="tl-chip is-on" data-track="all" aria-pressed="true">All <span>{items.length}</span></button>
+    {TRACKS.map((t) => (
+      <button type="button" class="tl-chip" data-track={t.value} aria-pressed="false">{t.label} <span>{counts[t.value]}</span></button>
+    ))}
+    <label class="tl-toggle"><input type="checkbox" data-headlines /> Headlines only</label>
+    <button type="button" class="tl-order" data-order="oldest" aria-label="Show newest first">↓ Oldest first</button>
+  </div>
+
+  <div class="tl-lanes-head" aria-hidden="true">
+    <span>Anthropic</span><span>OpenAI</span>
+  </div>
+
+  <div class="tl-months">
+  {months.map((m) => (
+    <section class="tl-month" data-month={m.key} aria-labelledby={`m-${m.key}`}>
+      <h2 class="tl-month__label" id={`m-${m.key}`}>{m.label}</h2>
+      <div class="tl-lanes">
+        {[['Anthropic', m.anthropic], ['OpenAI', m.openai]].map(([vendor, list]) => (
+          <ol class={`tl-lane tl-lane--${(vendor as string).toLowerCase()}`} aria-label={`${vendor} in ${m.label}`}>
+            {(list as Item[]).map((i) => (
+              <li class:list={['tl-item', { 'tl-item--headline': i.importance === 3 }]} data-track={i.track} data-importance={i.importance}>
+                <div class="tl-item__meta">
+                  <time datetime={i.date}>{dayLabel(i.date)}</time>
+                  <span class="tl-item__track">{i.track === 'Model' ? 'Model' : i.track}</span>
+                  {i.importance === 3 && <span class="tl-item__flag">Headline</span>}
+                </div>
+                <h3 class="tl-item__title">{i.title}</h3>
+                <p class="tl-item__summary">{i.summary}</p>
+                {i.plans && <p class="tl-item__plans">{i.plans}</p>}
+                <a class="tl-item__source" href={i.source} target="_blank" rel="noopener noreferrer">Source ↗</a>
+              </li>
+            ))}
+            {(list as Item[]).length === 0 && <li class="tl-empty">Nothing major.</li>}
+          </ol>
+        ))}
+      </div>
+    </section>
+  ))}
+  </div>
+
+  <p class="tl-foot">
+    Compiled for the <a href="/sessions/2026-11-19_monthly-all-hands">Agents at Work</a> session, Nov 19, 2026.
+    Dates are when each company announced or shipped; rollouts by plan often take weeks longer.
+  </p>
+</BaseThemeLayout>
+
+<script>
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('.tl-chip')];
+  const headlinesOnly = document.querySelector<HTMLInputElement>('[data-headlines]');
+  let track = 'all';
+  const apply = () => {
+    const onlyHead = !!headlinesOnly?.checked;
+    document.querySelectorAll<HTMLElement>('.tl-item').forEach((el) => {
+      el.hidden = (track !== 'all' && el.dataset.track !== track) || (onlyHead && el.dataset.importance !== '3');
+    });
+    // Months with nothing left disappear, so a filter reads as a short list.
+    document.querySelectorAll<HTMLElement>('.tl-month').forEach((m) => {
+      m.hidden = !m.querySelector('.tl-item:not([hidden])');
+    });
+  };
+  chips.forEach((c) => c.addEventListener('click', () => {
+    track = c.dataset.track ?? 'all';
+    chips.forEach((x) => { const on = x === c; x.classList.toggle('is-on', on); x.setAttribute('aria-pressed', String(on)); });
+    apply();
+  }));
+  headlinesOnly?.addEventListener('change', apply);
+
+  // Flip months and the items inside each lane. ?order=newest links straight to it.
+  const orderBtn = document.querySelector<HTMLButtonElement>('.tl-order');
+  const flip = () => {
+    const months = document.querySelector('.tl-months');
+    months?.append(...[...months.children].reverse());
+    document.querySelectorAll('.tl-lane').forEach((lane) => {
+      const items = [...lane.querySelectorAll(':scope > .tl-item')].reverse();
+      lane.prepend(...items);
+    });
+    const newest = orderBtn?.dataset.order === 'oldest';
+    if (orderBtn) {
+      orderBtn.dataset.order = newest ? 'newest' : 'oldest';
+      orderBtn.textContent = newest ? '↑ Newest first' : '↓ Oldest first';
+      orderBtn.setAttribute('aria-label', newest ? 'Show oldest first' : 'Show newest first');
+    }
+    const url = new URL(location.href);
+    if (newest) url.searchParams.set('order', 'newest'); else url.searchParams.delete('order');
+    history.replaceState(null, '', url);
+  };
+  orderBtn?.addEventListener('click', flip);
+  if (new URLSearchParams(location.search).get('order') === 'newest') flip();
+</script>
+
+<style>
+  .tl-head { max-width: 48rem; margin-bottom: 2rem; }
+  .tl-eyebrow { margin: 0 0 .6rem; font-family: var(--font-code); font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-muted); }
+  .tl-title { margin: 0 0 .9rem; font-family: var(--font-display); font-size: clamp(1.9rem, 4.5vw, 2.8rem); line-height: 1.08; letter-spacing: -.02em; color: var(--color-text); }
+  .tl-lede { margin: 0; font-size: 1.05rem; line-height: 1.6; color: var(--color-text-muted); }
+
+  .tl-filters { position: sticky; top: 4.25rem; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: .45rem;
+    padding: .7rem 0; margin-bottom: 1rem; background: color-mix(in srgb, var(--color-background) 92%, transparent); backdrop-filter: blur(8px); }
+  .tl-chip { font-family: var(--font-code); font-size: .75rem; padding: .35rem .7rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text-muted); }
+  .tl-chip span { opacity: .7; margin-left: .2rem; }
+  .tl-chip:hover { border-color: var(--color-primary); color: var(--color-text); }
+  .tl-chip.is-on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+  .tl-order { font-family: var(--font-code); font-size: .75rem; padding: .35rem .7rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); }
+  .tl-order:hover { border-color: var(--color-primary); }
+  .tl-toggle { margin-left: auto; display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-code); font-size: .75rem; color: var(--color-text-muted); cursor: pointer; }
+
+  .tl-lanes-head, .tl-lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .tl-lanes-head { font-family: var(--font-code); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-muted); padding: 0 .25rem .4rem; border-bottom: 1px solid var(--color-border); }
+  .tl-month { padding: 1.5rem 0 .5rem; border-bottom: 1px dashed var(--color-border); }
+  .tl-month__label { margin: 0 0 1rem; font-family: var(--font-display); font-size: 1.35rem; color: var(--color-text); }
+  .tl-lane { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .75rem; }
+  .tl-item { position: relative; padding: .85rem 1rem; border-radius: .7rem; border: 1px solid var(--color-border); background: var(--fx-card-bg, var(--color-surface)); }
+  .tl-lane--anthropic .tl-item { border-left: 3px solid #d97757; }
+  .tl-lane--openai .tl-item { border-left: 3px solid #10a37f; }
+  .tl-item--headline { border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary), 0 10px 28px -16px var(--color-primary); }
+  .tl-item__meta { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: .3rem; font-family: var(--font-code); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--color-text-muted); }
+  .tl-item__track { padding: .05rem .4rem; border-radius: .3rem; border: 1px solid var(--color-border); }
+  .tl-item__flag { padding: .05rem .4rem; border-radius: .3rem; background: var(--color-primary); color: #fff; }
+  .tl-item__title { margin: 0 0 .3rem; font-family: var(--font-display); font-size: 1.02rem; line-height: 1.3; color: var(--color-text); }
+  .tl-item__summary { margin: 0; font-size: .9rem; line-height: 1.5; color: var(--color-text); }
+  .tl-item__plans { margin: .4rem 0 0; font-size: .78rem; color: var(--color-text-muted); }
+  .tl-item__source { display: inline-block; margin-top: .45rem; font-family: var(--font-code); font-size: .7rem; color: var(--color-primary); text-decoration: none; }
+  .tl-item__source:hover { color: var(--color-anchor-hover, var(--color-primary)); }
+  .tl-empty { font-size: .85rem; color: var(--color-text-muted); font-style: italic; padding: .5rem .25rem; }
+  .tl-foot { margin-top: 2rem; font-size: .85rem; color: var(--color-text-muted); }
+  .tl-foot a { color: var(--color-primary); }
+
+  @media (max-width: 760px) {
+    .tl-lanes-head { display: none; }
+    .tl-lanes { grid-template-columns: 1fr; }
+    .tl-lane--openai::before { content: 'OpenAI'; font-family: var(--font-code); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-muted); }
+    .tl-lane--anthropic::before { content: 'Anthropic'; font-family: var(--font-code); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-muted); }
+    .tl-toggle { margin-left: 0; }
+  }
+</style>
