@@ -50,6 +50,8 @@ If your firm built custom GPTs, they're being retired and moved to plugins. We'l
 
 The group chat has been comparing personal agents for weeks: Instinct, Town, Muse, Grok Bot, OpenClaw and others. We'll talk through what fellows actually use them for, what's worked, what hasn't, and the practices worth sharing. Bring your "best thing I've done with my agent" story.
 
+Background reading: **[Takeaways from Using Personal Agents](/guides/personal-agents-in-the-dojo/)**.
+
 ### 3. Creating a home connector
 
 A connector lets Claude or ChatGPT read and write your own data and tools directly. We'll walk through building a home connector of your own, so the work you do with your agents has one place to live.

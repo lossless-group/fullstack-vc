@@ -92,7 +92,16 @@ const shareUrl = new URL(url ?? Astro.url.pathname, Astro.site).href;
     height: 0.6em;
   }
   .share-button--icon:hover {
-    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-anchor-hover, var(--color-primary));
+    background: color-mix(in srgb, var(--color-anchor-hover, var(--color-primary)) 16%, transparent);
+    transform: translateY(-1px) scale(1.06);
+  }
+  .share-button--icon {
+    transition: color 140ms ease, background-color 140ms ease, transform 140ms ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .share-button--icon { transition: none; }
+    .share-button--icon:hover { transform: none; }
   }
   .share-button--icon:focus-visible {
     outline: 2px solid var(--color-primary);

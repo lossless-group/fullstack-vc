@@ -134,22 +134,22 @@ const description = shareUrl
 </script>
 
 <style>
+  /* Brand purple at rest, green on hover. Both modes (link and share) read
+     as one control: always visible, because a link nobody sees is one nobody
+     uses, and phones never hover. */
   .lfm-heading-anchor {
-    /* Quiet until the heading is hovered or the button is focused, so it
-       doesn't compete with the heading, but never invisible: a link nobody
-       can see is one nobody uses. */
-    opacity: 0.3;
     background: none;
     border: none;
-    padding: 0;
+    padding: 0.12em;
     margin-left: 0.4em;
+    border-radius: 0.3em;
     cursor: pointer;
-    color: var(--color-text-muted, #999);
+    color: var(--color-primary, currentColor);
     line-height: 1;
     display: inline-flex;
     align-items: center;
     vertical-align: middle;
-    transition: opacity 120ms ease, color 120ms ease;
+    transition: color 140ms ease, background-color 140ms ease, transform 140ms ease;
     /* Size from the heading; buttons don't inherit font-size (edviro-blog fix). */
     font-size: inherit;
   }
@@ -159,38 +159,22 @@ const description = shareUrl
     height: 0.72em;
   }
 
-  :where(h1, h2, h3, h4, h5, h6):hover > .lfm-heading-anchor,
-  .lfm-heading-anchor:focus-visible {
-    opacity: 1;
-  }
-
   .lfm-heading-anchor:hover,
-  .lfm-heading-anchor:focus-visible {
-    color: var(--color-primary, currentColor);
-  }
-
-  .lfm-heading-anchor:focus-visible {
-    outline: 2px solid var(--color-primary, currentColor);
-    outline-offset: 2px;
-    border-radius: 0.2rem;
-  }
-
+  .lfm-heading-anchor:focus-visible,
   .lfm-heading-anchor.is-copied {
-    opacity: 1;
-    color: var(--color-primary, currentColor);
+    color: var(--color-anchor-hover, var(--color-primary));
+    background-color: color-mix(in srgb, var(--color-anchor-hover, var(--color-primary)) 16%, transparent);
+  }
+  .lfm-heading-anchor:hover { transform: translateY(-1px) scale(1.08); }
+
+  .lfm-heading-anchor:focus-visible {
+    outline: 2px solid var(--color-anchor-hover, var(--color-primary));
+    outline-offset: 2px;
   }
 
-  /* Touch devices never hover; keep it permanently visible but quiet. */
-  @media (hover: none) {
-    .lfm-heading-anchor { opacity: 0.45; }
-  }
-
-  /* Section share buttons are always visible: sharing a section is the point,
-     and nobody finds a button that only appears on hover. */
+  /* Section share buttons send the section's own card; a touch larger. */
   .lfm-heading-anchor.is-share {
-    opacity: 1;
     margin-left: 0.5em;
-    color: var(--color-primary);
   }
   .lfm-heading-anchor.is-share svg {
     width: 0.85em;
@@ -199,5 +183,6 @@ const description = shareUrl
 
   @media (prefers-reduced-motion: reduce) {
     .lfm-heading-anchor { transition: none; }
+    .lfm-heading-anchor:hover { transform: none; }
   }
 </style>
