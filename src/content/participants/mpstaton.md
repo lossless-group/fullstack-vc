@@ -77,6 +77,7 @@ current_stack:
   - tool: railway
   - tool: glen
   - tool: dove-email
+  - tool: axel
 aspirational_stack:
   - tool: agents-view
     intent: "Browse and search past AI coding sessions."

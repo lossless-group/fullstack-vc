@@ -18,6 +18,14 @@ export const presentation = {
 
 import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
 import timeline from "../../../data/claude-chatgpt-timeline-2026.json";
+import { getCollection } from "astro:content";
+import ToolCard from "../../../components/stack/ToolCard.astro";
+
+// Our own code-first work product, shown on the "decks as code" slide.
+const allTools = await getCollection("tools");
+const codeFirst = ["dididecks-ai", "memopop-ai"]
+  .map((slug) => allTools.find((t) => t.id === slug))
+  .filter(Boolean) as typeof allTools;
 
 const TITLE = "Monthly All-Hands · Nov 19, 2026 · Agents at Work";
 const DESCRIPTION = "What's new in Claude and ChatGPT for VCs, personal agents in practice, and building a home connector.";
@@ -30,6 +38,17 @@ const months = [...new Set(items.map((i) => i.date.slice(0, 7)))].map((k) => ({
   anthropic: items.filter((i) => i.date.startsWith(k) && i.vendor === "Anthropic"),
   openai: items.filter((i) => i.date.startsWith(k) && i.vendor === "OpenAI"),
 }));
+// What each month's releases mean you can do now. The release list on the
+// slide is the evidence; this line is the point.
+const TAKEAWAYS: Record<string, string> = {
+  "2026-05": "Hand an agent a goal that takes hours or days, and give your team shared agents for its workflows.",
+  "2026-06": "Delegate from Slack or your phone, put tasks on a schedule, and fix a draft by pointing at it.",
+  "2026-07": "Close the laptop: agents keep working in the cloud, and Claude can write to your Outlook, calendar and OneDrive.",
+  "2026-08": "Share work by link with anyone, keep one memory across all your Claude work, and let Claude drive your browser.",
+  "2026-09": "Ask any chat for a deck, doc or design; get agents that keep working between conversations; and ChatGPT with PitchBook and FactSet built in.",
+  "2026-10": "Work in native Google Docs, Sheets and Slides, turn data into live dashboards and explainer videos, and manage it all from one Plugins page.",
+  "2026-11": "Send Claude to the partner meeting, build the model and the whiteboard in chat, and run DCFs and memos on a finance-trained GPT.",
+};
 const day = (d: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${d}T00:00:00Z`));
 const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
 ---
@@ -52,11 +71,12 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
     <p class="slide-eyebrow" data-reveal>The next 60 minutes</p>
     <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">Three things, in order</h2>
     <ol class="agenda" data-reveal style="--delay: 160ms;">
-      <li class="agenda-accent"><span class="agenda-n">01</span><span>What's new in Claude and ChatGPT, and how to use it in a fund</span><span class="agenda-min">20m</span></li>
-      <li><span class="agenda-n">02</span><span>Personal agents: use cases and shared best practices</span><span class="agenda-min">20m</span></li>
-      <li><span class="agenda-n">03</span><span>Creating a home connector</span><span class="agenda-min">15m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">01</span><span>A whirlwind of Claude and ChatGPT updates, and how to think about using them</span><span class="agenda-min">15m</span></li>
+      <li class="agenda-accent"><span class="agenda-n">02</span><span>Personal agents: wins, disappointments, show-and-tell</span><span class="agenda-min">25m</span></li>
+      <li><span class="agenda-n">03</span><span>The home connector idea, and how to get started</span><span class="agenda-min">15m</span></li>
       <li><span class="agenda-n">04</span><span>Questions and what's next</span><span class="agenda-min">5m</span></li>
     </ol>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">Fast today, on purpose. Two sessions in December go deeper.</p>
   </section>
 
   {/* ── 03 segment 1 */}
@@ -66,14 +86,17 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
     <p class="slide-subhead" data-reveal style="--delay: 160ms;">
       Claude, ChatGPT, Claude Code, Codex and the models behind them, May to November. Every one is on the hub, linked to its source.
     </p>
-    <p class="slide-caption" data-reveal style="--delay: 240ms;">fullstack-vc.com/timelines/claude-and-chatgpt</p>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;"><a class="pop-link" href="/timelines/claude-and-chatgpt" target="_blank" rel="noopener">fullstack-vc.com/timelines/claude-and-chatgpt ↗</a></p>
   </section>
 
   {/* ── 04–09 month by month */}
   {months.map((m) => (
     <section class="slide slide--month">
       <p class="slide-eyebrow" data-reveal>01 · What's new · {m.label}</p>
-      <div class="month-grid" data-reveal style="--delay: 80ms;">
+      {TAKEAWAYS[m.key] && (
+        <h2 class="month-takeaway" data-reveal style="--delay: 60ms;"><span class="accent">Now you can:</span> {TAKEAWAYS[m.key]}</h2>
+      )}
+      <div class="month-grid" data-reveal style="--delay: 140ms;">
         {[["Anthropic", m.anthropic], ["OpenAI", m.openai]].map(([vendor, list]) => (
           <div class={`month-col month-col--${(vendor as string).toLowerCase()}`}>
             <h3>{vendor}</h3>
@@ -147,28 +170,79 @@ const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
 
   {/* ── 13 decks as code */}
   <section class="slide slide--bold">
-    <p class="slide-eyebrow" data-reveal>01 · What's new · A takeaway for the bold</p>
-    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Ditch PowerPoint. <span class="accent">Have Claude write the deck as code.</span></h2>
-    <p class="slide-subhead" data-reveal style="--delay: 160ms;">
-      HTML, JS and SVG. Your brand as code, not a template. Live data and polls inside. Versioned, and shared as a link that opens without an account.
-    </p>
-    <p class="slide-caption" data-reveal style="--delay: 240ms;">You're looking at one. This deck is a web page.</p>
+    <div class="bold-grid">
+      <div>
+        <p class="slide-eyebrow" data-reveal>01 · What's new · A takeaway for the bold</p>
+        <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Ditch PowerPoint. <span class="accent">Have Claude write the deck as code.</span></h2>
+        <p class="slide-subhead" data-reveal style="--delay: 160ms;">
+          HTML, JS and SVG. Your brand as code, not a template. Live data and polls inside. Versioned, and shared as a link that opens without an account.
+        </p>
+        <p class="slide-caption" data-reveal style="--delay: 240ms;">You're looking at one. This deck is a web page. And we build decks and memos this way for funds:</p>
+      </div>
+      <div data-reveal style="--delay: 320ms;">
+        <div class="bold-cards">
+          {codeFirst.map((t) => <ToolCard slug={t.id} data={t.data as any} />)}
+        </div>
+      </div>
+    </div>
   </section>
 
-  {/* ── 14 segment 2 */}
+  {/* ── 13b how to think about it */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>01 · How to think about using it</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Eight habits of an <span class="accent">agent-native VC</span></h2>
+    <ol class="habits" data-reveal style="--delay: 160ms;">
+      <li><span>01</span>Use Claude Code and Codex, not just the chat</li>
+      <li><span>02</span>Write briefs and specs, not prompts</li>
+      <li><span>03</span>Put routine work on a schedule</li>
+      <li><span>04</span>Let models work in HTML, not .pptx</li>
+      <li><span>05</span>Experiment with enterprise context</li>
+      <li><span>06</span>Give it direct access: APIs and your browser</li>
+      <li><span>07</span>Automate your personal life</li>
+      <li><span>08</span>Create your firm's home connector</li>
+    </ol>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">The guide, with examples and tools for each: <a class="pop-link" href="/guides/agent-native-vc-2027/" target="_blank" rel="noopener">fullstack-vc.com/guides/agent-native-vc-2027 ↗</a></p>
+  </section>
+
+  {/* ── 14 segment 2: wins and disappointments */}
   <section class="slide">
     <p class="slide-eyebrow" data-reveal>02 · Personal agents</p>
-    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">What's the best thing you've done <span class="accent">with your agent?</span></h2>
+    <h2 class="slide-headline slide-headline--medium" data-reveal style="--delay: 80ms;">What worked? <span class="accent">What let you down?</span></h2>
     <p class="slide-subhead" data-reveal style="--delay: 160ms;">
-      Instinct, Town, Muse, Grok Bot, OpenClaw, Hermes. The group chat has been testing them on real lives for weeks.
+      Instinct, Town, Grok Bot, Muse, OpenClaw, Hermes, and now the big labs' own: ChatGPT's Dots and Claude Duet. The group chat has been testing them on real lives for weeks.
     </p>
-    <ul class="prompts" data-reveal style="--delay: 240ms;">
-      <li>Does it act before you ask?</li>
-      <li>Can it really reach your email, calendars and accounts?</li>
-      <li>What's built in, and what can you add?</li>
-      <li>Personal life, or your firm?</li>
-    </ul>
-    <p class="slide-caption" data-reveal style="--delay: 320ms;">Background reading: fullstack-vc.com/guides/personal-agents-in-the-dojo</p>
+    <div class="two-col" data-reveal style="--delay: 240ms;">
+      <ul class="prompts prompts--win">
+        <li>The moment it did something you didn't ask for</li>
+        <li>An errand it handled end to end</li>
+        <li>What you'd never give back</li>
+      </ul>
+      <ul class="prompts prompts--miss">
+        <li>Where it guessed wrong, or went quiet</li>
+        <li>Accounts it couldn't reach</li>
+        <li>What you turned off, and why</li>
+      </ul>
+    </div>
+    <p class="slide-caption" data-reveal style="--delay: 320ms;">Background reading: <a class="pop-link" href="/guides/personal-agents-in-the-dojo/" target="_blank" rel="noopener">fullstack-vc.com/guides/personal-agents-in-the-dojo ↗</a></p>
+  </section>
+
+  {/* ── 14b propagate wins */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>02 · Personal agents</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">A win only counts once <span class="accent">someone else can repeat it.</span></h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li><span class="agenda-n">01</span><span><strong>Write it down as a brief or a skill:</strong> what you asked, what it needed access to, what you checked.</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">02</span><span><strong>Share it where the group looks:</strong> the chat for the story, the hub for the recipe.</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">03</span><span><strong>Add the tool to your stack</strong> on your hub profile, so others can find who uses what.</span><span class="agenda-min"></span></li>
+      <li class="agenda-accent"><span class="agenda-n">04</span><span><strong>Put it behind your firm's home connector,</strong> so the whole team gets it, not just you.</span><span class="agenda-min"></span></li>
+    </ol>
+  </section>
+
+  {/* ── 14c show and tell */}
+  <section class="slide slide--close">
+    <p class="slide-eyebrow" data-reveal>02 · Show-and-tell</p>
+    <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Share your screen. <span class="accent">Five minutes.</span></h2>
+    <p class="slide-subhead" data-reveal style="--delay: 160ms;">One thing your agent did for you this month: what you asked, and what came back. Rough is fine.</p>
   </section>
 
   {/* ── 15 segment 3: the problem */}
@@ -231,7 +305,21 @@ changelog-v/, memory-v/. Every write is a commit under the
 person's name; tools only add. Proxy our CRM and wiki through it
 with stored credentials. Sign-in per person, a permission table
 per folder and tool, and approval for sensitive actions.</pre>
-    <p class="slide-caption" data-reveal style="--delay: 240ms;">The full prompt and recipe: fullstack-vc.com/guides/one-home-connector. Start with the files, then add one tool at a time.</p>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">The full prompt and recipe: <a class="pop-link" href="/guides/one-home-connector/" target="_blank" rel="noopener">fullstack-vc.com/guides/one-home-connector ↗</a>. Start with the files, then add one tool at a time.</p>
+  </section>
+
+  {/* ── 15e get started */}
+  <section class="slide">
+    <p class="slide-eyebrow" data-reveal>03 · Get started this week</p>
+    <h2 class="slide-headline slide-headline--small" data-reveal style="--delay: 80ms;">Your first home connector <span class="accent">in five steps.</span></h2>
+    <ol class="agenda" data-reveal style="--delay: 160ms;">
+      <li><span class="agenda-n">01</span><span>Open Claude Code or Codex in the desktop app, in an empty folder. No terminal needed.</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">02</span><span>Paste the prompt from the recipe, and answer its questions as it builds.</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">03</span><span>Files first: have Claude save a note, then find it from a fresh chat.</span><span class="agenda-min"></span></li>
+      <li><span class="agenda-n">04</span><span>Add your most-used tool, usually the CRM, read-only.</span><span class="agenda-min"></span></li>
+      <li class="agenda-accent"><span class="agenda-n">05</span><span>Invite one teammate, and give them the same connector.</span><span class="agenda-min"></span></li>
+    </ol>
+    <p class="slide-caption" data-reveal style="--delay: 240ms;">Recipe and prompt: <a class="pop-link" href="/guides/one-home-connector/" target="_blank" rel="noopener">fullstack-vc.com/guides/one-home-connector ↗</a>. Stuck? Bring it to a December session.</p>
   </section>
 
   {/* ── 16 close */}
@@ -240,10 +328,11 @@ per folder and tool, and approval for sensitive actions.</pre>
     <h2 class="slide-headline" data-reveal style="--delay: 80ms;">Bring a story next time.</h2>
     <p class="slide-subhead" data-reveal style="--delay: 160ms;">The replay goes up on the session page.</p>
     <div class="close-links" data-reveal style="--delay: 240ms;">
-      <a href="/timelines/claude-and-chatgpt">Six months of Claude and ChatGPT →</a>
-      <a href="/guides/personal-agents-in-the-dojo/">Takeaways from Using Personal Agents →</a>
-      <a href="/guides/one-home-connector/">One Home Connector for Your Whole Team →</a>
-      <a href="/sessions/2026-11-19_monthly-all-hands">Session page →</a>
+      <a href="/guides/agent-native-vc-2027/" target="_blank" rel="noopener">Eight habits of an agent-native VC ↗</a>
+      <a href="/timelines/claude-and-chatgpt" target="_blank" rel="noopener">Six months of Claude and ChatGPT ↗</a>
+      <a href="/guides/personal-agents-in-the-dojo/" target="_blank" rel="noopener">Takeaways from Using Personal Agents ↗</a>
+      <a href="/guides/one-home-connector/" target="_blank" rel="noopener">One Home Connector for Your Whole Team ↗</a>
+      <a href="/sessions/2026-11-19_monthly-all-hands" target="_blank" rel="noopener">Session page ↗</a>
     </div>
     <p class="slide-footnote">
       <span>In partnership with Kauffman Fellows</span>
@@ -268,6 +357,7 @@ per folder and tool, and approval for sensitive actions.</pre>
 
   /* Month slides: two lanes, headline releases emphasised. */
   .slide--month { justify-content: center; }
+  .slide.slide--month .month-takeaway { margin: 0 0 1.25rem; max-width: 60rem; font-family: var(--font-display); font-size: clamp(1.25rem, 2.6vw, 2rem); line-height: 1.2; letter-spacing: -.01em; color: var(--color-text); }
   .month-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; width: 100%; max-width: 64rem; }
   .month-col { background: var(--fx-card-bg); border: 1px solid var(--color-border); border-radius: .75rem; padding: 1rem 1.25rem; }
   .month-col--anthropic { border-top: 4px solid #d97757; }
@@ -287,6 +377,16 @@ per folder and tool, and approval for sensitive actions.</pre>
   .picks span { display: block; margin-top: .25rem; font-size: clamp(.9rem, 1.3vw, 1.02rem); color: var(--color-text-muted); line-height: 1.45; }
   .picks--warn li { border-left-color: #e8a33d; }
 
+  .habits { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem 1.25rem; width: 100%; max-width: 60rem; }
+  .habits li { display: flex; gap: .8rem; align-items: baseline; padding: .7rem 1rem; background: var(--fx-card-bg); border: 1px solid var(--color-border); border-radius: .55rem;
+    font-family: var(--font-display); font-size: clamp(.95rem, 1.5vw, 1.15rem); color: var(--color-text); }
+  .habits span { font-family: var(--font-code); font-size: .8rem; font-weight: 700; color: var(--color-accent); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 60rem; }
+  .two-col .prompts { flex-direction: column; margin: 0; }
+  .two-col .prompts--win li { border-color: color-mix(in srgb, #3f9a14 50%, var(--color-border)); background: color-mix(in srgb, #3f9a14 8%, transparent); }
+  .two-col .prompts--miss li { border-color: color-mix(in srgb, #e8a33d 55%, var(--color-border)); background: color-mix(in srgb, #e8a33d 10%, transparent); }
+  .habits + .slide-caption, .two-col + .slide-caption, .agenda + .slide-caption { margin-top: 1rem; }
+
   .templates { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: .6rem; width: 100%; max-width: 60rem; }
   .templates li { padding: .8rem 1rem; background: var(--fx-card-bg); border: 1px solid var(--color-border); border-top: 3px solid #d97757; border-radius: .6rem; }
   .templates strong { display: block; font-family: var(--font-display); font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: var(--color-text); }
@@ -298,12 +398,17 @@ per folder and tool, and approval for sensitive actions.</pre>
     background: var(--fx-card-bg); font-family: var(--font-code); font-size: clamp(.8rem, 1.25vw, 1rem); line-height: 1.55; color: var(--color-text); white-space: pre-wrap; }
 
   .prompt + .slide-caption { margin-top: 1rem; }
+  .pop-link { color: var(--color-primary); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--color-primary) 40%, transparent); text-underline-offset: .2em; }
+  .pop-link:hover { color: var(--color-anchor-hover, var(--color-primary)); text-decoration-color: currentColor; }
 
   .prompts { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; max-width: 56rem; }
   .prompts li { padding: .55rem 1rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
     background: color-mix(in srgb, var(--color-accent) 8%, transparent); font-family: var(--font-display); font-size: clamp(.95rem, 1.4vw, 1.1rem); color: var(--color-text); }
 
   .slide--bold .slide-headline { max-width: 22ch; }
+  .slide.slide--bold .bold-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; width: 100%; max-width: 84rem; }
+  .slide.slide--bold .bold-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+  .bold-cards :global(a) { text-decoration: none; }
 
   .slide-body--center { text-align: center; max-width: 60ch; margin-inline: auto; }
   .slide--close { justify-content: center; align-items: center; text-align: center; }
@@ -314,6 +419,7 @@ per folder and tool, and approval for sensitive actions.</pre>
   .disclaimer { font-family: var(--font-code); font-size: .6875rem; color: var(--color-text-muted); text-align: right; max-width: 50%; }
 
   @media (max-width: 760px) {
+    .habits, .two-col, .slide.slide--bold .bold-grid, .slide.slide--bold .bold-cards { grid-template-columns: 1fr; }
     .month-grid { grid-template-columns: 1fr; }
     .slide--month { justify-content: flex-start; padding-top: 3rem; }
   }

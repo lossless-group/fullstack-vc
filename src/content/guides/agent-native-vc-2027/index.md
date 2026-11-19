@@ -1,6 +1,6 @@
 ---
 title: "How to Use Claude & GPT like an Agent-Native VC Going into 2027"
-lede: "Three habits that separate VCs getting real work out of Claude and ChatGPT from those still chatting with them."
+lede: "Eight habits that separate VCs getting real work out of Claude and ChatGPT from those still chatting with them."
 kind: how-to
 tools:
   - claude-code
@@ -72,7 +72,7 @@ A fund runs on recurring chores: triaging the pipeline, nudging founders for upd
 | | ChatGPT | Claude |
 |---|---|---|
 | **The routine agent** | **Workspace agents** (generally available since May 21): describe the workflow once and ChatGPT builds the agent; share it with the team, run it on a schedule or from Slack | **Cowork**, now part of every Claude conversation (since Sep 16): hand it a task and set it to repeat; scheduled tasks run in the cloud with no device online (since Jul 7) |
-| **Always on** | [Dots](/tools/dots) (since Sep 29): agents with their own computer that act on new information without being asked | **Claude Tag** in Slack (Team and Enterprise): delegate to Claude in a channel |
+| **Always on** | [Dots](/tools/dots) (since Sep 29): agents with their own computer that act on new information without being asked | [Claude Duet](/tools/claude-duet) (since Oct 21, US research preview): a morning brief, eyes on your inbox and calendar, and background work, with approval before anything goes out |
 | **Simple reminders** | **Scheduled tasks** (since Jun 17) | Recurring tasks in Cowork |
 
 **Routines worth handing over first:**
@@ -134,7 +134,7 @@ Every chat starts from zero unless something gives the model your firm's context
 
 None of these is the answer yet, and several will merge or disappear. Pick one problem, like "what have we said about this company before?", and try two tools against it.
 
-## 6. Give your AI direct API access
+## 6. Give your AI direct access: APIs and your browser
 
 Most services your firm uses have an **API**: a documented way for software to read and write their data. Most non-developers have never needed to look up the API docs or use the API, and for good reason: it's complicated. But for your AI, it's as easy as riding a bicycle.
 
@@ -150,6 +150,19 @@ Good places to start:
 
 Start with a **read-only key**, so the model can look but not change anything. Add write access once you trust what it does, and require approval for anything that deletes or sends.
 
+**And give it your browser.** Plenty of what a fund uses has no API at all: the data room, the fund admin portal, LinkedIn, a founder's investor-update page. For those, let the model use the browser the way you do. **Claude in Chrome** (generally available on all paid plans since Aug 26) is an extension that reads pages, clicks, fills in forms and navigates sites in your own logged-in Chrome, with a safety check on each action; Claude Code can drive it too. ChatGPT Work has a built-in browser in its desktop app.
+
+**What that unlocks for a fund:** if you can log in to it, the model can use it.
+
+- **Sourcing lists:** run a LinkedIn search (say, senior engineers who left a portfolio competitor this year) and turn the results into a sheet. Keep it modest and on your own account: LinkedIn's terms bar automated scraping, and heavy use can get an account restricted.
+- **Portfolio updates:** log in to each company's investor-update page or portal, export the latest update and metrics, and drop them in one folder before the board meeting or LP report.
+- **Fund admin and cap tables:** pull the latest capital account statements or cap tables from your fund administrator's or Carta's portal.
+- **Data rooms:** walk a founder's data room, download what's there, and summarize it against your diligence checklist.
+- **Forms:** fill in LP due-diligence questionnaires, conference registrations and expense reports from what's already in your files.
+- **Research behind a login:** company profiles in the databases you already pay for, competitor pricing pages, regulatory filings.
+
+Between the API and the browser, there's very little a model can't reach. Watch what it does the first few times, and keep approvals on for anything it submits or sends.
+
 A home connector (habit 8) is the natural place to keep those keys and docs, so the whole team gets the access without anyone handling a key.
 
 ## 7. Automate your personal life, minimize drag
@@ -163,12 +176,13 @@ Fellows in the Dojo have been testing them on their real lives for weeks:
 - [[tools/town|Town]]
 - [[tools/grok-bot|Grok Bot]]
 - [[tools/dots|Dots]]
+- [[tools/claude-duet|Claude Duet]]
 - [[tools/muse|Muse]]
 - [[tools/openclaw|OpenClaw]]
 - [[tools/hermes-agent|Hermes Agent]]
 :::
 
-ChatGPT's [[tools/dots|Dots]] (since Sep 29) bring the same always-on idea into ChatGPT: an agent with its own computer that keeps working on your goals between conversations. Start with one errand you dread every week, give the agent only the accounts that errand needs, and widen from there.
+Both big labs now ship their own: ChatGPT's [[tools/dots|Dots]] (since Sep 29) and [[tools/claude-duet|Claude Duet]] (since Oct 21, a US research preview by waitlist). Each is an agent with its own computer that keeps working on your goals between conversations and checks with you before it sends, pays or signs. Start with one errand you dread every week, give the agent only the accounts that errand needs, and widen from there.
 
 **[Takeaways from Using Personal Agents →](/guides/personal-agents-in-the-dojo/)**: what fellows actually use them for, what worked, and how to choose one.
 
