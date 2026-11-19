@@ -23,3 +23,14 @@ export function inferWebinarStatus(input: InferStatusInput): WebinarStatus {
   if (now >= start && now < end) return 'Live';
   return 'Recorded';
 }
+
+/** True when a link opens Zoom (a meeting, a webinar or a recording). */
+export function isZoomUrl(url?: string): boolean {
+  if (!url) return false;
+  try {
+    const host = new URL(url).hostname;
+    return host === 'zoom.us' || host.endsWith('.zoom.us');
+  } catch {
+    return false;
+  }
+}

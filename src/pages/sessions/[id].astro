@@ -10,7 +10,8 @@ import { parseMarkdown } from '@lossless-group/lfm';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import AstroMarkdown from '../../components/markdown/AstroMarkdown.astro';
 import Sources from '../../components/markdown/Sources.astro';
-import { inferWebinarStatus } from '../../lib/webinar-status';
+import ZoomWordmark from '../../components/ui/ZoomWordmark.astro';
+import { isZoomUrl, inferWebinarStatus } from '../../lib/webinar-status';
 import Section__WebinarSurveyStats from '../../components/sections/Section__WebinarSurveyStats.astro';
 import Section__WebinarSurveyPolls from '../../components/sections/Section__WebinarSurveyPolls.astro';
 import Section__WebinarFirmsRepresented from '../../components/sections/Section__WebinarFirmsRepresented.astro';
@@ -155,6 +156,8 @@ const presentersEyebrowTxt = isSetupathon ? 'Hosted by' : 'With';
 const partner = data.partnerMark ?? null;
 const ctaHref = status === 'Recorded' ? data.recordingUrl : data.rsvpUrl;
 const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ? 'Join now' : 'RSVP';
+// A Zoom link gets Zoom's own button: their blue, their wordmark.
+const ctaIsZoom = isZoomUrl(ctaHref);
 
 const surveyKey = `../../data/webinar-survey/${entry.id}.json`;
 const survey = surveyModules[surveyKey]?.default ?? null;
@@ -247,11 +250,12 @@ const breakoutData = breakoutsSlug
         {ctaHref && (
           <a
             href={ctaHref}
-            class="webinar-detail__cta"
+            class:list={["webinar-detail__cta", { "webinar-detail__cta--zoom": ctaIsZoom }]}
             target={status === 'Recorded' ? '_blank' : undefined}
             rel={status === 'Recorded' ? 'noopener noreferrer' : undefined}
           >
             {ctaLabel}
+            {ctaIsZoom && <><span class="webinar-detail__cta-on">on</span><ZoomWordmark class="webinar-detail__cta-zoom-mark" /></>}
             <span aria-hidden="true">→</span>
           </a>
         )}
@@ -767,4 +771,15 @@ const breakoutData = breakoutsSlug
     .webinar-detail__date-day { font-size: 2rem; margin: 0; }
     .webinar-detail__title { font-size: 1.75rem; }
   }
+  /* Zoom links: Zoom's blue and white wordmark, in every mode. */
+  .webinar-detail__cta--zoom,
+  .webinar-detail--recorded .webinar-detail__cta--zoom {
+    background: var(--color-brand-zoom);
+    color: #fff;
+    border-color: transparent;
+  }
+  .webinar-detail__cta--zoom:hover,
+  .webinar-detail--recorded .webinar-detail__cta--zoom:hover { background: var(--color-brand-zoom); color: #fff; }
+  .webinar-detail__cta-on { font-weight: 400; opacity: .85; }
+  .webinar-detail__cta :global(.webinar-detail__cta-zoom-mark) { height: .95em; }
 </style>

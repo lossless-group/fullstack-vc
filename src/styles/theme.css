@@ -32,6 +32,7 @@
   --color__bone-warm: #ece8de;
   --color__ink: #0a0c12;
   --color__amber-flare: #ffb84d;
+  --color__zoom-blue: #0b5cff;          /* Zoom's brand blue, for Zoom-branded buttons only */
 
   /* Font Tier 1 tokens (--font__inter, --font__space-grotesk, --font__jetbrains-mono)
      are emitted by Astro's Fonts API — see the `fonts:` array in astro.config.mjs
@@ -55,6 +56,9 @@
   --color-status-active: var(--color__lime-terminal);
   --color-status-proposed: var(--color__amber-flare);
   --color-status-archived: var(--color__graphite-400);
+
+  /* Third-party brands — same across modes */
+  --color-brand-zoom: var(--color__zoom-blue);
 
   /* Typography */
   --font-display: var(--font__space-grotesk);

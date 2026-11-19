@@ -7,6 +7,7 @@ durationMinutes: 60
 hosts:
   - Michael Staton
 rsvpUrl: https://kf.events/4BX40HK
+recordingUrl: https://kauffmanfellows.zoom.us/rec/share/lyn3Mml_azLdzfJbm2sldLcnLZhFv8EhR6unFZzJEyjF8zxarcZTRNH9fC6mPkHq.CKgNmEqTmqAinrk8
 partnerMark:
   name: Kauffman Fellows
   light: /trademark__Kauffman-Fellows--Light-Mode.svg
@@ -25,11 +26,11 @@ tags:
 og_image: /og-default.png
 ---
 
-🎟️ **[Register on Zoom →](https://kf.events/4BX40HK)**
+🎬 **[Watch the recording on Zoom →](https://kauffmanfellows.zoom.us/rec/share/lyn3Mml_azLdzfJbm2sldLcnLZhFv8EhR6unFZzJEyjF8zxarcZTRNH9fC6mPkHq.CKgNmEqTmqAinrk8)** (hosted by Kauffman Fellows)
 
 📊 **[Open the session deck →](/slides/2026-11-19_monthly-all-hands)**
 
-## What we'll cover
+## What we covered
 
 ### 1. What's new in Claude and ChatGPT, and how to use it in VC
 

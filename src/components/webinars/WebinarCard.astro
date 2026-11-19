@@ -1,5 +1,6 @@
 ---
-import { inferWebinarStatus, type WebinarStatus } from '../../lib/webinar-status';
+import ZoomWordmark from '../ui/ZoomWordmark.astro';
+import { isZoomUrl, inferWebinarStatus, type WebinarStatus } from '../../lib/webinar-status';
 
 interface Props {
   data: {
@@ -35,6 +36,8 @@ const time = date.toLocaleString('en-US', {
 const presentersStr = (data.presenters ?? []).join(' · ');
 const ctaHref = status === 'Recorded' ? data.recordingUrl : data.rsvpUrl;
 const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ? 'Join now' : 'RSVP';
+// A Zoom link gets Zoom's own button: their blue, their wordmark.
+const ctaIsZoom = isZoomUrl(ctaHref);
 ---
 
 <article class={`webinar-card webinar-card--${status.toLowerCase()}`} data-status={status}>
@@ -81,11 +84,12 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
       {ctaHref && (
         <a
           href={ctaHref}
-          class="webinar-card__cta"
+          class:list={["webinar-card__cta", { "webinar-card__cta--zoom": ctaIsZoom }]}
           target={status === 'Recorded' ? '_blank' : undefined}
           rel={status === 'Recorded' ? 'noopener noreferrer' : undefined}
         >
           {ctaLabel}
+          {ctaIsZoom && <><span class="webinar-card__cta-on">on</span><ZoomWordmark class="webinar-card__cta-zoom-mark" /></>}
           <span aria-hidden="true">→</span>
         </a>
       )}
@@ -293,4 +297,15 @@ const ctaLabel = status === 'Recorded' ? 'Watch recording' : status === 'Live' ?
     }
     .webinar-card__date-day { font-size: 1.5rem; margin: 0; }
   }
+  /* Zoom links: Zoom's blue and white wordmark, in every mode. */
+  .webinar-card__cta--zoom,
+  .webinar-card--recorded .webinar-card__cta--zoom {
+    background: var(--color-brand-zoom);
+    color: #fff;
+    border-color: transparent;
+  }
+  .webinar-card__cta--zoom:hover,
+  .webinar-card--recorded .webinar-card__cta--zoom:hover { background: var(--color-brand-zoom); color: #fff; }
+  .webinar-card__cta-on { font-weight: 400; opacity: .85; }
+  .webinar-card__cta :global(.webinar-card__cta-zoom-mark) { height: .95em; }
 </style>
