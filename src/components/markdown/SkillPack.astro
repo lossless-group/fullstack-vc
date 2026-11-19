@@ -1,0 +1,95 @@
+---
+/* SkillPack — renders the `:::skill-pack` directive (alias `:::agent-skills`)
+   as a grid of SkillCards from the agent-skills registry.
+
+     :::skill-pack{title="Diligence & memos"}
+     - market-capture-analysis
+     - timeline-scenario-analysis
+     :::
+
+   Each list item is a skill slug, as plain text, inline code or a
+   [[skills/<slug>]] wikilink. Unknown slugs are skipped, so a typo drops
+   one card rather than breaking the page. The optional title renders as a
+   small label above the grid.
+
+   A product that rolls skills up (MemoPop, DidiDecks) is a pack of its own:
+
+     :::skill-pack{suite="memopop-ai"}
+     :::
+
+   lists every skill whose `suite` is memopop-ai, led by the product's own
+   ToolCard. Listed slugs, if any, come first, then the rest of the suite. */
+import { getCollection } from 'astro:content';
+import { getSkill, skillsInSuite, type AgentSkill } from '../../lib/agent-skills';
+import SkillCard from '../stack/SkillCard.astro';
+import ToolCard from '../stack/ToolCard.astro';
+
+interface Props {
+  node: any;
+  data?: any;
+}
+
+const { node } = Astro.props;
+
+function text(n: any): string {
+  if (typeof n?.value === 'string') return n.value;
+  return (n?.children ?? []).map(text).join('');
+}
+
+function collectSlugs(n: any, out: string[] = []): string[] {
+  if (n?.type === 'listItem') {
+    const link = JSON.stringify(n).match(/"url":"\/skills\/([^/"?#]+)/);
+    out.push(link ? decodeURIComponent(link[1]) : text(n).trim().split(/\s+/)[0]);
+    return out;
+  }
+  for (const c of n?.children ?? []) collectSlugs(c, out);
+  return out;
+}
+
+const suiteHandle: string | undefined = node?.attributes?.suite;
+const listed = collectSlugs(node);
+const slugs = [...new Set([...listed, ...(suiteHandle ? skillsInSuite(suiteHandle).map((s) => s.slug) : [])])];
+const skills = slugs.map(getSkill).filter(Boolean) as AgentSkill[];
+const product = suiteHandle
+  ? (await getCollection('tools')).find((t) => t.id.replace(/\/index$/, '') === suiteHandle)
+  : undefined;
+const title = node?.attributes?.title;
+---
+
+{skills.length > 0 && (
+  <section class="skill-pack" aria-label={title ?? 'Agent skills'}>
+    {title && <p class="skill-pack__title">{title}</p>}
+    <ul class="skill-pack__grid" role="list">
+      {product && (
+        <li class="skill-pack__item skill-pack__item--product">
+          <ToolCard slug={suiteHandle!} data={product.data as any} notes={`${skills.length} skills`} />
+        </li>
+      )}
+      {skills.map((s) => (
+        <li class="skill-pack__item"><SkillCard skill={s} /></li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .skill-pack { margin: 1.5rem 0 2rem; }
+  .skill-pack__title {
+    margin: 0 0 .6rem; font-family: var(--font-code); font-size: .72rem;
+    text-transform: uppercase; letter-spacing: .1em; color: var(--color-text-muted);
+  }
+  .skill-pack__grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1rem;
+  }
+  /* Prose styles add bullets and indents to list items; a card grid wants neither. */
+  .skill-pack__item { margin: 0; padding: 0; display: flex; }
+  /* In a suite, the product card is taller than a skill card; let it span two
+     rows so the skill cards beside it keep their own height. */
+  .skill-pack__item--product { grid-row: span 2; }
+  .skill-pack__item::before, .skill-pack__item::marker { content: none; }
+  .skill-pack__item > :global(*) { width: 100%; }
+  /* The product card's own tag list inherits prose list styles; reset them. */
+  .skill-pack__item--product :global(ul) { margin: 0; padding-left: 0; list-style: none; }
+  .skill-pack__item--product :global(li) { margin: 0; }
+</style>

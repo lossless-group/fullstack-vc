@@ -1,0 +1,102 @@
+---
+/* SkillCard — one agent skill from the registry (src/data/agent-skills.json):
+   name, category, a Draft badge when it isn't settled, what it does, what
+   to use it for, a link to the skill on GitHub, and a button that copies
+   the one-line prompt that loads it into any chat. */
+import { getCollection } from 'astro:content';
+import { type AgentSkill, skillUrl, skillPrompt } from '../../lib/agent-skills';
+
+interface Props {
+  skill: AgentSkill;
+}
+
+const { skill } = Astro.props;
+const draft = (skill.status ?? '').toLowerCase() === 'draft';
+// A skill a product rolls up says so, linking to that product's tool page.
+const suite = skill.suite
+  ? (await getCollection('tools')).find((t) => t.id.replace(/\/index$/, '') === skill.suite)
+  : undefined;
+const suiteName = suite?.data.site_name ?? skill.suite;
+const suiteIcon = suite?.data.og_favicon ?? suite?.data.favicon;
+---
+
+<article class="skill-card">
+  <header class="skill-card__head">
+    <span class="skill-card__category">{skill.category}</span>
+    {draft && <span class="skill-card__status">Draft</span>}
+  </header>
+  <a class="skill-card__name" href={skillUrl(skill)} target="_blank" rel="noopener noreferrer">
+    {skill.name}<span class="skill-card__ext" aria-hidden="true">↗</span>
+  </a>
+  <span class="skill-card__slug">{skill.slug}</span>
+  <p class="skill-card__summary">{skill.summary}</p>
+  {skill.use_for && <p class="skill-card__use"><span>Use for</span> {skill.use_for}</p>}
+  {skill.suite && (
+    <a class="skill-card__suite" href={`/tools/${skill.suite}`}>
+      {suiteIcon && <img src={suiteIcon} alt="" loading="lazy" decoding="async" />}
+      Part of {suiteName}
+    </a>
+  )}
+  <button type="button" class="skill-card__copy" data-skill-copy={skillPrompt(skill)}>Copy the prompt</button>
+</article>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-skill-copy]:not([data-wired])').forEach((b) => {
+    b.dataset.wired = '';
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.skillCopy ?? '');
+        const label = b.textContent;
+        b.textContent = 'Copied';
+        setTimeout(() => { b.textContent = label; }, 1600);
+      } catch { /* clipboard blocked: the GitHub link still works */ }
+    });
+  });
+</script>
+
+<style>
+  .skill-card {
+    display: flex; flex-direction: column; gap: .45rem; height: 100%;
+    padding: 1rem 1.1rem; border-radius: .75rem;
+    border: 1px solid var(--color-border); background: var(--color-surface);
+    transition: border-color .15s ease;
+  }
+  .skill-card:hover { border-color: var(--color-primary); }
+  .skill-card__head { display: flex; align-items: center; gap: .5rem; }
+  .skill-card__category, .skill-card__status {
+    font-family: var(--font-code); font-size: .68rem; text-transform: uppercase; letter-spacing: .1em;
+  }
+  .skill-card__category { color: var(--color-text-muted); }
+  .skill-card__status {
+    margin-left: auto; padding: .1rem .45rem; border-radius: 999px;
+    border: 1px solid var(--color-border); color: var(--color-text-muted);
+  }
+  .skill-card__name {
+    font-weight: 700; font-size: 1.05rem; line-height: 1.25;
+    color: var(--color-text); text-decoration: none;
+  }
+  .skill-card__name:hover { color: var(--color-primary); }
+  .skill-card__ext { margin-left: .3rem; font-size: .8em; color: var(--color-text-muted); }
+  .skill-card__slug { font-family: var(--font-code); font-size: .72rem; color: var(--color-text-muted); }
+  .skill-card__summary { margin: 0; font-size: .9rem; line-height: 1.5; color: var(--color-text); }
+  .skill-card__use { margin: 0; font-size: .82rem; line-height: 1.45; color: var(--color-text-muted); }
+  .skill-card__use span {
+    font-family: var(--font-code); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+    margin-right: .3rem;
+  }
+  .skill-card__suite {
+    display: inline-flex; align-items: center; gap: .35rem; align-self: flex-start;
+    font-family: var(--font-code); font-size: .7rem; color: var(--color-text-muted); text-decoration: none;
+  }
+  .skill-card__suite img { width: 14px; height: 14px; border-radius: 3px; }
+  .skill-card__suite:hover { color: var(--color-primary); }
+  .skill-card__copy {
+    margin-top: auto; align-self: flex-start; cursor: pointer;
+    font-family: var(--font-code); font-size: .72rem;
+    padding: .35rem .7rem; border-radius: 999px;
+    border: 1px solid var(--color-border); background: transparent; color: var(--color-text);
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .skill-card__copy:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  @media (prefers-reduced-motion: reduce) { .skill-card, .skill-card__copy { transition: none; } }
+</style>

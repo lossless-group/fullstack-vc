@@ -7,6 +7,8 @@ import Callout from "./Callout.astro";
 import MarkdownImage from "./MarkdownImage.astro";
 import ImageCarousel from "./ImageCarousel.astro";
 import ToolShowcase from "./ToolShowcase.astro";
+import SkillPack from "./SkillPack.astro";
+import { getSkill, skillUrl } from "../../lib/agent-skills";
 import HeadingAnchor from "./HeadingAnchor.astro";
 import HoverCard from "./HoverCard.astro";
 
@@ -294,6 +296,10 @@ function childrenOf(n: any): any[] {
   if (directive.name === "tool-showcase") {
     return <ToolShowcase node={directive} data={data} />;
   }
+  // `agent-skills` is an alias of `skill-pack`; both render the same grid.
+  if (directive.name === "skill-pack" || directive.name === "agent-skills") {
+    return <SkillPack node={directive} data={data} />;
+  }
   // Fallback: render children as-is
   return (
     <div>
@@ -308,6 +314,18 @@ function childrenOf(n: any): any[] {
   const directive: any = node;
   if (directive.name === "badge") {
     return <span class="ak-badge">{childrenOf(directive).map((child) => toString(child))}</span>;
+  }
+  // :skill[market-capture-analysis] — an inline reference to a registry skill.
+  // Links to the skill on GitHub; the summary rides in the title tooltip.
+  if (directive.name === "skill") {
+    const label = childrenOf(directive).map((child) => toString(child)).join("").trim();
+    const skill = getSkill(directive.attributes?.slug ?? label);
+    if (!skill) return <>{label}</>;
+    return (
+      <a class="ak-skill-ref" href={skillUrl(skill)} title={skill.summary} target="_blank" rel="noopener noreferrer">
+        <span class="ak-skill-ref__icon" aria-hidden="true">⚙</span>{directive.attributes?.slug ? label : skill.name}
+      </a>
+    );
   }
   // Fallback: just render inner text
   return <>{childrenOf(directive).map((child) => toString(child))}</>;
@@ -359,6 +377,16 @@ function childrenOf(n: any): any[] {
     background: rgba(59, 130, 246, 0.1);
     color: rgb(96, 165, 250);
   }
+
+  .ak-skill-ref {
+    display: inline-flex; align-items: baseline; gap: .25em;
+    padding: 0 .4em; border-radius: .35em;
+    border: 1px solid var(--color-border);
+    font-family: var(--font-code); font-size: .88em;
+    color: var(--color-text); text-decoration: none; white-space: nowrap;
+  }
+  .ak-skill-ref:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .ak-skill-ref__icon { color: var(--color-primary); font-size: .9em; }
 
   /* Restore list styles stripped by Tailwind preflight */
   ul {

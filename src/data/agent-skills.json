@@ -1,0 +1,361 @@
+[
+  {
+    "slug": "market-capture-analysis",
+    "name": "Market Capture Analysis",
+    "category": "Diligence & memos",
+    "summary": "Answers \"how big can it get?\" by walking revenue and EBITDA across 1%, 5% and 10% penetration of TAM, SAM and SOM at the company's own pricing. An if-then grid with every assumption stated, not a forecast.",
+    "use_for": "The market-sizing section of a memo",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "memopop-ai"
+  },
+  {
+    "slug": "timeline-scenario-analysis",
+    "name": "Timeline Scenario Analysis",
+    "category": "Diligence & memos",
+    "summary": "Answers \"how fast can it get that big?\" by stress-testing current growth across four scenarios: sustain, improve, plateau and reduce. Run it after Market Capture Analysis.",
+    "use_for": "Is this reachable inside the fund's horizon?",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "memopop-ai"
+  },
+  {
+    "slug": "competitive-analysis",
+    "name": "Competitive Analysis",
+    "category": "Diligence & memos",
+    "summary": "Sorts a company's competitors by stage and by type: direct, adjacent, indirect, or just noise. Keeps the long research list separate from the short landscape the memo needs.",
+    "use_for": "The competitive-landscape section of a memo",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "memopop-ai"
+  },
+  {
+    "slug": "crawl-fetch-ingest",
+    "name": "Crawl, Fetch, Ingest",
+    "category": "Research",
+    "summary": "Starting from a firm's site or a deck, collects the team, the portfolio and the portfolio CEOs, with headshots, titles and logos, as clean files ready for a slide or a page.",
+    "use_for": "Team, advisor and portfolio slides without hand-collecting every headshot",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "dididecks-ai"
+  },
+  {
+    "slug": "decile-hub-connector",
+    "name": "Decile Hub Connector",
+    "category": "CRM & contacts",
+    "summary": "How an agent reads and writes Decile Hub: people, organizations, pipeline prospects, deal memos, funds, portfolio companies, notes and tasks. Covers the auth and per-firm setup that trip people up.",
+    "use_for": "Funds that run their pipeline in Decile",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "hubspot-interface",
+    "name": "HubSpot Interface",
+    "category": "CRM & contacts",
+    "summary": "Operate HubSpot from Claude through HubSpot's own connector: look up a contact or deal, log a call, update a stage, run a pipeline roundup. Separates everyday record writes from account-wide changes that need a person.",
+    "use_for": "Funds on HubSpot",
+    "status": "Draft",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "create-contact-list-from-image-or-spreadsheet",
+    "name": "Contact List from a Photo or Spreadsheet",
+    "category": "CRM & contacts",
+    "summary": "Turns a photo of a sign-in sheet, a screenshot, a PDF or a spreadsheet into a checked contact list, phone contact cards and a number list for a group chat. Reads phone numbers from close crops, so digits don't come out wrong.",
+    "use_for": "Rosters from dinners, cohorts and events",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "event-prep",
+    "name": "Event Prep",
+    "category": "Events",
+    "summary": "Prepare for, work and recap a conference: who to meet, which sessions to attend, who you met, and getting badge photos and business cards into the CRM.",
+    "use_for": "Before, during and after a summit",
+    "status": "Draft",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "event-hog"
+  },
+  {
+    "slug": "augment-speakers-panelists",
+    "name": "Augment Speakers & Panelists",
+    "category": "Events",
+    "summary": "Turns a speaker's thin event-app bio into a usable profile: their social accounts, coverage about or by them, where they're quoted, and their talks on video.",
+    "use_for": "\"Who is this, and what have they said publicly?\"",
+    "status": "Draft",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "event-hog"
+  },
+  {
+    "slug": "conference-attendee-export",
+    "name": "Conference Attendee Export",
+    "category": "Events",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/conference-attendee-export",
+    "status": "Ready",
+    "summary": "Turns a conference attendee directory you have access to into checked lists of attendees and companies, through the app's own export or by paging through it, and reports how complete the list is.",
+    "use_for": "Getting the attendee list out of the event app"
+  },
+  {
+    "slug": "prioritize-attendees",
+    "name": "Prioritize Attendees",
+    "category": "Events",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/prioritize-attendees",
+    "status": "Ready",
+    "summary": "Screens an attendee, speaker or sponsor list against your firm's focus and returns a short, sourced list of who is worth finding.",
+    "use_for": "\"Who should I meet?\""
+  },
+  {
+    "slug": "capture-slides",
+    "name": "Capture Slides",
+    "category": "Events",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/capture-slides",
+    "status": "Draft",
+    "summary": "Saves photos of a talk's slides, small but legible, each with its own transcript and write-up, so the talk can be re-read slide by slide afterwards.",
+    "use_for": "Every talk you photograph"
+  },
+  {
+    "slug": "parallel-content-generation-starters",
+    "name": "Content While You Work the Room",
+    "category": "Events",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/parallel-content-generation-starters",
+    "status": "Draft",
+    "summary": "Turns short, thumb-typed notes on conversations, panels and speakers into useful content as you go, starting with flash cards for the acronyms and concepts you hear.",
+    "use_for": "Learning a new market at its conference"
+  },
+  {
+    "slug": "draft-follow-up-emails",
+    "name": "Draft Follow-up Emails",
+    "category": "Events",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/draft-follow-up-emails",
+    "status": "Ready",
+    "summary": "Drafts one follow-up per person you met, from what was actually said and logged, choosing the template by priority and by what you promised.",
+    "use_for": "The Monday after the event"
+  },
+  {
+    "slug": "recreate-slides-in-brand",
+    "name": "Recreate Slides in Brand",
+    "category": "Events",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/recreate-slides-in-brand",
+    "status": "Draft",
+    "summary": "Rebuilds a slide you photographed as a clean slide in your own brand, credited to its source, so a good idea can go into your own deck.",
+    "use_for": "\"I want this slide for our deck\""
+  },
+  {
+    "slug": "maintain-design-system",
+    "name": "Maintain the Design System",
+    "category": "Decks & brand",
+    "suite": "event-hog",
+    "repo": "lossless-group/event-hog-mcp",
+    "path": "kit/skills/maintain-design-system",
+    "status": "Draft",
+    "summary": "Keeps the company's DESIGN.md where every agent on the team can read it, and drafts one from the company's website when there is none.",
+    "use_for": "Anything made \"in our brand\" at an event"
+  },
+  {
+    "slug": "remake-deck",
+    "name": "Remake a Deck",
+    "category": "Decks & brand",
+    "summary": "Takes a pitch deck as a PDF, PowerPoint or slide images and produces several clean redesigns as web decks, each by a separate designer agent that never sees the original layout.",
+    "use_for": "Fund decks and portfolio-company decks",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "dididecks-ai"
+  },
+  {
+    "slug": "deck-iteration-workflow",
+    "name": "Deck Iteration Workflow",
+    "category": "Decks & brand",
+    "summary": "How to build a fundraise deck as a website and iterate on it slide by slide, with variants of each slide to choose between.",
+    "use_for": "A fund's own raise",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills",
+    "suite": "dididecks-ai"
+  },
+  {
+    "slug": "write-site-narrative",
+    "name": "Write the Site Narrative",
+    "category": "Decks & brand",
+    "summary": "Grills you one question at a time until you and the agent agree on what your website should say, then writes it down before anyone designs anything.",
+    "use_for": "A new fund site, or a redesign",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "build-a-moodboard",
+    "name": "Build a Mood Board",
+    "category": "Decks & brand",
+    "summary": "For people who can't say what they want something to look like: builds two to four visual directions from real, credited images to point at.",
+    "use_for": "The look of a new site or brand",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "maintain-design-md",
+    "name": "Maintain DESIGN.md",
+    "category": "Decks & brand",
+    "summary": "Writes and keeps current a DESIGN.md: your brand's colors, type and components in the open format agents read, so everything an agent makes comes out on brand.",
+    "use_for": "Brand as code",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "expense-report-generation",
+    "name": "Expense Report Generation",
+    "category": "Back office",
+    "summary": "Turns card and bank statement downloads into an expense report a client or LP will accept. Works out what each charge really was (Loom bills as Atlassian) and never makes a product name up.",
+    "use_for": "Reimbursements and trip expenses",
+    "status": "Ready",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "context-vigilance",
+    "name": "Context Vigilance",
+    "category": "Team context",
+    "summary": "How we keep a team's context as files an agent can find: specs, plans, briefs, decisions and skills, each in a known folder with a standard header.",
+    "use_for": "The context half of a home connector",
+    "status": "Draft",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "cloudflare-artifacts-interface",
+    "name": "Cloudflare Artifacts Interface",
+    "category": "Team context",
+    "summary": "Operate Cloudflare Artifacts, git storage built for agents: create a repository per person, agent or deal, mint read and write tokens, hand a workspace to a reviewer, and clean up.",
+    "use_for": "The storage behind a home connector",
+    "status": "Draft",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
+    "slug": "memopop",
+    "name": "MemoPop",
+    "category": "Diligence & memos",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/investment-memo-orchestrator",
+    "path": "plugin/skills/memopop",
+    "status": "Ready",
+    "summary": "Write an investment memo with MemoPop: start one on a company, approve the research, compile the memo, and revise it with new research or a different angle. Every research file and draft is kept.",
+    "use_for": "The memo itself, start to finish"
+  },
+  {
+    "slug": "12ps-5os-scorecard",
+    "name": "12Ps & 5Os Scorecard",
+    "category": "Diligence & memos",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/memopop-ai",
+    "path": "context-v/agent-skills/12ps-5os-scorecard",
+    "status": "Ready",
+    "summary": "A guided conversation that records a partner's own read of a deal, then how it shifts with AI, outside opinions and the firm's discussion, so the path to a decision can be retraced.",
+    "use_for": "Scoring a deal before and after the partner meeting"
+  },
+  {
+    "slug": "thesis-bleed-cleanup",
+    "name": "Thesis Bleed Cleanup",
+    "category": "Diligence & memos",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/memopop-ai",
+    "path": "context-v/agent-skills/thesis-bleed-cleanup",
+    "status": "Ready",
+    "summary": "Keeps a strong finding in the sections where it belongs, instead of every section of a generated memo citing it again.",
+    "use_for": "\"Why is this risk mentioned six times?\""
+  },
+  {
+    "slug": "manage-memo-citations",
+    "name": "Manage Memo Citations",
+    "category": "Diligence & memos",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/investment-memo-orchestrator",
+    "path": "context-v/agent-skills/manage-memo-citations",
+    "status": "Ready",
+    "summary": "Keeps a memo's citations from vanishing when MemoPop rebuilds it: where each source's definition goes, and how to name citation IDs so they never collide.",
+    "use_for": "A footnote that disappeared or shows as a bare marker"
+  },
+  {
+    "slug": "adhoc-edits-workflow",
+    "name": "Ad-hoc Memo Edits",
+    "category": "Diligence & memos",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/investment-memo-orchestrator",
+    "path": "context-v/agent-skills/adhoc-edits-workflow",
+    "status": "Ready",
+    "summary": "Make a one-off change to a finished memo: add the fact and its source to the research first, work it into the right section, rebuild, then export.",
+    "use_for": "\"The valuation is wrong\" or \"add this fact\""
+  },
+  {
+    "slug": "sources-md-curation",
+    "name": "Curate a Deal's Sources",
+    "category": "Research",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/memopop-ai",
+    "path": "agent-skills/sources-md-curation",
+    "status": "Ready",
+    "summary": "Build and prune the list of sources MemoPop researches a deal from: add links, fetch each one, and decide which part of the memo it informs.",
+    "use_for": "Steering the research before the memo is written"
+  },
+  {
+    "slug": "user-adds-adhoc-sources",
+    "name": "Add Sources After the Fact",
+    "category": "Research",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/memopop-ai",
+    "path": "agent-skills/user-adds-adhoc-sources",
+    "status": "Ready",
+    "summary": "Bring in the few links you found after reading the memo, with proper citations, without re-running the whole pipeline.",
+    "use_for": "\"I found three better sources\""
+  },
+  {
+    "slug": "source-with-extracts-md",
+    "name": "Source with Extracts",
+    "category": "Research",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/memopop-ai",
+    "path": "agent-skills/source-with-extracts-md",
+    "status": "Draft",
+    "summary": "Save one source as its own file, with the quotes, statistics and claims you pulled from it, so every extract keeps its link back to where it came from.",
+    "use_for": "Building a research library a memo can cite"
+  },
+  {
+    "slug": "setup-new-firm",
+    "name": "Set Up a New Firm",
+    "category": "Diligence & memos",
+    "suite": "memopop-ai",
+    "repo": "lossless-group/investment-memo-orchestrator",
+    "path": "context-v/agent-skills/setup-new-firm",
+    "status": "Ready",
+    "summary": "Onboard a fund into MemoPop: its brand, its folders, the investment framework its memos follow, and its first deal.",
+    "use_for": "The first day with MemoPop"
+  },
+  {
+    "slug": "setup-new-dddecks-workspace",
+    "name": "Set Up a DidiDecks Workspace",
+    "category": "Decks & brand",
+    "suite": "dididecks-ai",
+    "repo": "lossless-group/dididecks-ai",
+    "branch": "development",
+    "path": "context-v/agent-skills/setup-new-dddecks-workspace",
+    "status": "Ready",
+    "summary": "Set up a deck workspace for a fund or company: its brand as a DESIGN.md, its theme, sign-in, its sources, and a starter deck to iterate on.",
+    "use_for": "The first day with DidiDecks"
+  },
+  {
+    "slug": "slide-target",
+    "name": "Slide Target",
+    "category": "Decks & brand",
+    "suite": "dididecks-ai",
+    "repo": "lossless-group/lossless-agent-skills",
+    "status": "Ready",
+    "summary": "Load everything about one slide so an agent can iterate on it slide by slide, without re-explaining where things live.",
+    "use_for": "\"Work on slide 7 of the fund deck\""
+  }
+]

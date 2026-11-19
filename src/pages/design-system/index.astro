@@ -303,6 +303,18 @@ const components = [
     props: 'node: the containerDirective (wired from AstroMarkdown); optional directive attribute {title} becomes the list\'s aria-label',
   },
   {
+    name: 'SkillCard',
+    purpose: 'One agent skill from the registry (src/data/agent-skills.json, read through src/lib/agent-skills.ts): category, a Draft badge when the skill is not settled, the name linking to its folder on GitHub, the slug, what it does, what to use it for, and a "Copy the prompt" button that copies a one-line prompt telling any chat to read the raw SKILL.md and follow it.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',
+    props: 'skill: AgentSkill (slug, name, category, summary, use_for?, status?, suite?, repo, branch?, path?)',
+  },
+  {
+    name: 'SkillPack',
+    purpose: 'Renders the LFM `:::skill-pack` directive (alias `:::agent-skills`) as a responsive grid of SkillCards. Each list item is a skill slug, as plain text, inline code or a [[skills/<slug>]] wikilink; unknown slugs are skipped. With {suite="<tool handle>"} it lists every skill that product rolls up (the registry\'s `suite` field), led by the product\'s ToolCard spanning two rows; SkillCard shows a "Part of <product>" chip for those skills. The inline form `:skill[<slug>]` renders a small linked chip (.ak-skill-ref in AstroMarkdown) with the skill\'s summary as its tooltip; `:skill[label]{slug="<slug>"}` keeps custom link text.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-border, --font-code',
+    props: 'node: the containerDirective (wired from AstroMarkdown); optional directive attributes {title} (a label above the grid) and {suite} (a tools-registry handle)',
+  },
+  {
     name: 'TagChip (Svelte)',
     purpose: 'A tag as a control inside the search islands. Stores Train-Case, displays Normal Case. Selected and removable states fill with --color-primary; that fill is the only cue for active facets.',
     cssContract: '--color-primary, --color-background, --color-text, --color-text-muted, --color-border, --font-code',
