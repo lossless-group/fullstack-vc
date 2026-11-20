@@ -315,6 +315,18 @@ const components = [
     props: 'node: the containerDirective (wired from AstroMarkdown); optional directive attributes {title} (a label above the grid) and {suite} (a tools-registry handle)',
   },
   {
+    name: 'GitHubRepoCard',
+    purpose: 'Renders the LFM `::github-repo{repo="owner/name"}` leaf directive as a card for one GitHub repository: the GitHub mark, owner/name, description, up to four topics, primary language, stars, forks, last push date and homepage, the whole card linking to the repo. Live numbers come from the GitHub API through src/lib/github-repo.ts, cached in memory for an hour (GITHUB_TOKEN raises the rate limit); on a timeout or miss it falls back to the directive\'s description and language attributes.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',
+    props: 'node: the leafDirective (wired from AstroMarkdown); directive attributes {repo} (required; owner/name or a github.com URL), optional {description}, {language}, {homepage} to override or stand in for the API',
+  },
+  {
+    name: 'LinkCard',
+    purpose: 'Renders the LFM `::link-card{url="…"}` leaf directive as a preview card for one web page: image on the left (on top on phones), site, title with an external-link arrow, and a line of description, the whole card a link. Nothing is fetched: every field comes from the directive, and without a title it shows the URL\'s host. Use it to point readers at a product\'s splash page or any site worth a visible card rather than a bare link.',
+    cssContract: '--color-primary, --color-text, --color-text-muted, --color-surface, --color-border, --font-code',
+    props: 'node: the leafDirective (wired from AstroMarkdown); directive attributes {url} (required), optional {title}, {description}, {image}, {site}',
+  },
+  {
     name: 'TagChip (Svelte)',
     purpose: 'A tag as a control inside the search islands. Stores Train-Case, displays Normal Case. Selected and removable states fill with --color-primary; that fill is the only cue for active facets.',
     cssContract: '--color-primary, --color-background, --color-text, --color-text-muted, --color-border, --font-code',

@@ -8,6 +8,8 @@ import MarkdownImage from "./MarkdownImage.astro";
 import ImageCarousel from "./ImageCarousel.astro";
 import ToolShowcase from "./ToolShowcase.astro";
 import SkillPack from "./SkillPack.astro";
+import GitHubRepoCard from "./GitHubRepoCard.astro";
+import LinkCard from "./LinkCard.astro";
 import { getSkill, skillUrl } from "../../lib/agent-skills";
 import HeadingAnchor from "./HeadingAnchor.astro";
 import HoverCard from "./HoverCard.astro";
@@ -299,6 +301,14 @@ function childrenOf(n: any): any[] {
   // `agent-skills` is an alias of `skill-pack`; both render the same grid.
   if (directive.name === "skill-pack" || directive.name === "agent-skills") {
     return <SkillPack node={directive} data={data} />;
+  }
+  // ::github-repo{repo="owner/name"} — a card for one GitHub repository.
+  if (directive.name === "github-repo") {
+    return <GitHubRepoCard node={directive} />;
+  }
+  // ::link-card{url="…" title="…" description="…" image="…"} — a page preview.
+  if (directive.name === "link-card") {
+    return <LinkCard node={directive} />;
   }
   // Fallback: render children as-is
   return (
