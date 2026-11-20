@@ -110,7 +110,7 @@ export const GET: APIRoute = async () => {
     // Standalone data pages: one record each, carrying every release title
     // so "Dots" or "Opus 5.5" finds the timeline.
     {
-      url: '/release-timeline',
+      url: '/claude-gpt-release-timeline',
       content: join(
         'Six months of Claude and ChatGPT',
         'Timeline of Claude, ChatGPT, Claude Code, Codex and model releases, May to November 2026.',

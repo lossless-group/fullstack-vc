@@ -18,4 +18,4 @@ tags:
   - OpenAI
 ---
 
-On the [Claude and ChatGPT timeline](/release-timeline) it's one of the headline releases of the fall. In Enterprise workspaces dots switched on by default on November 18, 2026, unless an admin opted out. Anthropic's counterpart is [Claude Duet](/tools/claude-duet).
+On the [Claude and ChatGPT timeline](/claude-gpt-release-timeline) it's one of the headline releases of the fall. In Enterprise workspaces dots switched on by default on November 18, 2026, unless an admin opted out. Anthropic's counterpart is [Claude Duet](/tools/claude-duet).

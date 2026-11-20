@@ -24,7 +24,7 @@ tags:
   - Specs-and-Plans
 ---
 
-Claude and ChatGPT changed more in the last six months than in the two years before. Agents now work for hours, make documents and decks, and run in the background after you close the laptop. (Every release is on **[the timeline](/release-timeline)**, side by side and sourced.)
+Claude and ChatGPT changed more in the last six months than in the two years before. Agents now work for hours, make documents and decks, and run in the background after you close the laptop. (Every release is on **[the timeline](/claude-gpt-release-timeline)**, side by side and sourced.)
 
 Most VCs still use them as a chat box: type a question, read the answer, copy it somewhere else. That leaves most of the value on the table. These are the eight habits we'd start with.
 
