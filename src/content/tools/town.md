@@ -6,7 +6,9 @@ url: https://www.town.com/
 og_image: https://www.town.com/images/brand/og/home-opengraph.png
 favicon: https://www.town.com/favicon.png
 description: "Town gives each user a personal AI assistant — a 'Townie' — that learns how you work, manages your inbox, schedules meetings, keeps a wiki of your preferences, and handles repetitive tasks quietly in the background. Integrates with your existing apps; tasks are delegated conversationally."
+category: "Personal Agents"
 tags:
+  - Personal-Agents
   - AI-Assistants
   - Personal-Automation
   - Email-Management
