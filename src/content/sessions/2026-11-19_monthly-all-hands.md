@@ -52,6 +52,26 @@ A small, talkative group. [Michael](/people/mpstaton/) ran through six months of
 
 **From the session:** [lossless.at](https://lossless.at) · [How to Use Claude & GPT like an Agent-Native VC Going into 2027](/guides/agent-native-vc-2027/) · [The VC Agent Skill Pack](/guides/vc-agent-skill-pack/)
 
+## An open question: can you stop an acquirer's agents from taking everything?
+
+[Patrick](/people/psagisi/) raised it, from a conversation with a colleague: when a portfolio company's value *is* its agents, harness, code and industry know-how, a big acquirer's technical diligence can pull all of it out. Pre-AI, big companies sometimes walked away from a deal knowing everything the startup knew. With agents in the data room, rebuilding what you saw is far cheaper. So how do companies, investors, and their lawyers and bankers stop a buyer from extracting as much intelligence as possible, and then walking?
+
+Nobody in the room had a full answer, and as far as we can find, nobody else does yet either.
+
+**What the group said**
+- **Stage what you show.** [Punit](/people/punit24-lab/): reveal the crown jewels only at the last stage, and back them with breakup fees and a liability tail (a 3–5 year look-back with defined penalties if anything leaks).
+- **Leverage decides it.** A hot company can demand those terms. A small acquihire usually can't.
+- **The UI is enough.** [Michael](/people/mpstaton/) noted that a "reverse engineer anything" skill rebuilt every major fantasy football app overnight from the UI alone, with no code access.
+
+**What lawyers have started recommending** ([Pillsbury, Nov 2026](https://www.pillsburylaw.com/en/news-and-insights/ai-mergers-acquisitions-confidential-information.html); [Kohrman Jackson & Krantz, Mar 2026](https://www.jdsupra.com/legalnews/ai-and-m-a-ndas-managing-artificial-7475576/))
+- **NDAs that name AI.** Uploading to an AI tool counts as a disclosure. Only approved enterprise tools are allowed, with no retention and no training on the data, or no AI at all for the most sensitive material.
+- **AI output stays confidential.** Summaries and analyses an AI produces from your data are confidential information too, and deletion at the end of a deal covers prompt histories, chat logs and vector indexes.
+- **Close the residuals loophole.** Anything stored in or retrieved from an AI tool is not the "unaided memory" a residuals clause lets the buyer keep.
+- **Clean teams and third-party review.** A small walled-off team, or an independent firm, reviews the code and reports findings without handing over the code.
+- **Bind the advisors too.** The same limits apply to the buyer's bankers, accountants and lawyers. No AI notetakers on calls without written consent.
+
+**Why it stays open:** all of this governs what a buyer may do with your *documents*. None of it stops their people, or their agents, from learning what's possible and building it themselves, and that know-how is exactly what an AI-native company is selling. If you've seen a term sheet, NDA or process that handles this well, bring it to the December session.
+
 ## The agenda
 
 ### 1. What's new in Claude and ChatGPT, and how to use it in VC
