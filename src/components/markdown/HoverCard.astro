@@ -16,6 +16,7 @@
    leaks into a popover. Phones don't hover; a tap just follows the link. */
 import { getCollection } from 'astro:content';
 import PersonCardThumb from '../stack/PersonCard--Thumb.astro';
+import { getEngagementScore } from '../../lib/engagement';
 import ToolCard from '../stack/ToolCard.astro';
 
 interface Props {
@@ -43,6 +44,7 @@ if (kind === 'person') {
       toolCount: (d.current_stack?.length ?? 0) + (d.aspirational_stack?.length ?? 0) + (d.abandoned_stack?.length ?? 0),
       kauffmanClass: d.kauffman_class ?? undefined,
       joinedOn: d.joined_dojo,
+      engagement: await getEngagementScore(d.handle),
     };
   }
 } else {

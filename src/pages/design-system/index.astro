@@ -232,9 +232,9 @@ const components = [
   },
   {
     name: 'PersonCard--Thumb',
-    purpose: 'Compact profile chip for /people, /stacks, and any roster grid. Avatar with primary halo + name + firm + role + tool-count + Kauffman class + joined-on date. Visual vocabulary copied from Section__WebinarPresenters avatar pattern. Whole card is a link to /people/[handle]. Naming: PersonCard--{variant}.astro — Thumb is the small horizontal card; future variants (Full, Hero, Mini) live as siblings.',
-    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --font-display, --font-code',
-    props: 'handle: string, name: string, firm?: string, role?: string, avatar?: string, toolCount?: number, kauffmanClass?: number, joinedOn?: string | Date',
+    purpose: 'Compact profile chip for /people, /stacks, and any roster grid. Avatar with primary halo + name + firm + role + tool-count + Kauffman class + joined-on date, and with engagement set, a small green dot in the top-right corner holding the person\'s engagement score (lib/engagement.ts, the PersonEngagement view in Turso), with no label. Visual vocabulary copied from Section__WebinarPresenters avatar pattern. Whole card is a link to /people/[handle]. Naming: PersonCard--{variant}.astro — Thumb is the small horizontal card; future variants (Full, Hero, Mini) live as siblings.',
+    cssContract: '--fx-card-bg, --fx-card-border, --fx-card-border-hover, --fx-card-shadow, --fx-card-shadow-hover, --color-text, --color-text-muted, --color-primary, --color-surface, --color-border, --color-engagement, --color-background, --font-display, --font-code',
+    props: 'handle: string, name: string, firm?: string, role?: string, avatar?: string, toolCount?: number, kauffmanClass?: number, joinedOn?: string | Date, engagement?: number',
   },
   {
     name: 'ParticipantStackView (stack)',

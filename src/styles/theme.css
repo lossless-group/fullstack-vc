@@ -83,6 +83,8 @@
   --color-link: var(--color__violet-bright);
   /* Anchor hover: lime is ~1.1:1 on bone, so light mode uses a deeper green. */
   --color-anchor-hover: var(--color__green-deep);
+  /* The engagement-score dot on person cards. */
+  --color-engagement: var(--color__green-deep);
   --color-link-underline: var(--color__lavender-soft);
 
   /* Effect tokens — minimal in light mode */
@@ -137,6 +139,8 @@
   --color-link: var(--color__lavender-soft);
   --color-link-underline: color-mix(in srgb, var(--color__lavender-soft) 55%, transparent);
   --color-anchor-hover: var(--color__lime-terminal);
+  /* The engagement-score dot on person cards. */
+  --color-engagement: var(--color__lime-terminal);
 
   /* Effect tokens — moderate in dark mode */
   --fx-glow-opacity: 0.22;
@@ -185,6 +189,8 @@
   --color-link: var(--color__lavender-soft);
   --color-link-underline: color-mix(in srgb, var(--color__lavender-soft) 55%, transparent);
   --color-anchor-hover: var(--color__lime-terminal);
+  /* The engagement-score dot on person cards. */
+  --color-engagement: var(--color__lime-terminal);
 
   /* Effect tokens — maximum impact */
   --fx-glow-opacity: 0.55;

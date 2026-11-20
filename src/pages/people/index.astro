@@ -7,11 +7,13 @@ import { getCollection } from 'astro:content';
 import { getAllProfileVisibility, isPublic } from '../../lib/profile-visibility';
 import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
 import PersonCardThumb from '../../components/stack/PersonCard--Thumb.astro';
+import { getEngagementScores } from '../../lib/engagement';
 
 const all = await getCollection('participants');
 const saved = await getAllProfileVisibility();
 const visible = all.filter(p => isPublic(p.data.handle, p.data.publish, saved));
 const hiddenCount = all.length - visible.length;
+const scores = await getEngagementScores();
 
 const cards = visible.map(p => {
   const stackTotal =
@@ -27,8 +29,11 @@ const cards = visible.map(p => {
     toolCount: stackTotal,
     kauffmanClass: p.data.kauffman_class,
     joinedOn: p.data.joined_dojo,
+    engagement: scores.size ? (scores.get(p.data.handle.toLowerCase()) ?? 0) : undefined,
   };
-});
+})
+  // Most engaged first.
+  .sort((a, b) => (b.engagement ?? 0) - (a.engagement ?? 0) || a.name.localeCompare(b.name));
 ---
 
 <BaseThemeLayout

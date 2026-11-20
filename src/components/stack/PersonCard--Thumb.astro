@@ -17,9 +17,11 @@ interface Props {
   kauffmanClass?: number;
   /** ISO date string or Date — when present, renders a "JOINED <date>" meta line. */
   joinedOn?: string | Date;
+  /** Engagement score (lib/engagement.ts); when present, a green dot with the number. */
+  engagement?: number;
 }
 
-const { handle, name, firm, role, avatar, toolCount, kauffmanClass, joinedOn } = Astro.props;
+const { handle, name, firm, role, avatar, toolCount, kauffmanClass, joinedOn, engagement } = Astro.props;
 
 function initials(n: string): string {
   return n.split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
@@ -32,7 +34,10 @@ const joinedLabel = joinedOn
   : null;
 ---
 
-<a class="pcard" href={`/people/${handle}`}>
+<a class:list={["pcard", { "pcard--scored": engagement !== undefined }]} href={`/people/${handle}`}>
+  {engagement !== undefined && (
+    <span class="pcard__engagement" aria-label={`Engagement ${engagement}`}>{engagement}</span>
+  )}
   {/* Remote avatars expire (LinkedIn's signed URLs do, within months), so a
       failed load swaps in the initials chip rather than a broken image. */}
   {avatar ? (
@@ -83,6 +88,27 @@ const joinedLabel = joinedOn
     text-decoration: none;
     color: inherit;
     transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .pcard { position: relative; }
+  .pcard--scored { padding-right: 2.75rem; }
+  .pcard__engagement {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-engagement);
+    color: var(--color-background);
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
   }
   .pcard:hover {
     border-color: var(--fx-card-border-hover);
