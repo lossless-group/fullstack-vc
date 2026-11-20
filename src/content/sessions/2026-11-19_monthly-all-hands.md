@@ -70,6 +70,8 @@ Nobody in the room had a full answer, and as far as we can find, nobody else doe
 - **Clean teams and third-party review.** A small walled-off team, or an independent firm, reviews the code and reports findings without handing over the code.
 - **Bind the advisors too.** The same limits apply to the buyer's bankers, accountants and lawyers. No AI notetakers on calls without written consent.
 
+**What seems to be missing:** an agent-proof data room. Today's data rooms were built to stop people from downloading and forwarding files, with view-only access, watermarks and access logs. They weren't built for an agent that reads every page and keeps what it learns. [Michael](/people/mpstaton/)'s take: there's a need for data rooms that can tell an agent or crawler apart from a person reading, and stop it from ingesting the whole room. At the very least, they should keep a record that it happened, so the seller has evidence if the IP turns up somewhere later. We haven't seen anyone build this yet.
+
 **Why it stays open:** all of this governs what a buyer may do with your *documents*. None of it stops their people, or their agents, from learning what's possible and building it themselves, and that know-how is exactly what an AI-native company is selling. If you've seen a term sheet, NDA or process that handles this well, bring it to the December session.
 
 ## The agenda
