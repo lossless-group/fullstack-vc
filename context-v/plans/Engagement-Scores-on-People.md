@@ -32,7 +32,7 @@ Builds on [[People-and-Contact-Cards-for-Session-Registrations]].
 |---|---|---|
 | Registering for a session | +1 each | `SessionRegistrations` rows |
 | Attending a session | +3 each | `SessionRegistrations.attendance = 'Attended'` |
-| Logging in | +5 each | `AuthEvent` rows with `outcome = 'success'` for the person's `user_id` |
+| Logging in | +5 each | `AuthEvent` rows with `outcome = 'success'` for the person's `user_id`, plus logins before `AuthEvent` began on 2026-05-21 from `User.first_login_at` / `last_login_at` (migration 004) |
 | Answering a poll | +3 per poll | distinct `Vote.poll_id` for the person's `user_id` |
 
 Counted from the source tables, not `PersonInteractions`: sign-in doesn't write interactions yet, so a score built on them would miss every login since the backfill.
@@ -48,3 +48,8 @@ Counted from the source tables, not `PersonInteractions`: sign-in doesn't write 
 ## Not in scope
 
 No explanation of the score on the page, by request.
+
+## After shipping
+
+- **Early logins.** `AuthEvent` starts on 2026-05-21, so the 14 people who signed in during the first weeks scored no logins. Migration 004 counts them from `User`.
+- **Who still scores zero.** Every profile at zero was created by hand from the group chat or the Kauffman directory, and that person hasn't registered, logged in or voted. Hosting or presenting a session isn't counted.

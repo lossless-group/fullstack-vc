@@ -52,7 +52,7 @@ Yes, in its **Code** tab. Mods are a Claude Code feature, and the Desktop app's 
 | Claude Code on your machine, driven from claude.ai or the phone (Remote Control) | Yes | In the terminal on your machine |
 | A Claude Code cloud session, `claude -p`, the Agent SDK | Yes | No: nothing draws, so a mod there is rules, not panes |
 
-Check your version: in a terminal, `claude --version`; in the Desktop app, type `/status` in a local Code session and read the **Claude Code** row. Mods arrived on [October 1](/timelines/claude-and-chatgpt) and are on by default.
+Check your version: in a terminal, `claude --version`; in the Desktop app, type `/status` in a local Code session and read the **Claude Code** row. Mods arrived on [October 1](/release-timeline) and are on by default.
 
 ## What a mod is
 

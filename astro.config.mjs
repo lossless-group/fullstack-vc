@@ -48,6 +48,11 @@ export default defineConfig({
     }),
   ],
 
+  // Moved 2026-11-20; links in sent emails and decks still point at the old path.
+  redirects: {
+    '/timelines/claude-and-chatgpt': '/release-timeline',
+  },
+
   // Astro 6 stable Fonts API. Emits @font-face + the named CSS variables that
   // theme.css's Tier 2 semantic tokens (--font-display/-body/-code) reference.
   // Don't redeclare these `--font__*` names anywhere else — Astro owns them.

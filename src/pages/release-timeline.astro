@@ -5,9 +5,9 @@
 // Every item links its primary source (Anthropic or OpenAI). Filter chips are
 // plain JS toggling `hidden`; with JS off, everything shows.
 export const prerender = true;
-import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
-import ShareButton from '../../components/ui/ShareButton.astro';
-import timeline from '../../data/claude-chatgpt-timeline-2026.json';
+import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
+import ShareButton from '../components/ui/ShareButton.astro';
+import timeline from '../data/claude-chatgpt-timeline-2026.json';
 
 type Item = {
   date: string; vendor: 'Anthropic' | 'OpenAI'; track: string; title: string; summary: string;
