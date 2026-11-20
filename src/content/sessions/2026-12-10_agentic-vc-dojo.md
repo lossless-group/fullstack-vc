@@ -1,6 +1,6 @@
 ---
-title: "Agentic VC Dojo · Dec 10"
-lede: "The agenda is still being set. Tell us what you want to cover."
+title: "All-Hands · Agentic VC Dojo · Dec 10"
+lede: "An all-hands, and all are welcome. The agenda is still being set, so tell us what you want to cover."
 date_scheduled: 2026-12-10T09:00:00-08:00
 date_posted: 2026-11-19
 durationMinutes: 60
@@ -32,4 +32,4 @@ Thursday, December 10, 2026 · 12:00 PM Eastern / 9:00 AM Pacific
 
 ## Who this is for
 
-VCs from analyst to partner, at any level of AI comfort.
+Everyone. This is an all-hands: VCs from analyst to partner, at any level of AI comfort, and first-timers are as welcome as regulars.
