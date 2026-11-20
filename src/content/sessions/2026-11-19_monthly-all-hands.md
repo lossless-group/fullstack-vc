@@ -60,7 +60,7 @@ Nobody in the room had a full answer, and as far as we can find, nobody else doe
 
 **What the group said**
 - **Stage what you show.** [Punit](/people/punit24-lab/): reveal the crown jewels only at the last stage, and back them with breakup fees and a liability tail (a 3–5 year look-back with defined penalties if anything leaks).
-- **Leverage decides it.** A hot company can demand those terms. A small acquihire usually can't.
+- **But protection depends on leverage.** [Punit](/people/punit24-lab/)'s sharper point: those protections are only as strong as the company's bargaining position. A hot company with several bidders can demand them. A small company facing a low-end exit or an acquihire, playing for its liquidation preferences, usually can't. That explains who gets protected, but it doesn't solve the problem: most acquisitions are at the low end, which is where the protection is weakest.
 - **The UI is enough.** [Michael](/people/mpstaton/) noted that a "reverse engineer anything" skill rebuilt every major fantasy football app overnight from the UI alone, with no code access.
 
 **What lawyers have started recommending** ([Pillsbury, Nov 2026](https://www.pillsburylaw.com/en/news-and-insights/ai-mergers-acquisitions-confidential-information.html); [Kohrman Jackson & Krantz, Mar 2026](https://www.jdsupra.com/legalnews/ai-and-m-a-ndas-managing-artificial-7475576/))
