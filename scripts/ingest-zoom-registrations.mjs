@@ -59,7 +59,7 @@
 //   SESSION=2026-11-19_monthly-all-hands pnpm ingest:registrations
 
 import { createClient } from '@libsql/client';
-import { addEmailAlias, cardEmails, createPerson, newId, recordInteractions, upsertContactCard } from '../src/lib/contact-cards.ts';
+import { addEmailAlias, allNames, cardEmails, createPerson, newId, recordInteractions, upsertContactCard } from '../src/lib/contact-cards.ts';
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -220,8 +220,8 @@ const people = new Map();
 const personByEmail = new Map();   // every address on any card, aliases too
 const personByUser = new Map();
 if (hasTables) {
-  for (const r of (await client.execute('SELECT id, name, user_id FROM People')).rows) {
-    people.set(String(r.id), { name: r.name ? String(r.name) : null, emails: new Set(), sessions: new Set(), cards: [], user_id: r.user_id ?? null, isNew: false });
+  for (const r of (await client.execute('SELECT id, name, called, user_id FROM People')).rows) {
+    people.set(String(r.id), { name: r.name ? String(r.name) : null, names: allNames(r.name ? String(r.name) : null, r.called), emails: new Set(), sessions: new Set(), cards: [], user_id: r.user_id ?? null, isNew: false });
     if (r.user_id) personByUser.set(String(r.user_id), String(r.id));
   }
   for (const r of (await client.execute('SELECT id, person_id, card_type, card FROM PersonContactCards')).rows) {
@@ -266,27 +266,33 @@ function editDistance(a, b) {
   return d[a.length][b.length];
 }
 
-/** Why this registrant might be this person, or [] if they don't look alike. */
+/** Why this registrant might be this person, or [] if they don't look alike.
+ *  Compared against every name the person goes by (People.called too). */
 function fuzzyReasons(r, person) {
-  const reasons = [];
-  const a = nameTokens(r.name), b = nameTokens(person.name);
-  if (a.length && b.length) {
+  const reasons = new Set();
+  const a = nameTokens(r.name);
+  const names = person.names?.length ? person.names : [person.name];
+  for (const name of names) {
+    const b = nameTokens(name);
+    const how = name === person.name ? '' : ` (goes by ${name})`;
+    if (!a.length || !b.length) continue;
     const [af, al, bf, bl] = [a[0], a.at(-1), b[0], b.at(-1)];
     const firstsAgree = af === bf || (af.length >= 3 && bf.startsWith(af)) || (bf.length >= 3 && af.startsWith(bf))
       || (af.length === 1 && bf.startsWith(af)) || (bf.length === 1 && af.startsWith(bf));
-    if (a.join(' ') === b.join(' ')) reasons.push('same name');
-    else if (al === bl && al.length > 1 && firstsAgree) reasons.push('same last name, matching first name');
-    else if (a.join(' ').length >= 8 && editDistance(a.join(' '), b.join(' ')) <= 2) reasons.push('nearly the same name');
+    if (a.join(' ') === b.join(' ')) reasons.add('same name' + how);
+    else if (al === bl && al.length > 1 && firstsAgree) reasons.add('same last name, matching first name' + how);
+    else if (a.join(' ').length >= 8 && editDistance(a.join(' '), b.join(' ')) <= 2) reasons.add('nearly the same name' + how);
   }
+  const b = nameTokens(person.name);
   // A username that's just a first name (jenny@, patrick@) is shared by too
   // many people to mean anything on its own.
   const user = r.email.split('@')[0];
   if (user.length >= 4 && !GENERIC_USERNAMES.has(user) && user !== a[0] && user !== b[0]) {
     for (const e of person.emails) {
-      if (e.split('@')[0] === user && e !== r.email) { reasons.push('same email username, other domain'); break; }
+      if (e.split('@')[0] === user && e !== r.email) { reasons.add('same email username, other domain'); break; }
     }
   }
-  return reasons;
+  return [...reasons];
 }
 
 // ─── Sort every registrant into definite, new or fuzzy ───────────────────────
@@ -319,7 +325,7 @@ function register(personId, r, session) {
 
 function createNew(r, session, userId) {
   const id = newId('prs');
-  people.set(id, { name: r.name, emails: new Set(), sessions: new Set(), cards: [], user_id: userId, isNew: true });
+  people.set(id, { name: r.name, names: r.name ? [r.name] : [], emails: new Set(), sessions: new Set(), cards: [], user_id: userId, isNew: true });
   if (userId) personByUser.set(userId, id);
   addCard(id, r, 'zoom-registration');
   register(id, r, session);

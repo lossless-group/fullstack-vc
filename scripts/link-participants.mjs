@@ -38,7 +38,7 @@ import { createClient } from '@libsql/client';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { cardEmails, createPerson, findPersonIdByEmail, loadCards, upsertContactCard } from '../src/lib/contact-cards.ts';
+import { addCalled, allNames, cardEmails, createPerson, findPersonIdByEmail, loadCards, upsertContactCard } from '../src/lib/contact-cards.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -107,8 +107,8 @@ const asUrl = (v, base) => (!v ? null : /^https?:\/\//.test(v) ? v.replace(/^htt
 // ─── Database ────────────────────────────────────────────────────────────────
 const client = createClient({ url: getEnv('TURSO_DATABASE_URL'), authToken: getEnv('TURSO_AUTH_TOKEN') });
 
-const people = new Map((await client.execute('SELECT id, name, user_id, handle FROM People')).rows
-  .map((r) => [String(r.id), { name: r.name ? String(r.name) : null, user_id: r.user_id ? String(r.user_id) : null, handle: r.handle ? String(r.handle) : null }]));
+const people = new Map((await client.execute('SELECT id, name, called, user_id, handle FROM People')).rows
+  .map((r) => [String(r.id), { name: r.name ? String(r.name) : null, names: allNames(r.name ? String(r.name) : null, r.called), user_id: r.user_id ? String(r.user_id) : null, handle: r.handle ? String(r.handle) : null }]));
 const emailsOf = new Map();
 for (const r of (await client.execute('SELECT person_id, card FROM PersonContactCards')).rows) {
   const list = emailsOf.get(String(r.person_id)) ?? [];
@@ -148,7 +148,7 @@ for (const p of profiles) {
     if (personId) how = 'account';
   }
   if (!personId) {
-    const same = [...people].filter(([, x]) => norm(x.name) && norm(x.name) === norm(p.name));
+    const same = [...people].filter(([, x]) => x.names.some((n) => norm(n) && norm(n) === norm(p.name)));
     if (same.length === 1) { personId = same[0][0]; how = 'same name'; }
   }
   if (!personId && decisions.has(p.handle)) {
@@ -158,7 +158,7 @@ for (const p of profiles) {
   }
   if (!personId && how !== 'decided new') {
     const last = tokens(p.name).at(-1);
-    const similar = [...people].filter(([, x]) => last && last.length > 2 && tokens(x.name).at(-1) === last);
+    const similar = [...people].filter(([, x]) => last && last.length > 2 && x.names.some((n) => tokens(n).at(-1) === last));
     if (similar.length) {
       held.push({
         handle: p.handle,
@@ -217,6 +217,16 @@ async function apply(db, { profile: p, personId, user }) {
   if (personId && realName && before.name !== p.name) {
     await db.execute({ sql: 'UPDATE People SET name = ? WHERE id = ?', args: [p.name, id] });
     changes.push(`${p.handle}: name "${before.name}" → "${p.name}"`);
+    // The name they registered under is still a name they go by.
+    if (before.name && before.name !== p.handle) await addCalled(db, id, [before.name]);
+  }
+  // A nickname in the profile's name ('Aravind “Avi” Bharadwaj') is a name
+  // they go by: "Avi Bharadwaj".
+  const nick = p.name.match(/[“"']([^”"']+)[”"']/)?.[1];
+  const last = p.name.replace(/[“"'][^”"']+[”"']/, '').replace(/,.*$/, '').trim().split(/\s+/).at(-1);
+  if (nick && last) {
+    const added = await addCalled(db, id, [`${nick} ${last}`]);
+    if (added.length) changes.push(`${p.handle}: goes by ${added.join(', ')}`);
   }
 
   // Login account and its addresses.

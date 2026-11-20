@@ -51,6 +51,7 @@ One row per human, with or without an account.
 |---|---|---|
 | `id` | TEXT PK | `prs_` + a random id. Never an email, which can change. |
 | `name` | TEXT | Display name |
+| `called` | TEXT (JSON) | Other names they go by: nicknames, short forms, pseudonyms, a name used before a rename. `["Gopi Sundaramurthy"]`. Matching checks these as well as `name`; written by `addCalled()`. |
 | `email` | TEXT | **Redundant:** the main email, from the primary card (§4) |
 | `org` | TEXT | **Redundant:** from the primary role card |
 | `title` | TEXT | **Redundant:** from the primary role card |

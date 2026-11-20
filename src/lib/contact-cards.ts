@@ -307,6 +307,40 @@ export async function addEmailAlias(db: Executor, cardId: string, email: string)
   });
 }
 
+/** Every name a person goes by: their name, then People.called. */
+export function allNames(name: string | null | undefined, called: unknown): string[] {
+  let list: unknown = called;
+  if (typeof called === 'string') {
+    try { list = JSON.parse(called); } catch { list = []; }
+  }
+  return [name, ...(Array.isArray(list) ? list : [])].filter((n): n is string => typeof n === 'string' && n.trim() !== '');
+}
+
+/**
+ * Adds names to People.called (nicknames, short forms, a name they used
+ * before a rename). Skips the person's own name and anything already there,
+ * ignoring case. Returns the names actually added.
+ */
+export async function addCalled(db: Executor, personId: string, names: string[]): Promise<string[]> {
+  const row = (await db.execute({ sql: 'SELECT name, called FROM People WHERE id = ?', args: [personId] })).rows[0];
+  if (!row) throw new Error(`No person ${personId}`);
+  const known = allNames(row.name ? String(row.name) : null, row.called);
+  const seen = new Set(known.map((n) => n.toLowerCase()));
+  const added: string[] = [];
+  for (const n of names.map((x) => x.trim()).filter(Boolean)) {
+    if (seen.has(n.toLowerCase())) continue;
+    seen.add(n.toLowerCase());
+    added.push(n);
+  }
+  if (added.length) {
+    await db.execute({
+      sql: 'UPDATE People SET called = ?, updated_at = ? WHERE id = ?',
+      args: [JSON.stringify([...known.slice(1), ...added]), new Date().toISOString(), personId],
+    });
+  }
+  return added;
+}
+
 /** Deletes a card (a mistaken one, say) and recomputes its person. */
 export async function removeContactCard(db: Executor, cardId: string): Promise<void> {
   const row = (await db.execute({ sql: 'SELECT person_id FROM PersonContactCards WHERE id = ?', args: [cardId] })).rows[0];
@@ -346,12 +380,13 @@ export async function recordInteractions(db: Executor, items: InteractionInput[]
 
 /**
  * Folds `mergeId` into `keepId`: moves its cards, interactions and session
- * registrations, links its account and profile if `keepId` has none,
+ * registrations, keeps its names in `called`, links its account and profile
+ * if `keepId` has none,
  * recomputes, deletes the emptied person. A registration both people hold
  * for the same session keeps `keepId`'s row. Run inside a transaction.
  */
 export async function mergePeople(db: Executor, keepId: string, mergeId: string) {
-  const merged = (await db.execute({ sql: 'SELECT user_id, handle FROM People WHERE id = ?', args: [mergeId] })).rows[0];
+  const merged = (await db.execute({ sql: 'SELECT name, called, user_id, handle FROM People WHERE id = ?', args: [mergeId] })).rows[0];
   if (!merged) throw new Error(`No person ${mergeId}`);
   const cards = await db.execute({ sql: 'UPDATE PersonContactCards SET person_id = ? WHERE person_id = ?', args: [keepId, mergeId] });
   await db.execute({ sql: 'UPDATE PersonInteractions SET person_id = ? WHERE person_id = ?', args: [keepId, mergeId] });
@@ -366,6 +401,8 @@ export async function mergePeople(db: Executor, keepId: string, mergeId: string)
     sql: 'UPDATE People SET user_id = COALESCE(user_id, ?), handle = COALESCE(handle, ?) WHERE id = ?',
     args: [merged.user_id ?? null, merged.handle ?? null, keepId],
   });
+  // The merged person's names are names the kept person goes by.
+  await addCalled(db, keepId, allNames(merged.name ? String(merged.name) : null, merged.called));
   await recomputePerson(db, keepId);
   return { cardsMoved: cards.rowsAffected, registrationsMoved: regs.rowsAffected };
 }
