@@ -327,6 +327,12 @@ const components = [
     props: 'node: the leafDirective (wired from AstroMarkdown); directive attributes {url} (required), optional {title}, {description}, {image}, {site}',
   },
   {
+    name: 'PageAsDeckWrapper',
+    purpose: 'Layout for section-composed decks under /slides/: each child <section> is a slide in a scroll-snap container, with keyboard navigation, a slide counter, a jump menu, reveal-on-scroll and the site\'s live theme and mode. With pdfHref it shows a "Download PDF" link in the chrome. Print styles lay out one slide per 1440×810 page with the chrome hidden and reveals finished; loaded with ?print it also loads every image and shrinks any slide whose content is taller than a page. scripts/deck-pdf.sh (pnpm deck:pdf <slug>) prints a deck with headless Chrome to public/decks/<slug>.pdf. A deck\'s own phone breakpoints should be written as @media screen and (max-width: …), or Chrome applies them while printing.',
+    cssContract: '--color-primary, --color-accent, --color-text, --color-text-muted, --color-border, --font-code, --font-display, --fx-card-bg',
+    props: 'title?, description?, noindex?, themeClass?, hideChrome?, pdfHref? (a ready-made PDF under /decks/); slides as child <section>s; optional "chrome" slot',
+  },
+  {
     name: 'TagChip (Svelte)',
     purpose: 'A tag as a control inside the search islands. Stores Train-Case, displays Normal Case. Selected and removable states fill with --color-primary; that fill is the only cue for active facets.',
     cssContract: '--color-primary, --color-background, --color-text, --color-text-muted, --color-border, --font-code',

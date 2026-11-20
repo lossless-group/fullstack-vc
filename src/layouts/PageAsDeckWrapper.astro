@@ -26,6 +26,8 @@ export interface Props {
   themeClass?: string;
   /** Optional chrome (header) rendered above the scroll container. */
   hideChrome?: boolean;
+  /** A ready-made PDF of the deck (see scripts/deck-pdf.sh), linked from the chrome. */
+  pdfHref?: string;
 }
 
 const {
@@ -34,6 +36,7 @@ const {
   noindex = true,
   themeClass = "theme-default",
   hideChrome = false,
+  pdfHref,
 } = Astro.props;
 ---
 
@@ -49,7 +52,9 @@ const {
         <slot name="chrome">
           <a href="/sessions" class="deck-chrome__back">← All sessions</a>
           <span class="deck-chrome__title">{title}</span>
-          <span class="deck-chrome__spacer" aria-hidden="true"></span>
+          {pdfHref
+            ? <a href={pdfHref} class="deck-chrome__pdf" download>Download PDF ↓</a>
+            : <span class="deck-chrome__spacer" aria-hidden="true"></span>}
         </slot>
       </header>
     )}
@@ -114,6 +119,36 @@ const {
       if (sections.length === 0) return;
 
       if (totalEl) totalEl.textContent = String(sections.length);
+
+      // Print (the PDF download): a slide taller than one 810px page would be
+      // cut off, so shrink just that slide's content to fit, and undo after.
+      const PAGE_H = 810;
+      const fitForPrint = () => {
+        for (const s of sections) {
+          s.style.zoom = "";
+          // Measure the content, not the section: centered content that
+          // overflows spills off the top, which scrollHeight doesn't count.
+          const kids = Array.from(s.children) as HTMLElement[];
+          if (kids.length === 0) continue;
+          const top = Math.min(...kids.map((k) => k.getBoundingClientRect().top));
+          const bottom = Math.max(...kids.map((k) => k.getBoundingClientRect().bottom));
+          const cs = getComputedStyle(s);
+          const h = bottom - top + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+          if (h > PAGE_H) s.style.zoom = String(Math.floor((PAGE_H / h) * 100) / 100);
+        }
+      };
+      window.addEventListener("beforeprint", fitForPrint);
+      // scripts/deck-pdf.sh loads the deck with ?print, since headless Chrome's
+      // print-to-pdf doesn't fire beforeprint. Fit once fonts and images settle.
+      if (new URLSearchParams(location.search).has("print")) {
+        // Lazy images have no height until they load, so load them all first.
+        const imgs = Array.from(document.querySelectorAll<HTMLImageElement>("img"));
+        imgs.forEach((img) => { img.loading = "eager"; });
+        const fit = () =>
+          Promise.all([document.fonts.ready, ...imgs.map((img) => img.decode().catch(() => {}))]).then(fitForPrint);
+        if (document.readyState === "complete") fit(); else window.addEventListener("load", fit);
+      }
+      window.addEventListener("afterprint", () => sections.forEach((s) => { s.style.zoom = ""; }));
 
       let activeIndex = 0;
 
@@ -385,6 +420,14 @@ const {
     .deck-chrome__back:hover {
       color: var(--color-primary);
     }
+    .deck-chrome__pdf {
+      justify-self: end;
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .deck-chrome__pdf:hover {
+      color: var(--color-primary);
+    }
     .deck-chrome__title {
       text-align: center;
       color: var(--color-text);
@@ -617,6 +660,25 @@ const {
       justify-content: center;
       padding: 4rem clamp(1.5rem, 5vw, 5rem);
       position: relative;
+    }
+
+    /* ── Print: one slide per 16:9 page, for the PDF download ─────────────
+       scripts/deck-pdf.sh prints the deck with headless Chrome at this size.
+       Chrome, counter, jump menu and controls drop out; reveal animations
+       are shown as finished; each section fills exactly one page. */
+    @page { size: 1440px 810px; margin: 0; }
+    @media print {
+      html, body { height: auto !important; overflow: visible !important; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .deck-chrome, .deck-counter, .deck-jump-trigger, .deck-jump-panel, .deck-controls { display: none !important; }
+      .deck-root { display: block !important; height: auto !important; }
+      .deck-scroll { overflow: visible !important; height: auto !important; scroll-snap-type: none; }
+      .deck-scroll > section {
+        height: 810px; min-height: 0; overflow: hidden;
+        break-after: page; break-inside: avoid;
+      }
+      .deck-scroll > section:last-child { break-after: auto; }
+      [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
     }
 
     /* ── Controls hint: bottom-right ─────────────────────────────────────── */

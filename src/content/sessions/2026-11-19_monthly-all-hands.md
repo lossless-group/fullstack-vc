@@ -28,11 +28,15 @@ og_image: /og-default.png
 
 🎬 **[Watch the recording on Zoom →](https://kauffmanfellows.zoom.us/rec/share/lyn3Mml_azLdzfJbm2sldLcnLZhFv8EhR6unFZzJEyjF8zxarcZTRNH9fC6mPkHq.CKgNmEqTmqAinrk8)** (hosted by Kauffman Fellows)
 
-📊 **[Open the session deck →](/slides/2026-11-19_monthly-all-hands)**
+📊 **[Open the session deck →](/slides/2026-11-19_monthly-all-hands)** · [Download it as a PDF ↓](/decks/2026-11-19_monthly-all-hands.pdf)
 
 ## Summary
 
-A small, talkative group. [Michael](/people/mpstaton/) ran through six months of Claude and ChatGPT releases in ten minutes, and the conversation went straight to personal agents and the question underneath them: how much of your life do you hand an agent? Some fellows are all in, with agents kept read-only; one had just been phished on the road and is rebuilding carefully; others keep firm and LP data well out of reach. From there: what AI does to M&A diligence, how to tell a deck nobody thought through, why the deliverable should be HTML and not PowerPoint, self-hosted tools with no seat fees, and the home connector. [Jules](/people/julesmiller/) closed on the big one: what is an agent, and how much should each one do? We meet again in December.
+A small, talkative group. [Michael](/people/mpstaton/) ran through six months of Claude and ChatGPT releases in ten minutes. 
+
+Then, the conversation went straight to personal agents and the question underneath them: how much of your life do you hand an agent? Some fellows are all in, with agents kept read-only; one had just been phished on the road and is rebuilding carefully; others keep firm and LP data well out of reach. 
+
+From there: what AI does to M&A diligence, how to tell a deck nobody thought through, why the deliverable should be HTML and not PowerPoint, self-hosted tools with no seat fees, and the home connector. [Jules](/people/julesmiller/) closed on the big one: what is an agent, and how much should each one do? We meet again on December 3rd.
 
 ## Highlights
 
@@ -49,7 +53,15 @@ A small, talkative group. [Michael](/people/mpstaton/) ran through six months of
 - **Self-host, and lose the seat fees.** [Ariel](/people/amuslera/) pointed to Kevin Rose's [SignuDoc](https://github.com/NYLLON-SOFTWARE/signudoc), an open-source DocuSign replacement he built [after being quoted $8,100 a year](https://x.com/kevinrose/status/2122394902168473975) for a 15-person team, and said small firms could replace a lot of monthly software the same way, if someone collected the options. That list exists: [Michael](/people/mpstaton/)'s **[lossless.at](https://lossless.at)**, 99 open-source tools for VC firms, each mapped to the paid product it replaces, such as [Papermark](/tools/papermark/) for data rooms and [Twenty](/tools/twenty/) for CRM. It's the most complete list of its kind we know of. The bigger win isn't cost: interns and advisors cost nothing to add, and with the database in reach Claude builds dashboards straight from it.
 
   ::link-card{url="https://lossless.at" site="lossless.at" title="lossless.at: the whole stack an investment team needs, every seat free" description="99 open-source tools mapped to what they replace, self-hosted for a firm and reached from Claude through one connector." image="/images/tool-banners/banner__lossless-at.jpg"}
-- **One home connector.** Event Hog, used at four conferences, runs entirely through one MCP: it logs everyone you meet, profiles speakers and suggests who to find, with every change committed under the person who made it. The same shape works as a firm's shared skills and tools, "an app marketplace for the firm," as [Ariel](/people/amuslera/) put it. Recipe: [One Home Connector for Your Whole Team](/guides/one-home-connector/).
+
+- **One home connector.** _We don't always need an app now. Just a way for agent chats to access a set of instructions, tools, data, and a common output repository. 
+ 
+  Michael created [Event Hog](https://eventhog.cc) in about two days of work across two weekends. It's been used by small teams at four conferences, runs entirely through one MCP: it logs everyone you meet, profiles speakers and suggests who to find, with every change committed under the person who made it. 
+
+  ::github-repo{repo="lossless-group/event-hog"}
+
+  The same shape could work as a firm's shared skills, workflows, output expectations, and tools. Recipe: [One Home Connector for Your Whole Team](/guides/one-home-connector/). "One MCP for all MCPs, it's like an app marketplace for the firm," as [Ariel](/people/amuslera/) put it.
+
 - **WTF is an agent?** [Jules](/people/julesmiller/) is getting more ambitious, moving from single agents to multi-agent systems across everything she's working on, and that raises the broad scoping questions: what cluster of tasks can a single agent handle? Many narrowly scoped agents, or a few broadly scoped ones? Underneath them sits the real one: what even counts as an agent? [Michael](/people/mpstaton/)'s read is that the public conversation has shifted away from many small agents and toward giving more powerful models large scopes of work and large tasks, steered by full specs, briefs and plans rather than prompts. A model with a role and a set of skills will farm work out to sub-agents on its own. Jules wants to dig into this at a future session. In the meantime, the clearest worked example we have is MemoPop: its first version was a LangGraph orchestration of specialized agents, and the open-source code shows how the work was split up.
 
   ::link-card{url="https://lossless-group.github.io/memopop-ai/" site="MemoPop AI" title="MemoPop AI: a multi-agent investment memo orchestrator" description="Turn a company name into an institutional-quality investment memo, researched and fact-checked by 33 specialized AI agents." image="/images/tool-banners/banner__memopop-ai.jpg"}
@@ -65,9 +77,9 @@ A small, talkative group. [Michael](/people/mpstaton/) ran through six months of
 Nobody in the room had a full answer, and as far as we can find, nobody else does yet either.
 
 **What the group said**
-- **Stage what you show.** [Punit](/people/punit24-lab/): reveal the crown jewels only at the last stage, and back them with breakup fees and a liability tail (a 3–5 year look-back with defined penalties if anything leaks).
-- **But protection depends on leverage.** [Punit](/people/punit24-lab/)'s sharper point: those protections are only as strong as the company's bargaining position. A hot company with several bidders can demand them. A small company facing a low-end exit or an acquihire, playing for its liquidation preferences, usually can't. That explains who gets protected, but it doesn't solve the problem: most acquisitions are at the low end, which is where the protection is weakest.
-- **The UI is enough.** [Michael](/people/mpstaton/) noted that [Reverse Engineer Anything](https://github.com/morluto/rea) rebuilt every major fantasy football app overnight from the UI alone, with no code access.
+- **Stage what you show.** [Punit](/people/punit24-lab/): reveal the most valuable IP and trade secrets only at the last stage, and back them with breakup fees and a liability tail (a 3–5 year look-back with defined penalties if anything leaks).
+- **But protection depends on leverage.** [Punit](/people/punit24-lab/) protections are only as strong as the company's bargaining position. A hot company with several bidders can demand them. A small company facing a low-end exit or an acquihire, playing for its liquidation preferences, usually can't. 
+- **It seems unstoppable, even having browser login to the UI is enough.** [Michael](/people/mpstaton/) noted that [Reverse Engineer Anything](https://github.com/morluto/rea) rebuilt every major fantasy football app overnight from the UI alone, with no code access.
 
 **What lawyers have started recommending** ([Pillsbury, Nov 2026](https://www.pillsburylaw.com/en/news-and-insights/ai-mergers-acquisitions-confidential-information.html); [Kohrman Jackson & Krantz, Mar 2026](https://www.jdsupra.com/legalnews/ai-and-m-a-ndas-managing-artificial-7475576/))
 - **NDAs that name AI.** Uploading to an AI tool counts as a disclosure. Only approved enterprise tools are allowed, with no retention and no training on the data, or no AI at all for the most sensitive material.
@@ -78,9 +90,9 @@ Nobody in the room had a full answer, and as far as we can find, nobody else doe
 
 **What seems to be missing:** an agent-proof data room. Today's data rooms were built to stop people from downloading and forwarding files, with view-only access, watermarks and access logs. They weren't built for an agent that reads every page and keeps what it learns. [Michael](/people/mpstaton/)'s take: there's a need for data rooms that can tell an agent or crawler apart from a person reading, and stop it from ingesting the whole room. At the very least, they should keep a record that it happened, so the seller has evidence if the IP turns up somewhere later. We haven't seen anyone build this yet.
 
-**Why it stays open:** all of this governs what a buyer may do with your *documents*. None of it stops their people, or their agents, from learning what's possible and building it themselves, and that know-how is exactly what an AI-native company is selling. If you've seen a term sheet, NDA or process that handles this well, bring it to the December session.
+**Why it stays open:** all of this governs what a buyer may do with your *documents*. None of it stops their people, or their agents, from learning what's possible and building it themselves, and that know-how is exactly what an AI-native company is selling. If you've seen a term sheet, NDA or process that handles this well, bring it to back to the AI Skills Dojo on WhatsApp.
 
-## The agenda
+# The agenda
 
 ### 1. What's new in Claude and ChatGPT, and how to use it in VC
 

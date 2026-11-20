@@ -57,7 +57,7 @@ const day = (d: string) => new Intl.DateTimeFormat("en-US", { month: "short", da
 const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
 ---
 
-<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true}>
+<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true} pdfHref="/decks/2026-11-19_monthly-all-hands.pdf">
 
   {/* ── 01 cover */}
   <section class="slide slide--cover">
@@ -433,7 +433,7 @@ per folder and tool, and approval for sensitive actions.</pre>
   .close-links a:hover { color: var(--color-anchor-hover, var(--color-primary)); }
   .disclaimer { font-family: var(--font-code); font-size: .6875rem; color: var(--color-text-muted); text-align: right; max-width: 50%; }
 
-  @media (max-width: 760px) {
+  @media screen and (max-width: 760px) {
     .habits, .two-col, .slide.slide--bold .bold-grid, .slide.slide--bold .bold-cards { grid-template-columns: 1fr; }
     .slide.slide--connectors .connector-cards { grid-template-columns: 1fr 1fr; }
     .month-grid { grid-template-columns: 1fr; }

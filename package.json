@@ -44,7 +44,8 @@
     "tag:lp-frequency:remote": "astro db execute scripts/regroup-lp-syndication-frequency.ts --remote",
     "seed:test": "astro db execute scripts/seed-test-session.ts --remote",
     "set-poll-status": "node --env-file=.env scripts/db-execute.mjs scripts/set-poll-status.ts",
-    "search:dev": "SEARCH_RECORDS_URL=http://localhost:4324/search-records.json node scripts/build-search-index.mjs"
+    "search:dev": "SEARCH_RECORDS_URL=http://localhost:4324/search-records.json node scripts/build-search-index.mjs",
+    "deck:pdf": "bash scripts/deck-pdf.sh"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
