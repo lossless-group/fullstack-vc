@@ -5,7 +5,10 @@
    horizontal card; future variants (Full, Hero, Mini) live as siblings.
    Visual vocabulary: avatar with primary halo, name in display font, firm in
    code font + primary color, meta row in uppercase code font. Pure Astro,
-   mode-aware. */
+   mode-aware. The engagement dot looks the score up itself
+   (lib/engagement.ts), so every page that uses the card shows it; pass
+   `engagement` only to reuse a score already loaded. */
+import { getEngagementScore } from '../../lib/engagement';
 
 interface Props {
   handle: string;
@@ -17,11 +20,12 @@ interface Props {
   kauffmanClass?: number;
   /** ISO date string or Date — when present, renders a "JOINED <date>" meta line. */
   joinedOn?: string | Date;
-  /** Engagement score (lib/engagement.ts); when present, a green dot with the number. */
+  /** Engagement score; looked up by handle when omitted. Shown as a green dot unless scores can't be read. */
   engagement?: number;
 }
 
-const { handle, name, firm, role, avatar, toolCount, kauffmanClass, joinedOn, engagement } = Astro.props;
+const { handle, name, firm, role, avatar, toolCount, kauffmanClass, joinedOn } = Astro.props;
+const engagement = Astro.props.engagement ?? (await getEngagementScore(handle));
 
 function initials(n: string): string {
   return n.split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
