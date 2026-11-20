@@ -1,6 +1,6 @@
 ---
 title: "The VC Agent Skill Pack"
-lede: "Thirty-five open skills that teach Claude or Codex how a fund does the work, from sizing a market to the memo, the deck and the CRM."
+lede: "Thirty-six open skills that teach Claude or Codex how a fund does the work, from sizing a market to the memo, the deck and the CRM."
 kind: how-to
 tools:
   - claude-code
@@ -102,6 +102,7 @@ For the fund's own site and look. These go with the habit of letting models work
 - write-site-narrative
 - build-a-moodboard
 - maintain-design-md
+- shares-down-to-the-edge
 :::
 
 ## Back office

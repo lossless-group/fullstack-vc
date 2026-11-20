@@ -211,6 +211,15 @@
     "repo": "lossless-group/lossless-agent-skills"
   },
   {
+    "slug": "shares-down-to-the-edge",
+    "name": "Shares Down to the Edge",
+    "category": "Decks & brand",
+    "summary": "Makes every page and every section of your site shareable with its own preview: a card for each page and heading, share buttons beside them, and links that unfurl as the exact section in iMessage, WhatsApp and LinkedIn instead of your logo.",
+    "use_for": "Sending an LP or founder the exact section you mean",
+    "status": "Draft",
+    "repo": "lossless-group/lossless-agent-skills"
+  },
+  {
     "slug": "expense-report-generation",
     "name": "Expense Report Generation",
     "category": "Back office",
