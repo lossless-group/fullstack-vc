@@ -30,11 +30,33 @@ og_image: /og-default.png
 
 📊 **[Open the session deck →](/slides/2026-11-19_monthly-all-hands)**
 
-## What we covered
+## Summary
+
+A small, talkative group. [Michael](/people/mpstaton/) ran through six months of Claude and ChatGPT releases in ten minutes, and the conversation went straight to personal agents and the question underneath them: how much of your life do you hand an agent? Some fellows are all in, with agents kept read-only; one had just been phished on the road and is rebuilding carefully; others keep firm and LP data well out of reach. From there: what AI does to M&A diligence, how to tell a deck nobody thought through, why the deliverable should be HTML and not PowerPoint, self-hosted tools with no seat fees, and the home connector. [Jules](/people/julesmiller/) closed on how many agents a project really needs. We meet again in December.
+
+## Highlights
+
+- **"Any CLI, in my agent."** [Toby](/people/tobyrush/) found he can install any command-line tool into Grok Bot's VM, including his Claude, Codex and Gemini accounts, and every bot he runs shares them. His other hack: no agent connects more than one Gmail account, but Superhuman has an MCP server, so his agents read every inbox through it.
+- **Trust comes from tight limits, not blind faith.** Keep agents read-only (no sending email), opt into zero data retention everywhere, and think twice before handing your data to a company whose business is advertising. "The benefit is sufficiently high for the risk."
+- **A phishing story.** While traveling, one fellow clicked a convincing Google sign-in link from their phone and approved the 2FA. Ninety minutes of fighting to keep control of the accounts, then days rotating credentials and wiping a laptop. Not an AI attack, but it easily could have been, and an agent with access to everything is one more door. Watch out for authenticator codes synced to the same Google account they protect.
+- **Separate inbox, curated feed.** Rather than open years of unknown email to an agent, one fellow started a fresh inbox, forwards new mail there, and gives agents access only to that.
+- **Microsoft may win on trust.** Toby is watching the new Copilot, whose autopilot wraps OpenClaw in a secure container with an Entra ID. Most firms will never run open-source OpenClaw themselves, but they already run Microsoft. [Anderson](/people/amthees/) lost two hours happily exploring his Fund I schedule of investments in Gemini, which also pulled answers from his email.
+- **No LP data in an LLM.** [Patrick](/people/psagisi/)'s two-person firm uses AI for research only. [Ariel](/people/amuslera/) asked whether any LPA now covers LLM data sharing; [Punit](/people/punit24-lab/), with two funds raising, hasn't seen one.
+- **Diligence as extraction.** [Patrick](/people/psagisi/) raised what happens when a large acquirer runs technical diligence on a portfolio company whose value *is* its agents and code: with AI, they can rebuild it and walk away. [Punit](/people/punit24-lab/): it's a staging and contract problem (reveal late, back it with breakup fees and a 3–5 year liability tail), and at the low end you have no leverage. [Michael](/people/mpstaton/) added that a "reverse engineer anything" skill rebuilt every major fantasy football app overnight, from the UI alone.
+- **You can tell when nobody did the thinking.** One fellow has watched polished thematic decks, written overnight by Claude with a PitchBook plugin, presented by people who were effectively reading off a teleprompter. [Michael](/people/mpstaton/)'s guard: write the narrative in markdown first, agree on it, then generate slides. And the models default to private-equity thinking, not venture.
+- **Work in HTML, not PowerPoint.** Let agents write HTML, SVG and markdown, their native formats, and ask for 3–5 variants instead of iterating on one: a couple are duds, a couple beat expectations. [Punit](/people/punit24-lab/) hasn't made a PowerPoint deck in a year.
+- **Use the API, not just the connector.** Connectors are new and thin; most SaaS APIs are complete. Point Claude at the API docs and let it authenticate.
+- **Self-host, and lose the seat fees.** [Ariel](/people/amuslera/) flagged Kevin Rose's open-source DocuSign replacement. [Michael](/people/mpstaton/) keeps a list of [99 self-hostable tools](/tools/lossless-at/) such as [Papermark](/tools/papermark/) for data rooms and [Twenty](/tools/twenty/) for CRM. The win isn't cost: interns and advisors cost nothing to add, and with the database in reach Claude builds dashboards straight from it.
+- **One home connector.** Event Hog, used at four conferences, runs entirely through one MCP: it logs everyone you meet, profiles speakers and suggests who to find, with every change committed under the person who made it. The same shape works as a firm's shared skills and tools, "an app marketplace for the firm," as [Ariel](/people/amuslera/) put it. Recipe: [One Home Connector for Your Whole Team](/guides/one-home-connector/).
+- **How many agents?** [Jules](/people/julesmiller/) asked for best practice when Claude told her she'd designed too many. Michael's answer: models are strong enough now that a set of skills plus a role ("you're VP Product, farm the tasks out to sub-agents") often beats a hand-built orchestration.
+
+**From the session:** [How to Use Claude & GPT like an Agent-Native VC Going into 2027](/guides/agent-native-vc-2027/) · [The VC Agent Skill Pack](/guides/vc-agent-skill-pack/)
+
+## The agenda
 
 ### 1. What's new in Claude and ChatGPT, and how to use it in VC
 
-Both apps changed a lot since our July session. We'll go through the updates that matter most for venture work, with a fund use for each.
+Both apps changed a lot since our July session. These are the updates that matter most for venture work, with a fund use for each.
 
 📅 **[See the full six-month timeline →](/timelines/claude-and-chatgpt)**: every Claude, ChatGPT, Claude Code, Codex and model release since May, side by side, each linked to its source.
 
@@ -71,4 +93,4 @@ Thursday, November 19, 2026 · 12:00 PM Eastern / 9:00 AM Pacific
 
 VCs from analyst to partner, at any level of AI comfort.
 
-The session will be recorded, and the replay will be posted here.
+The recording is linked at the top of this page.
