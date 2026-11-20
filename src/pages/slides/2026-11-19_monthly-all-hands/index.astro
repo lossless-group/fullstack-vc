@@ -12,8 +12,10 @@ export const presentation = {
   description: "What's new in Claude and ChatGPT and how to use it in a fund, what fellows have learned from personal agents, and how to build a home connector.",
   date: "2026-11-19",
   author: "Michael Staton",
-  tags: ["All-Hands", "Agentic-VC-Dojo", "Claude", "ChatGPT", "Today"],
-  featured: true,
+  tags: ["All-Hands", "Agentic-VC-Dojo", "Claude", "ChatGPT"],
+  featured: false,
+  // A ready-made PDF; regenerate with `pnpm deck:pdf 2026-11-19_monthly-all-hands`.
+  pdf: "/decks/2026-11-19_monthly-all-hands.pdf",
 };
 
 import PageAsDeckWrapper from "../../../layouts/PageAsDeckWrapper.astro";
@@ -57,7 +59,7 @@ const day = (d: string) => new Intl.DateTimeFormat("en-US", { month: "short", da
 const total = (timeline as Item[]).filter((i) => i.verified && !i.prior).length;
 ---
 
-<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true} pdfHref="/decks/2026-11-19_monthly-all-hands.pdf">
+<PageAsDeckWrapper title={TITLE} description={DESCRIPTION} noindex={true} pdfHref={presentation.pdf}>
 
   {/* ── 01 cover */}
   <section class="slide slide--cover">

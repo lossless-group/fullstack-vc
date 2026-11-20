@@ -52,9 +52,7 @@ const {
         <slot name="chrome">
           <a href="/sessions" class="deck-chrome__back">← All sessions</a>
           <span class="deck-chrome__title">{title}</span>
-          {pdfHref
-            ? <a href={pdfHref} class="deck-chrome__pdf" download>Download PDF ↓</a>
-            : <span class="deck-chrome__spacer" aria-hidden="true"></span>}
+          <span class="deck-chrome__spacer" aria-hidden="true"></span>
         </slot>
       </header>
     )}
@@ -67,20 +65,30 @@ const {
       <span data-deck-current>1</span><span class="deck-counter__sep">/</span><span data-deck-total>?</span>
     </aside>
 
-    <button
-      type="button"
-      class="deck-jump-trigger"
-      data-deck-jump-trigger
-      aria-controls="deck-jump-panel"
-      aria-expanded="false"
-      aria-label="Jump to a slide"
-      title="Jump to a slide"
-    >
-      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-        <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-      </svg>
-      <span class="deck-jump-trigger__label">Jump</span>
-    </button>
+    <div class="deck-tools">
+      {pdfHref && (
+        <a href={pdfHref} class="deck-tool deck-pdf" download aria-label="Download this deck as a PDF" title="Download as PDF">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span class="deck-jump-trigger__label">PDF</span>
+        </a>
+      )}
+      <button
+        type="button"
+        class="deck-tool deck-jump-trigger"
+        data-deck-jump-trigger
+        aria-controls="deck-jump-panel"
+        aria-expanded="false"
+        aria-label="Jump to a slide"
+        title="Jump to a slide"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+        <span class="deck-jump-trigger__label">Jump</span>
+      </button>
+    </div>
 
     <aside
       id="deck-jump-panel"
@@ -420,14 +428,7 @@ const {
     .deck-chrome__back:hover {
       color: var(--color-primary);
     }
-    .deck-chrome__pdf {
-      justify-self: end;
-      color: var(--color-text-muted);
-      text-decoration: none;
-    }
-    .deck-chrome__pdf:hover {
-      color: var(--color-primary);
-    }
+
     .deck-chrome__title {
       text-align: center;
       color: var(--color-text);
@@ -478,10 +479,17 @@ const {
 
     /* Jump trigger — small button below the counter, always visible.
        Same pattern as the counter (top-right, survives chrome toggle). */
-    .deck-jump-trigger {
+    /* Top-right tools under the counter: the PDF download (when the deck has
+       one) beside the Jump menu. */
+    .deck-tools {
       position: fixed;
       top: calc(0.625rem + 2.5rem); /* under the counter */
       right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .deck-tool {
       display: inline-flex;
       align-items: center;
       gap: 0.375rem;
@@ -494,15 +502,15 @@ const {
       font-weight: 600;
       letter-spacing: 0.04em;
       color: var(--color-text);
+      text-decoration: none;
       cursor: pointer;
-      z-index: 11;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.25);
       transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
     }
-    .deck-jump-trigger:hover,
-    .deck-jump-trigger:focus-visible {
+    .deck-tool:hover,
+    .deck-tool:focus-visible {
       border-color: var(--color-accent);
       color: var(--color-accent);
       outline: none;
@@ -512,7 +520,7 @@ const {
       border-color: var(--color-accent);
       color: var(--color-accent);
     }
-    .deck-jump-trigger svg {
+    .deck-tool svg {
       width: 0.875rem;
       height: 0.875rem;
     }
@@ -670,7 +678,7 @@ const {
     @media print {
       html, body { height: auto !important; overflow: visible !important; }
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .deck-chrome, .deck-counter, .deck-jump-trigger, .deck-jump-panel, .deck-controls { display: none !important; }
+      .deck-chrome, .deck-counter, .deck-tools, .deck-jump-panel, .deck-controls { display: none !important; }
       .deck-root { display: block !important; height: auto !important; }
       .deck-scroll { overflow: visible !important; height: auto !important; scroll-snap-type: none; }
       .deck-scroll > section {

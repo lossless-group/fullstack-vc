@@ -6,7 +6,8 @@
  *
  * Each deck exports a `presentation = { title, description, date, ... }` const.
  * A `featured: true` entry pulls out into the top-right "Today" card; the rest
- * render in the grid below sorted by date descending.
+ * render in the grid below sorted by date descending. A deck with
+ * `presentation.pdf` gets a PDF download badge on its card.
  *
  * Markdown deck discovery was removed — Reveal-only markdown decks are still
  * served by [...slug].astro but don't surface on this index.
@@ -23,6 +24,8 @@ interface Presentation {
   author?: string;
   tags?: string[];
   featured?: boolean;
+  /** A ready-made PDF of the deck, offered as a download on its card. */
+  pdf?: string;
   type: 'astro';
 }
 
@@ -36,6 +39,7 @@ const astroGlobs = import.meta.glob<{
     author?: string;
     tags?: string[];
     featured?: boolean;
+    pdf?: string;
   };
 }>(['./*.astro', './*/index.astro']);
 
@@ -61,6 +65,7 @@ for (const [path, loader] of Object.entries(astroGlobs)) {
       author: mod.presentation.author,
       tags: mod.presentation.tags,
       featured: mod.presentation.featured ?? false,
+      pdf: mod.presentation.pdf,
       type: 'astro',
     });
   } catch (e) {
@@ -117,7 +122,13 @@ const restDecks = decks.filter((d) => !d.featured);
   {restDecks.length > 0 && (
     <ul class="slides-grid" role="list">
       {restDecks.map((p) => (
-        <li>
+        <li class="slides-item">
+          {p.pdf && (
+            <a href={p.pdf} class="slides-pdf" download aria-label={`Download ${p.title} as a PDF`} title="Download as PDF">
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              <span>PDF</span>
+            </a>
+          )}
           <a href={`/slides/${p.slug}`} class="slides-card">
             <span class="slides-card__type">Astro</span>
             <h2 class="slides-card__title">{p.title}</h2>
@@ -343,6 +354,21 @@ const restDecks = decks.filter((d) => !d.featured);
   @media (min-width: 1100px) {
     .slides-grid { grid-template-columns: repeat(3, 1fr); }
   }
+
+  .slides-item { position: relative; }
+  /* Sits over the card's top-right corner, outside the card's own link. */
+  .slides-pdf {
+    position: absolute; top: .75rem; right: .75rem; z-index: 1;
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .25rem .55rem; border-radius: .5rem;
+    border: 1px solid var(--color-border); background: var(--color-background);
+    font-family: var(--font-code, system-ui); font-size: .7rem; font-weight: 600; letter-spacing: .04em;
+    color: var(--color-text-muted); text-decoration: none;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .slides-pdf svg { width: .85rem; height: .85rem; }
+  .slides-pdf:hover, .slides-pdf:focus-visible { border-color: var(--color-primary); color: var(--color-primary); outline: none; }
+  @media (prefers-reduced-motion: reduce) { .slides-pdf { transition: none; } }
 
   .slides-card {
     display: flex;
