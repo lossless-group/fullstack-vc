@@ -10,7 +10,7 @@ difficulty: beginner
 status: Published
 publish: true
 date_created: 2026-11-15
-date_modified: 2026-11-20
+date_modified: 2026-11-21
 authors:
   - Michael Staton
 augmented_with: "Claude Code on Claude Opus 5.5"
@@ -55,7 +55,7 @@ No one had asked it to connect the flight to the camp schedule. "After that, I w
 - **[[tools/instinct|Instinct]].** The most-discussed agent. Fans love its proactivity and its voice. The limits: it's single-threaded, so long conversations scroll away and you have to ask it for recaps ([[jehanchu|Jehan]]'s complaint, from its biggest fan). And [[punit24-lab|Punit Chiniwalla]] found that after the first wow, it felt "little better than a skin on my Claude work."
 - **[[tools/town|Town]].** [[caroline-lewis|Caroline]]'s choice, paired with Claude Cowork: "pretty dialed for me now." [[caroline-lewis|Caroline]] also called it "very good at responsive email and as a headless CRM." [[pocketcreates|Pocket Sun]] initially switched between Town, Instinct and ChatGPT, but now gravitates to Town as it has gotten faster. [[georgebabu|George]] was trialing it and liked the onboarding and its security pitch.
 - **[[tools/muse|Muse]].** [[chang-xu|Chang Xu]] sent the same requests to Instinct and Muse for weeks, and Muse consistently gave better replies. [[jehanchu|Jehan]] tried Muse two days after Instinct and preferred Instinct's voice, but admits to having been "already too embedded."
-- **[[tools/grok-bot|Grok Bot]].** [[jehanchu|Jehan]] runs a small team of Grok Bot agents for ongoing projects (a home renovation, nonprofit work), plus a Grok Bot "chief of staff" that can't yet manage the others. A two-day experiment to get it to make money from "make money with AI" posts failed, because the posts were all engagement bait.
+- **[[tools/grok-bot|Grok Bot]].** [[jehanchu|Jehan]] runs a Grok Bot swarm to help manage, research and double-check a house renovation, manage a portfolio, test investment ideas, and run one of [[jehanchu|Jehan]]'s art philanthropy initiatives. Alongside the swarm is a Grok Bot "chief of staff" that can't yet manage the others. A two-day experiment to get it to make money from "make money with AI" posts failed, because the posts were all engagement bait.
 - **[[tools/openclaw|OpenClaw]].** [[tobyrush|Toby]] has it wired into so many things that switching is painful, but it doesn't do the proactive nudges, so [[tobyrush|Toby]] is eyeing Grok Bot.
 
 ## What to weigh when you choose
