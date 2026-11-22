@@ -228,6 +228,17 @@ The component vocabulary (all read Tier 2 + `--fx-*` tokens only — never
 Catalog: `/design-system` (developers) and `/brand-kit` (stakeholders) — update
 `/design-system` in the same change as any component change.
 
+### Trademark pack
+
+In `public/`, every piece outlined to paths (an `<img>` cannot load web fonts).
+
+| Piece | File |
+|---|---|
+| appIcon | `appIcon__FullStackVC.svg`: a vector rebuild of `appIcon__FullStackVC.png` from `favicon.svg`'s own F and dot plus *VC* in Space Grotesk 400, `#DF08EE` |
+| favicon | `favicon.svg` |
+| wordmark | `wordmark__FullStackVC--{Dark,Light}-Mode.svg`: *FullStack VC* in Space Grotesk 600, -0.01em, as the header sets it, with *VC* in the appIcon's magenta |
+| trademark | `trademark__FullStackVC--{Dark,Light}-Mode.svg`: appIcon + wordmark |
+
 ## Do's and Don'ts
 
 - **Do** put every new raw value in Tier 1 and wire components through Tier 2.
