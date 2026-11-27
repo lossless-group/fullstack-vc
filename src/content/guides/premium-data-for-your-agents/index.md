@@ -35,7 +35,7 @@ tags:
 ---
 
 > [!info] The short version
-> The data you actually trust (PitchBook, Crunchbase, CB Insights, Statista, expert-call libraries) has always lived behind logins your agents couldn't reach. Perplexity now offers some of it with every plan and connects the rest to subscriptions you already hold. A Perplexity MCP server then puts all of it inside Claude. Three steps: try it in Perplexity, connect your own subscriptions, then plug Perplexity into your agent.
+> The data you actually trust (PitchBook, Crunchbase, CB Insights, Statista, expert-call libraries) has always lived behind logins your agents couldn't reach. [[tools/perplexity|Perplexity]] now offers some of it with every plan and connects the rest to subscriptions you already hold. A Perplexity MCP server then puts all of it inside Claude. Three steps: try it in Perplexity, connect your own subscriptions, then plug Perplexity into your agent.
 
 > [!warning] Draft: verify against a real run before publishing
 > Everything here comes from Perplexity's [help center](https://www.perplexity.ai/help-center/en/articles/12870803-premium-data-sources) and [Computer MCP docs](https://docs.perplexity.ai/docs/getting-started/integrations/computer-mcp-server), read on 2026-11-26. Nobody in the Dojo has run the full path yet. Keep `publish: false` until someone has, and update the `[!todo]` blocks with what they find.
