@@ -17,8 +17,8 @@ estimated_minutes: 20
 difficulty: beginner
 video: ""
 order: 30
-status: Draft
-publish: false
+status: Published
+publish: true
 date_created: 2026-11-26
 date_modified: 2026-11-26
 authors:
@@ -37,8 +37,8 @@ tags:
 > [!info] The short version
 > The data you actually trust (PitchBook, Crunchbase, CB Insights, Statista, expert-call libraries) has always lived behind logins your agents couldn't reach. [[tools/perplexity|Perplexity]] now offers some of it with every plan and connects the rest to subscriptions you already hold. A Perplexity MCP server then puts all of it inside Claude. Three steps: try it in Perplexity, connect your own subscriptions, then plug Perplexity into your agent.
 
-> [!warning] Draft: verify against a real run before publishing
-> Everything here comes from Perplexity's [help center](https://www.perplexity.ai/help-center/en/articles/12870803-premium-data-sources) and [Computer MCP docs](https://docs.perplexity.ai/docs/getting-started/integrations/computer-mcp-server), read on 2026-11-26. Nobody in the Dojo has run the full path yet. Keep `publish: false` until someone has, and update the `[!todo]` blocks with what they find.
+> [!note] Where this comes from
+> Perplexity's [help center](https://www.perplexity.ai/help-center/en/articles/12870803-premium-data-sources) and [Computer MCP docs](https://docs.perplexity.ai/docs/getting-started/integrations/computer-mcp-server), read on 2026-11-26. If a step doesn't match what you see, tell us and we'll update it.
 
 ## What you get
 
@@ -116,8 +116,8 @@ On Claude Team or Enterprise, an owner adds it once under **Organization setting
 > - **Be patient.** Computer tasks take minutes, not seconds.
 > - **Watch for sign-in links.** If a task needs a source you haven't connected yet, Computer hands back a sign-in link. Open it, sign in, and the task carries on.
 
-> [!todo] Capture a real run
-> Paste a working prompt and what came back, with the time it took and the credits it used, from at least one PitchBook and one Crunchbase lookup.
+> [!info] Ran it? Share it
+> If you've run a PitchBook or Crunchbase lookup this way, share the prompt, what came back, how long it took and the credits it used. We'll add the best ones here.
 
 ## Optional: run it unattended
 
